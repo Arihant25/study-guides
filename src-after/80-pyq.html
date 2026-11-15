@@ -1,9 +1,8 @@
 
 <div class="part">Finish<span>Practice</span></div>
 <section>
-<h2 id="pyq"><span class="num">19</span>Past-paper questions on this half</h2>
+<h2 id="pyq"><span class="num">29</span>Past-paper questions on this half</h2>
 <p class="about">The 2024 papers asked these questions on the material on this page. Each answer gives the idea in plain words, the formulas, the steps with numbers, and the final answer. Write your own answer first, then compare.</p>
-<p class="small">Not covered here: 2024 Quiz 2 Set 2 Q1 (Barabási–Albert growth model), which is not in this year's slides so far.</p>
 
 <details class="q"><summary><span class="qt pyq">Quiz 2 · Set 1 · Q3 · 2 + 3 marks</span><span>If \(x_{n+1} = f(x_n)\), find the condition (show the derivation) where the system shows a stable fixed point \(x_{n+1} = f(x_n) = x^*\). For (i) \(f(x) = x^2\) and (ii) \(f(x) = \cos x\), find the fixed points and the stability conditions.</span><span class="chev">›</span></summary>
 <div class="ans">
@@ -89,6 +88,29 @@
 </ol>
 <h4>Final answer</h4>
 <p>(a) \(\dot r = \mu r - r^3\), \(\dot\theta = \omega\). (b) A stable limit cycle of radius \(\sqrt\mu\) exists when \(\mu > 0\). At \(\mu = 0\) the stable origin becomes unstable and the cycle is born: a supercritical Hopf bifurcation (the radial equation is a supercritical pitchfork).</p>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q1 · 2 + 2 marks</span><span>Explain the basic ingredients required for generating a BA graph. Prove that the rate at which an existing node \(i\) acquires links, \(\frac{dk_i}{dt}\), as a result of new nodes connecting to it is proportional to \(\frac{k_i}{t}\), where \(k\) is the degree and \(t\) is time.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p class="idea"><strong>The idea in plain words.</strong> A BA network grows one node at a time, and each new node prefers to link to nodes that already have many links. A node's chance of getting each new link is its share of all the link ends in the network. That total grows in proportion to time, so the rate of gaining links is the node's degree divided by time.</p>
+<h4>Formulas you need</h4>
+<ul><li>\(\Pi(k_i) = \dfrac{k_i}{\sum_jk_j}\), and \(\sum_jk_j = 2\times\text{(number of links)}\) (<a href="#ba">§19</a>, <a href="#badeg">§20</a>).</li></ul>
+<h4>Part 1 · the ingredients</h4>
+<ol class="steps">
+<li><strong>Growth.</strong> Start from \(m_0\) nodes. At each time step add one new node with \(m\le m_0\) links to nodes already present. The number of nodes keeps increasing, unlike in a random graph where \(N\) is fixed.</li>
+<li><strong>Preferential attachment.</strong> The probability that a link of the new node goes to node \(i\) is proportional to its degree: \(\Pi(k_i) = k_i/\sum_jk_j\). Unlike in a random graph, partners are not chosen with equal probability.</li>
+<li>Together they give a scale-free network with \(P(k)\sim k^{-3}\). Either one alone does not.</li>
+</ol>
+<h4>Part 2 · the rate</h4>
+<ol class="steps">
+<li>Treat \(k_i\) as a continuous quantity (its average over many runs).</li>
+<li>Each step brings \(m\) new links, and each chooses node \(i\) with probability \(\Pi(k_i)\): \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_{j=1}^{N-1}k_j}.\]</li>
+<li>After \(t\) steps there are \(mt\) links, so the total degree is \(2mt\). Without the new node's own \(m\): \(\sum_{j=1}^{N-1}k_j = 2mt - m\).</li>
+<li>So \[\frac{dk_i}{dt} = \frac{m\,k_i}{2mt - m} = \frac{k_i}{2t - 1}\approx\frac{k_i}{2t}\quad\text{for large }t.\] The rate is proportional to \(k_i/t\), with constant \(\frac12\).</li>
+</ol>
+<h4>Final answer</h4>
+<p>Ingredients: growth and preferential attachment. \(\dfrac{dk_i}{dt} = \dfrac{k_i}{2t}\propto\dfrac{k_i}{t}\). If there is time, add the solution: \(k_i(t) = m(t/t_i)^{1/2}\), so equivalently \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_i\,t}}\propto t^{-1/2}\).</p>
+<p class="small">The scan of this paper is hard to read at "proportional to"; \(k_i/t\) is the reading that fits the slides' derivation.</p>
 </div></details>
 
 <h3>One more in the exam's style</h3>

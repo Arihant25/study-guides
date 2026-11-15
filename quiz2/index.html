@@ -280,7 +280,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
   <a href="../remember/" data-pg="remember"><b>★</b><span>Memory sheet<small>Whole course: formulas and proofs</small></span></a>
   <a href="../quiz1/" data-pg="quiz1"><b>1</b><span>Quiz 1 guide<small>Classes 1 to 6, network basics</small></span></a>
   <a href=".././" data-pg="mid"><b>2</b><span>Mid-sem guide<small>Power laws, random graphs, bifurcations</small></span></a>
-  <a href="../after-midsem/" data-pg="after"><b>3</b><span>After mid-sem guide<small>Classes 13 to 18, 2-D systems to chaos</small></span></a>
+  <a href="../after-midsem/" data-pg="after"><b>3</b><span>After mid-sem guide<small>Classes 13 to 22, 2-D systems to scale-free networks</small></span></a>
 </div>
 
   <nav id="tocnav">
@@ -312,7 +312,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
   <a href="../remember/" data-pg="remember"><b>★</b><span>Memory sheet<small>Whole course: formulas and proofs</small></span></a>
   <a href="../quiz1/" data-pg="quiz1"><b>1</b><span>Quiz 1 guide<small>Classes 1 to 6, network basics</small></span></a>
   <a href=".././" data-pg="mid"><b>2</b><span>Mid-sem guide<small>Power laws, random graphs, bifurcations</small></span></a>
-  <a href="../after-midsem/" data-pg="after"><b>3</b><span>After mid-sem guide<small>Classes 13 to 18, 2-D systems to chaos</small></span></a>
+  <a href="../after-midsem/" data-pg="after"><b>3</b><span>After mid-sem guide<small>Classes 13 to 22, 2-D systems to scale-free networks</small></span></a>
 </div>
 
     <div class="mgrp">Sections on this page</div>
@@ -353,7 +353,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
 <tr><td>2024 mid-sem</td><td>Two coupled oscillators: critical coupling, the common frequency, and can they lock at <math><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow></math>, <math><mrow><msub><mi>ω</mi><mn>1</mn></msub><mo>=</mo><mn>2</mn></mrow></math>, <math><mrow><msub><mi>ω</mi><mn>2</mn></msub><mo>=</mo><mn>10</mn></mrow></math>? (No, since <math><mrow><mn>8</mn><mo>&gt;</mo><mn>4</mn></mrow></math>.)</td><td>3 + 4</td><td><a href="#pf-twoosc">Two oscillators</a></td></tr>
 <tr><td>2024 mid-sem</td><td>Put <math><mrow><mover><mi>z</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">˙</mo></mover><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>μ</mi><mo>+</mo><mi>i</mi><mi>ω</mi><mo>−</mo><mi>|</mi><mi>z</mi><msup><mi>|</mi><mn>2</mn></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>z</mi></mrow></math> in polar form, and find when there's a stable limit cycle.</td><td>3 + 4</td><td><a href="#pf-hopf">Hopf</a></td></tr>
 </table>
-<p class="small">Worked answers with the full reasoning are in <a href="../after-midsem/#pyq">the After mid-sem guide, §19</a>, along with a practice competition question in the same style.</p>
+<p class="small">Worked answers with the full reasoning are in <a href="../after-midsem/#pyq">the After mid-sem guide, §29</a>, along with a practice competition question in the same style.</p>
 </section>
 
 <section>
@@ -576,7 +576,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
 <li><math><mrow><mrow><mi>cos</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>x</mi></mrow></math>: <math><mrow><msup><mi>x</mi><mo form="prefix" stretchy="false" class="tml-sml-pad">∗</mo></msup><mo>=</mo><mrow><mi>cos</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><msup><mi>x</mi><mo form="prefix" stretchy="false" class="tml-sml-pad">∗</mo></msup></mrow></math>. Iterate from 1: 0.540, 0.858, 0.654, 0.794, … → <math><mrow><msup><mi>x</mi><mo form="prefix" stretchy="false" class="tml-sml-pad">∗</mo></msup><mo>≈</mo><mn>0.739</mn></mrow></math></li>
 <li><math><mrow><msup><mi>f</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-lrg-pad">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mo form="prefix" stretchy="false">−</mo><mrow><mi>sin</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>x</mi></mrow></math>, <math><mrow><mi>|</mi><msup><mi>f</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-lrg-pad">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0.739</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>|</mi><mo>=</mo><mrow><mi>sin</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mn>0.739</mn><mo>≈</mo><mn>0.674</mn><mo>&lt;</mo><mn>1</mn></mrow></math>, stable<span class="why">negative slope, so the iterates zigzag in</span></li>
 </ul>
-<p class="small"><a href="../after-midsem/#pyq">Worked answer: After mid-sem guide §19</a></p>
+<p class="small"><a href="../after-midsem/#pyq">Worked answer: After mid-sem guide §29</a></p>
 </div>
 
 <div class="pf" data-pg="3" id="pf-2cycle">

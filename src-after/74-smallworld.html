@@ -1,0 +1,265 @@
+<div class="part">Part 9<span>Degree correlations and small worlds</span></div>
+<section>
+<h2 id="assort"><span class="num">24</span>Assortativity · who links to whom</h2>
+<span class="board">Deck 15 · slides 6–19</span>
+<p class="about">The degree distribution says how many links each node has. It does not say which nodes those links go to. Do hubs link to other hubs, or to small nodes? Networks where like links with like are called assortative, and the opposite disassortative. One number between −1 and 1, a correlation coefficient computed over the links, tells which kind a network is.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Write the probability that two nodes of degrees \(k\) and \(k'\) are linked in a random network, \(p_{k,k'} = kk'/(2L)\), and use it.</li>
+<li>Define assortative, neutral and disassortative.</li>
+<li>Compute the assortativity index \(r\) of a small drawn network.</li>
+</ul>
+</div>
+
+<h3>What random wiring predicts</h3>
+<p>The slides open with celebrity couples. If a celebrity chose a partner at random from \(10^8\) people, the chance of picking one of 1000 other celebrities would be \(10^3/10^8 = 10^{-5}\). Celebrities marry each other far more often than that. So partners are not chosen at random: like attracts like.</p>
+<p>For a network, the baseline is a network with the same degrees but wired at random. In it, the probability that a node of degree \(k\) and a node of degree \(k'\) are linked is</p>
+<div class="eq boxed">\[p_{k,k'} = \frac{k\,k'}{2L}\]</div>
+<p class="sym">\(L\) is the number of links, so \(2L\) is the number of link ends. Reason: each of the \(k\) links of the first node lands on one of the \(2L\) link ends, and \(k'\) of those belong to the second node.</p>
+
+<div class="card ex"><span class="tag">Numbers from the slides · the yeast protein interaction network</span>
+<p>\(N = 1870\) proteins, \(L = 2277\) links, so \(2L = 4554\).</p>
+<ul>
+<li>Two hubs with \(k = 56\) and \(k' = 13\): \(p = \frac{56\times13}{4554} = 0.16\).</li>
+<li>A degree-1 and a degree-2 node: \(p_{1,2} = \frac{2}{4554} = 0.0004\), which is 400 times smaller.</li>
+</ul>
+<p>So random wiring says hubs should often be linked to each other. In the real network they are not: the hubs link almost only to degree-1 nodes. The hub with \(k = 56\) should have about \(N_1p_{1,56}\approx12\) neighbours of degree 1, and it has 46, four times as many. This network is disassortative.</p>
+</div>
+
+<h3>Three kinds of network</h3>
+<table class="tbl">
+<tr><th>Kind</th><th>Pattern</th><th>Picture of links by the degrees \((k_1, k_2)\) at their two ends</th></tr>
+<tr><td><strong>Assortative</strong></td><td>Hubs link to hubs, small nodes to small nodes.</td><td>Links pile up where \(k_1\approx k_2\), along the diagonal.</td></tr>
+<tr><td><strong>Neutral</strong></td><td>Wired at random: \(p_{k,k'} = kk'/2L\).</td><td>A round blob, no direction.</td></tr>
+<tr><td><strong>Disassortative</strong></td><td>Hubs link to small nodes and avoid each other.</td><td>Links pile up where one degree is large and the other small, along the anti-diagonal.</td></tr>
+</table>
+
+<h3>The assortativity index</h3>
+<p>List every link once. Call the degree of its first end \(X\) and the degree of its second end \(Y\). The assortativity index is the Pearson correlation coefficient between \(X\) and \(Y\) over all \(n\) links:</p>
+<div class="eq boxed">\[r = \frac{\sum_{i=1}^n(X_i - \bar X)(Y_i - \bar Y)}{\sqrt{\sum_{i=1}^n(X_i - \bar X)^2}\;\sqrt{\sum_{i=1}^n(Y_i - \bar Y)^2}}\]</div>
+<p class="sym">\(X_i\), \(Y_i\) are the degrees at the two ends of link \(i\). \(\bar X\), \(\bar Y\) are their averages over the links. \(r>0\): assortative. \(r<0\): disassortative. \(r\) near 0: neutral.</p>
+
+<div class="card exam"><span class="tag">Worked example to learn · slide 13</span>
+<figure class="fig">
+<svg class="gr" viewBox="0 0 300 170" role="img" aria-label="Five-node graph with six links" data-spec='{"r":14,"nodes":{"1":[95,30],"2":[205,30],"4":[250,105],"3":[150,140],"5":[50,105]},"edges":[["1","2"],["1","4"],["1","5"],["2","4"],["3","4"],["3","5"]]}'></svg>
+<figcaption>Five nodes, six links. Degrees: nodes 1 and 4 have 3 links, nodes 2, 3 and 5 have 2.</figcaption></figure>
+<ol class="steps">
+<li><strong>List the links</strong> with the smaller node number first, in increasing order (the slide's convention), and write the degree of each end.</li>
+<li><strong>Averages.</strong> \(\bar X = \frac{3+3+3+2+2+2}{6} = 2.5\) and \(\bar Y = \frac{2+3+2+3+3+2}{6} = 2.5\).</li>
+<li><strong>Fill the table.</strong></li>
+</ol>
+<table class="tbl">
+<tr><th>Link</th><th class="c">\(X\)</th><th class="c">\(Y\)</th><th class="c">\(X - \bar X\)</th><th class="c">\(Y - \bar Y\)</th><th class="c">product</th></tr>
+<tr><td>1–2</td><td class="c">3</td><td class="c">2</td><td class="c">0.5</td><td class="c">−0.5</td><td class="c">−0.25</td></tr>
+<tr><td>1–4</td><td class="c">3</td><td class="c">3</td><td class="c">0.5</td><td class="c">0.5</td><td class="c">0.25</td></tr>
+<tr><td>1–5</td><td class="c">3</td><td class="c">2</td><td class="c">0.5</td><td class="c">−0.5</td><td class="c">−0.25</td></tr>
+<tr><td>2–4</td><td class="c">2</td><td class="c">3</td><td class="c">−0.5</td><td class="c">0.5</td><td class="c">−0.25</td></tr>
+<tr><td>3–4</td><td class="c">2</td><td class="c">3</td><td class="c">−0.5</td><td class="c">0.5</td><td class="c">−0.25</td></tr>
+<tr><td>3–5</td><td class="c">2</td><td class="c">2</td><td class="c">−0.5</td><td class="c">−0.5</td><td class="c">0.25</td></tr>
+</table>
+<ol class="steps" style="counter-reset:s 3">
+<li><strong>Add up.</strong> Sum of products \(= -0.5\). Sum of squares: \(6\times0.25 = 1.5\) for \(X\), and the same for \(Y\).</li>
+<li><strong>Divide.</strong> \[r = \frac{-0.5}{\sqrt{1.5}\,\sqrt{1.5}} = \frac{-0.5}{1.5} = -0.333.\] Negative, so this small network is disassortative: four of its six links join a degree-3 node to a degree-2 node.</li>
+</ol>
+</div>
+
+<h3>Real networks</h3>
+<table class="tbl">
+<tr><th>Network</th><th class="c">\(r\)</th><th>Kind</th></tr>
+<tr><td>Physics co-authorship</td><td class="c">0.363</td><td rowspan="3">Social networks are mostly assortative.</td></tr>
+<tr><td>Company directors</td><td class="c">0.276</td></tr>
+<tr><td>Film actor collaborations</td><td class="c">0.208</td></tr>
+<tr><td>Internet</td><td class="c">−0.189</td><td rowspan="4">Technological and biological networks are mostly disassortative.</td></tr>
+<tr><td>Protein interactions</td><td class="c">−0.156</td></tr>
+<tr><td>Neural network</td><td class="c">−0.226</td></tr>
+<tr><td>Metabolic network</td><td class="c">−0.240</td></tr>
+</table>
+<p>There are exceptions both ways. The karate club network (34 members) is social but has \(r = -0.476\); protein structure (0.412) and Roget's Thesaurus (0.174) are not social but are assortative. The co-authorship network of the Social Networks journal (475 authors) has \(r = 0.349\).</p>
+<p><strong>Why it matters for spreading.</strong> The last slide shows a 2022 paper (Mizutaka, Mori and Hasegawa) on the SIS model in networks with degree correlation. A positive correlation lowers the epidemic threshold and a negative one raises it. When hubs are linked to hubs, a disease can keep itself alive inside the group of hubs.</p>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>Random wiring: \(p_{k,k'} = kk'/(2L)\).</li>
+<li>Assortative: hubs link to hubs, \(r>0\). Disassortative: hubs link to small nodes, \(r<0\). Neutral: \(r\approx0\).</li>
+<li>\(r\) = Pearson correlation of the degrees at the two ends of each link.</li>
+<li>Social networks tend to be assortative; technological and biological ones disassortative.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>A star with one centre and 4 leaves. What is \(r\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>With each link listed once as centre–leaf, \(X = 4\) and \(Y = 1\) for every link, so both have zero spread and the formula gives 0/0. Counting each link in both directions (the usual definition), the pairs are \((4,1)\) four times and \((1,4)\) four times: whenever one end is above the average the other is below by the same amount, so \(r = -1\), perfectly disassortative.</p></div></details>
+<details class="q"><summary><span class="qt">Calc</span><span>In a network with \(L = 500\) links, what is the chance that two nodes with degrees 20 and 10 are linked, if the wiring is random?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(p = \frac{20\times10}{2\times500} = 0.2\).</p></div></details>
+</section>
+
+<section>
+<h2 id="lattice"><span class="num">25</span>Small worlds · two extremes that both fail</h2>
+<span class="board">Deck 16 · slides 1–17</span>
+<p class="about">Real networks have two properties at once. Your friends know each other (high clustering), and yet anyone can be reached in a few steps (short paths). A regular lattice has the first property but not the second. A random graph has the second but not the first. This section works out both extremes exactly, so that the next section can show how a few random links join them.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>State the small-world conditions: \(\bar\ell\approx\bar\ell_{\text{random}}\) and \(C\gg C_{\text{random}}\).</li>
+<li>Derive the clustering of a ring lattice, \(C(0) = \frac{3(k-1)}{2(2k-1)}\).</li>
+<li>Derive its path length, \(\bar\ell(0)\approx\frac{n}{4k}\).</li>
+<li>Give \(C\) and \(\bar\ell\) of a random graph with the same degree and compare.</li>
+</ul>
+</div>
+
+<h3>The three quantities</h3>
+<table class="tbl">
+<tr><th>Quantity</th><th>Definition</th></tr>
+<tr><td>Average path length</td><td>\(\bar\ell = \dfrac{1}{n(n-1)}\sum_{u\ne v}\ell(u,v)\), the mean number of steps between two nodes. The diameter is the largest \(\ell(u,v)\).</td></tr>
+<tr><td>Clustering coefficient (Watts–Strogatz)</td><td>\(C_i = \dfrac{\text{links among the neighbours of } i}{\binom{k_i}{2}}\) and \(C = \dfrac1n\sum_iC_i\).</td></tr>
+<tr><td>Global transitivity (a different number)</td><td>\(T = \dfrac{3\times\text{number of triangles}}{\text{number of connected triples}}\).</td></tr>
+</table>
+<p class="sym">\(n\) is the number of nodes. \(k_i\) is the degree of node \(i\), and \(\binom{k_i}{2} = k_i(k_i-1)/2\) is the number of pairs of its neighbours. \(C\) averages a ratio over nodes, so low-degree nodes count as much as hubs. \(T\) is one ratio for the whole network, so hubs dominate. They can differ by a factor of ten. This deck always uses \(C\) (<a href="{{ROOT}}quiz1/#cluster">Quiz 1 guide, clustering</a>).</p>
+<div class="card watch"><span class="tag">Convention in this deck</span>
+<p>In a ring lattice every node is linked to its \(k\) nearest neighbours <strong>on each side</strong>. So the degree is \(2k\), and the lattice has \(nk\) links. Other texts write \(K = 2k\) for the degree. Check which is meant before using a formula.</p>
+</div>
+
+<h3>What "small world" means</h3>
+<div class="eq boxed">\[\bar\ell\approx\bar\ell_{\text{random}}\qquad\text{and}\qquad C\gg C_{\text{random}}\]</div>
+<p>In full, five conditions: (1) \(\bar\ell\) grows at most like \(\ln n\) at fixed average degree, (2) the network is large, \(n\gg1\), (3) sparse, \(n\gg\langle k\rangle\), (4) not held together by one hub, \(n\gg k_{\max}\), and (5) clustered, \(C\gg C_{\text{random}}\). The random graph satisfies the first four and fails the fifth, which is why it is the wrong model for a social network.</p>
+<p class="small">Measured: film actors have \(C = 0.79\) with \(\bar\ell = 3.65\). In real networks the path length is within a factor of about 1.5 of the random-graph value, while the clustering is hundreds to thousands of times larger (2900 times for film actors). Exact distances on whole graphs: MSN Messenger (\(1.8\times10^8\) users) 6.6, Facebook 4.7 in 2012 and 3.6 in 2016.</p>
+<p><strong>A wrong argument.</strong> "With 100 friends each, five steps reach \(100^5 = 10^{10}\) people, so six degrees is obvious." This assumes that your friends' friends are all new people. In a clustered network they are mostly your own friends again, so the number of new people per step stops multiplying. The real claim is that a few long-range links are enough to bring back short distances without destroying the clustering.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · clustering of a ring lattice</span>
+<ol class="steps">
+<li><strong>Count the possible pairs.</strong> Node \(i\) has \(2k\) neighbours, at positions \(-k,\dots,-1\) and \(+1,\dots,+k\) from it. The number of pairs of neighbours is \[\binom{2k}{2} = k(2k-1).\]</li>
+<li><strong>Count the pairs that are linked.</strong> Two nodes are linked when their positions differ by at most \(k\).
+  <ul>
+  <li>Two neighbours on the same side are always within \(k\) of each other: \(\binom k2\) pairs on the left and \(\binom k2\) on the right.</li>
+  <li>One neighbour on each side, at \(-a\) and \(+b\): they are \(a + b\) apart, so they are linked when \(a + b\le k\). There are \(\binom k2\) such pairs.</li>
+  </ul>
+  Total: \[3\binom k2 = \frac32k(k-1).\]</li>
+<li><strong>Divide.</strong> \[C(0) = \frac{\frac32k(k-1)}{k(2k-1)} = \frac{3(k-1)}{2(2k-1)}\;\xrightarrow{\;k\to\infty\;}\;\frac34.\]</li>
+</ol>
+</div>
+<p>\(C(0)\) is \(\frac12\) for \(k = 2\) and climbs towards \(\frac34\) without reaching it (0.711 at \(k = 10\)). It does not depend on \(n\): however large the ring, the clustering stays high. With the degree \(K = 2k\) the same formula reads \(C(0) = \frac{3(K-2)}{4(K-1)}\).</p>
+<p class="small">Why \(\binom k2\) pairs straddle node \(i\): for \(a = 1\) there are \(k - 1\) choices of \(b\), for \(a = 2\) there are \(k - 2\), down to 0, and \((k-1) + (k-2) + \dots + 0 = k(k-1)/2\).</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · path length of a ring lattice</span>
+<ol class="steps">
+<li><strong>Count the shells.</strong> One step reaches the \(2k\) neighbours. A second step reaches the next \(k\) nodes on each side, again \(2k\) new nodes. Every step adds exactly \(2k\) new nodes: the shells are flat. In a random graph the shells multiply (\(\langle k\rangle^\ell\) nodes at distance \(\ell\)); here they do not.</li>
+<li><strong>Farthest node.</strong> It is \(n/2\) positions away around the ring, and each step covers \(k\) positions, so it takes \(\frac{n/2}{k} = \frac{n}{2k}\) steps.</li>
+<li><strong>Average.</strong> Distances are spread evenly between 1 and \(n/(2k)\) (each distance holds \(2k\) nodes), so the mean is half the largest: \[\bar\ell(0)\approx\frac12\cdot\frac{n}{2k} = \frac{n}{4k}.\] As a sum, with \(D = n/(2k)\): \(\bar\ell(0) = \frac1n\sum_{\ell=1}^{D}\ell\cdot2k\approx\frac{2k}{n}\cdot\frac{D^2}{2} = \frac{n}{4k}\).</li>
+</ol>
+</div>
+<p>So the lattice is a large world: its path length grows in proportion to \(n\).</p>
+<div class="card watch"><span class="tag">Slide errors</span>
+<p>Slide 12 says the farthest node is reached in "\(n/(2\cdot2k) = n/4k\) steps" and writes the sum with upper limit \(n/4k\) and a factor \(\frac2n\). The farthest node takes \(n/(2k)\) steps; \(n/(4k)\) is the average. The final result \(\bar\ell(0)\approx n/(4k)\) is right.</p>
+</div>
+
+<h3>The other extreme · a random graph with the same degree</h3>
+<p>Take \(G(n,p)\) with average degree \(2k\), so \(p = 2k/n\).</p>
+<ul>
+<li><strong>Clustering.</strong> Among the neighbours of a node, each possible link is present with probability \(p\), independently of everything else. So \[C_{\text{rand}} = p = \frac{2k}{n}\to0.\]</li>
+<li><strong>Path length.</strong> Shells multiply: 1, then \(2k\), then \((2k)^2\), and so on. Setting \((2k)^d\approx n\): \[\bar\ell_{\text{rand}}\approx\frac{\ln n}{\ln2k}.\] The multiplying argument is valid here because there is no clustering.</li>
+</ul>
+
+<table class="tbl">
+<tr><th>Network (degree \(2k\))</th><th>Clustering</th><th>Path length</th><th>Verdict</th></tr>
+<tr><td>Ring lattice</td><td>\(\dfrac{3(k-1)}{2(2k-1)}\approx\dfrac34\)</td><td>\(\dfrac{n}{4k}\)</td><td>High \(C\), but a large world</td></tr>
+<tr><td>Random graph</td><td>\(\dfrac{2k}{n}\to0\)</td><td>\(\dfrac{\ln n}{\ln2k}\)</td><td>Short paths, but no clustering</td></tr>
+<tr><td>Real networks</td><td>high</td><td>short</td><td>Both at once</td></tr>
+</table>
+
+<div class="card ex"><span class="tag">Numbers from the slides · \(k = 5\)</span>
+<table class="tbl">
+<tr><th>\(n\)</th><th>Ring lattice, \(n/4k\)</th><th>Random graph, \(\ln n/\ln10\)</th></tr>
+<tr><td>\(10^3\)</td><td>50</td><td>3</td></tr>
+<tr><td>\(10^6\)</td><td>50,000</td><td>6</td></tr>
+<tr><td>\(10^9\)</td><td>\(5\times10^7\)</td><td>9</td></tr>
+</table>
+<p>Fifty million steps to cross a lattice of a billion nodes, against nine in a random graph. The clustering goes the other way: \(C(0) = \frac{3\times4}{2\times9} = 0.667\) for the lattice, and \(10/10^9 = 10^{-8}\) for the random graph.</p>
+</div>
+
+<h3>The connected caveman graph (slides 15–17)</h3>
+<p>An even more clustered extreme. Take \(n/(k+1)\) cliques of \(k+1\) nodes each (the caves; inside a cave everyone is linked to everyone). In each cave remove one link and use it to join the cave to the next one, so that the caves form a ring.</p>
+<ul>
+<li><strong>Clustering.</strong> The \(k - 2\) untouched nodes of a cave have \(C = 1 - \frac{2}{k(k-1)}\), the node that lost a link has \(C = 1\), and the two nodes on the link between caves have \(C = 1 - \frac2k\). Averaging: \[C_{\text{caveman}}\approx1 - \frac{6}{k^2-1}\to1.\]</li>
+<li><strong>Path length.</strong> Shrink each cave to one point: the points form a ring of \(n/(k+1)\) caves, and distances on a ring grow in proportion to its length. So \[\bar\ell_{\text{caveman}}\approx\frac{n}{2(k+1)}\propto n.\]</li>
+</ul>
+<p>So both extremes fail, in opposite ways. The caveman graph and the lattice have high \(C\) and \(\bar\ell\propto n\). The random graph has \(\bar\ell\propto\ln n\) and \(C\to0\).</p>
+<p class="small">Slide 17 gives two different constants for the caveman path length, \(n/(4(k+1))\) in one box and \(n/(2(k+1))\) in the other. The first counts cave-to-cave hops on the ring of caves; each hop costs about two steps (one across the cave, one along the joining link), which gives the second. What matters is that it is proportional to \(n\).</p>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>Small world: \(\bar\ell\approx\bar\ell_{\text{random}}\sim\ln n\) and \(C\gg C_{\text{random}}\).</li>
+<li>Ring lattice, \(k\) neighbours per side: \(C(0) = \frac{3(k-1)}{2(2k-1)}\to\frac34\), \(\bar\ell(0)\approx\frac{n}{4k}\).</li>
+<li>Random graph, degree \(2k\): \(C = \frac{2k}{n}\), \(\bar\ell\approx\frac{\ln n}{\ln2k}\).</li>
+<li>Caveman: \(C\approx1 - \frac{6}{k^2-1}\), \(\bar\ell\propto n\).</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>A ring lattice has \(n = 2000\) and each node is linked to 3 neighbours on each side. Find \(C(0)\) and \(\bar\ell(0)\).</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(k = 3\): \(C(0) = \frac{3\times2}{2\times5} = 0.6\). \(\bar\ell(0)\approx\frac{2000}{12} = 167\).</p></div></details>
+<details class="q"><summary><span class="qt">Drill</span><span>For \(k = 2\), list the linked pairs among the neighbours of node 0 and check \(3\binom k2\).</span><span class="chev">›</span></summary>
+<div class="ans"><p>Neighbours: \(-2, -1, +1, +2\). Linked pairs (positions differ by at most 2): \((-2,-1)\), \((+1,+2)\), \((-1,+1)\). That is 3, and \(3\binom22 = 3\). Possible pairs: \(\binom42 = 6\). \(C = 3/6 = \frac12\).</p></div></details>
+</section>
+
+<section>
+<h2 id="ws"><span class="num">26</span>The Watts–Strogatz model</h2>
+<span class="board">Deck 16 · slides 18–23</span>
+<p class="about">Watts and Strogatz (1998) found a one-knob model that moves from the ring lattice to the random graph. Take the lattice and rewire each link with probability \(p\). The surprise is what happens for small \(p\): a handful of rewired links is enough to make all distances short, while the clustering is almost untouched. That in-between range is the small world.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Describe the Watts–Strogatz construction and its two end points.</li>
+<li>Derive \(C(p) = C(0)(1-p)^3\).</li>
+<li>Explain why the path length collapses long before the clustering does.</li>
+</ul>
+</div>
+
+<h3>The construction</h3>
+<ol>
+<li>Start with a ring lattice of \(n\) nodes, each linked to \(k\) neighbours on each side. It has \(nk\) links.</li>
+<li>Go through the links. With probability \(p\), detach one end of the link and re-attach it to a node chosen at random (no self-links, no double links). With probability \(1 - p\) leave it alone.</li>
+</ol>
+<p>No link is added or removed, so the average degree stays \(2k\) for every \(p\). Only the wiring changes. The model is studied for \(n\gg k\gg\ln n\gg1\).</p>
+<table class="tbl">
+<tr><th>\(p\)</th><th>Network</th><th>\(C\)</th><th>\(\bar\ell\)</th></tr>
+<tr><td>0</td><td>Ring lattice</td><td>\(C(0) = \frac{3(k-1)}{2(2k-1)}\)</td><td>\(\frac{n}{4k}\)</td></tr>
+<tr><td>small, about 0.002 to 0.2</td><td>Small world</td><td>almost \(C(0)\)</td><td>almost the random value</td></tr>
+<tr><td>1</td><td>Random graph</td><td>\(\frac{2k}{n}\)</td><td>\(\frac{\ln n}{\ln2k}\)</td></tr>
+</table>
+
+<figure class="fig"><!--plot:ws-curve--><figcaption>A simulation of the model with \(n = 500\) and \(k = 4\). Both quantities are divided by their value at \(p = 0\), and the \(p\) axis is logarithmic. The path length (orange) has fallen to about a quarter by \(p = 0.01\), while the clustering (teal) stays near 1 until about \(p = 0.1\). The dashed line is \((1-p)^3\).</figcaption></figure>
+
+<div class="card exam"><span class="tag">Derivation to learn · \(C(p) = C(0)(1-p)^3\)</span>
+<ol class="steps">
+<li><strong>What has to survive.</strong> Clustering counts triangles. A triangle of the lattice is still there after rewiring only if none of its three links was rewired. One rewired link destroys it.</li>
+<li><strong>Independence.</strong> Each link is rewired with probability \(p\), independently of the others. So each link stays with probability \(1 - p\), and all three stay with probability \[(1-p)^3.\]</li>
+<li><strong>What is neglected.</strong> A rewired link could land back in the same neighbourhood and make a new triangle. The chance of that is of order \(1/n\), which vanishes for a large network. This is the only approximation.</li>
+<li><strong>Multiply.</strong> The fraction of triangles that survive is \((1-p)^3\), so \[C(p) = C(0)\,(1-p)^3 = \frac{3(k-1)}{2(2k-1)}\,(1-p)^3.\]</li>
+</ol>
+</div>
+<p>For small \(p\), \((1-p)^3 = 1 - 3p + 3p^2 - p^3\approx1 - 3p\): the clustering falls slowly and in proportion to \(p\). At \(p = 1\) the formula gives 0, the random-graph value for large \(n\).</p>
+
+<h3>Why the path length collapses first</h3>
+<ul>
+<li><strong>Clustering is local.</strong> Rewiring one link destroys only the few triangles that used it. The damage adds up link by link, so it takes a number of rewirings of order \(nk\) (a fixed fraction of all links) to destroy the clustering.</li>
+<li><strong>Path length is global.</strong> One rewired link is a shortcut across the ring. It does not shorten one distance. It shortens the distance between everything near one end and everything near the other. So a few shortcuts are enough.</li>
+<li><strong>Counting.</strong> At rewiring probability \(p\) there are about \(nkp\) shortcuts. The first one appears when \(nkp\approx1\), that is at \[p\approx\frac{1}{nk},\] which goes to zero as the network grows. At that \(p\) the clustering is still \(C(0)(1 - \frac1{nk})^3\approx C(0)\).</li>
+</ul>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>\(n = 10^6\), \(k = 5\). The first shortcut appears at \(p\approx\frac{1}{5\times10^6} = 2\times10^{-7}\). At \(p = 0.01\) there are about \(nkp = 50{,}000\) shortcuts, and the clustering is \(C(0)\times0.99^3 = 0.667\times0.970 = 0.647\), a drop of 3%.</p>
+</div>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>WS model: ring lattice (\(nk\) links), rewire each link with probability \(p\). Degree stays \(2k\).</li>
+<li>\(C(p) = C(0)(1-p)^3\): a triangle survives only if all 3 of its links stay.</li>
+<li>Shortcuts: about \(nkp\). The first appears at \(p\approx1/(nk)\).</li>
+<li>Small world for small \(p\): path length already short, clustering still high.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>\(k = 3\). What is the clustering at \(p = 0.1\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(C(0) = 0.6\). \(C(0.1) = 0.6\times0.9^3 = 0.6\times0.729 = 0.437\).</p></div></details>
+<details class="q"><summary><span class="qt">Explain</span><span>Why is the exponent 3?</span><span class="chev">›</span></summary>
+<div class="ans"><p>A triangle has three links, and each must be left alone, each with probability \(1 - p\), independently.</p></div></details>
+</section>

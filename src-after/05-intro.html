@@ -1,8 +1,8 @@
 <aside class="toc" aria-label="Contents">
-  <div class="brand">DPCN study notes<small>Page 3 of 3 · Classes 13 to 18</small></div>
+  <div class="brand">DPCN study notes<small>Page 3 of 3 · Classes 13 to 22</small></div>
   <!--include:shared/pages.html-->
   <nav id="tocnav">
-    <a href="#start">Start here · classes 13 to 18</a>
+    <a href="#start">Start here · classes 13 to 22</a>
     <a href="#maths">M · More maths for this page</a>
     <div class="grp">Part 1 · 2-D linear systems</div>
     <a href="#eigen">1 · Straight-line solutions</a>
@@ -29,16 +29,29 @@
     <div class="grp">Part 7 · Large systems</div>
     <a href="#may">17 · Will a large system be stable?</a>
     <a href="#pendulum">18 · The double pendulum</a>
+    <div class="grp">Part 8 · Scale-free networks</div>
+    <a href="#ba">19 · Hubs and the Barabási–Albert model</a>
+    <a href="#badeg">20 · How a node's degree grows</a>
+    <a href="#bapk">21 · The BA degree distribution</a>
+    <a href="#kmax">22 · The largest hub, the role of γ</a>
+    <a href="#sfpath">23 · Distances in scale-free networks</a>
+    <div class="grp">Part 9 · Correlations and small worlds</div>
+    <a href="#assort">24 · Assortativity</a>
+    <a href="#lattice">25 · Small worlds: two extremes</a>
+    <a href="#ws">26 · The Watts–Strogatz model</a>
+    <div class="grp">Part 10 · Epidemics on networks</div>
+    <a href="#hmf">27 · Epidemic thresholds, MF and HMF</a>
+    <a href="#hmfsf">28 · SIS on scale-free networks, QMF, DMP</a>
     <div class="grp">Finish</div>
-    <a href="#pyq">19 · Past-paper questions</a>
-    <a href="#sheet">20 · Formula sheet</a>
+    <a href="#pyq">29 · Past-paper questions</a>
+    <a href="#sheet">30 · Formula sheet</a>
   </nav>
 </aside>
 <main>
 <header class="hero">
   <div class="kicker">Dynamical Processes in Complex Networks · SC1.440 · Page 3 of 3</div>
   <h1>DPCN After Mid-sem Guide</h1>
-  <p class="lead">This last page covers the classes after the mid-sem, 13 to 18. Until now a system had one changing quantity. Here there are two or three, and their motion can oscillate or turn chaotic. Exam questions on this material have been derivations, so each section is built around one derivation to learn line by line.</p>
+  <p class="lead">This last page covers the classes after the mid-sem, 13 to 22. Until now a system had one changing quantity. Here there are two or three, and their motion can oscillate or turn chaotic. The last three parts (classes 19 to 22) return to networks: scale-free networks, small worlds, and epidemics on them. Exam questions on this material have been derivations, so each section is built around one derivation to learn line by line.</p>
   <p class="small">Can't hold it all in your head? The <a href="{{ROOT}}remember/">Memory sheet</a> puts the whole course on one page, with flashcards.</p>
 </header>
 <div class="tocwrap-mobile">
@@ -47,7 +60,7 @@
     <div class="mgrp">Pages</div>
     <!--include:shared/pages.html-->
     <div class="mgrp">Sections on this page</div>
-    <a href="#start">Start here · classes 13 to 18</a>
+    <a href="#start">Start here · classes 13 to 22</a>
     <a href="#maths">M · More maths for this page</a>
     <a href="#eigen">1 · Straight-line solutions</a>
     <a href="#classify">2 · Saddles, nodes, spirals, centers</a>
@@ -67,23 +80,38 @@
     <a href="#kuramoto">16 · The Kuramoto model</a>
     <a href="#may">17 · Will a large system be stable?</a>
     <a href="#pendulum">18 · The double pendulum</a>
-    <a href="#pyq">19 · Past-paper questions</a>
-    <a href="#sheet">20 · Formula sheet</a>
+    <a href="#ba">19 · Hubs and the Barabási–Albert model</a>
+    <a href="#badeg">20 · How a node's degree grows</a>
+    <a href="#bapk">21 · The BA degree distribution</a>
+    <a href="#kmax">22 · The largest hub, the role of γ</a>
+    <a href="#sfpath">23 · Distances in scale-free networks</a>
+    <a href="#assort">24 · Assortativity</a>
+    <a href="#lattice">25 · Small worlds: two extremes</a>
+    <a href="#ws">26 · The Watts–Strogatz model</a>
+    <a href="#hmf">27 · Epidemic thresholds, MF and HMF</a>
+    <a href="#hmfsf">28 · SIS on scale-free networks, QMF, DMP</a>
+    <a href="#pyq">29 · Past-paper questions</a>
+    <a href="#sheet">30 · Formula sheet</a>
   </div>
   </details>
 </div>
 
 <section>
-<h2 id="start"><span class="num">·</span>Start here · classes 13 to 18</h2>
-<p class="about">These are the three slide decks posted on Moodle after the mid-sem: "Class 13-16: 1d and 2d systems + stability" (two decks) and "Class 17-18: Chaos: Lorenz, Logistic Map, Kuramoto". In your Drive they are files 11, 12 and 13 in the Slides folder.</p>
+<h2 id="start"><span class="num">·</span>Start here · classes 13 to 22</h2>
+<p class="about">These are the files posted on Moodle after the mid-sem: "Class 13-16: 1d and 2d systems + stability" (two decks), "Class 17-18: Chaos: Lorenz, Logistic Map, Kuramoto", "Class 19-20: Scale-free networks" (one deck) and "Class 21-22: Scale-free assortative networks, Small world, epidemic spreading" (two decks and a PDF of notes). In your Drive they are files 11 to 17 in the Slides folder.</p>
 
 <table class="tbl">
 <tr><th>Slide deck</th><th>Topics</th><th>Sections</th></tr>
 <tr><td>11 · Class 13-14 (ODE, bifurcation, 2-D)</td><td>2-D linear systems, eigenvalues, classification, Romeo and Juliet, the Jacobian, rabbits vs sheep, predator–prey</td><td><a href="#eigen">§1</a> to <a href="#lv">§7</a></td></tr>
 <tr><td>12 · Class 15-16</td><td>Stability of dynamics on a network, population growth with migration, limit cycles, Hopf bifurcation, van der Pol, Poincaré–Bendixson, networks of oscillators</td><td><a href="#netstab">§8</a> to <a href="#vdp">§10</a></td></tr>
 <tr><td>13 · Class 17-18</td><td>Runge–Kutta, Lorenz system, logistic map and chaos, cobwebs, synchronisation and the Kuramoto model, stability of large systems (May), double pendulum</td><td><a href="#euler">§11</a> to <a href="#pendulum">§18</a></td></tr>
+<tr><td>14 · Class 19-20 (Scale-free networks)</td><td>Hubs, growth and preferential attachment, the Barabási–Albert model, degree dynamics, the \(k^{-3}\) degree distribution (continuum theory and rate equation), the largest hub, average path length for any degree distribution, ultra-small worlds, error and attack tolerance</td><td><a href="#ba">§19</a> to <a href="#sfpath">§23</a></td></tr>
+<tr><td>15 · Class 21-22 (Assortativity)</td><td>The largest hub and the role of \(\gamma\) again, assortative and disassortative networks, the assortativity index</td><td><a href="#kmax">§22</a>, <a href="#assort">§24</a></td></tr>
+<tr><td>16 · Class 21-22 (Small-world networks)</td><td>The small-world conditions, clustering and path length of the ring lattice, the random graph and the caveman graph, the Watts–Strogatz model, \(C(p) = C(0)(1-p)^3\)</td><td><a href="#lattice">§25</a>, <a href="#ws">§26</a></td></tr>
+<tr><td>17 · Class 21-22 (Epidemic spreading, PDF notes)</td><td>SIS thresholds by mean field, heterogeneous mean field, quenched mean field and dynamical message passing; SIS on a scale-free network with \(\gamma = 3\)</td><td><a href="#hmf">§27</a>, <a href="#hmfsf">§28</a></td></tr>
 </table>
 <p class="small">Deck 13 marks the infinite-N Kuramoto material (slides 38 to 48) "Advanced Topics (Not for exam)". This page gives only its final result. The research-paper slides (aging transition, explosive synchronisation, the dynamic Jacobian ensemble) are summarised in a few lines each, since they show results rather than derivations.</p>
+<p class="small">Deck 16 stops after the Watts–Strogatz clustering derivation. Its opening slide also announces a scaling section and Kleinberg's question of finding short paths, but those slides are not in the file on Moodle, so they are not covered here.</p>
 
 <div class="card goal"><span class="tag">Derivations from this page that past papers asked</span>
 <p>Past papers (2024 Quiz 2 and mid-sem) asked exactly these kinds of questions. If you are short on time, learn these first.</p>
@@ -94,6 +122,7 @@
 <li>Convert \(\dot z = (\mu + i\omega - |z|^2)z\) to polar form and find the limit cycle (<a href="#cycle">§9</a>). Asked in the 2024 mid-sem.</li>
 <li>Two coupled phase oscillators: when do they lock, and at what frequency (<a href="#twoosc">§15</a>). Asked in the 2024 mid-sem.</li>
 <li>Solve a 2-D linear initial value problem with eigenvectors (<a href="#ivp">§3</a>).</li>
+<li>The two ingredients of the Barabási–Albert model, and the proof that \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) (<a href="#ba">§19</a>, <a href="#badeg">§20</a>). Asked in 2024 Quiz 2. The step after it, \(P(k) = 2m^2k^{-3}\), is the natural follow-up (<a href="#bapk">§21</a>).</li>
 </ol>
 </div>
 

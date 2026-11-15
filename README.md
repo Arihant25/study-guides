@@ -4,7 +4,7 @@ Study notes for **Dynamical Processes of Complex Networks (SC1.440)** at IIIT Hy
 
 1. **Page 1, Quiz 1 guide** (classes 1 to 6, network basics): https://arihant25.github.io/dpcn-study-guide/quiz1/
 2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/dpcn-study-guide/
-3. **Page 3, After mid-sem guide** (classes 13 to 18): https://arihant25.github.io/dpcn-study-guide/after-midsem/
+3. **Page 3, After mid-sem guide** (classes 13 to 22): https://arihant25.github.io/dpcn-study-guide/after-midsem/
 
 There is also a **Memory sheet** with the whole course on one page (formulas, a short proof for each result, flashcards): https://arihant25.github.io/dpcn-study-guide/remember/
 
@@ -31,6 +31,9 @@ Quiz 2 and the end-sem cover the whole course. Page 1 opens with a map of which 
 - Euler/RK4, map stability and cobwebs, logistic map period doubling and chaos, Lorenz fixed points and Jacobians
 - Two coupled phase oscillators, Kuramoto order parameter and critical coupling
 - May's stability criterion and the elliptic law; double pendulum normal modes
+- Scale-free networks: the Barabási–Albert model, degree dynamics, P(k) = 2m²k⁻³ by continuum theory and by the rate equation, the largest hub, path length for any degree distribution, ultra-small worlds
+- Assortativity; small worlds: ring lattice, random graph and caveman graph, the Watts–Strogatz model and C(p) = C(0)(1 − p)³
+- Epidemic thresholds on networks: mean field, heterogeneous mean field (⟨K⟩/⟨K²⟩), SIS on a scale-free network, quenched mean field, message passing
 - Every topic is built around a numbered derivation to learn, plus 2024 past-paper questions
 
 ## Editing

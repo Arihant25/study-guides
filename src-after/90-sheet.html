@@ -1,6 +1,6 @@
 
 <section>
-<h2 id="sheet"><span class="num">20</span>Formula sheet</h2>
+<h2 id="sheet"><span class="num">30</span>Formula sheet</h2>
 <p class="about">Every "What to remember" box in one table. If a line means nothing to you, go back to its section.</p>
 <table class="tbl">
 <tr><th>Topic</th><th>Formula or fact</th></tr>
@@ -20,6 +20,16 @@
 <tr><td><a href="#kuramoto">Kuramoto</a></td><td>\(re^{i\psi} = \frac1N\sum e^{i\theta_j}\); \(\dot\theta_i = \omega_i + Kr\sin(\psi - \theta_i)\); \(K_c = 2/(\pi g(0))\); Lorentzian \(K_c = 2\gamma\), \(r = \sqrt{1 - K_c/K}\).</td></tr>
 <tr><td><a href="#may">Large systems</a></td><td>GLV \(M = D(\mathbf x^*)A\). May: stable iff \(\sqrt{SC\sigma^2} < d\). Elliptic: \(\sqrt{SC\sigma^2}(1+\rho) < d\).</td></tr>
 <tr><td><a href="#pendulum">Double pendulum</a></td><td>\(\omega_{1,2}^2 = \frac gL[1 + \mu\pm\sqrt{\mu(1+\mu)}]\); equal masses \(\sqrt{g/L}\sqrt{2\pm\sqrt2}\).</td></tr>
+<tr><td><a href="#ba">BA model</a></td><td>Growth (one node with \(m\) links per step) + preferential attachment \(\Pi(k_i) = k_i/\sum_jk_j\). \(N = t + m_0\), links \(m_0 + mt\).</td></tr>
+<tr><td><a href="#badeg">Degree dynamics</a></td><td>\(\frac{dk_i}{dt} = \frac{mk_i}{2mt - m}\approx\frac{k_i}{2t}\); \(k_i(t) = m(t/t_i)^{1/2}\), \(\beta = \frac12\); \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_it}}\).</td></tr>
+<tr><td><a href="#bapk">BA degree distribution</a></td><td>\(P(k_i<k) = 1 - m^2/k^2\) ⇒ \(P(k) = 2m^2k^{-3}\). Exact: \(P(k) = \frac{k-1}{k+2}P(k-1)\), \(P(m) = \frac{2}{m+2}\), \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\). \(\langle d\rangle\sim\frac{\ln N}{\ln\ln N}\), \(\langle C\rangle\sim\frac{(\ln N)^2}{N}\).</td></tr>
+<tr><td><a href="#kmax">Largest hub</a></td><td>\(p_k = k^{-\gamma}/\zeta(\gamma)\) or \(p(k) = (\gamma-1)k_{\min}^{\gamma-1}k^{-\gamma}\). \(\int_{k_{\max}}^\infty P\,dk\approx\frac1N\) ⇒ \(k_{\max} = k_{\min}N^{1/(\gamma-1)}\). Random: \(\sim\ln N\). \(\gamma<2\) anomalous, \(2<\gamma<3\) scale-free, \(\gamma>3\) random-like.</td></tr>
+<tr><td><a href="#sfpath">Distances</a></td><td>\(\rho = \frac{\langle k^2\rangle}{\langle k\rangle} - 1\), \(z_2 = \langle k^2\rangle - \langle k\rangle\), \(L = 1 + \frac{\ln(N/\langle k\rangle)}{\ln\rho}\). \(\langle l\rangle\): const (\(\gamma = 2\)), \(\ln\ln N\) (\(2<\gamma<3\)), \(\frac{\ln N}{\ln\ln N}\) (\(\gamma = 3\)), \(\ln N\) (\(\gamma>3\)). Robust to failure, fragile to attack.</td></tr>
+<tr><td><a href="#assort">Assortativity</a></td><td>Random wiring \(p_{k,k'} = \frac{kk'}{2L}\). \(r\) = Pearson correlation of the degrees at the two ends of each link; \(r>0\) assortative, \(r<0\) disassortative.</td></tr>
+<tr><td><a href="#lattice">Ring lattice, random graph</a></td><td>\(k\) neighbours per side: \(C(0) = \frac{3(k-1)}{2(2k-1)}\to\frac34\), \(\bar\ell(0)\approx\frac{n}{4k}\). Random: \(C = \frac{2k}{n}\), \(\bar\ell\approx\frac{\ln n}{\ln2k}\). Caveman: \(C\approx1 - \frac{6}{k^2-1}\).</td></tr>
+<tr><td><a href="#ws">Watts–Strogatz</a></td><td>Rewire each of the \(nk\) links with probability \(p\). \(C(p) = C(0)(1-p)^3\). First shortcut at \(p\approx\frac{1}{nk}\).</td></tr>
+<tr><td><a href="#hmf">Epidemic thresholds</a></td><td>MF: \(\dot\rho = -\rho + \beta\langle K\rangle\rho(1-\rho)\), \(\beta_c = \frac{1}{\langle K\rangle}\). HMF: \(\dot\rho_K = -\rho_K + \beta K(1-\rho_K)\Theta\), \(\Theta = \frac{\sum_KKP(K)\rho_K}{\langle K\rangle}\), \(\rho_K^* = \frac{\beta K\Theta^*}{1 + \beta K\Theta^*}\), \(\beta_c = \frac{\langle K\rangle}{\langle K^2\rangle}\); ER \(\frac{1}{\langle K\rangle + 1}\); scale-free \(\gamma\le3\): 0.</td></tr>
+<tr><td><a href="#hmfsf">SIS, \(\gamma = 3\); QMF</a></td><td>\(\Theta^* = \frac{1}{m\beta(e^{1/(m\beta)} - 1)}\), \(\rho = 2m\beta\Theta^*(1-\Theta^*)\simeq2e^{-1/(m\beta)}\). QMF: \(\beta_c = \frac{1}{\Lambda_A}\).</td></tr>
 </table>
 <p class="small">The formula sheets for the earlier pages are in <a href="../quiz1/#sheet">the Quiz 1 guide</a> and <a href="../#sheet">the Mid-sem guide</a>.</p>
 </section>

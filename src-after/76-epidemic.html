@@ -1,0 +1,187 @@
+<div class="part">Part 10<span>Epidemics on networks</span></div>
+<section>
+<h2 id="hmf"><span class="num">27</span>Epidemic thresholds · from mean field to degree classes</h2>
+<span class="board">Deck 17 (PDF) · pages 2–5, 9–11</span>
+<p class="about">The SIS model of the Mid-sem guide treated the population as one well-mixed crowd. On a network that is wrong in an important way: a hub meets many more people than a node with one link. This section repeats the SIS calculation in two steps. First the old way (mean field), then with nodes grouped by degree (heterogeneous mean field). The threshold changes from \(1/\langle K\rangle\) to \(\langle K\rangle/\langle K^2\rangle\), and that small change has a large consequence for scale-free networks.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Write the mean-field SIS equation and derive the threshold \(\beta_c = 1/\langle K\rangle\).</li>
+<li>Write the heterogeneous mean-field (HMF) equations and define \(\Theta\).</li>
+<li>Derive the HMF self-consistency equation.</li>
+<li>Linearise the HMF equations, find the Jacobian, and show \(\beta_c = \langle K\rangle/\langle K^2\rangle\).</li>
+<li>Evaluate the threshold for an ER network and for a scale-free network.</li>
+</ul>
+</div>
+
+<div class="card watch"><span class="tag">Notation in this deck</span>
+<p>These notes (by Subrata Ghosh, ISI Kolkata) write the degree as a capital \(K\), the infected fraction as \(\rho\), and the infection rate per link as \(\beta\). The recovery rate is set to 1, which only fixes the unit of time. To compare with the <a href="{{ROOT}}#epi">Mid-sem guide §11</a>, where recovery was \(\gamma\), read \(\beta\) here as \(\beta/\gamma\) there. The \(\rho\) here is not the branching number of <a href="#sfpath">§23</a>.</p>
+</div>
+
+<h3>Step 1 · the mean-field approach (MF)</h3>
+<p>Two assumptions. (1) <strong>Fully mixed</strong>: any two nodes are statistically the same, and every pair interacts with the same probability. (2) <strong>No dynamical correlations</strong>: the state of a node and the states of its neighbours are independent.</p>
+<div class="eq">\[\frac{d\rho}{dt} = \underbrace{-\rho}_{\text{recovery}} + \underbrace{\beta\langle K\rangle\,\rho\,(1 - \rho)}_{\text{new infections}}\]</div>
+<p class="sym">\(\rho(t)\) is the fraction of infected nodes and \(1 - \rho\) the fraction of susceptible ones. Each infected node recovers at rate 1. Each susceptible node has \(\langle K\rangle\) contacts, a fraction \(\rho\) of them infected, and catches the disease from each at rate \(\beta\).</p>
+<div class="card exam"><span class="tag">Derivation to learn · the mean-field threshold</span>
+<ol class="steps">
+<li><strong>Steady state.</strong> Set \(d\rho/dt = 0\) and take out a factor \(\rho\): \[\rho\,\big[-1 + \beta\langle K\rangle(1 - \rho)\big] = 0.\]</li>
+<li><strong>Two solutions.</strong> \(\rho = 0\) (no disease), or the bracket is zero: \[\rho = 1 - \frac{1}{\beta\langle K\rangle}.\]</li>
+<li><strong>Threshold.</strong> The second solution is positive only when \(\beta\langle K\rangle>1\). It starts from zero at \[\beta_c^{\text{MF}} = \frac{1}{\langle K\rangle}.\]</li>
+<li><strong>Same answer by linearising.</strong> For small \(\rho\), \(d\rho/dt\approx(\beta\langle K\rangle - 1)\rho\). A small outbreak grows only if \(\beta\langle K\rangle - 1>0\).</li>
+</ol>
+</div>
+<p>For \(\beta\le\beta_c\) the disease dies out (the absorbing, disease-free state). For \(\beta>\beta_c\) it stays for ever at a steady level (the active, endemic state). The weakness of mean field: it fails when degrees differ a lot from node to node.</p>
+
+<h3>Step 2 · the heterogeneous mean-field approach (HMF)</h3>
+<p>New assumption: nodes with the same degree \(K\) are statistically the same. Let \(\rho_K(t)\) be the fraction of degree-\(K\) nodes that are infected. The total infected fraction is the average over degrees,</p>
+<div class="eq">\[\rho(t) = \sum_K P(K)\,\rho_K(t),\]</div>
+<p>and each degree class has its own equation:</p>
+<div class="eq boxed">\[\frac{d\rho_K}{dt} = \underbrace{-\rho_K}_{\text{recovery}} + \underbrace{\beta K\,(1 - \rho_K)\,\Theta}_{\text{new infections through } K \text{ links}},\qquad\Theta(t) = \frac{\sum_K P(K)\,K\,\rho_K(t)}{\langle K\rangle}\]</div>
+<p class="sym">\(\Theta\) is the probability that a link points to an infected node. It is not simply \(\rho\). Following a link leads to a node of degree \(K\) with the degree-biased probability \(KP(K)/\langle K\rangle\) (the \(q_k\) of the friendship paradox, <a href="{{ROOT}}#knn">Mid-sem guide §7</a>), and that node is infected with probability \(\rho_K\). This formula for \(\Theta\) holds for uncorrelated networks, the neutral ones of <a href="#assort">§24</a>.</p>
+<p>A susceptible node of degree \(K\) has \(K\) links, each pointing to an infected node with probability \(\Theta\), so it is infected at rate \(\beta K\Theta\). Nodes with many links are infected faster.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the HMF self-consistency equation</span>
+<ol class="steps">
+<li><strong>Steady state for one degree class.</strong> Set \(d\rho_K/dt = 0\), writing stars for steady values: \[0 = -\rho_K^* + \beta K(1 - \rho_K^*)\Theta^*\;\Rightarrow\;\rho_K^*(1 + \beta K\Theta^*) = \beta K\Theta^*\;\Rightarrow\;\rho_K^* = \frac{\beta K\Theta^*}{1 + \beta K\Theta^*}.\] This rises with \(K\): hubs are infected more of the time.</li>
+<li><strong>Put it into the definition of \(\Theta\).</strong> With degrees treated as continuous from the smallest degree \(m\) to the largest \(K_{\max}\): \[\Theta^* = \frac{1}{\langle K\rangle}\int_m^{K_{\max}}K\,P(K)\,\rho_K^*\,dK = \frac{\beta\,\Theta^*}{\langle K\rangle}\int_m^{K_{\max}}\frac{K^2P(K)}{1 + \beta K\Theta^*}\,dK.\]</li>
+<li><strong>Cancel \(\Theta^*\)</strong> (we want the solution with \(\Theta^*\ne0\)) and rearrange: \[\frac{\langle K\rangle}{\beta} = \int_m^{K_{\max}}\frac{P(K)\,K^2}{1 + \beta K\Theta^*}\,dK.\]</li>
+</ol>
+</div>
+<p>This is one equation for the one unknown \(\Theta^*\). It is called self-consistent because \(\Theta^*\) appears on both sides of step 2: the level of infection decides \(\rho_K^*\), and the \(\rho_K^*\) decide the level of infection.</p>
+<p><strong>The threshold from it.</strong> At the threshold the endemic solution just appears, so \(\Theta^*\to0\) and the bottom of the integrand becomes 1: \(\frac{\langle K\rangle}{\beta_c} = \int P(K)K^2\,dK = \langle K^2\rangle\). So \(\beta_c = \langle K\rangle/\langle K^2\rangle\). The notes get the same result by a stability calculation, which is the one to learn.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the HMF threshold from the Jacobian</span>
+<ol class="steps">
+<li><strong>Write \(\Theta\) out</strong> inside the equation, using \(K'\) for the summed degree: \[\frac{d\rho_K}{dt} = -\rho_K + \frac{\beta K}{\langle K\rangle}(1 - \rho_K)\sum_{K'}P(K')\,K'\,\rho_{K'}.\]</li>
+<li><strong>Small outbreak.</strong> Put \(\rho_K = \epsilon_K\ll1\). Then \(1 - \epsilon_K\approx1\). The term \(\epsilon_K\sum_{K'}K'P(K')\epsilon_{K'}\) is a product of two small numbers and is dropped: \[\frac{d\epsilon_K}{dt}\approx-\epsilon_K + \frac{\beta K}{\langle K\rangle}\sum_{K'}P(K')\,K'\,\epsilon_{K'}.\]</li>
+<li><strong>Matrix form.</strong> Write \(-\epsilon_K = -\sum_{K'}\delta_{K,K'}\epsilon_{K'}\): \[\frac{d\epsilon_K}{dt} = \sum_{K'}C_{K,K'}\,\epsilon_{K'},\qquad C_{K,K'} = \frac{\beta\,K\,K'\,P(K')}{\langle K\rangle} - \delta_{K,K'}.\] \(C\) is the Jacobian. Its rows and columns are labelled by degree, not by node. The outbreak grows if the largest eigenvalue of \(C\) is positive.</li>
+<li><strong>Split it.</strong> \(C = M - I\) with \(M_{K,K'} = \dfrac{\beta KK'P(K')}{\langle K\rangle}\).</li>
+<li><strong>\(M\) has rank 1.</strong> Each entry is a product of something that depends only on \(K\) and something that depends only on \(K'\): \(M = \mathbf u\mathbf v^T\) with \[u_K = \beta K,\qquad v_{K'} = \frac{K'P(K')}{\langle K\rangle}.\]</li>
+<li><strong>Its only non-zero eigenvalue</strong> is \(\mathbf v^T\mathbf u\) (because \(M\mathbf u = \mathbf u(\mathbf v^T\mathbf u)\)): \[\lambda_1(M) = \sum_Kv_Ku_K = \sum_K\frac{KP(K)}{\langle K\rangle}\,\beta K = \frac{\beta}{\langle K\rangle}\sum_KK^2P(K) = \frac{\beta\langle K^2\rangle}{\langle K\rangle}.\] All the other eigenvalues of \(M\) are 0.</li>
+<li><strong>Shift by −1.</strong> The eigenvalues of \(C = M - I\) are those of \(M\) minus 1: \[\lambda_1(C) = \frac{\beta\langle K^2\rangle}{\langle K\rangle} - 1,\qquad\text{all others} = -1<0.\]</li>
+<li><strong>Threshold.</strong> The epidemic starts when \(\lambda_1(C)>0\): \[\beta_c^{\text{HMF}} = \frac{\langle K\rangle}{\langle K^2\rangle}.\]</li>
+</ol>
+</div>
+
+<h3>The threshold for different networks</h3>
+<table class="tbl">
+<tr><th>Network</th><th>\(\langle K^2\rangle\)</th><th>Threshold \(\beta_c^{\text{HMF}} = \langle K\rangle/\langle K^2\rangle\)</th></tr>
+<tr><td>Every node has the same degree</td><td>\(\langle K\rangle^2\)</td><td>\(\dfrac{1}{\langle K\rangle}\), the mean-field value</td></tr>
+<tr><td>Erdős–Rényi (Poisson)</td><td>\(\langle K\rangle^2 + \langle K\rangle\)</td><td>\(\dfrac{1}{\langle K\rangle + 1}\), slightly below mean field, with a visible difference only for small \(\langle K\rangle\)</td></tr>
+<tr><td>Scale-free, \(P(K)\sim K^{-\gamma}\) with \(\gamma\le3\)</td><td>\(\to\infty\) as \(N\to\infty\)</td><td>\(\to0\)</td></tr>
+</table>
+<p><strong>What the last row means.</strong> In a large scale-free network there is no epidemic threshold. Any infection rate, however small, keeps the disease alive. The hubs do it: they are infected often and pass the disease on to many nodes. This is the same ⟨k²⟩ that diverges for \(\gamma<3\) in <a href="#kmax">§22</a>.</p>
+
+<figure class="fig"><!--plot:hmf-prevalence--><figcaption>Steady infected fraction against infection rate for two networks with the same average degree \(\langle K\rangle = 4\). Mean field (orange) is zero up to \(\beta_c = 0.25\). The scale-free network with \(\gamma = 3\) (teal, from <a href="#hmfsf">§28</a>) is above zero for every \(\beta>0\).</figcaption></figure>
+
+<p><strong>Limits of HMF.</strong> (1) The real, fixed links of the network are replaced by an average over all networks with the same degrees (an "annealed" network, re-wired all the time). (2) Correlations between the states of neighbouring nodes are still ignored.</p>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>An ER network with \(\langle K\rangle = 4\): mean field gives \(\beta_c = 0.25\), HMF gives \(\frac{1}{5} = 0.2\). A network with \(\langle K\rangle = 4\) and \(\langle K^2\rangle = 100\): \(\beta_c = \frac{4}{100} = 0.04\), six times lower than mean field.</p>
+</div>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>MF: \(\dot\rho = -\rho + \beta\langle K\rangle\rho(1 - \rho)\); \(\rho^* = 1 - \frac{1}{\beta\langle K\rangle}\); \(\beta_c = \frac{1}{\langle K\rangle}\).</li>
+<li>HMF: \(\dot\rho_K = -\rho_K + \beta K(1 - \rho_K)\Theta\), \(\Theta = \frac{1}{\langle K\rangle}\sum_KKP(K)\rho_K\).</li>
+<li>Steady state: \(\rho_K^* = \frac{\beta K\Theta^*}{1 + \beta K\Theta^*}\); self-consistency \(\frac{\langle K\rangle}{\beta} = \int\frac{P(K)K^2}{1 + \beta K\Theta^*}dK\).</li>
+<li>Jacobian \(C_{K,K'} = \frac{\beta KK'P(K')}{\langle K\rangle} - \delta_{K,K'}\); rank-1 part has eigenvalue \(\frac{\beta\langle K^2\rangle}{\langle K\rangle}\).</li>
+<li>\(\beta_c^{\text{HMF}} = \frac{\langle K\rangle}{\langle K^2\rangle}\). ER: \(\frac{1}{\langle K\rangle + 1}\). Scale-free with \(\gamma\le3\): 0.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Drill</span><span>Why does a matrix \(\mathbf u\mathbf v^T\) have only one non-zero eigenvalue, and what is it?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\((\mathbf u\mathbf v^T)\mathbf x = \mathbf u(\mathbf v^T\mathbf x)\) is always a multiple of \(\mathbf u\). So the only direction that can be an eigenvector with a non-zero eigenvalue is \(\mathbf u\) itself, and \((\mathbf u\mathbf v^T)\mathbf u = (\mathbf v^T\mathbf u)\mathbf u\). The eigenvalue is \(\mathbf v^T\mathbf u\). Every vector with \(\mathbf v^T\mathbf x = 0\) has eigenvalue 0.</p></div></details>
+<details class="q"><summary><span class="qt">Calc</span><span>Half the nodes have degree 2 and half have degree 10. Find the mean-field and the HMF thresholds.</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\langle K\rangle = 6\), \(\langle K^2\rangle = \frac{4 + 100}{2} = 52\). MF: \(\frac16 = 0.167\). HMF: \(\frac{6}{52} = 0.115\).</p></div></details>
+</section>
+
+<section>
+<h2 id="hmfsf"><span class="num">28</span>SIS on a scale-free network, and two better approximations</h2>
+<span class="board">Deck 17 (PDF) · pages 6–8, 12–14</span>
+<p class="about">The last section said the threshold vanishes on a scale-free network. This one finds how much of the network is infected for the BA degree distribution, \(\gamma = 3\). The answer is \(\rho\approx2e^{-1/(m\beta)}\): never zero, but extremely small for small \(\beta\). The section ends with two approximations that keep more of the real network than degree classes do.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Solve the HMF self-consistency equation for \(P(K) = 2m^2K^{-3}\) and get \(\Theta^*\).</li>
+<li>Find the prevalence \(\rho = 2m\beta\Theta^*(1 - \Theta^*)\approx2e^{-1/(m\beta)}\).</li>
+<li>State the quenched mean-field threshold \(\beta_c = 1/\Lambda_A\) and what dynamical message passing changes.</li>
+</ul>
+</div>
+
+<h3>The setting</h3>
+<p>Take the BA distribution of <a href="#bapk">§21</a> for an infinite network (\(K_{\max}\to\infty\)):</p>
+<div class="eq">\[P(K) = 2m^2K^{-3}\ \ (K\ge m),\qquad\langle K\rangle = \int_m^\infty K\cdot2m^2K^{-3}\,dK = 2m.\]</div>
+
+<div class="card exam"><span class="tag">Derivation to learn · \(\Theta^*\) for \(\gamma = 3\)</span>
+<ol class="steps">
+<li><strong>Put \(P(K)\) and \(\langle K\rangle\) into the self-consistency equation</strong> \(\frac{\langle K\rangle}{\beta} = \int_m^\infty\frac{P(K)K^2}{1 + \beta K\Theta^*}dK\): \[\frac{2m}{\beta} = 2m^2\int_m^\infty\frac{dK}{K(1 + \beta K\Theta^*)}.\]</li>
+<li><strong>Do the integral.</strong> Write \(a = \beta\Theta^*\). Partial fractions: \(\frac{1}{K(1 + aK)} = \frac1K - \frac{a}{1 + aK}\). So \[\int_m^\infty\frac{dK}{K(1 + aK)} = \Big[\ln\frac{K}{1 + aK}\Big]_m^\infty = \ln\frac1a - \ln\frac{m}{1 + am} = \ln\Big(1 + \frac{1}{am}\Big).\]</li>
+<li><strong>The equation becomes</strong> \[\frac{2m}{\beta} = 2m^2\ln\Big(1 + \frac{1}{m\beta\Theta^*}\Big)\quad\Rightarrow\quad\frac{1}{m\beta} = \ln\Big(1 + \frac{1}{m\beta\Theta^*}\Big).\]</li>
+<li><strong>Solve for \(\Theta^*\).</strong> Take the exponential of both sides: \(e^{1/(m\beta)} - 1 = \frac{1}{m\beta\Theta^*}\), so \[\Theta^* = \frac{1}{m\beta\,\big(e^{1/(m\beta)} - 1\big)}.\]</li>
+<li><strong>Small infection rate</strong> (\(m\beta\ll1\)): the exponential is huge, so the \(-1\) can be dropped: \[\Theta^*\simeq\frac{e^{-1/(m\beta)}}{m\beta}.\]</li>
+</ol>
+</div>
+<p>\(\Theta^*\) is positive for every \(\beta>0\). There is no value of \(\beta\) below which the only solution is zero.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the prevalence \(\rho\)</span>
+<ol class="steps">
+<li><strong>Average \(\rho_K^*\) over degrees.</strong> \(\rho = \int_m^\infty P(K)\rho_K^*\,dK\) with \(\rho_K^* = \frac{\beta K\Theta^*}{1 + \beta K\Theta^*}\): \[\rho = 2m^2\beta\Theta^*\int_m^\infty\frac{dK}{K^2(1 + \beta K\Theta^*)}.\]</li>
+<li><strong>Partial fractions</strong> with \(\alpha = \beta\Theta^*\): \[\frac{1}{K^2(1 + \alpha K)} = -\frac\alpha K + \frac{1}{K^2} + \frac{\alpha^2}{1 + \alpha K}.\] Check by putting the right side over the common bottom: \(-\alpha K(1 + \alpha K) + (1 + \alpha K) + \alpha^2K^2 = 1\).</li>
+<li><strong>Integrate term by term.</strong> \[\int_m^\infty\frac{dK}{K^2(1 + \alpha K)} = \Big[\alpha\ln\frac{1 + \alpha K}{K} - \frac1K\Big]_m^\infty = \alpha\ln\alpha - \alpha\ln\frac{1 + \alpha m}{m} + \frac1m = \frac1m - \alpha\ln\Big(1 + \frac{1}{\alpha m}\Big).\]</li>
+<li><strong>Use the self-consistency result.</strong> From step 3 of the last derivation, \(\ln\big(1 + \frac{1}{m\beta\Theta^*}\big) = \frac{1}{m\beta}\). So the integral is \[\frac1m - \beta\Theta^*\cdot\frac{1}{m\beta} = \frac{1 - \Theta^*}{m}.\]</li>
+<li><strong>Put it back.</strong> \[\rho = 2m^2\beta\Theta^*\cdot\frac{1 - \Theta^*}{m} = 2m\beta\,\Theta^*(1 - \Theta^*).\]</li>
+<li><strong>Small infection rate.</strong> With \(\Theta^*\simeq\frac{e^{-1/(m\beta)}}{m\beta}\ll1\), so that \(1 - \Theta^*\approx1\): \[\rho\simeq2m\beta\cdot\frac{e^{-1/(m\beta)}}{m\beta} = 2\,e^{-1/(m\beta)}.\]</li>
+</ol>
+</div>
+<p><strong>Meaning.</strong> The infected fraction is never exactly zero for \(\beta>0\), so there is no ordinary threshold. But it is tiny for small \(\beta\): \(e^{-1/(m\beta)}\) goes to zero faster than any power of \(\beta\) as \(\beta\to0\) (this is called an essential singularity at \(m\beta = 0\)). Compare with mean field, where \(\rho\) is exactly zero up to \(\beta_c\) and then rises steadily. The plot in <a href="#hmf">§27</a> shows both.</p>
+
+<div class="card ex"><span class="tag">Numbers · \(m = 2\)</span>
+<ul>
+<li>\(\beta = 0.5\): \(m\beta = 1\). \(\Theta^* = \frac{1}{e - 1} = 0.582\). \(\rho = 2\times1\times0.582\times0.418 = 0.487\).</li>
+<li>\(\beta = 0.1\): \(m\beta = 0.2\). \(\Theta^* = \frac{1}{0.2\,(e^5 - 1)} = 0.0339\). \(\rho = 2\times0.2\times0.0339\times0.966 = 0.0131\). The short formula gives \(2e^{-5} = 0.0135\).</li>
+<li>\(\beta = 0.05\): \(\rho\approx2e^{-10} = 0.00009\). Mean field with \(\langle K\rangle = 2m = 4\) would say exactly 0 for both of the last two, since \(\beta<0.25\).</li>
+</ul>
+</div>
+
+<h3>Quenched mean field (QMF) · keep the real network</h3>
+<p>HMF only knows the degrees. The quenched mean-field approach keeps the actual, fixed ("quenched") links through the adjacency matrix \(A\). Each node \(i\) has its own probability \(\rho_i(t)\) of being infected:</p>
+<div class="eq">\[\frac{d\rho_i}{dt} = -\rho_i + \beta\,(1 - \rho_i)\sum_{j=1}^NA_{ij}\,\rho_j,\qquad\rho(t) = \frac1N\sum_{i=1}^N\rho_i(t).\]</div>
+<p>Linearise around \(\rho_i\to0\) (drop the \(\rho_i\rho_j\) terms):</p>
+<div class="eq boxed">\[\frac{d\boldsymbol\rho}{dt} = (-I + \beta A)\,\boldsymbol\rho\quad\Longrightarrow\quad\beta_c^{\text{QMF}} = \frac{1}{\Lambda_A}\]</div>
+<p class="sym">\(\Lambda_A\) is the largest eigenvalue of \(A\). The matrix \(-I + \beta A\) has eigenvalues \(-1 + \beta\Lambda\), and the outbreak grows when the largest of them is positive, \(\beta\Lambda_A>1\). This is the calculation of the <a href="{{ROOT}}#netdyn">Mid-sem guide §13</a>, where the largest eigenvalue was called \(\kappa_1\).</p>
+<p>For power-law degree distributions \(P(K)\sim K^{-\gamma}\):</p>
+<ul>
+<li>\(\gamma<2.5\): \(\beta_c^{\text{QMF}}\propto\dfrac{\langle K\rangle}{\langle K^2\rangle}\). The hubs act together, and QMF agrees with HMF.</li>
+<li>\(\gamma>2.5\): \(\beta_c^{\text{QMF}}\propto\dfrac{1}{\sqrt{K_{\max}}}\). The biggest hub and its neighbours form a star, and the star alone keeps the disease alive.</li>
+</ul>
+<p>Since \(K_{\max}\) grows with \(N\) (<a href="#kmax">§22</a>), the QMF threshold goes to zero for every \(\gamma\), also above 3 where HMF gives a finite value. Limit of QMF: correlations between the states of neighbours are still ignored.</p>
+<p class="small">Why \(1/\sqrt{K_{\max}}\): the adjacency matrix of a star with \(K\) leaves has largest eigenvalue \(\sqrt K\).</p>
+
+<h3>Dynamical message passing (DMP) · no echo</h3>
+<p>In QMF, node \(i\) can infect its neighbour \(j\), and then \(j\)'s infection is counted as a reason for \(i\) to be infected, although \(i\) was the source. The infection "bounces" back and forth along the same link, an echo-chamber effect that makes the predicted infection too high.</p>
+<p>Dynamical message passing fixes this with a <strong>cavity state</strong>: when working out what node \(i\) receives from its neighbours, node \(i\) is treated as unable to pass the infection back to them, while still able to receive it. This removes the echo and avoids overestimating the infection probability.</p>
+
+<table class="tbl">
+<tr><th>Approach</th><th>What counts as "the same"</th><th>Threshold</th><th>What it still ignores</th></tr>
+<tr><td>MF</td><td>All nodes</td><td>\(1/\langle K\rangle\)</td><td>Differences in degree</td></tr>
+<tr><td>HMF</td><td>Nodes of the same degree</td><td>\(\langle K\rangle/\langle K^2\rangle\)</td><td>The actual wiring; correlations between neighbours</td></tr>
+<tr><td>QMF</td><td>Nothing: each node separately, real \(A\)</td><td>\(1/\Lambda_A\)</td><td>Correlations between neighbours</td></tr>
+<tr><td>DMP</td><td>Each node, with the cavity state</td><td>not given in the notes</td><td>Removes the echo along each link</td></tr>
+</table>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>\(\gamma = 3\): \(P(K) = 2m^2K^{-3}\), \(\langle K\rangle = 2m\).</li>
+<li>\(\Theta^* = \dfrac{1}{m\beta(e^{1/(m\beta)} - 1)}\simeq\dfrac{e^{-1/(m\beta)}}{m\beta}\).</li>
+<li>\(\rho = 2m\beta\Theta^*(1 - \Theta^*)\simeq2e^{-1/(m\beta)}\): no threshold, essential singularity.</li>
+<li>QMF: \(\dot\rho_i = -\rho_i + \beta(1 - \rho_i)\sum_jA_{ij}\rho_j\), \(\beta_c = 1/\Lambda_A\); \(\propto\langle K\rangle/\langle K^2\rangle\) for \(\gamma<2.5\), \(\propto1/\sqrt{K_{\max}}\) for \(\gamma>2.5\).</li>
+<li>DMP: cavity state, a node cannot send the infection back along the link it came from.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Drill</span><span>Show that \(\int_m^\infty\frac{dK}{K(1 + aK)} = \ln\big(1 + \frac{1}{am}\big)\).</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\frac{1}{K(1 + aK)} = \frac1K - \frac{a}{1 + aK}\). The integral is \(\big[\ln K - \ln(1 + aK)\big]_m^\infty = \big[\ln\frac{K}{1 + aK}\big]_m^\infty\). At infinity \(\frac{K}{1 + aK}\to\frac1a\). So the value is \(\ln\frac1a - \ln\frac{m}{1 + am} = \ln\frac{1 + am}{am} = \ln\big(1 + \frac{1}{am}\big)\).</p></div></details>
+<details class="q"><summary><span class="qt">Calc</span><span>A star network has one centre and 100 leaves. What is the QMF threshold?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\Lambda_A = \sqrt{100} = 10\), so \(\beta_c = 0.1\). Mean field with \(\langle K\rangle = 200/101\approx2\) would say about 0.5.</p></div></details>
+</section>

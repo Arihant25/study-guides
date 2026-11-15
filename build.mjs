@@ -385,6 +385,70 @@ Object.assign(plots, {
     texts: [{ x: 0.05, y: 1.02, t: 'stable cycle, r = √μ', c: '--stable' }, { x: -0.95, y: 0.1, t: 'stable point', c: '--stable' }, { x: 0.3, y: 0.08, t: 'origin unstable', c: '--unstable' }] }),
 });
 
+/* ---------------- plots for classes 19 to 22 (scale-free, small world, epidemics) ---------------- */
+// Watts–Strogatz simulation: clustering and path length against the rewiring probability.
+function wsCurve(n, k, ps, reps) {
+  const rnd = mulberry(20261115);
+  const measure = adj => {
+    let c = 0, dist = 0, pairs = 0;
+    for (let i = 0; i < n; i++) {
+      const nb = [...adj[i]]; let links = 0;
+      for (let a = 0; a < nb.length; a++) for (let b = a + 1; b < nb.length; b++) if (adj[nb[a]].has(nb[b])) links++;
+      if (nb.length > 1) c += links / (nb.length * (nb.length - 1) / 2);
+      const d = new Int32Array(n).fill(-1); d[i] = 0; let q = [i];
+      while (q.length) { const nq = []; for (const u of q) for (const v of adj[u]) if (d[v] < 0) { d[v] = d[u] + 1; dist += d[v]; pairs++; nq.push(v); } q = nq; }
+    }
+    return [c / n, dist / pairs];
+  };
+  const make = p => {
+    const adj = Array.from({ length: n }, () => new Set());
+    for (let i = 0; i < n; i++) for (let j = 1; j <= k; j++) { adj[i].add((i + j) % n); adj[(i + j) % n].add(i); }
+    if (p > 0) for (let j = 1; j <= k; j++) for (let i = 0; i < n; i++) {
+      const old = (i + j) % n;
+      if (rnd() >= p || !adj[i].has(old) || adj[i].size >= n - 1) continue;
+      let t; do { t = Math.floor(rnd() * n); } while (t === i || adj[i].has(t));
+      adj[i].delete(old); adj[old].delete(i); adj[i].add(t); adj[t].add(i);
+    }
+    return adj;
+  };
+  const [c0, l0] = measure(make(0));
+  return ps.map(p => { let c = 0, l = 0; for (let r = 0; r < reps; r++) { const [a, b] = measure(make(p)); c += a; l += b; } return [p, c / reps / c0, l / reps / l0]; });
+}
+Object.assign(plots, {
+  'ba-growth': () => {
+    const m = 3, line = ti => range(Math.log10(ti), 4, 60).map(e => [10 ** e, m * Math.sqrt(10 ** e / ti)]);
+    return plot({ label: 'Degree of a Barabási–Albert node against time', x: [1, 1e4], y: [1, 1000], logx: true, logy: true, w: 520, h: 300,
+      xticks: logTicks(0, 4), yticks: logTicks(0, 3), xlabel: 'time t (number of nodes added)', ylabel: 'degree k(t)',
+      series: [{ pts: line(1), c: '--c1', w: 2.6 }, { pts: line(30), c: '--c2', w: 2.6 }, { pts: line(1000), c: '--c3', w: 2.6 }],
+      texts: [{ x: 60, y: 60, t: 'joined at t = 1', c: '--c1', a: 'end' }, { x: 420, y: 5.2, t: 'joined at t = 30', c: '--c2' }, { x: 1300, y: 1.7, t: 'joined at t = 1000', c: '--c3' }] });
+  },
+  'kmax': () => {
+    const Ns = range(2, 9, 70).map(e => 10 ** e);
+    return plot({ label: 'Largest expected degree against network size', x: [100, 1e9], y: [1, 1e9], logx: true, logy: true, w: 520, h: 320,
+      xticks: logTicks(2, 9), yticks: [[1, '1'], ...logTicks(1, 9).filter((t, i) => i % 2 === 1)], xlabel: 'number of nodes N', ylabel: 'largest degree',
+      series: [{ pts: Ns.map(N => [N, N - 1]), c: '--muted-fg', dash: '4 4', w: 1.6 }, { pts: Ns.map(N => [N, N ** (1 / 1.5)]), c: '--c1', w: 2.6 }, { pts: Ns.map(N => [N, Math.sqrt(N)]), c: '--c3', w: 2.6 }, { pts: Ns.map(N => [N, Math.log(N)]), c: '--c2', w: 2.6 }],
+      texts: [{ x: 3e4, y: 1.2e6, t: 'N − 1', c: '--muted-fg', a: 'end' }, { x: 5e8, y: 4e6, t: 'scale-free, γ = 2.5', c: '--c1', a: 'end' }, { x: 2e6, y: 250, t: 'scale-free, γ = 3', c: '--c3' }, { x: 2e6, y: 5, t: 'random network, ln N', c: '--c2' }] });
+  },
+  'ws-curve': () => {
+    const ps = [1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 0.1, 0.2, 0.35, 0.5, 0.7, 1];
+    const data = wsCurve(500, 4, ps, 4);
+    return plot({ label: 'Watts–Strogatz model: clustering and path length against rewiring probability', x: [1e-4, 1], y: [0, 1.08], logx: true, w: 540, h: 320,
+      xticks: logTicks(-4, 0), yticks: [[0], [0.2], [0.4], [0.6], [0.8], [1]], xlabel: 'rewiring probability p', ylabel: 'value ÷ value at p = 0',
+      series: [{ pts: range(-4, 0, 80).map(e => [10 ** e, (1 - 10 ** e) ** 3]), c: '--muted-fg', dash: '5 4', w: 1.6 },
+        { pts: data.map(d => [d[0], d[1]]), c: '--c1', w: 2.2, dots: true }, { pts: data.map(d => [d[0], d[2]]), c: '--c2', w: 2.2, dots: true }],
+      texts: [{ x: 1.5e-3, y: 0.9, t: 'clustering C(p)/C(0)', c: '--c1' }, { x: 3e-3, y: 0.52, t: 'path length ℓ(p)/ℓ(0)', c: '--c2' }, { x: 0.02, y: 0.7, t: 'small world', c: '--muted-fg' }] });
+  },
+  'hmf-prevalence': () => {
+    const m = 2, bs = range(0.005, 0.6, 240);
+    const sf = b => { const th = 1 / (m * b * (Math.exp(1 / (m * b)) - 1)); return 2 * m * b * th * (1 - th); };
+    return plot({ label: 'Steady infected fraction against infection rate: mean field versus scale-free', x: [0, 0.6], y: [0, 0.7], w: 520, h: 290,
+      xticks: [[0], [0.1], [0.2], [0.25, 'βc'], [0.3, ''], [0.4], [0.5], [0.6]], yticks: [[0], [0.2], [0.4], [0.6]], xlabel: 'infection rate β', ylabel: 'infected fraction ρ',
+      series: [{ pts: [[0, 0], [0.25, 0], ...range(0.25, 0.6, 80).map(b => [b, 1 - 1 / (4 * b)])], c: '--c2', w: 2.6 }, { pts: [[0, 0], ...bs.map(b => [b, sf(b)])], c: '--c1', w: 2.6 }],
+      vlines: [{ x: 0.25 }],
+      texts: [{ x: 0.37, y: 0.19, t: 'mean field, 1 − 1/(β⟨K⟩)', c: '--c2' }, { x: 0.02, y: 0.3, t: 'scale-free, γ = 3, m = 2', c: '--c1' }] });
+  },
+});
+
 /* ---------------- TeX → MathML ---------------- */
 const macros = { '\\avg': '\\langle #1\\rangle' };
 let errors = 0;
