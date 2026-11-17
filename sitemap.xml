@@ -14,6 +14,9 @@
   <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/11-speculative-decoding.html</loc></url>
   <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/12-evaluation.html</loc></url>
   <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/13-quantization.html</loc></url>
+  <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/14-rnn-advances.html</loc></url>
+  <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/15-state-space-models.html</loc></url>
+  <url><loc>https://arihant25.github.io/anlp-study-guide/lectures/16-diffusion-lms.html</loc></url>
   <url><loc>https://arihant25.github.io/anlp-study-guide/tutorials/1-math-for-dl.html</loc></url>
   <url><loc>https://arihant25.github.io/anlp-study-guide/tutorials/2-matrices-to-transformers.html</loc></url>
   <url><loc>https://arihant25.github.io/anlp-study-guide/assignments/1-transformers-from-scratch.html</loc></url>

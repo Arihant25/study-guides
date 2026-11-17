@@ -82,6 +82,9 @@
         <a href="lectures/11-speculative-decoding.html">11 · Speculative Decoding</a>
         <a href="lectures/12-evaluation.html">12 · Evaluation</a>
         <a href="lectures/13-quantization.html">13 · Quantization</a>
+        <a href="lectures/14-rnn-advances.html">14 · RNN Advances</a>
+        <a href="lectures/15-state-space-models.html">15 · State Space Models</a>
+        <a href="lectures/16-diffusion-lms.html">16 · Diffusion LMs</a>
 
         <div class="grp">Seminars</div>
         <a href="seminars/sian-shinjo-linear-rnns.html">Linear RNNs</a>
@@ -130,8 +133,8 @@
           need a second pass.
         </p>
         <div class="meta">
-          <span class="pill heat">13 lectures</span>
-          <span class="pill">512 slides</span>
+          <span class="pill heat">16 lectures</span>
+          <span class="pill">660 slides</span>
           <span class="pill">6 seminars</span>
           <span class="pill">2 tutorials</span>
           <span class="pill">1 project</span>
@@ -205,7 +208,7 @@
       <section>
         <h2 id="chapters"><span class="num">§2</span>The material</h2>
         <p class="section-intro">
-          Six lectures, two tutorials, and three past exam papers. The lectures
+          Sixteen lectures, two tutorials, and three past exam papers. The lectures
           and tutorials are from Monsoon '26; PYQs come from the community
           <a class="xref" href="https://github.com/VijayrajS/iiitprevpapers" target="_blank"
             rel="noopener">iiitprevpapers</a>
@@ -301,6 +304,28 @@
             <p>Storing an LLM in 8, 4 or 2 bits per weight: number formats, absmax scaling, outliers, LLM.int8(),
               SmoothQuant, GPTQ, AWQ and quantization-aware training.</p>
             <div class="foot"><span>INT8 / INT4</span><span>outliers</span><span>GPTQ &amp; AWQ</span></div>
+          </a>
+          <a class="chapter-card" href="lectures/14-rnn-advances.html">
+            <div class="kicker">Lecture 14 · 41 slides</div>
+            <h3>RNN Advances</h3>
+            <p>Why recurrence came back once the KV cache got expensive. Linear recurrences that train in parallel,
+              then RetNet, RWKV, Griffin, xLSTM, GLA and DeltaNet read as one matrix memory with different update
+              rules, what a fixed-size state can't recall, and the hybrids in use today.</p>
+            <div class="foot"><span>linear RNNs</span><span>delta rule</span><span>hybrids</span></div>
+          </a>
+          <a class="chapter-card" href="lectures/15-state-space-models.html">
+            <div class="kicker">Lecture 15 · 48 slides</div>
+            <h3>State Space Models</h3>
+            <p>From a continuous linear system to Mamba: discretization, the recurrent and convolutional views of the
+              same model, HiPPO and S4, and selective state spaces computed with a parallel scan.</p>
+            <div class="foot"><span>S4</span><span>selective SSM</span><span>Mamba</span></div>
+          </a>
+          <a class="chapter-card" href="lectures/16-diffusion-lms.html">
+            <div class="kicker">Lecture 16 · 59 slides</div>
+            <h3>Diffusion Language Models</h3>
+            <p>Generating text by undoing noise. Diffusion-LM in embedding space, [MASK] as noise in D3PM, MDLM and
+              LLaDA, how Mercury gets its speed, and diffusion models as drafters for speculative decoding.</p>
+            <div class="foot"><span>masked diffusion</span><span>LLaDA</span><span>parallel drafts</span></div>
           </a>
         </div>
 

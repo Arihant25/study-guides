@@ -8,7 +8,7 @@ Every lecture slide, tutorial page, and previous-year exam question is embedded 
 
 ## What's inside
 
-- **Lectures** — Logistics, Transformers, Tokenization, Positional Encoding, Attention, More Attention, Normalization, Feed Forward, Optimizers, Decoding, Speculative Decoding, Evaluation, Quantization
+- **Lectures** — Logistics, Transformers, Tokenization, Positional Encoding, Attention, More Attention, Normalization, Feed Forward, Optimizers, Decoding, Speculative Decoding, Evaluation, Quantization, RNN Advances, State Space Models, Diffusion Language Models
 - **Tutorials** — Mathematics for Deep Learning, Talking Matrices → Word Embeddings → BERT-family
 - **Assignments** — A1 Transformers from Scratch, A2 MoE, Optimizers, Decoding, A3 Mamba, DeltaNet, GNNs (every line of code, with tensor shapes)
 - **Project** — the ANLP Doomsday mid report in plain words: when BM25-style collection statistics help top-k selection
