@@ -6,7 +6,7 @@
 
 <h3>1 · Phase synchronisation</h3>
 <ul class="fl">
-<li><span>The model</span><span>\(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\), \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\)<span class="w">where \(\theta_{1,2}\) are the phases (angles) of the two oscillators, \(\omega_{1,2}\) their natural frequencies (how fast each turns alone) and \(k_{1,2}\) how strongly each is pulled towards the other.</span></span></li>
+<li><span>The model</span><span>\(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\), \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\)<span class="w">where \(\theta_{1,2}\) are the phases (angles) of the two oscillators. Each \(\omega\) is a natural frequency, how fast that oscillator turns on its own, and each \(k\) says how strongly it is pulled towards the other.</span></span></li>
 <li><span>Phase difference</span><span>\(\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi\)<span class="w">where \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega = \omega_2 - \omega_1\).</span></span></li>
 <li><span>Critical condition</span><span>Lock iff \(|\Delta\omega|\le k_1 + k_2\). Equal couplings \(k\): \(k_c = \frac{|\Delta\omega|}2\)<span class="w">where locking means \(\phi\) stops changing, so both turn at one common frequency.</span></span></li>
 <li><span>Common frequency</span><span>\(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\)<span class="w">a weighted average of the two natural frequencies. With \(k_1 = k_2\) it is the plain average.</span></span></li>
@@ -14,9 +14,9 @@
 
 <h3>2 · The Lorenz system</h3>
 <ul class="fl">
-<li><span>The model</span><span>\(\dot x = \sigma(y - x)\), \(\dot y = \rho x - y - xz\), \(\dot z = xy - \beta z\)<span class="w">where \(\sigma\), \(\rho\), \(\beta\) are positive constants.</span></span></li>
+<li><span>The model</span><span>\(\dot x = \sigma(y - x)\), \(\dot y = \rho x - y - xz\), \(\dot z = xy - \beta z\)<span class="w">where all the constants are positive.</span></span></li>
 <li><span>Fixed points</span><span>\((0,0,0)\), and for \(\rho>1\): \(\big(\pm\sqrt{\beta(\rho-1)},\ \pm\sqrt{\beta(\rho-1)},\ \rho - 1\big)\)<span class="w">where the two signs are taken together.</span></span></li>
-<li><span>Jacobian</span><span>\(J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}\)<span class="w">where row \(i\) holds the slopes of the \(i\)-th rate with respect to \(x\), \(y\), \(z\). Put in each fixed point.</span></span></li>
+<li><span>Jacobian</span><span>\(J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}\)<span class="w">where row \(i\) holds the slopes of the \(i\)-th rate, taken with respect to each variable in turn. Put each fixed point into it.</span></span></li>
 <li><span>Origin</span><span>Stable iff \(\rho<1\)<span class="w">because \(J(0)\) splits into \(-\beta\) and a 2×2 block with trace \(-(\sigma + 1)<0\) and determinant \(\sigma(1 - \rho)\).</span></span></li>
 </ul>
 
@@ -24,11 +24,11 @@
 <ul class="fl">
 <li><span>BA model</span><span>Growth + preferential attachment \(\Pi(k_i) = \frac{k_i}{\sum_jk_j}\)<span class="w">where each step adds one node with \(m\) links, and \(k_i\) is the degree of node \(i\).</span></span></li>
 <li><span>Degree of one node</span><span>\(\frac{dk_i}{dt} = \frac{k_i}{2t}\), \(k_i(t) = m\big(\frac t{t_i}\big)^{1/2}\)<span class="w">where \(t\) is the time now (= number of nodes added) and \(t_i\) the time node \(i\) joined, with \(k_i(t_i) = m\).</span></span></li>
-<li><span>Degree distribution</span><span>\(P(k) = 2m^2k^{-3}\); master equation gives \(\frac{2m(m+1)}{k(k+1)(k+2)}\)<span class="w">where \(P(k)\) is the fraction of nodes with degree \(k\). Exponent \(\gamma = 3\) for every \(m\), and it does not change as the network grows.</span></span></li>
-<li><span>Master equation</span><span>\((N+1)P(k,t+1) = NP(k,t) + \frac{k-1}2P(k-1,t) - \frac k2P(k,t)\)<span class="w">for \(k>m\). At \(k = m\): \((N+1)P(m,t+1) = NP(m,t) + 1 - \frac m2P(m,t)\). \(P(k,t)\) is the fraction of degree-\(k\) nodes at time \(t\), and \(N = t\).</span></span></li>
-<li><span>No preferential attachment</span><span>\(k_i = m + m\ln\frac t{t_i}\), \(P(k) = \frac em e^{-k/m}\)<span class="w">Model A: growth, but each new link picks a node uniformly. Exponential, so no hubs.</span></span></li>
-<li><span>No growth</span><span>\(k_i(t)\approx\frac{2t}N\) for every node<span class="w">Model B: \(N\) fixed, one link per step. All degrees become about equal, then the graph becomes complete after about \(N^2/2\) steps.</span></span></li>
-<li><span>Nonlinear attachment</span><span>\(\Pi(k_i) = \frac{k_i^\alpha}{\sum_jk_j^\alpha}\): \(\alpha<1\) stretched exponential, \(\alpha = 1\) BA, \(\alpha>1\) winner takes all<span class="w">where \(\alpha\ge0\). Largest hub: \((\ln t)^{1/(1-\alpha)}\) for \(\alpha<1\), \(t^{1/2}\) for \(\alpha = 1\), \(\sim t\) for \(\alpha>1\).</span></span></li>
+<li><span>Degree distribution</span><span>\(P(k) = 2m^2k^{-3}\), or exactly \(\frac{2m(m+1)}{k(k+1)(k+2)}\) from the master equation<span class="w">where \(P(k)\) is the fraction of nodes with degree \(k\). Exponent \(\gamma = 3\) for every \(m\), and it does not change as the network grows.</span></span></li>
+<li><span>Master equation</span><span>\((N+1)P(k,t+1) = NP(k,t) + \frac{k-1}2P(k-1,t) - \frac k2P(k,t)\)<span class="w">for \(k>m\). The equation at \(k = m\) is \((N+1)P(m,t+1) = NP(m,t) + 1 - \frac m2P(m,t)\). Here \(P(k,t)\) is the fraction of degree-\(k\) nodes at time \(t\), and \(N = t\).</span></span></li>
+<li><span>No preferential attachment</span><span>\(k_i = m + m\ln\frac t{t_i}\), \(P(k) = \frac em e^{-k/m}\)<span class="w">Model A keeps growth, but each new link picks a node uniformly. The result is an exponential, so there are no hubs.</span></span></li>
+<li><span>No growth</span><span>\(k_i(t)\approx\frac{2t}N\) for every node<span class="w">Model B fixes \(N\) and adds one link per step. All degrees become about equal, and after about \(N^2/2\) steps the graph is complete.</span></span></li>
+<li><span>Nonlinear attachment</span><span>\(\Pi(k_i) = \frac{k_i^\alpha}{\sum_jk_j^\alpha}\). Below \(\alpha = 1\) hubs stay small, and above it one hub takes almost every link<span class="w">where \(\alpha\ge0\), and \(\alpha = 1\) is the BA model. The largest hub grows like \((\ln t)^{1/(1-\alpha)}\) below 1 and like \(t\) above 1, against \(t^{1/2}\) for BA.</span></span></li>
 </ul>
 
 <h3>4 · Small-world graphs</h3>
@@ -37,7 +37,7 @@
 <li><span>Path length</span><span>\(\bar\ell = \frac{1}{n(n-1)}\sum_{u\ne v}\ell(u,v)\)<span class="w">where \(\ell(u,v)\) is the number of steps on a shortest path from \(u\) to \(v\).</span></span></li>
 <li><span>\(p = 0\), ring lattice</span><span>\(C(0) = \frac{3(k-1)}{2(2k-1)}\to\frac34\), \(\bar\ell(0)\approx\frac n{4k}\)<span class="w">where each of the \(n\) nodes links to \(k\) neighbours on each side, so the degree is \(2k\).</span></span></li>
 <li><span>\(p = 1\), random graph</span><span>\(C\approx\frac{2k}n\), \(\bar\ell\approx\frac{\ln n}{\ln2k}\)<span class="w">same \(n\) and the same degree \(2k\).</span></span></li>
-<li><span>In between</span><span>\(C(p) = C(0)(1-p)^3\)<span class="w">where \(p\) is the rewiring probability. For small \(p\), \(\bar\ell\) is already near the random value while \(C\) is still near \(C(0)\): the small world.</span></span></li>
+<li><span>In between</span><span>\(C(p) = C(0)(1-p)^3\)<span class="w">where \(p\) is the rewiring probability. For small \(p\), \(\bar\ell\) is already near the random value while \(C\) is still near \(C(0)\). That range of \(p\) is the small world.</span></span></li>
 </ul>
 </section>
 
@@ -46,39 +46,39 @@
 <p class="about">Two oscillators each turn at their own speed. Coupling pulls each towards the other. If the pull is strong enough compared with the difference in speeds, they lock and turn together. The board's \(f_1(\omega_1, \theta_1, \theta_2, k_1)\) is \(\omega_1 + k_1\sin(\theta_2 - \theta_1)\).</p>
 <!--pick:src-remember/20-proofs.html#pf-twoosc-->
 <div class="card ex"><span class="tag">Numbers</span>
-<p>\(\omega_1 = 2\), \(\omega_2 = 10\). With \(k_1 = k_2 = 2\): \(k_1 + k_2 = 4 < 8\), so they never lock. They lock once \(k_1 + k_2\ge8\), so with equal couplings the critical value is \(k_c = 4\). At \(k_1 = k_2 = 5\): \(\sin\phi^* = \frac8{10}\), \(\phi^* = 0.93\) rad (the stable root, with \(\cos\phi^*>0\)), and \(\Omega = \frac{5\cdot2 + 5\cdot10}{10} = 6\).</p>
+<p>Take \(\omega_1 = 2\) and \(\omega_2 = 10\). With \(k_1 = k_2 = 2\) the coupling adds up to only 4, which is less than the gap of 8, so they never lock. They lock once \(k_1 + k_2\ge8\), so with equal couplings the critical value is \(k_c = 4\). At \(k_1 = k_2 = 5\) the locked state has \(\sin\phi^* = \frac8{10}\), so \(\phi^* = 0.93\) rad (the stable root, since \(\cos\phi^*>0\)), and the common frequency is \(\Omega = \frac{5\cdot2 + 5\cdot10}{10} = 6\).</p>
 </div>
-<p class="small">Longer version with the phase-line picture: <a href="{{ROOT}}after-midsem/#twoosc">After mid-sem guide §15</a>.</p>
+<p class="small">The <a href="{{ROOT}}after-midsem/#twoosc">After mid-sem guide, §15</a>, has a longer version with the phase-line picture.</p>
 </section>
 
 <section>
 <h2 id="e-lorenz">2 · The Lorenz system</h2>
-<p class="about">Three equations, three unknowns. Solve for the fixed points from the easy equations first, then write one general Jacobian and put each point into it.</p>
+<p class="about">There are three equations in three unknowns. Solve for the fixed points from the easy equations first, then write one general Jacobian and put each point into it.</p>
 <!--pick:src-remember/20-proofs.html#pf-lorenz-->
-<p class="small">Longer version with the attractor plot: <a href="{{ROOT}}after-midsem/#lorenz">After mid-sem guide §14</a>.</p>
+<p class="small">The <a href="{{ROOT}}after-midsem/#lorenz">After mid-sem guide, §14</a>, has a longer version with a plot of the attractor.</p>
 </section>
 
 <section>
-<h2 id="e-ba">3 · Scale-free networks: the Barabási–Albert model</h2>
-<p class="about">Real networks grow, and new nodes prefer well-connected nodes. Those two ingredients give a power law with exponent 3. The board asks for the rate \(\frac{dk_i}{dt}\), the distribution \(P(k)\), and the master equation, then for what happens when you remove or change an ingredient.</p>
+<h2 id="e-ba">3 · Scale-free networks and the Barabási–Albert model</h2>
+<p class="about">Real networks grow, and new nodes prefer well-connected nodes. Those two ingredients give a power law with exponent 3. The board asks for the rate \(\frac{dk_i}{dt}\) and the distribution \(P(k)\), with the master equation as a second way to get \(P(k)\). It then asks what happens when you remove an ingredient or change one.</p>
 <!--pick:src-remember/20-proofs.html#pf-ba-rate,pf-ba-pk,pf-ba-master-->
-<p class="small">Longer versions: <a href="{{ROOT}}after-midsem/#ba">After mid-sem guide §19–21</a>.</p>
+<p class="small">The <a href="{{ROOT}}after-midsem/#ba">After mid-sem guide, §19–21</a>, has longer versions.</p>
 
 <h3 id="nopa">3a · Growth without preferential attachment (Model A)</h3>
 <p>Keep growth, but let each new link pick an existing node uniformly at random, whatever its degree. There are \(m_0 + t - 1\approx t\) nodes to choose from, so</p>
 <div class="eq">\[\Pi(k_i) = \frac{1}{m_0 + t - 1}\approx\frac1t,\qquad\frac{dk_i}{dt} = m\,\Pi = \frac mt.\]</div>
-<p>The rate no longer depends on \(k_i\): a big node gains links no faster than a small one. Integrating from \(k_i(t_i) = m\) gives a logarithm instead of a square root, \(k_i(t) = m + m\ln(t/t_i)\). Old nodes still have more links, but only logarithmically more. The same "late joiners have small degree" argument as for BA then gives an exponential:</p>
+<p>The rate no longer depends on \(k_i\), so a big node gains links no faster than a small one. Integrating from \(k_i(t_i) = m\) gives a logarithm instead of a square root, \(k_i(t) = m + m\ln(t/t_i)\). Old nodes still have more links, but only logarithmically more. The same "late joiners have small degree" argument as for BA then gives an exponential:</p>
 <div class="eq boxed">\[P(k) = \frac em\,e^{-k/m}\qquad(k\ge m)\]</div>
-<p>Check that it adds up to 1: \(\int_m^\infty\frac1me^{1 - k/m}dk = e\cdot e^{-1} = 1\).</p>
-<figure class="fig"><!--plot:model-a--><figcaption>Degree distributions for \(m = 2\) on log-log axes. With preferential attachment (BA, teal) the distribution is a straight line of slope −3, so hubs of degree 100 and more appear. Without it (Model A, orange) the distribution drops off a cliff: a node of degree 30 is already rarer than one in a million.</figcaption></figure>
+<p>It adds up to 1, since \(\int_m^\infty\frac1me^{1 - k/m}dk = e\cdot e^{-1} = 1\).</p>
+<figure class="fig"><!--plot:model-a--><figcaption>Degree distributions for \(m = 2\) on log-log axes. With preferential attachment (BA, teal) the distribution is a straight line of slope −3, so hubs of degree 100 and more appear. Without it (Model A, orange) the distribution drops off a cliff, and a node of degree 30 is already rarer than one in a million.</figcaption></figure>
 <!--pick:src-remember/20-proofs.html#pf-model-a-->
 
 <h3 id="nogrowth">3b · Preferential attachment without growth (Model B)</h3>
-<p>Now keep preferential attachment but fix the number of nodes at \(N\). Nothing is ever added except links: at each step one node chosen at random gets a new link, and the other end is chosen by preferential attachment. After \(t\) steps there are \(t\) links, so \(\sum_jk_j = 2t\), and node \(i\) gains a link either by being the random end (probability \(\frac1N\)) or by being picked (probability \(\frac{k_i}{2t}\)):</p>
+<p>Now keep preferential attachment but fix the number of nodes at \(N\). Nothing is ever added except links. At each step one node chosen at random gets a new link, and preferential attachment chooses the other end. After \(t\) steps there are \(t\) links, so \(\sum_jk_j = 2t\), and node \(i\) gains a link either by being the random end (probability \(\frac1N\)) or by being picked (probability \(\frac{k_i}{2t}\)):</p>
 <div class="eq">\[\frac{dk_i}{dt} = \frac1N + \frac{k_i}{2t}.\]</div>
-<p>Try \(k_i = at\): \(a = \frac1N + \frac a2\), so \(a = \frac2N\). The equation without the \(\frac1N\) is the BA one, solved by \(\sqrt t\). So the full solution is</p>
+<p>Trying \(k_i = at\) gives \(a = \frac1N + \frac a2\), so \(a = \frac2N\). Without the \(\frac1N\) the equation is the BA one, which \(\sqrt t\) solves. So the full solution is</p>
 <div class="eq boxed">\[k_i(t) = \frac{2t}N + C_i\sqrt t\;\approx\;\frac{2t}{N}\ \text{ for large } t.\]</div>
-<p>The part that differs between nodes, \(C_i\sqrt t\), becomes negligible next to \(\frac{2t}N\), which is the same for everyone. So all degrees end up about equal: the distribution is a narrow peak around the average, not a power law. Since there are only \(\frac{N(N-1)}2\) possible links, after about \(\frac{N^2}{2}\) steps every pair is linked and the network is a complete graph. There is no stationary state.</p>
+<p>The part that differs between nodes, \(C_i\sqrt t\), becomes negligible next to \(\frac{2t}N\), which is the same for everyone. So all degrees end up about equal, and the distribution is a narrow peak around the average instead of a power law. Since there are only \(\frac{N(N-1)}2\) possible links, after about \(\frac{N^2}{2}\) steps every pair is linked and the network is a complete graph. There is no stationary state.</p>
 <!--pick:src-remember/20-proofs.html#pf-model-b-->
 <div class="card remember"><span class="tag">What to remember</span>
 <p>Both ingredients are needed. Growth alone gives an exponential. Preferential attachment alone gives a network where everyone ends up alike and then complete. Only together do they give \(P(k)\sim k^{-3}\).</p>
@@ -91,23 +91,23 @@
 <table class="tbl">
 <tr><th>\(\alpha\)</th><th>Name</th><th>Degree distribution</th><th>Largest hub after \(t\) steps</th></tr>
 <tr><td>0</td><td>no preferential attachment</td><td>exponential</td><td>\(\sim\ln t\)</td></tr>
-<tr><td>\(0<\alpha<1\)</td><td>sublinear</td><td>stretched exponential, about \(e^{-ck^{1-\alpha}}\): no power law, few hubs</td><td>\(\sim(\ln t)^{1/(1-\alpha)}\)</td></tr>
+<tr><td>\(0<\alpha<1\)</td><td>sublinear</td><td>a stretched exponential, about \(e^{-ck^{1-\alpha}}\), so no power law and few hubs</td><td>\(\sim(\ln t)^{1/(1-\alpha)}\)</td></tr>
 <tr><td>1</td><td>linear (BA)</td><td>power law \(k^{-3}\)</td><td>\(\sim t^{1/2}\)</td></tr>
-<tr><td>\(\alpha>1\)</td><td>superlinear</td><td>winner takes all: one hub, the rest small</td><td>\(\sim t\)</td></tr>
+<tr><td>\(\alpha>1\)</td><td>superlinear</td><td>winner takes all, with one hub and the rest small</td><td>\(\sim t\)</td></tr>
 </table>
 <p><strong>Why \(\alpha<1\) gives small hubs.</strong> When the degrees stay small, \(k_j^\alpha\) has a finite average \(\nu = \langle k^\alpha\rangle\), so the sum over the \(\approx t\) nodes is \(\sum_jk_j^\alpha\approx\nu t\). Then</p>
 <div class="eq">\[\frac{dk_i}{dt} = \frac{m\,k_i^\alpha}{\nu\,t}\;\Rightarrow\;\int_m^{k_i}k^{-\alpha}dk = \frac m\nu\int_{t_i}^t\frac{dt'}{t'}\;\Rightarrow\;k_i^{1-\alpha} - m^{1-\alpha} = \frac{(1-\alpha)\,m}{\nu}\ln\frac{t}{t_i}.\]</div>
-<p>For the oldest node (\(t_i = 1\)) this gives \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\): it grows more slowly than any power of \(t\). Put \(\alpha = 0\) and \(\nu = 1\) and it becomes Model A's \(k_i = m + m\ln(t/t_i)\), a good check.</p>
-<p><strong>Why \(\alpha>1\) gives one giant hub.</strong> Suppose one node has a degree that grows like \(t\), say \(k_1 = ct\), while the others stay small. Then \(k_1^\alpha = c^\alpha t^\alpha\), and since \(\alpha>1\) this outgrows the sum over all the other nodes, which is only about \(t\). So \(\Pi(1)\to1\): almost every new node links to node 1, which keeps \(k_1\) growing like \(t\). The guess is self-consistent. One node, usually one of the first, ends up linked to a finite fraction of the network.</p>
+<p>For the oldest node (\(t_i = 1\)) this gives \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\), which grows more slowly than any power of \(t\). Putting \(\alpha = 0\) and \(\nu = 1\) gives back Model A's \(k_i = m + m\ln(t/t_i)\), which is a useful check.</p>
+<p><strong>Why \(\alpha>1\) gives one giant hub.</strong> Suppose one node has a degree that grows like \(t\), say \(k_1 = ct\), while the others stay small. Then \(k_1^\alpha = c^\alpha t^\alpha\), and since \(\alpha>1\) this outgrows the sum over all the other nodes, which is only about \(t\). So \(\Pi(1)\to1\). Almost every new node links to node 1, which keeps \(k_1\) growing like \(t\). The guess is self-consistent. One node, usually one of the first, ends up linked to a finite fraction of the network.</p>
 <!--pick:src-remember/20-proofs.html#pf-nlpa-->
 <p class="small">The slides only pose this question (deck 14, slide 58). The table follows Krapivsky, Redner and Leyvraz (2000), whose paper is cited on slide 56, and Barabási's <em>Network Science</em>, chapter 5.</p>
 </section>
 
 <section>
 <h2 id="e-sw">4 · Small-world graphs</h2>
-<p class="about">Start from a ring lattice (\(p = 0\)): high clustering, long paths. Rewire each link with probability \(p\). At \(p = 1\) it is a random graph: short paths, no clustering. In between, a few rewired links make paths short while clustering stays high. The board asks for the average clustering coefficient and path length at both ends.</p>
+<p class="about">Start from a ring lattice (\(p = 0\)), which has high clustering and long paths. Rewire each link with probability \(p\). At \(p = 1\) the graph is random, with short paths and almost no clustering. In between, a few rewired links make the paths short while the clustering stays high. The board asks for the average clustering coefficient and the path length at both ends.</p>
 <div class="card watch"><span class="tag">Convention</span>
-<p>Here \(k\) is the number of neighbours <strong>on each side</strong>, so the degree is \(2k\). If a question writes \(K\) for the degree, put \(k = K/2\): \(C(0) = \frac{3(K-2)}{4(K-1)}\) and \(\bar\ell(0)\approx\frac{n}{2K}\).</p>
+<p>Here \(k\) is the number of neighbours <strong>on each side</strong>, so the degree is \(2k\). If a question writes \(K\) for the degree, put \(k = K/2\). Then \(C(0) = \frac{3(K-2)}{4(K-1)}\) and \(\bar\ell(0)\approx\frac{n}{2K}\).</p>
 </div>
 <!--pick:src-remember/20-proofs.html#pf-ring-c,pf-ring-l,pf-rand-sw,pf-ws-->
 <table class="tbl">
@@ -115,11 +115,11 @@
 <tr><td>Clustering \(C\)</td><td>\(\frac{3(k-1)}{2(2k-1)}\approx\frac34\)</td><td>\(\approx C(0)\)</td><td>\(\frac{2k}n\to0\)</td></tr>
 <tr><td>Path length \(\bar\ell\)</td><td>\(\frac n{4k}\), grows with \(n\)</td><td>\(\approx\) random value</td><td>\(\frac{\ln n}{\ln2k}\)</td></tr>
 </table>
-<figure class="fig"><!--plot:ws-curve--><figcaption>Simulation with \(n = 500\), \(k = 4\), both quantities divided by their \(p = 0\) value, \(p\) on a log axis. Path length (orange) has fallen to about a quarter by \(p = 0.01\), while clustering (teal) stays near 1 until about \(p = 0.1\). The dashed line is \((1-p)^3\).</figcaption></figure>
+<figure class="fig"><!--plot:ws-curve--><figcaption>A simulation with \(n = 500\) and \(k = 4\). Both quantities are divided by their value at \(p = 0\), and \(p\) is on a log axis. Path length (orange) has fallen to about a quarter by \(p = 0.01\), while clustering (teal) stays near 1 until about \(p = 0.1\). The dashed line is \((1-p)^3\).</figcaption></figure>
 <div class="card ex"><span class="tag">Numbers · \(n = 1000\), \(k = 5\) (degree 10)</span>
-<p>\(p = 0\): \(C = \frac{3\cdot4}{2\cdot9} = 0.667\), \(\bar\ell = \frac{1000}{20} = 50\). \(p = 1\): \(C = \frac{10}{1000} = 0.01\), \(\bar\ell = \frac{\ln1000}{\ln10} = 3\). \(p = 0.1\): \(C = 0.667\times0.9^3 = 0.486\), while there are already \(nkp = 500\) shortcuts.</p>
+<p>At \(p = 0\), \(C = \frac{3\cdot4}{2\cdot9} = 0.667\) and \(\bar\ell = \frac{1000}{20} = 50\). At \(p = 1\), \(C = \frac{10}{1000} = 0.01\) and \(\bar\ell = \frac{\ln1000}{\ln10} = 3\). At \(p = 0.1\) the clustering is still \(0.667\times0.9^3 = 0.486\), although there are already \(nkp = 500\) shortcuts.</p>
 </div>
-<p class="small">Longer versions, with the caveman graph: <a href="{{ROOT}}after-midsem/#lattice">After mid-sem guide §25–26</a>.</p>
+<p class="small">The <a href="{{ROOT}}after-midsem/#lattice">After mid-sem guide, §25–26</a>, has longer versions along with the caveman graph.</p>
 </section>
 
 <section>
@@ -128,13 +128,13 @@
 <!--pick:src-after/80-pyq.html#pyq-twoosc,pyq-lorenz,pyq-ba-->
 <details class="q"><summary><span class="qt pyq">2024 class quiz 2 · Q1 · 1 mark</span><span>In a social network, node A has neighbours B, C and D. If B and C are not connected to each other, what is the minimum possible local clustering coefficient of A? (0, 1, 2/3, 1/2, 1/3)</span><span class="chev">›</span></summary>
 <div class="ans">
-<p>A has 3 neighbours, so \(\binom32 = 3\) pairs: B–C, B–D, C–D. B–C is missing. The smallest value comes when B–D and C–D are missing too: 0 links out of 3, so \(C_A = 0\). (The largest possible is \(\frac23\).)</p>
+<p>A has 3 neighbours, so there are \(\binom32 = 3\) pairs of them, and the pair B–C is missing. The smallest value comes when the other two pairs (B with D, and C with D) are missing as well. That leaves 0 links out of 3, so \(C_A = 0\). The largest possible value is \(\frac23\).</p>
 </div></details>
 </section>
 
 <section>
 <h2 id="e-practice">Questions in the exam's style</h2>
-<p class="about">Nothing has been asked yet on the newer parts of the syllabus. These follow the style of the 2024 questions: a definition, then a derivation, with marks to match.</p>
+<p class="about">Nothing has been asked yet on the newer parts of the syllabus. These questions follow the style of the 2024 papers, which ask for a definition and then a derivation.</p>
 
 <details class="q"><summary><span class="qt">Practice · 2 + 3 marks</span><span>A network grows by one node with \(m\) links at each step, and each link chooses an existing node uniformly at random. (a) Find \(\frac{dk_i}{dt}\) and \(k_i(t)\). (b) Find \(P(k)\). Is the network scale-free?</span><span class="chev">›</span></summary>
 <div class="ans">
@@ -142,14 +142,21 @@
 <li>\(\Pi = \frac1{m_0 + t - 1}\approx\frac1t\), so \(\frac{dk_i}{dt} = \frac mt\).</li>
 <li>Integrate from \(k_i(t_i) = m\): \(k_i(t) = m + m\ln\frac t{t_i}\).</li>
 <li>\(k_i<k\iff t_i>te^{1-k/m}\). Joining times are uniform, so \(P(k_i<k) = 1 - e^{1-k/m}\).</li>
-<li>Differentiate: \(P(k) = \frac em e^{-k/m}\).</li>
+<li>Differentiating gives \(P(k) = \frac em e^{-k/m}\).</li>
 </ol>
-<p>Exponential, not a power law, so not scale-free: without preferential attachment there are no hubs.</p>
+<p>The result is an exponential, not a power law, so the network is not scale-free. Without preferential attachment there are no hubs.</p>
 </div></details>
 
 <details class="q"><summary><span class="qt">Practice · 3 + 2 marks</span><span>Write the master equation for the number of degree-\(k\) nodes in the BA model, including the equation for \(k = m\). Solve it in the steady state and show \(P(k)\sim k^{-3}\).</span><span class="chev">›</span></summary>
 <div class="ans">
-<p>Follow the <a href="#pf-ba-master">master-equation proof</a>. Points that earn the marks: \(\Pi(k) = \frac{k}{2mt}\), links to degree-\(k\) nodes per step \(= \frac k2P(k,t)\), the gain from \(k-1\) and loss to \(k+1\), the extra \(+1\) at \(k = m\), the steady state \(P(k) = \frac{k-1}{k+2}P(k-1)\), \(P(m) = \frac2{m+2}\), and the product \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\), which is \(\approx2m^2k^{-3}\) for large \(k\).</p>
+<p>Follow the <a href="#pf-ba-master">master-equation proof</a>. Each of these steps earns marks.</p>
+<ol>
+<li>\(\Pi(k) = \frac{k}{2mt}\), so the links landing on degree-\(k\) nodes in one step number \(\frac k2P(k,t)\).</li>
+<li>Degree-\(k\) nodes are gained from degree \(k-1\) and lost to degree \(k+1\).</li>
+<li>At \(k = m\) the new node adds an extra \(+1\).</li>
+<li>In the steady state, \(P(k) = \frac{k-1}{k+2}P(k-1)\) and \(P(m) = \frac2{m+2}\).</li>
+<li>Multiplying out gives \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\), which is \(\approx2m^2k^{-3}\) for large \(k\).</li>
+</ol>
 </div></details>
 
 <details class="q"><summary><span class="qt">Practice · 2 + 2 marks</span><span>What happens to the BA model if (a) the number of nodes is fixed, (b) the attachment probability is \(\Pi\propto k^\alpha\) with \(\alpha>1\)?</span><span class="chev">›</span></summary>
@@ -162,12 +169,12 @@
 <div class="ans">
 <p>(a) \(\binom{2k}2 = k(2k-1)\) pairs of neighbours, \(3\binom k2\) of them linked, so \(C(0) = \frac{3(k-1)}{2(2k-1)}\) (<a href="#pf-ring-c">proof</a>).</p>
 <p>(b) \(p = 0\): \(2k\) new nodes per step out to \(\frac n{2k}\) steps, so \(\bar\ell\approx\frac n{4k}\). \(p = 1\): shells grow as \((2k)^\ell\), so \(\bar\ell\approx\frac{\ln n}{\ln2k}\) (<a href="#pf-ring-l">proof</a>, <a href="#pf-rand-sw">proof</a>).</p>
-<p>(c) A triangle survives only if its three links are all kept: \(C(p) = C(0)(1-p)^3\) (<a href="#pf-ws">proof</a>).</p>
+<p>(c) A triangle survives only if its three links are all kept, so \(C(p) = C(0)(1-p)^3\) (<a href="#pf-ws">proof</a>).</p>
 </div></details>
 
 <details class="q"><summary><span class="qt">Practice · 3 marks</span><span>Two oscillators have \(\omega_1 = 1\), \(\omega_2 = 4\), \(k_1 = 1\), \(k_2 = 2\). Do they lock? If so, at what frequency, and what is the locked phase difference?</span><span class="chev">›</span></summary>
 <div class="ans">
-<p>\(|\Delta\omega| = 3\le k_1 + k_2 = 3\): exactly at the critical condition, so they just lock. \(\sin\phi^* = \frac33 = 1\), \(\phi^* = \frac\pi2\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{2 + 4}{3} = 2\). Check: \(\omega_1 + k_1\sin\phi^* = 1 + 1 = 2\) and \(\omega_2 - k_2\sin\phi^* = 4 - 2 = 2\).</p>
+<p>\(|\Delta\omega| = 3\) and \(k_1 + k_2 = 3\), which is exactly the critical condition, so they just lock. \(\sin\phi^* = \frac33 = 1\), \(\phi^* = \frac\pi2\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{2 + 4}{3} = 2\). As a check, \(\omega_1 + k_1\sin\phi^* = 1 + 1 = 2\) and \(\omega_2 - k_2\sin\phi^* = 4 - 2 = 2\).</p>
 </div></details>
 </section>
 

@@ -14,7 +14,7 @@
 
 <h3>What was measured</h3>
 <p>In 1999 Barabási and Albert sent a crawler through the <code>nd.edu</code> web domain: about 300,000 pages, with an average of 11 clicks between two pages. Two things stood out. Distances were short (for the 800 million pages of the 1999 Web the estimate was only 19 clicks, not thousands). And there were hubs: in one study 82% of pages had fewer than 3 incoming links, while 42 pages had more than 1000.</p>
-<p>The degree distribution was a power law, \(P(k)\sim k^{-\gamma}\), a straight line on log-log axes (<a href="{{ROOT}}#moments">Mid-sem guide §1</a>), not the bell-shaped Poisson curve of a random graph. A network whose degree distribution is a power law is called <strong>scale-free</strong>. The name says that there is no typical degree: the ratio of hubs to ordinary nodes stays the same as the network grows, so a small copy looks like a scaled version of the large one.</p>
+<p>The degree distribution was a power law, \(P(k)\sim k^{-\gamma}\), a straight line on log-log axes (<a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>), not the bell-shaped Poisson curve of a random graph. A network whose degree distribution is a power law is called <strong>scale-free</strong>. The name says that there is no typical degree: the ratio of hubs to ordinary nodes stays the same as the network grows, so a small copy looks like a scaled version of the large one.</p>
 
 <h3>Why the random graph fails · two wrong assumptions</h3>
 <table class="tbl">
@@ -212,7 +212,7 @@
 <tr><td>Result</td><td>\(p_k = \dfrac{k^{-\gamma}}{\zeta(\gamma)}\)</td><td>\(p(k) = (\gamma-1)\,k_{\min}^{\gamma-1}\,k^{-\gamma}\)</td></tr>
 <tr><td>Meaning</td><td>\(p_k\) is the probability that a node has exactly \(k\) links.</td><td>Only \(\int_{k_1}^{k_2}p(k)\,dk\) has a meaning: the probability of a degree between \(k_1\) and \(k_2\).</td></tr>
 </table>
-<p class="sym">\(\zeta(\gamma) = \sum_{k=1}^\infty k^{-\gamma}\) is the Riemann zeta function, just a name for that sum. \(k_{\min}\) is the smallest degree in the network. The continuous constant is derived in the <a href="{{ROOT}}#moments">Mid-sem guide §1</a>.</p>
+<p class="sym">\(\zeta(\gamma) = \sum_{k=1}^\infty k^{-\gamma}\) is the Riemann zeta function, just a name for that sum. \(k_{\min}\) is the smallest degree in the network. The continuous constant is derived in the <a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>.</p>
 
 <div class="card exam"><span class="tag">Derivation to learn · the size of the largest hub</span>
 <ol class="steps">
@@ -242,7 +242,7 @@
 <tr><td>\(2<\gamma<3\)</td><td>finite</td><td>diverges</td><td>\(k_{\max}\) grows more slowly than \(N\), so the hub holds a shrinking fraction of the links.</td><td>Scale-free regime. Most real scale-free networks are here (Web, actors, metabolism, protein interactions).</td></tr>
 <tr><td>\(\gamma>3\)</td><td>finite</td><td>finite</td><td>Small hubs.</td><td>Random regime. Hard to tell apart from a random network (citations, collaboration, Internet in the slides' table).</td></tr>
 </table>
-<p>The divergence conditions are those of the <a href="{{ROOT}}#moments">Mid-sem guide §1</a>: ⟨k⟩ is finite for \(\gamma>2\) and ⟨k²⟩ is finite for \(\gamma>3\). The BA model sits exactly on the edge, \(\gamma = 3\).</p>
+<p>The divergence conditions are those of the <a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>: ⟨k⟩ is finite for \(\gamma>2\) and ⟨k²⟩ is finite for \(\gamma>3\). The BA model sits exactly on the edge, \(\gamma = 3\).</p>
 <p class="small">Other slides in this block: twelve measured power laws from Newman (word counts, citations, city sizes, earthquakes, wealth), the 80/20 rule of Pareto ("80% of the wealth is in the hands of the richest 20%", another name for a power law), and the table of ten real networks with their exponents. In that table the power grid is the one that is not scale-free; its degrees follow an exponential.</p>
 
 <div class="card remember"><span class="tag">What to remember</span>
@@ -274,7 +274,7 @@
 </div>
 
 <h3>Neighbours of neighbours</h3>
-<p>Recall from the <a href="{{ROOT}}#knn">Mid-sem guide §7</a>: following a link, the chance of arriving at a node of degree \(k\) is \(q_k = kP(k)/\langle k\rangle\), and the average degree of a neighbour is</p>
+<p>Recall from the <a href="{{ROOT}}midsem/#knn">Mid-sem guide §7</a>: following a link, the chance of arriving at a node of degree \(k\) is \(q_k = kP(k)/\langle k\rangle\), and the average degree of a neighbour is</p>
 <div class="eq">\[\langle k_{nn}\rangle = \sum_k k\,q_k = \frac{\langle k^2\rangle}{\langle k\rangle}.\]</div>
 <p>For a Poisson distribution with mean \(z\): \(\langle k\rangle = z\) and \(\langle k^2\rangle = z^2 + z\), so \(\langle k_{nn}\rangle = z + 1 = \langle k\rangle + 1\). This does not depend on which node we start from, which is what "uncorrelated" means.</p>
 

@@ -39,18 +39,18 @@
 
 <details class="q" id="pyq-lorenz"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q4 · 4 marks</span><span>Find the fixed points of the Lorenz oscillator \(\dot x = \sigma(y - x)\), \(\dot y = \rho x - y - xz\), \(\dot z = -\beta z + xy\). Construct the associated Jacobians. (Eigenvalue analysis is not required.)</span><span class="chev">›</span></summary>
 <div class="ans">
-<p class="idea"><strong>The idea in plain words.</strong> Set all three rates to zero and solve one equation at a time: the first says \(y = x\), the third then gives \(z\) in terms of \(x\), and the middle one either forces \(x = 0\) or fixes \(z = \rho - 1\). Then the Jacobian is the table of partial derivatives, evaluated at each fixed point.</p>
+<p class="idea"><strong>The idea in plain words.</strong> Set all three rates to zero and solve one equation at a time. The first says \(y = x\), and the third then gives \(z\) in terms of \(x\). After that, the middle one either forces \(x = 0\) or fixes \(z = \rho - 1\). The Jacobian is the table of partial derivatives, evaluated at each fixed point.</p>
 <h4>Formulas you need</h4>
-<ul><li>Fixed point: all rates zero. Jacobian \(J_{ij} = \partial f_i/\partial x_j\) (<a href="{{ROOT}}after-midsem/#jacobian">§5</a>, <a href="{{ROOT}}after-midsem/#lorenz">§14</a>).</li></ul>
+<ul><li>At a fixed point all rates are zero. The Jacobian is \(J_{ij} = \partial f_i/\partial x_j\) (<a href="{{ROOT}}after-midsem/#jacobian">§5</a>, <a href="{{ROOT}}after-midsem/#lorenz">§14</a>).</li></ul>
 <h4>Step by step</h4>
 <ol class="steps">
 <li>\(\sigma(y - x) = 0\Rightarrow y = x\).</li>
 <li>\(xy - \beta z = 0\Rightarrow z = x^2/\beta\).</li>
 <li>\(\rho x - x - xz = x(\rho - 1 - z) = 0\Rightarrow x = 0\) or \(z = \rho - 1\).</li>
-<li>\(x = 0\): \(P_0 = (0, 0, 0)\). \(z = \rho - 1\): \(x^2 = \beta(\rho - 1)\), \(P_{1,2} = (\pm\sqrt{\beta(\rho-1)}, \pm\sqrt{\beta(\rho-1)}, \rho - 1)\), existing for \(\rho > 1\).</li>
-<li>General Jacobian: \(J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}\).</li>
+<li>If \(x = 0\), the point is \(P_0 = (0, 0, 0)\). If \(z = \rho - 1\), then \(x^2 = \beta(\rho - 1)\), which gives \(P_{1,2} = (\pm\sqrt{\beta(\rho-1)}, \pm\sqrt{\beta(\rho-1)}, \rho - 1)\). These exist only for \(\rho > 1\).</li>
+<li>The general Jacobian is \(J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}\).</li>
 <li>\(J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}\). \(J(P_{1,2}) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & \mp c\\ \pm c & \pm c & -\beta\end{pmatrix}\) with \(c = \sqrt{\beta(\rho-1)}\).</li>
-<li><strong>Numbers</strong>, \(\sigma = 10\), \(\beta = 8/3\), \(\rho = 28\): \(c = \sqrt{72} = 8.49\), \(P_{1,2} = (\pm8.49, \pm8.49, 27)\), \(J(P_1) = \begin{pmatrix}-10 & 10 & 0\\ 1 & -1 & -8.49\\ 8.49 & 8.49 & -2.67\end{pmatrix}\).</li>
+<li><strong>Numbers.</strong> For the usual values (\(\sigma = 10\), \(\beta = 8/3\), \(\rho = 28\)), \(c = \sqrt{72} = 8.49\), \(P_{1,2} = (\pm8.49, \pm8.49, 27)\), \(J(P_1) = \begin{pmatrix}-10 & 10 & 0\\ 1 & -1 & -8.49\\ 8.49 & 8.49 & -2.67\end{pmatrix}\).</li>
 </ol>
 <h4>Final answer</h4>
 <p>\(P_0 = (0,0,0)\) and, for \(\rho > 1\), \(P_{1,2} = (\pm\sqrt{\beta(\rho-1)}, \pm\sqrt{\beta(\rho-1)}, \rho - 1)\), with the Jacobians above.</p>
@@ -64,13 +64,13 @@
 <h4>Step by step</h4>
 <ol class="steps">
 <li>Subtract the equations to get \(\dot\phi\) above.</li>
-<li>Locked means \(\dot\phi = 0\): \(\sin\phi^* = \frac{\omega_2 - \omega_1}{k_1 + k_2}\). Needs \(|\omega_2 - \omega_1|\le k_1 + k_2\). Critical coupling: \(k_1 + k_2 = |\omega_2 - \omega_1|\).</li>
-<li>Stable lock: slope \(-(k_1 + k_2)\cos\phi^* < 0\), i.e. \(\cos\phi^* > 0\).</li>
-<li>Common frequency: from \(\Omega = \omega_1 + k_1\sin\phi^* = \omega_2 - k_2\sin\phi^*\), eliminate \(\sin\phi^*\): \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</li>
+<li>Locked means \(\dot\phi = 0\), so \(\sin\phi^* = \frac{\omega_2 - \omega_1}{k_1 + k_2}\). This needs \(|\omega_2 - \omega_1|\le k_1 + k_2\), and the critical coupling is \(k_1 + k_2 = |\omega_2 - \omega_1|\).</li>
+<li>The lock is stable when the slope \(-(k_1 + k_2)\cos\phi^*\) is negative, that is when \(\cos\phi^* > 0\).</li>
+<li>For the common frequency, write \(\Omega = \omega_1 + k_1\sin\phi^* = \omega_2 - k_2\sin\phi^*\) and eliminate \(\sin\phi^*\). That gives \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</li>
 <li><strong>Numbers.</strong> \(|\omega_2 - \omega_1| = 8\), \(k_1 + k_2 = 4\). \(\sin\phi^* = 2\) is impossible. No lock.</li>
 </ol>
 <h4>Final answer</h4>
-<p>(a) Lock iff \(k_1 + k_2\ge|\omega_2 - \omega_1|\); critical coupling \(k_1 + k_2 = |\omega_2 - \omega_1|\) (equal couplings: \(k_c = |\omega_2 - \omega_1|/2\)). (b) \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\). With \(k = 2\), \(\omega_1 = 2\), \(\omega_2 = 10\): \(4 < 8\), so no common stable frequency; each \(k\) would need to be at least 4. (If they locked, \(\Omega\) would be 6.)</p>
+<p>(a) They lock iff \(k_1 + k_2\ge|\omega_2 - \omega_1|\), so the critical coupling is \(k_1 + k_2 = |\omega_2 - \omega_1|\), or \(k_c = |\omega_2 - \omega_1|/2\) when the couplings are equal. (b) \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\). With \(k = 2\) the coupling adds up to only 4 against a gap of \(\omega_2 - \omega_1 = 8\), so there is no common stable frequency. Each \(k\) would need to be at least 4. (If they locked, \(\Omega\) would be 6.)</p>
 </div></details>
 
 <details class="q"><summary><span class="qt pyq">Mid-sem · Q2 · 3 + 4 marks</span><span>\(\dot z = (\mu + i\omega - |z|^2)z\), with \(z = x + iy\). (a) Transform this equation into the \((r, \theta)\) plane. (b) Find the condition in which the system will reveal a stable limit cycle. Explain it with proper bifurcation analysis.</span><span class="chev">›</span></summary>
@@ -98,19 +98,19 @@
 <h4>Part 1 · the ingredients</h4>
 <ol class="steps">
 <li><strong>Growth.</strong> Start from \(m_0\) nodes. At each time step add one new node with \(m\le m_0\) links to nodes already present. The number of nodes keeps increasing, unlike in a random graph where \(N\) is fixed.</li>
-<li><strong>Preferential attachment.</strong> The probability that a link of the new node goes to node \(i\) is proportional to its degree: \(\Pi(k_i) = k_i/\sum_jk_j\). Unlike in a random graph, partners are not chosen with equal probability.</li>
+<li><strong>Preferential attachment.</strong> The probability that a link of the new node goes to node \(i\) is proportional to its degree, \(\Pi(k_i) = k_i/\sum_jk_j\). Unlike in a random graph, partners are not chosen with equal probability.</li>
 <li>Together they give a scale-free network with \(P(k)\sim k^{-3}\). Either one alone does not.</li>
 </ol>
 <h4>Part 2 · the rate</h4>
 <ol class="steps">
 <li>Treat \(k_i\) as a continuous quantity (its average over many runs).</li>
-<li>Each step brings \(m\) new links, and each chooses node \(i\) with probability \(\Pi(k_i)\): \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_{j=1}^{N-1}k_j}.\]</li>
-<li>After \(t\) steps there are \(mt\) links, so the total degree is \(2mt\). Without the new node's own \(m\): \(\sum_{j=1}^{N-1}k_j = 2mt - m\).</li>
+<li>Each step brings \(m\) new links, and each chooses node \(i\) with probability \(\Pi(k_i)\), so \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_{j=1}^{N-1}k_j}.\]</li>
+<li>After \(t\) steps there are \(mt\) links, so the total degree is \(2mt\). Leaving out the new node's own \(m\) gives \(\sum_{j=1}^{N-1}k_j = 2mt - m\).</li>
 <li>So \[\frac{dk_i}{dt} = \frac{m\,k_i}{2mt - m} = \frac{k_i}{2t - 1}\approx\frac{k_i}{2t}\quad\text{for large }t.\] The rate is proportional to \(k_i/t\), with constant \(\frac12\).</li>
 </ol>
 <h4>Final answer</h4>
-<p>Ingredients: growth and preferential attachment. \(\dfrac{dk_i}{dt} = \dfrac{k_i}{2t}\propto\dfrac{k_i}{t}\). If there is time, add the solution: \(k_i(t) = m(t/t_i)^{1/2}\), so equivalently \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_i\,t}}\propto t^{-1/2}\).</p>
-<p class="small">The scan of this paper is hard to read at "proportional to"; \(k_i/t\) is the reading that fits the slides' derivation.</p>
+<p>The two ingredients are growth and preferential attachment, and \(\dfrac{dk_i}{dt} = \dfrac{k_i}{2t}\propto\dfrac{k_i}{t}\). If there is time, add the solution \(k_i(t) = m(t/t_i)^{1/2}\), which gives the same rate as \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_i\,t}}\propto t^{-1/2}\).</p>
+<p class="small">The scan of this paper is hard to read at "proportional to". The reading \(k_i/t\) is the one that fits the slides' derivation.</p>
 </div></details>
 
 <h3>One more in the exam's style</h3>

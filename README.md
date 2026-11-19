@@ -3,14 +3,14 @@
 Study notes for **Dynamical Processes of Complex Networks (SC1.440)** at IIIT Hyderabad, written as three pages to read in order. Every topic starts in plain words, symbols are explained where they first appear, and section M on page 1 covers the maths the course uses.
 
 1. **Page 1, Quiz 1 guide** (classes 1 to 6, network basics): https://arihant25.github.io/dpcn-study-guide/quiz1/
-2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/dpcn-study-guide/
+2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/dpcn-study-guide/midsem/
 3. **Page 3, After mid-sem guide** (classes 13 to 22): https://arihant25.github.io/dpcn-study-guide/after-midsem/
 
 There is also a **Memory sheet** with the whole course on one page (formulas, a short proof for each result, flashcards): https://arihant25.github.io/dpcn-study-guide/remember/
 
 The **Quiz 2 sheet** has only the Quiz 2 syllabus (2-D nonlinear stability and limit cycles, maps, Lorenz, synchronisation), with the past questions on those topics and a three-day plan: https://arihant25.github.io/dpcn-study-guide/quiz2/
 
-The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, practice questions and flashcards: https://arihant25.github.io/dpcn-study-guide/endsem/
+The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It is what the site opens on: https://arihant25.github.io/dpcn-study-guide/ (also at https://arihant25.github.io/dpcn-study-guide/endsem/)
 
 Page 1 opens with a map of which page teaches each class and a ranked list of derivations to learn (`shared/course-map.html`).
 
@@ -40,11 +40,11 @@ Page 1 opens with a map of which page teaches each class and a ranked list of de
 
 ## Editing
 
-The pages are generated. Edit the parts in `src/` (Mid-sem guide), `src-after/` (After mid-sem guide), `src-quiz1/` (Quiz 1 guide), `src-remember/` (Memory sheet), `src-quiz2/` (Quiz 2 sheet) or `src-endsem/` (End-sem sheet), in file-name order, then run:
+The pages are generated. Edit the parts in `src/` (Mid-sem guide, built to `midsem/`), `src-after/` (After mid-sem guide), `src-quiz1/` (Quiz 1 guide), `src-remember/` (Memory sheet), `src-quiz2/` (Quiz 2 sheet) or `src-endsem/` (End-sem sheet), in file-name order, then run:
 
 ```
 npm install
 node build.mjs
 ```
 
-`build.mjs` joins each folder's parts, renders `\( … \)` and `\[ … \]` TeX to MathML with temml, draws the plots as static SVG that follow the light/dark theme, and writes self-contained `index.html`, `after-midsem/index.html`, `quiz1/index.html`, `remember/index.html`, `quiz2/index.html` and `endsem/index.html`. `{{ROOT}}` in a part becomes the path back to the site root, and `<!--include:shared/…-->` pulls in a shared part. `<!--pick:file#id1,id2-->` copies the elements with those ids from another part, which is how the Quiz 2 and End-sem sheets reuse the Memory sheet's proofs and flashcards. The page switcher in the sidebar and the phone menu comes from `shared/pages.html`, `shared/nav-style.html` and `shared/nav-script.html`. The folders each carry their own copy of the head (CSS) and foot (scripts). `snap.mjs` takes screenshots of the figures (needs Chrome) for checking.
+`build.mjs` joins each folder's parts, renders `\( … \)` and `\[ … \]` TeX to MathML with temml, draws the plots as static SVG that follow the light/dark theme, and writes self-contained `midsem/index.html`, `after-midsem/index.html`, `quiz1/index.html`, `remember/index.html`, `quiz2/index.html` and `endsem/index.html`. The End-sem sheet is also written to the root `index.html`, which sends an old link to a Mid-sem anchor (such as `/#moments`) on to `midsem/`. `{{ROOT}}` in a part becomes the path back to the site root, and `<!--include:shared/…-->` pulls in a shared part. `<!--pick:file#id1,id2-->` copies the elements with those ids from another part, which is how the Quiz 2 and End-sem sheets reuse the Memory sheet's proofs and flashcards. The page switcher in the sidebar and the phone menu comes from `shared/pages.html`, `shared/nav-style.html` and `shared/nav-script.html`. The folders each carry their own copy of the head (CSS) and foot (scripts). `snap.mjs` takes screenshots of the figures (needs Chrome) for checking.

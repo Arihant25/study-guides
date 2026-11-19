@@ -15,7 +15,7 @@
 </div>
 
 <div class="card watch"><span class="tag">Notation in this deck</span>
-<p>These notes (by Subrata Ghosh, ISI Kolkata) write the degree as a capital \(K\), the infected fraction as \(\rho\), and the infection rate per link as \(\beta\). The recovery rate is set to 1, which only fixes the unit of time. To compare with the <a href="{{ROOT}}#epi">Mid-sem guide §11</a>, where recovery was \(\gamma\), read \(\beta\) here as \(\beta/\gamma\) there. The \(\rho\) here is not the branching number of <a href="#sfpath">§23</a>.</p>
+<p>These notes (by Subrata Ghosh, ISI Kolkata) write the degree as a capital \(K\), the infected fraction as \(\rho\), and the infection rate per link as \(\beta\). The recovery rate is set to 1, which only fixes the unit of time. To compare with the <a href="{{ROOT}}midsem/#epi">Mid-sem guide §11</a>, where recovery was \(\gamma\), read \(\beta\) here as \(\beta/\gamma\) there. The \(\rho\) here is not the branching number of <a href="#sfpath">§23</a>.</p>
 </div>
 
 <h3>Step 1 · the mean-field approach (MF)</h3>
@@ -37,7 +37,7 @@
 <div class="eq">\[\rho(t) = \sum_K P(K)\,\rho_K(t),\]</div>
 <p>and each degree class has its own equation:</p>
 <div class="eq boxed">\[\frac{d\rho_K}{dt} = \underbrace{-\rho_K}_{\text{recovery}} + \underbrace{\beta K\,(1 - \rho_K)\,\Theta}_{\text{new infections through } K \text{ links}},\qquad\Theta(t) = \frac{\sum_K P(K)\,K\,\rho_K(t)}{\langle K\rangle}\]</div>
-<p class="sym">\(\Theta\) is the probability that a link points to an infected node. It is not simply \(\rho\). Following a link leads to a node of degree \(K\) with the degree-biased probability \(KP(K)/\langle K\rangle\) (the \(q_k\) of the friendship paradox, <a href="{{ROOT}}#knn">Mid-sem guide §7</a>), and that node is infected with probability \(\rho_K\). This formula for \(\Theta\) holds for uncorrelated networks, the neutral ones of <a href="#assort">§24</a>.</p>
+<p class="sym">\(\Theta\) is the probability that a link points to an infected node. It is not simply \(\rho\). Following a link leads to a node of degree \(K\) with the degree-biased probability \(KP(K)/\langle K\rangle\) (the \(q_k\) of the friendship paradox, <a href="{{ROOT}}midsem/#knn">Mid-sem guide §7</a>), and that node is infected with probability \(\rho_K\). This formula for \(\Theta\) holds for uncorrelated networks, the neutral ones of <a href="#assort">§24</a>.</p>
 <p>A susceptible node of degree \(K\) has \(K\) links, each pointing to an infected node with probability \(\Theta\), so it is infected at rate \(\beta K\Theta\). Nodes with many links are infected faster.</p>
 
 <div class="card exam"><span class="tag">Derivation to learn · the HMF self-consistency equation</span>
@@ -149,7 +149,7 @@
 <div class="eq">\[\frac{d\rho_i}{dt} = -\rho_i + \beta\,(1 - \rho_i)\sum_{j=1}^NA_{ij}\,\rho_j,\qquad\rho(t) = \frac1N\sum_{i=1}^N\rho_i(t).\]</div>
 <p>Linearise around \(\rho_i\to0\) (drop the \(\rho_i\rho_j\) terms):</p>
 <div class="eq boxed">\[\frac{d\boldsymbol\rho}{dt} = (-I + \beta A)\,\boldsymbol\rho\quad\Longrightarrow\quad\beta_c^{\text{QMF}} = \frac{1}{\Lambda_A}\]</div>
-<p class="sym">\(\Lambda_A\) is the largest eigenvalue of \(A\). The matrix \(-I + \beta A\) has eigenvalues \(-1 + \beta\Lambda\), and the outbreak grows when the largest of them is positive, \(\beta\Lambda_A>1\). This is the calculation of the <a href="{{ROOT}}#netdyn">Mid-sem guide §13</a>, where the largest eigenvalue was called \(\kappa_1\).</p>
+<p class="sym">\(\Lambda_A\) is the largest eigenvalue of \(A\). The matrix \(-I + \beta A\) has eigenvalues \(-1 + \beta\Lambda\), and the outbreak grows when the largest of them is positive, \(\beta\Lambda_A>1\). This is the calculation of the <a href="{{ROOT}}midsem/#netdyn">Mid-sem guide §13</a>, where the largest eigenvalue was called \(\kappa_1\).</p>
 <p>For power-law degree distributions \(P(K)\sim K^{-\gamma}\):</p>
 <ul>
 <li>\(\gamma<2.5\): \(\beta_c^{\text{QMF}}\propto\dfrac{\langle K\rangle}{\langle K^2\rangle}\). The hubs act together, and QMF agrees with HMF.</li>

@@ -26,7 +26,7 @@
 <p class="idea"><strong>The idea in plain words.</strong> Everything goes through the hub: the hub is 1 step from everyone and two outer nodes are 2 steps apart. Count the pairs of each kind and average.</p>
 <h4>Steps</h4>
 <ol class="steps"><li>Pairs: \(5\times4/2 = 10\).</li><li>Hub–leaf: 4 pairs at distance 1. Leaf–leaf: \(4\times3/2 = 6\) pairs at distance 2.</li><li>\(\langle l\rangle = (4\times1 + 6\times2)/10 = 1.6\) (formula \(2(N-1)/N = 8/5\)).</li></ol>
-<h4>Final answer</h4><p>Average path length 1.6, diameter 2. (Derivation for any \(N\): <a href="../#simple">Mid-sem guide §3</a>.)</p>
+<h4>Final answer</h4><p>Average path length 1.6, diameter 2. (Derivation for any \(N\): <a href="../midsem/#simple">Mid-sem guide §3</a>.)</p>
 </div></details>
 
 <details class="q"><summary><span class="qt pyq">Q3 · 2</span><span>For an all-to-all connected network (binary, undirected, no self-loops) with N nodes, which are true? (a) symmetric (b) diameter N (c) average path length 1 (d) average degree N − 1. One-line reason for each.</span><span class="chev">›</span></summary>
@@ -108,8 +108,8 @@
 <details class="q"><summary><span class="qt pyq">Q10–Q17</span><span>Components and Laplacian nullity, SIR, predator–prey</span><span class="chev">›</span></summary>
 <div class="ans">
 <ul>
-<li><strong>Q10–Q12.</strong> Components = Laplacian nullity. As printed the matrix gives one connected graph (1 component, nullity 1); the key says 3 components {A,B,C}, {D}, {E}, nullity 3. Full working in <a href="../#pyq">Mid-sem guide §14</a>.</li>
-<li><strong>Q13–Q15.</strong> SIR: constant infectious period; susceptibles decrease; the rates of change of s, i, r add to zero (<a href="../#epi">Mid-sem guide §11</a>).</li>
+<li><strong>Q10–Q12.</strong> Components = Laplacian nullity. As printed the matrix gives one connected graph (1 component, nullity 1); the key says 3 components {A,B,C}, {D}, {E}, nullity 3. Full working in <a href="../midsem/#pyq">Mid-sem guide §14</a>.</li>
+<li><strong>Q13–Q15.</strong> SIR: constant infectious period; susceptibles decrease; the rates of change of s, i, r add to zero (<a href="../midsem/#epi">Mid-sem guide §11</a>).</li>
 <li><strong>Q16.</strong> Predator–prey starting with prey above capacity: it oscillates between high and low levels (<a href="../after-midsem/#lv">After mid-sem guide §7</a>).</li>
 <li><strong>Q17.</strong> Higher predation lowers the predators' steady level; a higher prey birth rate raises it. (The key also marked "a competing species has no impact on stability", which is doubtful.)</li>
 </ul>

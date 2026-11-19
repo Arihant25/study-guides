@@ -92,7 +92,7 @@
 <p class="small"><a href="{{ROOT}}quiz1/#numeric">Full proof: Quiz 1 guide §10</a></p>
 </div>
 
-<div class="grouphead"><h3 id="p2">Page 2 · Mid-sem topics</h3><a href="{{ROOT}}">Mid-sem guide →</a></div>
+<div class="grouphead"><h3 id="p2">Page 2 · Mid-sem topics</h3><a href="{{ROOT}}midsem/">Mid-sem guide →</a></div>
 
 <div class="pf" data-pg="2">
 <h4>For \(P(k) = Ck^{-\gamma}\), find \(C\), and say when it is finite.</h4>
@@ -103,7 +103,7 @@
 <li>\(C\,\frac{k_{\min}^{1-\gamma}}{\gamma-1} = 1\)<span class="why">\(k^{1-\gamma}\to0\) at infinity only if \(\gamma>1\)</span></li>
 <li>\(C = (\gamma-1)k_{\min}^{\gamma-1}\), finite only for \(\gamma>1\)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#moments">Full proof: Mid-sem guide §1</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#moments">Full proof: Mid-sem guide §1</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -117,7 +117,7 @@
 <li>\(\gamma>3\): \(\langle k^2\rangle = \frac{\gamma-1}{\gamma-3}k_{\min}^2\)</li>
 <li>Real networks have \(2<\gamma<3\): finite ⟨k⟩, infinite ⟨k²⟩</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#moments">Full proof: Mid-sem guide §1</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#moments">Full proof: Mid-sem guide §1</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -130,7 +130,7 @@
 <li>Log bins grow by a fixed factor (1, 2, 4, 8, …), so wide tail bins collect enough nodes</li>
 <li>Divide each count by \(N\times\) bin width, and plot at the bin centre</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#binning">Full answer: Mid-sem guide §2</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#binning">Full answer: Mid-sem guide §2</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -143,7 +143,7 @@
 <li>\(\langle l\rangle = \frac{(N-1)^2}{N(N-1)/2} = \frac{2(N-1)}{N}\to2\)<span class="why">divide by the number of pairs</span></li>
 <li>\(C_{\text{hub}} = 0\), \(C_{\text{leaf}} = 0\), so \(\langle C\rangle = 0\)<span class="why">no two leaves linked, and a leaf has one neighbour. It's a tree.</span></li>
 </ul>
-<p class="small"><a href="{{ROOT}}#simple">Full proof: Mid-sem guide §3</a>. The 2026 key gave 0 marks for the formula without this.</p>
+<p class="small"><a href="{{ROOT}}midsem/#simple">Full proof: Mid-sem guide §3</a>. The 2026 key gave 0 marks for the formula without this.</p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -155,7 +155,7 @@
 <li>\(= \frac{N(N-1)(N+1)}{6}\)</li>
 <li>\(\langle l\rangle = \frac{N(N-1)(N+1)/6}{N(N-1)/2} = \frac{N+1}{3}\)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#simple">Full proof: Mid-sem guide §3</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#simple">Full proof: Mid-sem guide §3</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -167,7 +167,7 @@
 <li>Every node looks the same, so \(\langle l\rangle\approx N/4\)</li>
 <li>Degree \(k\): each step covers \(k/2\) places, so \(\langle l\rangle\approx\frac{N/4}{k/2} = \frac{N}{2k}\)<span class="why">\(k = 2\) gives back \(N/4\)</span></li>
 </ul>
-<p class="small"><a href="{{ROOT}}#simple">Full proof: Mid-sem guide §3</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#simple">Full proof: Mid-sem guide §3</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -181,7 +181,7 @@
 <li>\(P(k) = e^{-\langle k\rangle}\frac{\langle k\rangle^k}{k!}\)<span class="why">multiply. \((N-1)^k\) cancels.</span></li>
 <li>⟨k⟩ \(= p(N-1)\), variance \(=\) ⟨k⟩, so \(\langle k^2\rangle = \langle k\rangle + \langle k\rangle^2\)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#er">Full proof: Mid-sem guide §4</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#er">Full proof: Mid-sem guide §4</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -194,7 +194,7 @@
 <li>\(u = e^{-\langle k\rangle(1-u)}\)<span class="why">\((1 - x/n)^n\to e^{-x}\)</span></li>
 <li>\(S = 1 - e^{-\langle k\rangle S}\)<span class="why">put \(u = 1 - S\)</span></li>
 </ul>
-<p class="small"><a href="{{ROOT}}#gcc">Full proof: Mid-sem guide §5</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#gcc">Full proof: Mid-sem guide §5</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -207,7 +207,7 @@
 <li>⟨k⟩ > 1: curve starts above the line but is below it at \(S = 1\), so they cross once in between<span class="why">\(1 - e^{-\langle k\rangle} < 1\)</span></li>
 <li>Near threshold: \(S\approx\langle k\rangle S - \frac{\langle k\rangle^2S^2}{2}\), so \(S\approx\frac{2(\langle k\rangle-1)}{\langle k\rangle^2}\sim(\langle k\rangle-1)^1\), \(\beta = 1\)<span class="why">expand \(e^{-x}\) to \(x^2\), divide by \(S\)</span></li>
 </ul>
-<p class="small"><a href="{{ROOT}}#gcc">Full proof: Mid-sem guide §5</a>. The key wanted the case argument, not only the tangency condition.</p>
+<p class="small"><a href="{{ROOT}}midsem/#gcc">Full proof: Mid-sem guide §5</a>. The key wanted the case argument, not only the tangency condition.</p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -219,7 +219,7 @@
 <li>\(\ln N\approx d\ln\langle k\rangle\)<span class="why">take logs</span></li>
 <li>\(\langle l\rangle\approx d\approx\frac{\ln N}{\ln\langle k\rangle}\), which grows slowly (concave in \(N\))</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#erlc">Full proof: Mid-sem guide §6</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#erlc">Full proof: Mid-sem guide §6</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -232,7 +232,7 @@
 <li>\(\bar C = p\approx\langle k\rangle/N\)<span class="why">\(\langle k\rangle\approx Np\)</span></li>
 <li>So \(\bar C\to0\) like \(1/N\) (slope −1 on log-log), but real networks keep \(\bar C\) high whatever \(N\)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#erlc">Full proof: Mid-sem guide §6</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#erlc">Full proof: Mid-sem guide §6</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -246,7 +246,7 @@
 <li>ER: \(\operatorname{Var} = \langle k\rangle\), so \(\langle k_{nn}\rangle = \langle k\rangle + 1\)</li>
 </ul>
 <p>The same ratio \(\operatorname{Var}(k)/\langle k\rangle\) tests for ER. About 1 means Poisson (ER). Much bigger than 1 means hubs, so a power law (scale-free).</p>
-<p class="small"><a href="{{ROOT}}#knn">Full proof: Mid-sem guide §7</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#knn">Full proof: Mid-sem guide §7</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -258,7 +258,7 @@
 <li>\(\varepsilon(t) = \varepsilon_0e^{f'(x^*)t}\)</li>
 <li>Shrinks if \(f'(x^*)<0\) (stable), grows if \(f'(x^*)>0\) (unstable)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#fixed">Full proof: Mid-sem guide §8</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#fixed">Full proof: Mid-sem guide §8</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -271,7 +271,7 @@
 <li>They swap stability at \(r = 0\): transcritical bifurcation</li>
 </ul>
 <p>Same recipe for the others. \(\dot x = 1 + rx + x^2\) has \(x^* = \frac{-r\pm\sqrt{r^2-4}}{2}\), real only for \(|r|\ge2\), with \(f' = \pm\sqrt{r^2-4}\). So a stable and an unstable point appear together at \(r = \pm2\): two saddle-node bifurcations.</p>
-<p class="small"><a href="{{ROOT}}#bif">Full analysis: Mid-sem guide §9</a> and the 2024 mid-sem in §14</p>
+<p class="small"><a href="{{ROOT}}midsem/#bif">Full analysis: Mid-sem guide §9</a> and the 2024 mid-sem in §14</p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -285,7 +285,7 @@
 <li>\(t\to\infty\): \(I^* = 1 - \gamma/\beta\) when \(\beta>\gamma\)</li>
 <li>\(\beta<\gamma\): \(f'(0) = \beta - \gamma < 0\), so \(I = 0\) is stable and the disease dies out</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#epi">Full proof: Mid-sem guide §11</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#epi">Full proof: Mid-sem guide §11</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -299,7 +299,7 @@
 <li>\(i^*>0\) needs \(\lambda\langle k\rangle>1\), so \(\lambda_c = 1/\langle k\rangle\)<span class="why">a fraction can't be negative</span></li>
 <li>More contacts means a lower threshold. \(R_0 = \lambda\langle k\rangle\) is how many each case infects.</li>
 </ul>
-<p class="small">This was 2026 mid-sem Q10. <a href="{{ROOT}}#pyq">Worked answer: Mid-sem guide §14</a></p>
+<p class="small">This was 2026 mid-sem Q10. <a href="{{ROOT}}midsem/#pyq">Worked answer: Mid-sem guide §14</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -312,7 +312,7 @@
 <li>\(\lambda = 0\) needs \(x_i = x_j\) on every link, so \(\mathbf x\) is constant on each component</li>
 <li>One such vector per component, so the zero count = the number of components</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#lap">Full proof: Mid-sem guide §12</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#lap">Full proof: Mid-sem guide §12</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -325,7 +325,7 @@
 <li>\(\lambda_1 = 0\) part stays. All others decay (connected network).</li>
 <li>That part is the constant vector, so every node ends at the average. Speed set by \(\lambda_2\).</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#netdyn">Full proof: Mid-sem guide §13</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#netdyn">Full proof: Mid-sem guide §13</a></p>
 </div>
 
 <div class="pf" data-pg="2">
@@ -338,7 +338,7 @@
 <li>So \(\kappa_1\) sets the speed and \(\mathbf v_1\) says which nodes get hit first</li>
 <li>No spread if \(\beta\kappa_1 - \gamma<0\), that is \(\beta/\gamma<1/\kappa_1\)</li>
 </ul>
-<p class="small"><a href="{{ROOT}}#netdyn">Full proof: Mid-sem guide §13</a></p>
+<p class="small"><a href="{{ROOT}}midsem/#netdyn">Full proof: Mid-sem guide §13</a></p>
 </div>
 
 <div class="grouphead"><h3 id="p3">Page 3 · After mid-sem</h3><a href="{{ROOT}}after-midsem/">After mid-sem guide →</a></div>
@@ -598,12 +598,12 @@
 <h4>Barabási–Albert model: show \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) and solve it.</h4>
 <p class="idea">Each new node brings \(m\) links, and each picks node \(i\) with probability \(k_i\) over the total degree. The total degree is \(2mt\). Separate and integrate from \(k_i(t_i) = m\).</p>
 <ul class="chain">
-<li>Growth: one node with \(m\) links per step. Preferential attachment: \(\Pi(k_i) = k_i/\sum_jk_j\)</li>
+<li>Growth adds one node with \(m\) links per step, and preferential attachment gives \(\Pi(k_i) = k_i/\sum_jk_j\)</li>
 <li>\(\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{mk_i}{\sum_{j=1}^{N-1}k_j}\)<span class="why">\(m\) chances per step, \(k_i\) treated as smooth</span></li>
-<li>\(\sum_{j=1}^{N-1}k_j = 2mt - m\)<span class="why">\(mt\) links, each adds 2; leave out the new node's \(m\)</span></li>
+<li>\(\sum_{j=1}^{N-1}k_j = 2mt - m\)<span class="why">\(mt\) links each add 2, minus the new node's \(m\)</span></li>
 <li>\(\frac{dk_i}{dt} = \frac{k_i}{2t - 1}\approx\frac{k_i}{2t}\)</li>
 <li>\(\frac{dk_i}{k_i} = \frac12\frac{dt}{t}\), so \(\ln\frac{k_i}{m} = \frac12\ln\frac{t}{t_i}\)<span class="why">node \(i\) joins at \(t_i\) with \(m\) links</span></li>
-<li>\(k_i(t) = m\,(t/t_i)^{1/2}\), and \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_it}}\)<span class="why">older nodes gain faster; everyone slows down</span></li>
+<li>\(k_i(t) = m\,(t/t_i)^{1/2}\), and \(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_it}}\)<span class="why">older nodes gain faster, and everyone slows down</span></li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#badeg">Full proof: After mid-sem guide §20</a></p>
 </div>
@@ -615,7 +615,7 @@
 <li>\(k_i = m(t/t_i)^{1/2}\;\Rightarrow\;t_i = m^2t/k_i^2\)</li>
 <li>\(P(k_i<k) = P\big(t_i>m^2t/k^2\big)\)<span class="why">a larger degree means an earlier joining time</span></li>
 <li>\(P(t_i>T) = 1 - T/t\)<span class="why">one node per step, so \(t_i\) is uniform on \(1\dots t\)</span></li>
-<li>\(P(k_i<k) = 1 - m^2/k^2\)<span class="why">\(t\) cancels: the distribution doesn't change as the network grows</span></li>
+<li>\(P(k_i<k) = 1 - m^2/k^2\)<span class="why">\(t\) cancels, so the distribution doesn't change as the network grows</span></li>
 <li>\(P(k) = \frac{d}{dk}P(k_i<k) = 2m^2k^{-3}\), so \(\gamma = 3\) for every \(m\)</li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#bapk">Full proof: After mid-sem guide §21</a></p>
@@ -623,14 +623,14 @@
 
 <div class="pf" data-pg="3" id="pf-ba-master">
 <h4>Barabási–Albert model: write the master (rate) equation and solve it for \(P(k)\).</h4>
-<p class="idea">Count degree-\(k\) nodes before and after one step: gained from degree \(k-1\), lost to \(k+1\). At \(k = m\) the new node itself is the gain. Then assume a steady state and climb up from \(m\).</p>
+<p class="idea">Count the degree-\(k\) nodes before and after one step. They are gained from degree \(k-1\) and lost to degree \(k+1\), except at \(k = m\), where the new node itself is the gain. Then assume a steady state and climb up from \(m\).</p>
 <ul class="chain">
-<li>\(\Pi(k) = \frac{k}{2mt}\); links landing on degree-\(k\) nodes per step \(= \frac{k}{2mt}\cdot NP(k,t)\cdot m = \frac k2P(k,t)\)<span class="why">\(N = t\)</span></li>
+<li>\(\Pi(k) = \frac{k}{2mt}\), so the links landing on degree-\(k\) nodes in one step number \(\frac{k}{2mt}\cdot NP(k,t)\cdot m = \frac k2P(k,t)\)<span class="why">\(N = t\)</span></li>
 <li>\((N+1)P(k,t+1) = NP(k,t) + \frac{k-1}2P(k-1,t) - \frac k2P(k,t)\) for \(k>m\)</li>
 <li>\((N+1)P(m,t+1) = NP(m,t) + 1 - \frac m2P(m,t)\)<span class="why">the new node arrives with degree \(m\)</span></li>
-<li>Steady state: left side minus \(NP\) is \(P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\), \(P(m) = \frac2{m+2}\)</li>
+<li>In the steady state the left side minus \(NP\) is \(P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\) and \(P(m) = \frac2{m+2}\)</li>
 <li>\(P(m+1) = \frac{2m}{(m+2)(m+3)}\), \(P(m+2) = \frac{2m(m+1)}{(m+2)(m+3)(m+4)}\), …</li>
-<li>\(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\sim2m^2k^{-3}\)<span class="why">check: \(k = m\) gives \(\frac2{m+2}\)</span></li>
+<li>\(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\sim2m^2k^{-3}\)<span class="why">as a check, \(k = m\) gives \(\frac2{m+2}\)</span></li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#bapk">Full proof: After mid-sem guide §21</a></p>
 </div>
@@ -643,8 +643,8 @@
 <li>\(\frac{dk_i}{dt} = m\,\Pi = \frac mt\)<span class="why">does not depend on \(k_i\)</span></li>
 <li>\(k_i(t) = m + m\ln\frac{t}{t_i} = m\ln\Big(\frac{e\,t}{t_i}\Big)\)<span class="why">integrate from \(k_i(t_i) = m\)</span></li>
 <li>\(k_i<k\iff t_i>t\,e^{1 - k/m}\)</li>
-<li>\(P(k_i<k) = 1 - e^{1 - k/m}\)<span class="why">\(t_i\) uniform: \(P(t_i>T) = 1 - T/t\)</span></li>
-<li>\(P(k) = \frac{e}{m}\,e^{-k/m}\) for \(k\ge m\)<span class="why">differentiate; no hubs</span></li>
+<li>\(P(k_i<k) = 1 - e^{1 - k/m}\)<span class="why">\(t_i\) is uniform, so \(P(t_i>T) = 1 - T/t\)</span></li>
+<li>\(P(k) = \frac{e}{m}\,e^{-k/m}\) for \(k\ge m\)<span class="why">differentiate, and there are no hubs</span></li>
 </ul>
 <p class="small"><a href="{{ROOT}}endsem/#nopa">Explained: End-sem sheet</a></p>
 </div>
@@ -655,35 +655,35 @@
 <ul class="chain">
 <li>Each step adds one link, so \(\sum_jk_j = 2t\)</li>
 <li>\(\frac{dk_i}{dt} = \frac1N + \frac{k_i}{2t}\)<span class="why">chosen as the random end, or picked by \(\Pi(k_i) = k_i/2t\)</span></li>
-<li>Try \(k_i = at\): \(a = \frac1N + \frac a2\), so \(a = \frac2N\)</li>
+<li>Trying \(k_i = at\) gives \(a = \frac1N + \frac a2\), so \(a = \frac2N\)</li>
 <li>\(k_i(t) = \frac{2t}{N} + C_i\sqrt t\)<span class="why">\(\sqrt t\) solves the equation without the \(\frac1N\)</span></li>
-<li>For large \(t\) the \(\frac{2t}N\) part wins: all degrees become about equal, the distribution is a narrow peak, not a power law</li>
+<li>For large \(t\) the \(\frac{2t}N\) part wins, so all degrees become about equal and the distribution is a narrow peak instead of a power law</li>
 <li>Complete graph after about \(N^2/2\) steps<span class="why">\(N(N-1)/2\) possible links</span></li>
 </ul>
 <p class="small"><a href="{{ROOT}}endsem/#nogrowth">Explained: End-sem sheet</a></p>
 </div>
 
 <div class="pf" data-pg="3" id="pf-nlpa">
-<h4>Nonlinear preferential attachment \(\Pi(k_i) = k_i^\alpha/\sum_jk_j^\alpha\): what happens for \(\alpha<1\), \(\alpha = 1\), \(\alpha>1\)?</h4>
+<h4>Nonlinear preferential attachment \(\Pi(k_i) = k_i^\alpha/\sum_jk_j^\alpha\). How do the hubs change with \(\alpha\)?</h4>
 <p class="idea">For \(\alpha<1\) the sum in the bottom grows like \(t\), as in Model A, so hubs grow only like a power of \(\ln t\). For \(\alpha>1\) the biggest node dominates the sum and takes almost every new link.</p>
 <ul class="chain">
-<li>\(\alpha = 0\): Model A, exponential. \(\alpha = 1\): BA, \(P(k)\sim k^{-3}\), \(k_{\max}\sim t^{1/2}\)</li>
-<li>\(\alpha<1\): \(\sum_jk_j^\alpha\approx\nu t\), \(\nu = \langle k^\alpha\rangle\) finite<span class="why">degrees stay small, \(N\approx t\)</span></li>
+<li>\(\alpha = 0\) gives Model A (exponential), and \(\alpha = 1\) gives BA, with \(P(k)\sim k^{-3}\) and \(k_{\max}\sim t^{1/2}\)</li>
+<li>For \(\alpha<1\), \(\sum_jk_j^\alpha\approx\nu t\) with \(\nu = \langle k^\alpha\rangle\) finite<span class="why">degrees stay small, \(N\approx t\)</span></li>
 <li>\(\frac{dk_i}{dt} = \frac{mk_i^\alpha}{\nu t}\;\Rightarrow\;k_i^{1-\alpha} - m^{1-\alpha} = \frac{(1-\alpha)m}{\nu}\ln\frac t{t_i}\)</li>
 <li>\(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\), \(P(k)\) a stretched exponential, roughly \(e^{-ck^{1-\alpha}}\)<span class="why">oldest node, \(t_i = 1\)</span></li>
-<li>\(\alpha>1\): if one node has \(k_1\propto t\), then \(k_1^\alpha\gg t\ge\) all the rest, so \(\Pi(1)\to1\)<span class="why">self-consistent</span></li>
-<li>Winner takes all: one hub holds a finite fraction of the links, \(k_{\max}\sim t\); the others stay small</li>
+<li>For \(\alpha>1\), if one node has \(k_1\propto t\), then \(k_1^\alpha\gg t\ge\) all the rest, so \(\Pi(1)\to1\)<span class="why">self-consistent</span></li>
+<li>Winner takes all. One hub holds a finite fraction of the links (\(k_{\max}\sim t\)), while the others stay small</li>
 </ul>
 <p class="small"><a href="{{ROOT}}endsem/#nlpa">Explained: End-sem sheet</a></p>
 </div>
 
 <div class="pf" data-pg="3" id="pf-ring-c">
 <h4>Ring lattice (\(k\) neighbours on each side): show \(C(0) = \frac{3(k-1)}{2(2k-1)}\).</h4>
-<p class="idea">Count pairs of neighbours, then count the ones that are linked: positions at most \(k\) apart. Same side always; across \(i\) when the two offsets add to at most \(k\).</p>
+<p class="idea">Count the pairs of neighbours, then the pairs that are linked, which are the ones at most \(k\) positions apart. Two neighbours on the same side always are, and two on opposite sides are when their offsets add up to at most \(k\).</p>
 <ul class="chain">
-<li>Possible pairs: \(\binom{2k}{2} = k(2k-1)\)<span class="why">\(2k\) neighbours, degree \(2k\)</span></li>
-<li>Same side: \(2\binom k2\)<span class="why">any two on one side are within \(k\)</span></li>
-<li>Across: offsets \(-a\), \(+b\) with \(a + b\le k\): \((k-1) + (k-2) + \dots + 0 = \binom k2\)</li>
+<li>There are \(\binom{2k}{2} = k(2k-1)\) possible pairs<span class="why">\(2k\) neighbours, degree \(2k\)</span></li>
+<li>Pairs on the same side number \(2\binom k2\)<span class="why">any two on one side are within \(k\)</span></li>
+<li>Pairs across \(i\), at offsets \(-a\) and \(+b\) with \(a + b\le k\), number \((k-1) + (k-2) + \dots + 0 = \binom k2\)</li>
 <li>Linked pairs \(= 3\binom k2 = \frac32k(k-1)\)</li>
 <li>\(C(0) = \frac{\frac32k(k-1)}{k(2k-1)} = \frac{3(k-1)}{2(2k-1)}\to\frac34\)<span class="why">does not depend on \(n\)</span></li>
 </ul>
@@ -695,9 +695,9 @@
 <p class="idea">Every step reaches exactly \(2k\) new nodes (flat shells), so distances run evenly from 1 to the farthest, and the average is half the farthest.</p>
 <ul class="chain">
 <li>Shell \(\ell\) holds \(2k\) nodes for every \(\ell\)<span class="why">\(k\) more on each side</span></li>
-<li>Farthest node: \(n/2\) positions away, \(k\) per step: \(D = \frac{n}{2k}\) steps</li>
+<li>The farthest node is \(n/2\) positions away and each step covers \(k\), so it takes \(D = \frac{n}{2k}\) steps</li>
 <li>\(\bar\ell(0) = \frac1n\sum_{\ell=1}^{D}2k\,\ell\approx\frac{2k}{n}\cdot\frac{D^2}2 = \frac n{4k}\)</li>
-<li>\(\bar\ell\propto n\): a large world</li>
+<li>\(\bar\ell\propto n\), so this is a large world</li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#lattice">Full proof: After mid-sem guide §25</a></p>
 </div>
@@ -708,7 +708,7 @@
 <ul class="chain">
 <li>\(p = \frac{2k}{n - 1}\approx\frac{2k}n\)<span class="why">mean degree \(p(n-1) = 2k\)</span></li>
 <li>\(C = \frac{p\binom{k_i}2}{\binom{k_i}2} = p = \frac{2k}n\to0\)</li>
-<li>Shells: \(1, 2k, (2k)^2, \dots\)<span class="why">no clustering, so the tree argument holds</span></li>
+<li>The shells hold \(1, 2k, (2k)^2, \dots\) nodes<span class="why">no clustering, so the tree argument holds</span></li>
 <li>\((2k)^{\bar\ell}\approx n\;\Rightarrow\;\bar\ell\approx\frac{\ln n}{\ln2k}\)</li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#lattice">Full proof: After mid-sem guide §25</a></p>
@@ -718,11 +718,11 @@
 <h4>Watts–Strogatz model: show \(C(p) = C(0)(1-p)^3\).</h4>
 <p class="idea">A triangle survives only if none of its three links was rewired. Each survives with probability \(1 - p\), independently.</p>
 <ul class="chain">
-<li>Rewire each of the \(nk\) lattice links with probability \(p\); the mean degree stays \(2k\)</li>
+<li>Rewire each of the \(nk\) lattice links with probability \(p\), and the mean degree stays \(2k\)</li>
 <li>P(triangle survives) \(= (1-p)^3\)<span class="why">three independent links</span></li>
-<li>New triangles from rewired links: probability \(O(1/n)\), neglected</li>
+<li>A rewired link makes a new triangle only with probability \(O(1/n)\), which is neglected</li>
 <li>\(C(p) = C(0)(1-p)^3 = \frac{3(k-1)}{2(2k-1)}(1-p)^3\approx C(0)(1 - 3p)\) for small \(p\)</li>
-<li>Path length: about \(nkp\) shortcuts, the first at \(p\approx\frac1{nk}\), so \(\bar\ell\) falls long before \(C\)</li>
+<li>There are about \(nkp\) shortcuts, the first at \(p\approx\frac1{nk}\), so \(\bar\ell\) falls long before \(C\)</li>
 </ul>
 <p class="small"><a href="{{ROOT}}after-midsem/#ws">Full proof: After mid-sem guide §26</a></p>
 </div>
