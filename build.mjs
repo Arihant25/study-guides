@@ -14,6 +14,7 @@ const PAGES = [
   { src: 'src-quiz1', out: 'quiz1/index.html', root: '../' },        // Quiz 1 guide
   { src: 'src-remember', out: 'remember/index.html', root: '../' },  // Memory sheet
   { src: 'src-quiz2', out: 'quiz2/index.html', root: '../' },        // Quiz 2 sheet
+  { src: 'src-endsem', out: 'endsem/index.html', root: '../' },      // End-sem sheet
 ];
 
 /* ---------------- plotting helpers (static SVG, colours from CSS tokens) ---------------- */
@@ -437,6 +438,13 @@ Object.assign(plots, {
       series: [{ pts: range(-4, 0, 80).map(e => [10 ** e, (1 - 10 ** e) ** 3]), c: '--muted-fg', dash: '5 4', w: 1.6 },
         { pts: data.map(d => [d[0], d[1]]), c: '--c1', w: 2.2, dots: true }, { pts: data.map(d => [d[0], d[2]]), c: '--c2', w: 2.2, dots: true }],
       texts: [{ x: 1.5e-3, y: 0.9, t: 'clustering C(p)/C(0)', c: '--c1' }, { x: 3e-3, y: 0.52, t: 'path length ℓ(p)/ℓ(0)', c: '--c2' }, { x: 0.02, y: 0.7, t: 'small world', c: '--muted-fg' }] });
+  },
+  'model-a': () => {
+    const m = 2, ks = range(2, 300, 400);
+    return plot({ label: 'Degree distribution with and without preferential attachment', x: [1, 1000], y: [1e-8, 1], logx: true, logy: true, w: 520, h: 300,
+      xticks: logTicks(0, 3), yticks: logTicks(-8, 0).filter((t, i) => i % 2 === 0), xlabel: 'degree k', ylabel: 'P(k)',
+      series: [{ pts: ks.map(k => [k, 2 * m * (m + 1) / (k * (k + 1) * (k + 2))]), c: '--c1', w: 2.6 }, { pts: ks.filter(k => k < 40).map(k => [k, Math.E / m * Math.exp(-k / m)]), c: '--c2', w: 2.6 }],
+      texts: [{ x: 25, y: 3e-3, t: 'BA, slope −3', c: '--c1' }, { x: 9, y: 3e-7, t: 'no preferential attachment', c: '--c2', a: 'end' }] });
   },
   'hmf-prevalence': () => {
     const m = 2, bs = range(0.005, 0.6, 240);

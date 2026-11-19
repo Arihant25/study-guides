@@ -37,11 +37,11 @@
 <p>Fixed points \(x^* = 0\) (stable for \(0 < r < 1\)) and \(x^* = 1 - 1/r\) (stable for \(1 < r < 3\)). At \(r = 3\) it loses stability to a 2-cycle.</p>
 </div></details>
 
-<details class="q"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q4 · 4 marks</span><span>Find the fixed points of the Lorenz oscillator \(\dot x = \sigma(y - x)\), \(\dot y = \rho x - y - xz\), \(\dot z = -\beta z + xy\). Construct the associated Jacobians. (Eigenvalue analysis is not required.)</span><span class="chev">›</span></summary>
+<details class="q" id="pyq-lorenz"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q4 · 4 marks</span><span>Find the fixed points of the Lorenz oscillator \(\dot x = \sigma(y - x)\), \(\dot y = \rho x - y - xz\), \(\dot z = -\beta z + xy\). Construct the associated Jacobians. (Eigenvalue analysis is not required.)</span><span class="chev">›</span></summary>
 <div class="ans">
 <p class="idea"><strong>The idea in plain words.</strong> Set all three rates to zero and solve one equation at a time: the first says \(y = x\), the third then gives \(z\) in terms of \(x\), and the middle one either forces \(x = 0\) or fixes \(z = \rho - 1\). Then the Jacobian is the table of partial derivatives, evaluated at each fixed point.</p>
 <h4>Formulas you need</h4>
-<ul><li>Fixed point: all rates zero. Jacobian \(J_{ij} = \partial f_i/\partial x_j\) (<a href="#jacobian">§5</a>, <a href="#lorenz">§14</a>).</li></ul>
+<ul><li>Fixed point: all rates zero. Jacobian \(J_{ij} = \partial f_i/\partial x_j\) (<a href="{{ROOT}}after-midsem/#jacobian">§5</a>, <a href="{{ROOT}}after-midsem/#lorenz">§14</a>).</li></ul>
 <h4>Step by step</h4>
 <ol class="steps">
 <li>\(\sigma(y - x) = 0\Rightarrow y = x\).</li>
@@ -56,11 +56,11 @@
 <p>\(P_0 = (0,0,0)\) and, for \(\rho > 1\), \(P_{1,2} = (\pm\sqrt{\beta(\rho-1)}, \pm\sqrt{\beta(\rho-1)}, \rho - 1)\), with the Jacobians above.</p>
 </div></details>
 
-<details class="q"><summary><span class="qt pyq">Mid-sem · Q1 · 3 + 4 marks</span><span>Two coupled phase oscillators: \(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\), \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\). (a) Calculate the critical coupling strength at which both oscillators follow the common frequency. (b) Calculate the common frequency. Can one obtain a common (and stable) frequency at \(k_1 = k_2 = k = 2\), \(\omega_1 = 2\), \(\omega_2 = 10\)?</span><span class="chev">›</span></summary>
+<details class="q" id="pyq-twoosc"><summary><span class="qt pyq">Mid-sem · Q1 · 3 + 4 marks</span><span>Two coupled phase oscillators: \(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\), \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\). (a) Calculate the critical coupling strength at which both oscillators follow the common frequency. (b) Calculate the common frequency. Can one obtain a common (and stable) frequency at \(k_1 = k_2 = k = 2\), \(\omega_1 = 2\), \(\omega_2 = 10\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <p class="idea"><strong>The idea in plain words.</strong> The oscillators share a frequency when the gap between their angles stops changing. The gap changes because of the difference in natural speeds, and the coupling pulls against it, but the pull is at most \(k_1 + k_2\) (a sine is never more than 1). So they can lock only if the coupling is at least as big as the speed difference.</p>
 <h4>Formulas you need</h4>
-<ul><li>\(\phi = \theta_2 - \theta_1\), \(\dot\phi = (\omega_2 - \omega_1) - (k_1 + k_2)\sin\phi\) (<a href="#twoosc">§15</a>).</li><li>\(|\sin\phi|\le1\).</li></ul>
+<ul><li>\(\phi = \theta_2 - \theta_1\), \(\dot\phi = (\omega_2 - \omega_1) - (k_1 + k_2)\sin\phi\) (<a href="{{ROOT}}after-midsem/#twoosc">§15</a>).</li><li>\(|\sin\phi|\le1\).</li></ul>
 <h4>Step by step</h4>
 <ol class="steps">
 <li>Subtract the equations to get \(\dot\phi\) above.</li>
@@ -90,11 +90,11 @@
 <p>(a) \(\dot r = \mu r - r^3\), \(\dot\theta = \omega\). (b) A stable limit cycle of radius \(\sqrt\mu\) exists when \(\mu > 0\). At \(\mu = 0\) the stable origin becomes unstable and the cycle is born: a supercritical Hopf bifurcation (the radial equation is a supercritical pitchfork).</p>
 </div></details>
 
-<details class="q"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q1 · 2 + 2 marks</span><span>Explain the basic ingredients required for generating a BA graph. Prove that the rate at which an existing node \(i\) acquires links, \(\frac{dk_i}{dt}\), as a result of new nodes connecting to it is proportional to \(\frac{k_i}{t}\), where \(k\) is the degree and \(t\) is time.</span><span class="chev">›</span></summary>
+<details class="q" id="pyq-ba"><summary><span class="qt pyq">Quiz 2 · Set 2 · Q1 · 2 + 2 marks</span><span>Explain the basic ingredients required for generating a BA graph. Prove that the rate at which an existing node \(i\) acquires links, \(\frac{dk_i}{dt}\), as a result of new nodes connecting to it is proportional to \(\frac{k_i}{t}\), where \(k\) is the degree and \(t\) is time.</span><span class="chev">›</span></summary>
 <div class="ans">
 <p class="idea"><strong>The idea in plain words.</strong> A BA network grows one node at a time, and each new node prefers to link to nodes that already have many links. A node's chance of getting each new link is its share of all the link ends in the network. That total grows in proportion to time, so the rate of gaining links is the node's degree divided by time.</p>
 <h4>Formulas you need</h4>
-<ul><li>\(\Pi(k_i) = \dfrac{k_i}{\sum_jk_j}\), and \(\sum_jk_j = 2\times\text{(number of links)}\) (<a href="#ba">§19</a>, <a href="#badeg">§20</a>).</li></ul>
+<ul><li>\(\Pi(k_i) = \dfrac{k_i}{\sum_jk_j}\), and \(\sum_jk_j = 2\times\text{(number of links)}\) (<a href="{{ROOT}}after-midsem/#ba">§19</a>, <a href="{{ROOT}}after-midsem/#badeg">§20</a>).</li></ul>
 <h4>Part 1 · the ingredients</h4>
 <ol class="steps">
 <li><strong>Growth.</strong> Start from \(m_0\) nodes. At each time step add one new node with \(m\le m_0\) links to nodes already present. The number of nodes keeps increasing, unlike in a random graph where \(N\) is fixed.</li>

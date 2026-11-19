@@ -1,0 +1,92 @@
+<aside class="toc" aria-label="Contents">
+  <div class="brand">DPCN study guide<small>End-sem sheet</small></div>
+  <!--include:shared/pages.html-->
+  <nav id="tocnav">
+    <a href="#syllabus">The syllabus</a>
+    <a href="#asked">What they've asked before</a>
+    <a href="#plan">How to use this page</a>
+    <a href="#formulas">Formulas to remember</a>
+    <div class="grp">The four topics</div>
+    <a href="#e-sync">1 · Phase synchronisation</a>
+    <a href="#e-lorenz">2 · The Lorenz system</a>
+    <a href="#e-ba">3 · Scale-free networks (BA)</a>
+    <a href="#nopa">3a · No preferential attachment</a>
+    <a href="#nogrowth">3b · No growth</a>
+    <a href="#nlpa">3c · Nonlinear preferential attachment</a>
+    <a href="#e-sw">4 · Small-world graphs</a>
+    <div class="grp">Practice</div>
+    <a href="#e-pyq">Past questions, worked</a>
+    <a href="#e-practice">Questions in the exam's style</a>
+    <a href="#cards">Flashcards</a>
+  </nav>
+</aside>
+<main>
+<header class="hero">
+  <div class="kicker">Dynamical Processes in Complex Networks · SC1.440 · End-sem</div>
+  <h1>DPCN Study Guide · End-sem Sheet</h1>
+  <p class="lead">Only what was written on the board for the end-sem: two coupled phase oscillators, the Lorenz system, the Barabási–Albert model and what happens when you take its ingredients away, and the small-world graph. Each topic has its formulas, a short proof of every result, and the past questions on it.</p>
+</header>
+<div class="tocwrap-mobile">
+  <details class="mtoc" id="mtoc"><summary><span class="here">End-sem sheet</span><span class="mbtn">Pages · Sections</span></summary>
+  <div class="mpanel">
+    <div class="mgrp">Pages</div>
+    <!--include:shared/pages.html-->
+    <div class="mgrp">Sections on this page</div>
+    <a href="#syllabus">The syllabus</a>
+    <a href="#asked">What they've asked before</a>
+    <a href="#plan">How to use this page</a>
+    <a href="#formulas">Formulas to remember</a>
+    <a href="#e-sync">1 · Phase synchronisation</a>
+    <a href="#e-lorenz">2 · The Lorenz system</a>
+    <a href="#e-ba">3 · Scale-free networks (BA)</a>
+    <a href="#nopa">3a · No preferential attachment</a>
+    <a href="#nogrowth">3b · No growth</a>
+    <a href="#nlpa">3c · Nonlinear preferential attachment</a>
+    <a href="#e-sw">4 · Small-world graphs</a>
+    <a href="#e-pyq">Past questions, worked</a>
+    <a href="#e-practice">Questions in the exam's style</a>
+    <a href="#cards">Flashcards</a>
+  </div>
+  </details>
+</div>
+
+<section>
+<h2 id="syllabus">The syllabus</h2>
+<p class="about">This is what was written on the board under "End Sem (17)", with where each item is on this page.</p>
+<table class="tbl">
+<tr><th>On the board</th><th>What it means</th><th>Here</th></tr>
+<tr><td>1. Phase synchronisation, \(\dot\theta_1 = f_1(\omega_1, \theta_1, \theta_2, k_1)\), \(\dot\theta_2 = f_2(\omega_2, \theta_1, \theta_2, k_2)\) (critical condition)</td><td>Two coupled phase oscillators, \(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\) and \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\). The critical condition is when they lock to a common frequency, and that frequency.</td><td><a href="#e-sync">Part 1</a></td></tr>
+<tr><td>Lorenz oscillator</td><td>Fixed points of the three Lorenz equations, their Jacobians, and when the origin is stable.</td><td><a href="#e-lorenz">Part 2</a></td></tr>
+<tr><td>2. Scale-free networks (BA): master equation, \(\frac{dk_i}{dt}\), \(P(k)\)</td><td>The Barabási–Albert model: its two ingredients, how one node's degree grows, the degree distribution by continuum theory and by the master (rate) equation.</td><td><a href="#e-ba">Part 3</a></td></tr>
+<tr><td>No growth · no preferential attachment · nonlinear preferential attachment, \(\Pi(k_i)\sim\frac{k_i^\alpha}{\sum_jk_j^\alpha}\)</td><td>Take one ingredient away at a time and see what is left, then change the attachment rule to a power \(\alpha\).</td><td><a href="#nopa">3a</a>, <a href="#nogrowth">3b</a>, <a href="#nlpa">3c</a></td></tr>
+<tr><td>Average clustering coefficient, path length · small-world graph, \(p = 0\), \(p = 1\), rewiring probability</td><td>The Watts–Strogatz model: \(C\) and \(\bar\ell\) of the ring lattice (\(p = 0\)) and of the random graph (\(p = 1\)), and \(C(p)\) in between.</td><td><a href="#e-sw">Part 4</a></td></tr>
+</table>
+<p class="small">"Lorenz oscillator" heads the left-hand list on the board, and an arrow joins that list to item 2, so the no-growth items belong to the BA model. Whether Lorenz itself is on the paper isn't fully clear from the photo. It is one short proof, so it is included.</p>
+<p class="small">Not on the board, so left out: power laws and random graphs from before the mid-sem, 2-D stability and limit cycles, maps, Kuramoto, May's criterion, the double pendulum, the largest hub, assortativity and epidemics on networks. All of them are on the <a href="{{ROOT}}remember/">Memory sheet</a> if you have time left over.</p>
+</section>
+
+<section>
+<h2 id="asked">What they've asked before</h2>
+<p class="about">Every past question on these topics. Three are full derivations; the worked answers are <a href="#e-pyq">further down</a>. No paper has asked about no growth, nonlinear attachment or the small-world graph yet, so <a href="#e-practice">practice questions</a> in the same style are given for those.</p>
+<table class="tbl">
+<tr><th>Paper</th><th>Question</th><th>Marks</th><th>Proof</th></tr>
+<tr><td>2024 mid-sem Q1</td><td>Two coupled phase oscillators: the critical coupling at which they share a frequency, the common frequency, and can they lock at \(k_1 = k_2 = 2\), \(\omega_1 = 2\), \(\omega_2 = 10\)? (No: \(8 > 4\).)</td><td>3 + 4</td><td><a href="#pf-twoosc">Two oscillators</a></td></tr>
+<tr><td>2024 Quiz 2, Set 2 Q4</td><td>Fixed points of the Lorenz oscillator and their Jacobians.</td><td>4</td><td><a href="#pf-lorenz">Lorenz</a></td></tr>
+<tr><td>2024 Quiz 2, Set 2 Q1</td><td>The ingredients of a BA graph, and prove that \(\frac{dk_i}{dt}\) is proportional to \(\frac{k_i}{t}\).</td><td>2 + 2</td><td><a href="#pf-ba-rate">BA rate</a></td></tr>
+<tr><td>2024 class quiz 2 (MCQ)</td><td>Node A has neighbours B, C, D, and B, C are not linked. The smallest possible local clustering of A?</td><td>1</td><td><a href="#e-pyq">Below</a></td></tr>
+</table>
+</section>
+
+<section>
+<h2 id="plan">How to use this page</h2>
+<p class="about">There are 12 proofs. Half of them (the BA family) share one method, so it is less than it looks.</p>
+<ol>
+<li><strong>Learn the formulas</strong> in the next section until you can write each one with its "where" line.</li>
+<li><strong>BA first</strong> (<a href="#e-ba">Part 3</a>): the rate \(\frac{dk_i}{dt}\), then \(P(k)\) by continuum theory. Models A and B and the nonlinear case are the same three steps with a different \(\Pi\): write \(\frac{dk_i}{dt} = m\Pi\), integrate from \(k_i(t_i) = m\), use uniform joining times.</li>
+<li><strong>Then the master equation</strong>. It is the longest proof, and the board names it, so write it out at least twice.</li>
+<li><strong>Small world</strong> (<a href="#e-sw">Part 4</a>): \(C\) and \(\bar\ell\) at \(p = 0\) and \(p = 1\), then \((1-p)^3\).</li>
+<li><strong>Synchronisation and Lorenz</strong> (<a href="#e-sync">Parts 1</a> and <a href="#e-lorenz">2</a>): you did these for Quiz 2, so one write-through each.</li>
+<li><strong>Last</strong>: the past questions with the page closed, then the flashcards.</li>
+</ol>
+<p>For every proof, learn the shaded one-line idea first, then the steps. The 2026 mid-sem gave 0 for a formula with no derivation, so always write the steps, even when you remember the answer.</p>
+</section>

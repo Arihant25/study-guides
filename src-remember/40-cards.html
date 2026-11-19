@@ -136,5 +136,20 @@
 <details class="q fc" data-pg="3" id="fc-pendulum"><summary><span class="qt">Page 3</span><span>Double pendulum with equal masses: the two normal-mode frequencies?</span><span class="chev">›</span></summary>
 <div class="ans"><p>\(\omega = \sqrt{g/L}\,\sqrt{2\pm\sqrt2}\).</p><p class="small"><a href="{{ROOT}}after-midsem/#pendulum">After mid-sem guide §18</a></p></div></details>
 
+<details class="q fc" data-pg="3" id="fc-ba"><summary><span class="qt">Page 3</span><span>The two ingredients of the Barabási–Albert model?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Growth: one new node with \(m\) links per step. Preferential attachment: it links to node \(i\) with probability \(\Pi(k_i) = k_i/\sum_jk_j\).</p><p class="small"><a href="{{ROOT}}after-midsem/#ba">After mid-sem guide §19</a></p></div></details>
+
+<details class="q fc" data-pg="3" id="fc-ba-k"><summary><span class="qt">Page 3</span><span>BA model: \(dk_i/dt\), \(k_i(t)\) and \(P(k)\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\frac{dk_i}{dt} = \frac{k_i}{2t}\), \(k_i(t) = m(t/t_i)^{1/2}\), \(P(k) = 2m^2k^{-3}\) (exactly \(\frac{2m(m+1)}{k(k+1)(k+2)}\)). \(\gamma = 3\) for every \(m\).</p><p class="small"><a href="{{ROOT}}after-midsem/#bapk">After mid-sem guide §21</a></p></div></details>
+
+<details class="q fc" data-pg="3" id="fc-ba-ab"><summary><span class="qt">Page 3</span><span>What do you get without preferential attachment (Model A)? Without growth (Model B)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Model A: \(k_i = m + m\ln(t/t_i)\) and an exponential \(P(k) = \frac em e^{-k/m}\), no hubs. Model B: \(k_i\approx2t/N\) for every node, a narrow peak, and a complete graph after about \(N^2/2\) steps. Both ingredients are needed for a power law.</p><p class="small"><a href="{{ROOT}}endsem/#nopa">End-sem sheet</a></p></div></details>
+
+<details class="q fc" data-pg="3" id="fc-nlpa"><summary><span class="qt">Page 3</span><span>Nonlinear preferential attachment \(\Pi\propto k^\alpha\): \(\alpha<1\), \(\alpha = 1\), \(\alpha>1\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\alpha<1\): stretched exponential, \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\). \(\alpha = 1\): BA, \(k^{-3}\), \(k_{\max}\sim t^{1/2}\). \(\alpha>1\): winner takes all, one hub with \(k_{\max}\sim t\).</p><p class="small"><a href="{{ROOT}}endsem/#nlpa">End-sem sheet</a></p></div></details>
+
+<details class="q fc" data-pg="3" id="fc-sw"><summary><span class="qt">Page 3</span><span>Watts–Strogatz: \(C\) and \(\bar\ell\) at \(p = 0\) and \(p = 1\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(p = 0\) (ring, \(k\) per side): \(C = \frac{3(k-1)}{2(2k-1)}\to\frac34\), \(\bar\ell\approx\frac n{4k}\). \(p = 1\) (random): \(C\approx\frac{2k}n\), \(\bar\ell\approx\frac{\ln n}{\ln2k}\). In between: \(C(p) = C(0)(1-p)^3\).</p><p class="small"><a href="{{ROOT}}after-midsem/#ws">After mid-sem guide §25–26</a></p></div></details>
+
 </div>
 </section>
