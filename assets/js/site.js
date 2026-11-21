@@ -21,7 +21,7 @@ const SITE_NAV = [
   { href: "lectures/16-diffusion-lms.html", short: "16", label: "Diffusion LMs", group: "lectures" },
   { href: "seminars/sian-shinjo-linear-rnns.html", short: "S1", label: "Linear RNNs", group: "seminars" },
   { href: "seminars/vishal-rao-data-creation.html", short: "S2", label: "Data Creation", group: "seminars" },
-  { href: "seminars/shruthi-m-efficient-deployment.html", short: "S3", label: "Efficient Deploy", group: "seminars" },
+  { href: "seminars/shruthi-m-efficient-deployment.html", short: "S3", label: "Efficient LMs", group: "seminars" },
   { href: "seminars/trisanu-bhar-ttt-learning.html", short: "S4", label: "TTT Learning", group: "seminars" },
   { href: "seminars/vansh-nawander-diffusion-lms.html", short: "S5", label: "Diffusion LMs", group: "seminars" },
   { href: "seminars/abdul-nalawala-reasoning.html", short: "S6", label: "Reasoning", group: "seminars" },
