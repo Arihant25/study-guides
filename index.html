@@ -43,7 +43,7 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
 a{color:var(--brand);text-decoration-thickness:1px;text-underline-offset:3px}
 code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.86em}
-.katex{font-size:1.06em}
+.katex{font-size:1.06em;text-transform:none;letter-spacing:normal}
 .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0;margin:.7em 0}
 
 .wrap{display:grid;grid-template-columns:minmax(0,1fr)}
@@ -117,8 +117,8 @@ details > .body{padding:2px 18px 16px;border-top:1px solid var(--border)}
 .steps > li::before{content:counter(s);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;background:var(--muted);border:1px solid var(--border-2);font-size:12px;font-weight:700;display:grid;place-items:center;font-family:"JetBrains Mono",monospace}
 
 .recipe{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
-.recipe span{background:var(--card);border:1px solid var(--border-2);border-radius:8px;padding:6px 10px;font-size:14px}
-.recipe i{color:var(--muted-fg);font-style:normal}
+.recipe > span{background:var(--card);border:1px solid var(--border-2);border-radius:8px;padding:6px 10px;font-size:14px}
+.recipe > i{color:var(--muted-fg);font-style:normal}
 
 .grid2{display:grid;gap:14px;grid-template-columns:1fr}
 @media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
@@ -182,9 +182,11 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
     <li><a href="#random">Random signals</a></li>
     <li><a href="#composite">Composite: UMP, Bayes, GLRT</a></li>
     <li><a href="#sprt">Sequential detection (SPRT)</a></li>
+    <li class="grp">Textbook</li>
+    <li><a href="#kay">Beyond the slides (Kay)</a></li>
     <li class="grp">Practice</li>
     <li><a href="#tut">Tutorial 1, solved</a></li>
-    <li><a href="#hw">Homework bank, solved</a></li>
+    <li><a href="#hw">Homework + Kay problems, solved</a></li>
     <li><a href="#cards">Flashcards</a></li>
     <li><a href="#sheet">Formula sheet</a></li>
   </ol>
@@ -203,11 +205,11 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
   <p class="lede">Lectures 1–11 (Arti D. Yardi), Tutorial 1 and the class notes, condensed into derivations you can rebuild, numbers you should know, and every classwork/homework problem solved.</p>
   <div class="meta">
     <span class="pill">End-sem <b>23 Nov 2026</b></span>
-    <span class="pill">Book: <b>Kay Vol. II</b> + Poor §III-D</span>
+    <span class="pill">Book: <b>Kay Vol. II</b> (Ch 2–7, 10 folded in) + Poor §III-D</span>
     <span class="pill">Expand all, then <b>Ctrl+P</b> for a printable copy</span>
   </div>
   <div class="mobile-nav">
-    <a href="#recipe">Recipe</a><a href="#bayes">Bayes</a><a href="#np">NP/ROC</a><a href="#known">Matched filter</a><a href="#mary">M-ary</a><a href="#random">Random</a><a href="#composite">GLRT</a><a href="#sprt">SPRT</a><a href="#tut">Tutorial</a><a href="#sheet">Formulas</a>
+    <a href="#recipe">Recipe</a><a href="#bayes">Bayes</a><a href="#np">NP/ROC</a><a href="#known">Matched filter</a><a href="#mary">M-ary</a><a href="#random">Random</a><a href="#composite">GLRT</a><a href="#sprt">SPRT</a><a href="#kay">Kay extras</a><a href="#tut">Tutorial</a><a href="#sheet">Formulas</a>
   </div>
 </header>
 
@@ -249,10 +251,10 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
     <span>find \(p(T;H_0),\ p(T;H_1)\)</span><i>→</i>
     <span>\(P_{FA},\ P_D,\ P_e\)</span>
   </div>
-  <div class="box key"><div class="t">Where the threshold γ comes from</div>
+  <div class="box key"><div class="t">Where the threshold comes from</div>
     <div class="tbl" style="margin:8px 0 0;box-shadow:none">
     <table>
-      <tr><th>Criterion</th><th>Threshold γ</th><th>Used in</th></tr>
+      <tr><th>Criterion</th><th>Threshold</th><th>Used in</th></tr>
       <tr><td>Min Bayes risk</td><td>\(\dfrac{(C_{10}-C_{00})P(H_0)}{(C_{01}-C_{11})P(H_1)}\)</td><td>decision-theoretic problems</td></tr>
       <tr><td>Min \(P_e\) (MAP)</td><td>\(P(H_0)/P(H_1)\)</td><td>digital comms</td></tr>
       <tr><td>ML (equal priors)</td><td>\(1\)</td><td>digital comms</td></tr>
@@ -676,9 +678,88 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
   <div class="box warn"><div class="t">Why not always use the SPRT?</div>N is unbounded (a single run can be long), you need exact knowledge of both \(p_0\) and \(p_1\), and the theory is thin once the data aren't iid. The SPRT is optimal: among all tests with errors ≤ (α, β), it minimises both \(E_0\{N\}\) and \(E_1\{N\}\) (Wald–Wolfowitz).</div>
 </section>
 
+<!-- ============ KAY EXTRAS ============ -->
+<section id="kay">
+  <h2><span class="n">13</span>Beyond the slides: Kay Vol. II</h2>
+  <p class="sec-sub">Results from the textbook (Kay, <i>Fundamentals of Statistical Signal Processing: Detection Theory</i>) that extend what the slides set up. Each one is tagged with the chapter it comes from. The lectures point to these sections, so they're fair game.</p>
+
+  <h3>Distribution zoo (Ch 2)</h3>
+  <div class="tbl"><table>
+    <tr><th>If…</th><th>then…</th><th>shows up in</th></tr>
+    <tr><td>\(\mathbf x\sim\mathcal N(\mathbf 0,C)\), N×1</td><td>\(\mathbf x^TC^{-1}\mathbf x\sim\chi^2_N\)</td><td>coloured-noise energy tests</td></tr>
+    <tr><td>\(\mathbf x\sim\mathcal N(\boldsymbol\mu,C)\)</td><td>\(\mathbf x^TC^{-1}\mathbf x\sim\chi'^2_N(\boldsymbol\mu^TC^{-1}\boldsymbol\mu)\)</td><td>GLRT under \(H_1\)</td></tr>
+    <tr><td>\(x_1,x_2\sim\mathcal N(0,\sigma^2)\) iid</td><td>\(\sqrt{x_1^2+x_2^2}\) is <b>Rayleigh</b>; \(x_1^2+x_2^2\) is exponential, mean \(2\sigma^2\)</td><td>unknown-phase sinusoid, fading</td></tr>
+    <tr><td>means \(\mu_1,\mu_2\) instead</td><td>\(\sqrt{x_1^2+x_2^2}\) is <b>Rician</b>; \((x_1^2+x_2^2)/\sigma^2\sim\chi'^2_2(\lambda)\)</td><td>\(P_D\) of the quadrature matched filter</td></tr>
+    <tr><td>\(\chi^2_{\nu_1}/\nu_1\) over independent \(\chi^2_{\nu_2}/\nu_2\)</td><td>\(F_{\nu_1,\nu_2}\) (→ \(\chi^2_{\nu_1}/\nu_1\) as \(\nu_2\to\infty\))</td><td>GLRT with unknown σ² (CFAR)</td></tr>
+  </table></div>
+
+  <h3>Exponential family → sufficient statistic for free (Prob 3.11)</h3>
+  <p>If \(p(x;\theta)=\exp[A(\theta)B(x)+C(x)+D(\theta)]\), then \(T(\mathbf x)=\sum_n B(x[n])\) is sufficient. Gaussian mean: \(B(x)=x\) → \(\sum x[n]\). Gaussian variance: \(B(x)=x^2\) → \(\sum x^2[n]\). Exponential: \(B(x)=x\). Rayleigh: \(B(x)=x^2\). This is a quick way to guess \(T\) before deriving the LRT.</p>
+
+  <h3>Linear model (Ch 4.6, 7.7)</h3>
+  <p>\(\mathbf x=H\boldsymbol\theta+\mathbf w\), with \(H\) an N×p known matrix and \(\mathbf w\sim\mathcal N(\mathbf 0,C)\). It covers DC levels, sinusoids with known frequency, polynomials and multipath taps.</p>
+  <div class="grid2">
+    <div class="card"><b>θ known</b> (\(H_0:\boldsymbol\theta=\mathbf 0\), \(H_1:\boldsymbol\theta=\boldsymbol\theta_1\)). This is a known signal \(\mathbf s=H\boldsymbol\theta_1\):
+      \[T=\mathbf x^TC^{-1}H\boldsymbol\theta_1,\quad d^2=\boldsymbol\theta_1^TH^TC^{-1}H\boldsymbol\theta_1.\]</div>
+    <div class="card"><b>θ unknown, WGN</b>: GLRT (Kay Thm 7.1, for \(A\boldsymbol\theta=\mathbf b\) vs \(\ne\); here \(A=I,\mathbf b=\mathbf 0\))
+      \[T=\frac{\hat{\boldsymbol\theta}_1^TH^TH\hat{\boldsymbol\theta}_1}{\sigma^2},\quad\hat{\boldsymbol\theta}_1=(H^TH)^{-1}H^T\mathbf x\]
+      \(T\sim\chi^2_p\) under \(H_0\), \(\chi'^2_p(\lambda)\) under \(H_1\), \(\lambda=\frac{\boldsymbol\theta_1^TH^TH\boldsymbol\theta_1}{\sigma^2}\). <b>Exact</b>, not asymptotic.</div>
+  </div>
+  <p class="muted">Sanity check: DC level is \(H=\mathbf 1\), p = 1, giving \(T=N\bar x^2/\sigma^2\sim\chi^2_1\). That's the slide's GLRT \(\bar x^2\) with an exact distribution. General test \(A\boldsymbol\theta=\mathbf b\): \(T=(A\hat{\boldsymbol\theta}_1-\mathbf b)^T[A(H^TH)^{-1}A^T]^{-1}(A\hat{\boldsymbol\theta}_1-\mathbf b)/\sigma^2\sim\chi^2_r\).</p>
+
+  <h3>Deterministic signals with unknown parameters (Ch 7)</h3>
+  <p>The more you don't know, the more you pay relative to the clairvoyant matched filter.</p>
+  <div class="tbl"><table>
+    <tr><th>Unknown</th><th>Detector (GLRT)</th><th>Performance</th></tr>
+    <tr><td>nothing</td><td>matched filter \(\mathbf x^T\mathbf s\)</td><td>\(P_D=Q(Q^{-1}(P_{FA})-\sqrt{\mathcal E/\sigma^2})\)</td></tr>
+    <tr><td>amplitude A (\(\mathbf s=A\mathbf s_0\))</td><td>\(\dfrac{(\mathbf x^T\mathbf s_0)^2}{\sigma^2\,\mathbf s_0^T\mathbf s_0}\), i.e. \(|\)MF output\(|\)</td><td>\(\chi^2_1\) / \(\chi'^2_1(\mathcal E/\sigma^2)\): \(P_{FA}=2Q(\sqrt{\gamma'})\)</td></tr>
+    <tr><td>amplitude + phase of \(A\cos(2\pi f_0n+\phi)\)</td><td><b>periodogram</b> \(I(f_0)=\frac1N\big|\sum x[n]e^{-j2\pi f_0n}\big|^2\) (quadrature MF)</td><td>\(P_{FA}=e^{-\gamma'/(\sigma^2/2)}\); \(P_D=Q_{\chi'^2_2(\lambda)}\big(2\ln\frac1{P_{FA}}\big)\), \(\lambda=\frac{NA^2}{2\sigma^2}\)</td></tr>
+    <tr><td>+ frequency \(f_0\)</td><td>peak of the periodogram, \(\max_{f}I(f)\) (the FFT)</td><td>same with \(P_{FA}\to P_{FA}/(N/2-1)\): searching more cells costs threshold</td></tr>
+    <tr><td>+ arrival time \(n_0\)</td><td>max over shifts of the MF output (or the spectrogram)</td><td>more search, more loss</td></tr>
+    <tr><td>whole signal (only energy known)</td><td>energy detector \(\sum x^2[n]\)</td><td>\(\chi^2_N\) / \(\chi'^2_N(\mathcal E/\sigma^2)\): big loss for large N</td></tr>
+  </table></div>
+  <details><summary>Why unknown phase gives the periodogram <span class="tag">derive</span></summary><div class="body">
+    <p>Write \(A\cos(2\pi f_0n+\phi)=\alpha_1\cos 2\pi f_0n+\alpha_2\sin 2\pi f_0n\). This is a linear model with \(H=[\mathbf c\ \mathbf s]\) and p = 2. For \(f_0\) not near 0 or ½, \(H^TH\approx\frac N2I\), so \(\hat\alpha_i\approx\frac2N(\cdot)^T\mathbf x\) and</p>
+    \[T=\frac{\hat{\boldsymbol\alpha}^TH^TH\hat{\boldsymbol\alpha}}{\sigma^2}\approx\frac{2}{N\sigma^2}\Big[\big(\textstyle\sum x[n]\cos2\pi f_0n\big)^2+\big(\sum x[n]\sin2\pi f_0n\big)^2\Big]=\frac{2\,I(f_0)}{\sigma^2}\sim\chi^2_2\text{ under }H_0.\]
+    <p>So you correlate with both cos and sin (the in-phase and quadrature branches) and add the squares. The phase drops out.</p>
+  </div></details>
+
+  <h3>Random-signal extras (Ch 5)</h3>
+  <ul>
+    <li><b>Rayleigh-fading sinusoid</b> (A Rayleigh, φ uniform, i.e. both quadrature amplitudes \(\sim\mathcal N(0,\sigma_s^2)\)): the NP detector is again the periodogram \(I(f_0)\), and
+      \[P_D=P_{FA}^{\,1/(1+\bar\eta/2)},\qquad\bar\eta=\frac{N\sigma_s^2}{\sigma^2}\ \text{(average ENR)}.\]
+      This has the same form as the χ²₂ variance-change ROC.</li>
+    <li><b>Incoherent FSK over a Rayleigh-fading channel:</b> \(P_e=\dfrac{1}{2+\bar\eta}\). It falls only like 1/SNR, compared with exponentially (\(Q(\cdot)\)) without fading. That gap is why fading channels need diversity.</li>
+    <li><b>Large-N estimator-correlator</b> (WSS signal with PSD \(P_{ss}(f)\)): \(T\approx N\int_{-1/2}^{1/2}\frac{P_{ss}(f)}{P_{ss}(f)+\sigma^2}I(f)\,df\). It weights the periodogram with the Wiener gain in frequency, the continuous version of the canonical form.</li>
+    <li><b>General Gaussian</b> \(\mathbf s\sim\mathcal N(\boldsymbol\mu_s,C_s)\), \(\mathbf w\sim\mathcal N(\mathbf 0,C_w)\): \(T=\mathbf x^TC_w^{-1}\boldsymbol\mu_s+\tfrac12\mathbf x^TC_w^{-1}C_s(C_s+C_w)^{-1}\mathbf x\), a matched filter plus an estimator-correlator.</li>
+  </ul>
+
+  <h3>Composite-test extras (Ch 6)</h3>
+  <div class="box key"><div class="t">GLRT asymptotics (large N)</div>
+  For \(H_0:\boldsymbol\theta=\boldsymbol\theta_0\) vs \(H_1:\boldsymbol\theta\ne\boldsymbol\theta_0\) with θ of dimension r:
+  \[2\ln L_G(\mathbf x)\ \stackrel{a}{\sim}\ \begin{cases}\chi^2_r & H_0\\ \chi'^2_r(\lambda) & H_1\end{cases},\qquad\lambda=(\boldsymbol\theta_1-\boldsymbol\theta_0)^T\mathbf I(\boldsymbol\theta_0)(\boldsymbol\theta_1-\boldsymbol\theta_0).\]
+  \(\mathbf I\) is the Fisher information from the estimation half of the course. Under \(H_0\) the distribution doesn't depend on anything unknown, so you can set the threshold. With nuisance parameters, the same holds with r = number of tested parameters, and λ uses the Schur complement of \(\mathbf I\).</div>
+  <p>Check: DC level, \(I(A)=N/\sigma^2\): \(2\ln L_G=N\bar x^2/\sigma^2\sim\chi^2_1\), \(\lambda=NA^2/\sigma^2\). Here it's exact.</p>
+  <div class="grid2">
+    <div class="card"><b>Wald test</b> (MLE under \(H_1\) only)
+      \[T_W=(\hat{\boldsymbol\theta}_1-\boldsymbol\theta_0)^T\mathbf I(\hat{\boldsymbol\theta}_1)(\hat{\boldsymbol\theta}_1-\boldsymbol\theta_0)\]</div>
+    <div class="card"><b>Rao (score) test</b> (no MLE at all)
+      \[T_R=\frac{\partial\ln p}{\partial\boldsymbol\theta}\Big|_{\boldsymbol\theta_0}^T\mathbf I^{-1}(\boldsymbol\theta_0)\frac{\partial\ln p}{\partial\boldsymbol\theta}\Big|_{\boldsymbol\theta_0}\]</div>
+  </div>
+  <p>Both have the same asymptotic distribution as the GLRT. Use them when an MLE is hard to compute.</p>
+  <div class="box ok"><div class="t">Locally most powerful (LMP) test: the one the slides listed but skipped</div>
+  One-sided scalar \(H_0:\theta=\theta_0\) vs \(H_1:\theta>\theta_0\), weak signal. Taylor-expand \(\ln p(\mathbf x;\theta)\) about \(\theta_0\); the first-order term gives
+  \[T_{LMP}(\mathbf x)=\frac{\partial\ln p(\mathbf x;\theta)/\partial\theta\big|_{\theta_0}}{\sqrt{I(\theta_0)}}\ \stackrel{a}{\sim}\ \begin{cases}\mathcal N(0,1)&H_0\\ \mathcal N\big(\sqrt{I(\theta_0)}(\theta_1-\theta_0),1\big)&H_1\end{cases}\]
+  DC level: \(\partial\ln p/\partial A|_0=\sum x[n]/\sigma^2\), so \(T_{LMP}=\sqrt N\bar x/\sigma\), which is the UMP test again.</div>
+  <p class="muted">Multiple composite hypotheses (model order selection): the generalized ML rule picks the \(H_i\) maximising \(\ln p(\mathbf x;\hat{\boldsymbol\theta}_i)\) minus a penalty. The MDL version penalises \(\tfrac{n_i}{2}\ln N\) for \(n_i\) parameters, so bigger models don't win automatically.</p>
+
+  <h3>Non-Gaussian noise (Ch 10)</h3>
+  <p>For a known signal in iid non-Gaussian noise with PDF \(p_w\): \(T=\sum_n\ln\frac{p_w(x[n]-s[n])}{p_w(x[n])}\). For a weak signal (LMP), this becomes \(T\approx\sum_n g(x[n])s[n]\) with the nonlinearity \(g(x)=-\frac{p_w'(x)}{p_w(x)}\): pass each sample through \(g\), then use a matched filter. Gaussian → \(g\) linear. Laplacian → \(g=\mathrm{sgn}(x)\) (hard limiter). Cauchy → \(g=\frac{2x}{1+x^2}\) (suppresses outliers). This ties together Tutorial Q5 and the Laplacian classwork.</p>
+</section>
+
 <!-- ============ TUTORIAL ============ -->
 <section id="tut">
-  <h2><span class="n">13</span>Tutorial 1, solved</h2>
+  <h2><span class="n">14</span>Tutorial 1, solved</h2>
   <p class="sec-sub">15 Oct 2026. Kay problems 3.1, 3.10, 3.16, 3.8 and 10.4. Try each one before you open it.</p>
 
   <details><summary>Q1 (Kay 3.1): NP test, \(\mu=0\) vs \(\mu=1\), one sample \(x\sim\mathcal N(\mu,1)\); find \(P_{FA}\), \(P_M\); plot \(P_M\) vs \(P_{FA}\)</summary><div class="body">
@@ -719,7 +800,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
 
 <!-- ============ HOMEWORK ============ -->
 <section id="hw">
-  <h2><span class="n">14</span>Homework &amp; classwork bank, solved</h2>
+  <h2><span class="n">15</span>Homework &amp; classwork bank, solved</h2>
   <p class="sec-sub">Every "Homework / Classwork / Tutorial" item flagged on the slides that isn't already solved above.</p>
 
   <details><summary>DC level: effect of unequal priors and costs (Lec 2 HW)</summary><div class="body">
@@ -760,18 +841,56 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
   <details><summary>Matched filter output peaks at n = N−1 (Lec 6 HW)</summary><div class="body">
     <p>Signal part of the output: \(y_s[n]=\sum_k h[n-k]s[k]=\sum_k s[N-1-n+k]s[k]=r_{ss}[N-1-n]\), the deterministic autocorrelation at lag \(N-1-n\). By Cauchy–Schwarz \(|r_{ss}[\ell]|\le r_{ss}[0]=\mathcal E\), so it is maximised at lag 0, i.e. \(n=N-1\).</p>
   </div></details>
+
+  <h3 id="kay-probs">Kay end-of-chapter problems, solved</h3>
+  <p class="muted">Short-answer versions of the textbook problems closest to the lectures (Tutorial 1 already covers 3.1, 3.8, 3.10, 3.16 and 10.4).</p>
+
+  <details><summary>Kay 3.4: \(P_{FA}=10^{-4}\), \(P_D=0.99\), SNR \(A^2/\sigma^2=-30\) dB. How many samples?</summary><div class="body">
+    \[\sqrt{d^2}=Q^{-1}(10^{-4})-Q^{-1}(0.99)=3.719+2.326=6.045\Rightarrow d^2=36.5,\qquad N=\frac{36.5}{10^{-3}}\approx36{,}550.\]
+    <p>Weak signals need huge N because \(d^2\) grows only linearly in N.</p>
+  </div></details>
+  <details><summary>Kay 3.6: DC level with A &lt; 0. Show the performance is the same as for A &gt; 0</summary><div class="body">
+    <p>Dividing by A &lt; 0 flips the test: decide \(H_1\) if \(\bar x<\gamma'\). \(P_{FA}=1-Q\big(\frac{\gamma'}{\sigma/\sqrt N}\big)\), so \(\gamma'=\frac{\sigma}{\sqrt N}Q^{-1}(1-P_{FA})=-\frac{\sigma}{\sqrt N}Q^{-1}(P_{FA})\). Then</p>
+    \[P_D=\Pr\{\bar x<\gamma';H_1\}=Q\Big(\frac{A-\gamma'}{\sigma/\sqrt N}\Big)=Q\Big(Q^{-1}(P_{FA})-\sqrt{NA^2/\sigma^2}\Big).\]
+    <p>Same as for A &gt; 0: only \(A^2\) matters. (The test itself is different, which is why there's no UMP test for \(A\ne0\).)</p>
+  </div></details>
+  <details><summary>Kay 3.7: iid Rayleigh samples, \(H_0:\sigma^2=\sigma_0^2\) vs \(H_1:\sigma^2=\sigma_1^2>\sigma_0^2\)</summary><div class="body">
+    <p>\(p(x)=\frac{x}{\sigma^2}e^{-x^2/2\sigma^2}\). \(\ln L=N\ln\frac{\sigma_0^2}{\sigma_1^2}+\frac12\big(\frac1{\sigma_0^2}-\frac1{\sigma_1^2}\big)\sum x^2[n]\), so \(T=\sum x^2[n]>\gamma'\).</p>
+    <p>Each \(x^2[n]\) is exponential with mean \(2\sigma^2\), so \(T/\sigma^2\sim\chi^2_{2N}\) and \(P_D=Q_{\chi^2_{2N}}\big(\frac{\sigma_0^2}{\sigma_1^2}Q^{-1}_{\chi^2_{2N}}(P_{FA})\big)\). This is the variance-change problem with 2N degrees of freedom (a Rayleigh sample is the envelope of two Gaussians).</p>
+  </div></details>
+  <details><summary>Kay 3.12: perfect detector for \(U[-c,c]\) vs \(U[1-c,1+c]\)</summary><div class="body">
+    <p>The supports are disjoint iff \(c<\tfrac12\) (at \(c=\tfrac12\) they touch at a single point, which has probability 0, so \(c\le\tfrac12\) works). Decide \(H_1\) if \(x>\tfrac12\): \(P_{FA}=0\), \(P_D=1\). Whenever the PDFs don't overlap, \(L\in\{0,\infty\}\) and detection is perfect.</p>
+  </div></details>
+  <details><summary>Kay 3.13: prove the ROC is concave</summary><div class="body">
+    <p>Take two ROC points \((p_1,P_D(p_1))\), \((p_2,P_D(p_2))\). Flip a coin with bias a and use detector 1 or detector 2. This randomised test has \(P_{FA}=ap_1+(1-a)p_2\) and \(P_D=aP_D(p_1)+(1-a)P_D(p_2)\). The NP detector at that \(P_{FA}\) does at least as well, so \(aP_D(p_1)+(1-a)P_D(p_2)\le P_D(ap_1+(1-a)p_2)\). That's concavity: the ROC lies above every chord.</p>
+  </div></details>
+  <details><summary>Kay 3.17: min-\(P_e\) regions for \(\mathcal N(\mathbf 0,\sigma^2I)\) vs \(\mathcal N(\boldsymbol\mu,\sigma^2I)\), 2-D, equal priors</summary><div class="body">
+    <p>ML: decide \(H_1\) if \(\|\mathbf x-\boldsymbol\mu\|^2<\|\mathbf x\|^2\iff\boldsymbol\mu^T\mathbf x>\tfrac12\boldsymbol\mu^T\boldsymbol\mu\). The boundary \(\boldsymbol\mu^T\mathbf x=\|\boldsymbol\mu\|^2/2\) is a line perpendicular to \(\boldsymbol\mu\) through \(\boldsymbol\mu/2\): the perpendicular bisector. \(P_e=Q\big(\frac{\|\boldsymbol\mu\|}{2\sigma}\big)\).</p>
+  </div></details>
+  <details><summary>Kay 3.18: MAP for \(\mathcal N(0,1)\) vs \(\mathcal N(0,2)\) with \(P(H_0)=\tfrac12\) and \(\tfrac34\)</summary><div class="body">
+    <p>\(\ln\frac{p_1}{p_0}=-\tfrac12\ln2+\tfrac{x^2}{4}>\ln\frac{P(H_0)}{P(H_1)}\iff x^2>4\ln\frac{P(H_0)}{P(H_1)}+2\ln2\).</p>
+    <ul><li>\(P(H_0)=\tfrac12\): \(x^2>2\ln2=1.386\), so \(|x|>1.18\).</li>
+    <li>\(P(H_0)=\tfrac34\): \(x^2>4\ln3+2\ln2=5.78\), so \(|x|>2.40\).</li></ul>
+    <p>Large \(|x|\) points to the wider PDF, so \(H_1\) occupies the two tails. A bigger prior on \(H_0\) pushes the tails out.</p>
+  </div></details>
+  <details><summary>Kay 3.9: variance change with N = 2. Show \(P_D=P_{FA}^{\sigma_0^2/\sigma_1^2}\)</summary><div class="body">
+    <p>See <a href="#np-ex">NP examples</a>: \(T/\sigma_i^2\sim\chi^2_2\), so \(P_{FA}=e^{-\gamma'/2\sigma_0^2}\) and \(P_D=e^{-\gamma'/2\sigma_1^2}=\big(e^{-\gamma'/2\sigma_0^2}\big)^{\sigma_0^2/\sigma_1^2}\). This is increasing in \(\sigma_1^2/\sigma_0^2\).</p>
+  </div></details>
+  <details><summary>Matched filter for a known sinusoid \(s[n]=A\cos2\pi f_0n\) (Kay Ch 4 style)</summary><div class="body">
+    <p>\(\mathcal E=\sum A^2\cos^2 2\pi f_0n\approx NA^2/2\) for \(f_0\) not near 0 or ½. So \(T=\sum x[n]\cos2\pi f_0n\) and \(d^2\approx\frac{NA^2}{2\sigma^2}\). Compare with an unknown phase (the periodogram, \(\chi'^2_2\)): the loss is small, about 1 dB at typical operating points.</p>
+  </div></details>
 </section>
 
 <!-- ============ FLASHCARDS ============ -->
 <section id="cards">
-  <h2><span class="n">15</span>Flashcards</h2>
+  <h2><span class="n">16</span>Flashcards</h2>
   <p class="sec-sub">Tap a card to reveal the answer.</p>
   <div class="flash" id="flash"></div>
 </section>
 
 <!-- ============ SHEET ============ -->
 <section id="sheet">
-  <h2><span class="n">16</span>Formula sheet</h2>
+  <h2><span class="n">17</span>Formula sheet</h2>
   <p class="sec-sub">One page to look at last.</p>
   <div class="card sheet">
     <div class="row"><div class="lbl">LRT</div><div>\(L=\frac{p(\mathbf x;H_1)}{p(\mathbf x;H_0)}\gtrless\gamma\); Bayes \(\gamma=\frac{(C_{10}-C_{00})\pi_0}{(C_{01}-C_{11})\pi_1}\); MAP \(\pi_0/\pi_1\); ML 1; NP: \(P_{FA}(\gamma)=\alpha\)</div></div>
@@ -786,13 +905,16 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);color
     <div class="row"><div class="lbl">Random signal</div><div>\(T=\mathbf x^T\hat{\mathbf s}\), \(\hat{\mathbf s}=C_s(C_s+\sigma^2I)^{-1}\mathbf x\); canonical \(\sum\frac{\lambda_n}{\lambda_n+\sigma^2}y^2[n]\)</div></div>
     <div class="row"><div class="lbl">Composite</div><div>One-sided → UMP. Two-sided → none. GLRT (σ² known) \(\bar x^2\); (σ² unknown) \(\bar x^2/\hat\sigma_1^2\). Bayes \(\mathcal N(0,\sigma_A^2)\) prior → \(\bar x^2\)</div></div>
     <div class="row"><div class="lbl">SPRT</div><div>\(S_n=\sum\ln\frac{p_1}{p_0}\); \(a=\ln\frac{1-\beta}{\alpha}\), \(b=\ln\frac{\beta}{1-\alpha}\); \(\alpha'+\beta'\le\alpha+\beta\); \(E_1N\approx\frac{(1-\beta)a+\beta b}{D(p_1\|p_0)}\), \(E_0N\approx\frac{\alpha a+(1-\alpha)b}{-D(p_0\|p_1)}\)</div></div>
+    <div class="row"><div class="lbl">GLRT asymptotics</div><div>\(2\ln L_G\sim\chi^2_r\) (H₀), \(\chi'^2_r(\lambda)\) (H₁), \(\lambda=\Delta\boldsymbol\theta^T\mathbf I(\boldsymbol\theta_0)\Delta\boldsymbol\theta\). Linear model: exact, \(T=\hat{\boldsymbol\theta}^TH^TH\hat{\boldsymbol\theta}/\sigma^2\)</div></div>
+    <div class="row"><div class="lbl">LMP</div><div>\(\frac{\partial\ln p/\partial\theta|_{\theta_0}}{\sqrt{I(\theta_0)}}\sim\mathcal N(0,1)\) / \(\mathcal N(\sqrt{I(\theta_0)}\Delta\theta,1)\)</div></div>
+    <div class="row"><div class="lbl">Sinusoid, unknown phase</div><div>periodogram \(I(f_0)\); \(P_D=Q_{\chi'^2_2(NA^2/2\sigma^2)}(2\ln\frac1{P_{FA}})\). Rayleigh fading: \(P_D=P_{FA}^{1/(1+\bar\eta/2)}\); fading FSK \(P_e=\frac1{2+\bar\eta}\)</div></div>
     <div class="row"><div class="lbl">Gaussian KL</div><div>\(D(\mathcal N(\mu_1,\sigma^2)\|\mathcal N(\mu_0,\sigma^2))=\frac{(\mu_1-\mu_0)^2}{2\sigma^2}\)</div></div>
     <div class="row"><div class="lbl">Q values</div><div>\(Q^{-1}\): 0.1→1.28, 0.05→1.645, 0.01→2.33, 10⁻³→3.09, 10⁻⁶→4.75. \(Q(0.5)=.309\), \(Q(1)=.159\), \(Q(2)=.023\)</div></div>
   </div>
 </section>
 
 <footer>
-  Built from the EC5.406 lecture slides (Lec 1–11, A. D. Yardi), Tutorial 1 and class notes. Worked answers not in the slides are derived here, so check them against the textbook if something looks off. Good luck on the 23rd.
+  Built from the EC5.406 lecture slides (Lec 1–11, A. D. Yardi), Tutorial 1, class notes, and Kay, <i>Fundamentals of Statistical Signal Processing, Vol. II: Detection Theory</i>. Worked answers not in the slides are derived here, so check them against the textbook if something looks off. Good luck on the 23rd.
 </footer>
 </div>
 </main>
