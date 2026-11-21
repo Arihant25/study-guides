@@ -116,6 +116,40 @@
   if(window.matchMedia){ try{ window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",drawAll); }catch(e){} }
 })();
 </script>
+<script>
+/* Checklist ticks (kept in this browser) and folded proof steps */
+(function(){
+  var KEY='dpcn-endsem-check', ticks={};
+  try{ ticks=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ ticks={}; }
+  var boxes=[].slice.call(document.querySelectorAll('#checklist input[data-k]'));
+  var count=document.getElementById('checkcount');
+  function render(){
+    var n=0;
+    boxes.forEach(function(b){ b.checked=!!ticks[b.dataset.k]; b.closest('li').classList.toggle('done',b.checked); if(b.checked) n++; });
+    if(count) count.textContent = n===boxes.length ? 'All '+n+' done. Now try the past questions.' : n+' of '+boxes.length+' done';
+  }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(ticks)); }catch(e){} }
+  boxes.forEach(function(b){ b.addEventListener('change',function(){ if(b.checked) ticks[b.dataset.k]=1; else delete ticks[b.dataset.k]; save(); render(); }); });
+  var reset=document.getElementById('checkreset');
+  if(reset) reset.addEventListener('click',function(){ ticks={}; save(); render(); });
+  render();
+
+  var toggles=[];
+  document.querySelectorAll('main .pf').forEach(function(pf){
+    var idea=pf.querySelector(':scope > .idea'); if(!idea) return;
+    var steps=document.createElement('div'); steps.className='steps'; steps.hidden=true;
+    while(idea.nextSibling) steps.appendChild(idea.nextSibling);
+    var btn=document.createElement('button'); btn.type='button'; btn.className='stepbtn';
+    btn.setAttribute('aria-expanded','false'); btn.textContent='Show the steps';
+    function set(open){ steps.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); btn.textContent=open?'Hide the steps':'Show the steps'; }
+    btn.addEventListener('click',function(){ set(steps.hidden); });
+    pf.appendChild(btn); pf.appendChild(steps);
+    toggles.push(set);
+  });
+  var all=document.getElementById('stepsall'), allOpen=false;
+  if(all) all.addEventListener('click',function(){ allOpen=!allOpen; toggles.forEach(function(f){ f(allOpen); }); all.textContent=allOpen?'Hide all steps':'Show all steps'; });
+})();
+</script>
 <!--include:shared/nav-script.html-->
 </body>
 </html>

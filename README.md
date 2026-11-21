@@ -10,7 +10,7 @@ There is also a **Memory sheet** with the whole course on one page (formulas, a 
 
 The **Quiz 2 sheet** has only the Quiz 2 syllabus (2-D nonlinear stability and limit cycles, maps, Lorenz, synchronisation), with the past questions on those topics and a three-day plan: https://arihant25.github.io/dpcn-study-guide/quiz2/
 
-The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It is what the site opens on: https://arihant25.github.io/dpcn-study-guide/ (also at https://arihant25.github.io/dpcn-study-guide/endsem/)
+The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It starts with a checklist of the seven proofs to learn, with ticks your browser remembers. Each proof shows only its question and one-line idea until you open the steps. It is what the site opens on: https://arihant25.github.io/dpcn-study-guide/ (also at https://arihant25.github.io/dpcn-study-guide/endsem/)
 
 Page 1 opens with a map of which page teaches each class and a ranked list of derivations to learn (`shared/course-map.html`).
 

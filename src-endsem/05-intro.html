@@ -2,6 +2,7 @@
   <div class="brand">DPCN study guide<small>End-sem sheet</small></div>
   <!--include:shared/pages.html-->
   <nav id="tocnav">
+    <a href="#check">Your checklist</a>
     <a href="#syllabus">The syllabus</a>
     <a href="#asked">What they've asked before</a>
     <a href="#plan">How to use this page</a>
@@ -32,6 +33,7 @@
     <div class="mgrp">Pages</div>
     <!--include:shared/pages.html-->
     <div class="mgrp">Sections on this page</div>
+    <a href="#check">Your checklist</a>
     <a href="#syllabus">The syllabus</a>
     <a href="#asked">What they've asked before</a>
     <a href="#plan">How to use this page</a>
@@ -49,6 +51,22 @@
   </div>
   </details>
 </div>
+
+<section>
+<h2 id="check">Your checklist</h2>
+<p class="about">This is the whole end-sem in seven proofs. Tick one off when you can write it out with the page closed. Your browser remembers the ticks.</p>
+<ol class="checklist" id="checklist">
+<li><label><input type="checkbox" data-k="ba"><span>The BA rate \(\frac{dk_i}{dt} = \frac{k_i}{2t}\), then \(P(k)\) by continuum theory</span></label> <a href="#pf-ba-rate">Go</a></li>
+<li><label><input type="checkbox" data-k="master"><span>The master equation for BA</span></label> <a href="#pf-ba-master">Go</a></li>
+<li><label><input type="checkbox" data-k="variants"><span>No preferential attachment, no growth and nonlinear \(\Pi\). They all use the BA method with a different \(\Pi\).</span></label> <a href="#pf-model-a">Go</a></li>
+<li><label><input type="checkbox" data-k="sw"><span>Small world at \(p = 0\) and \(p = 1\), meaning \(C\) and \(\bar\ell\) for each</span></label> <a href="#pf-ring-c">Go</a></li>
+<li><label><input type="checkbox" data-k="ws"><span>\(C(p) = C(0)(1-p)^3\)</span></label> <a href="#pf-ws">Go</a></li>
+<li><label><input type="checkbox" data-k="sync"><span>Two coupled oscillators, with the lock condition and \(\Omega\)</span></label> <a href="#pf-twoosc">Go</a></li>
+<li><label><input type="checkbox" data-k="lorenz"><span>Lorenz fixed points and Jacobians</span></label> <a href="#pf-lorenz">Go</a></li>
+</ol>
+<div class="checkbar"><span id="checkcount">0 of 7 done</span><button type="button" id="checkreset">Clear ticks</button></div>
+<p class="small">Each proof below shows its question and its one-line idea. Try to write the steps yourself before you press "Show the steps". <button type="button" class="linkbtn" id="stepsall">Show all steps</button></p>
+</section>
 
 <section>
 <h2 id="syllabus">The syllabus</h2>

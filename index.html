@@ -231,6 +231,22 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .filters button[aria-pressed="true"]{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
 .bar{height:6px; border-radius:3px; background:var(--muted); overflow:hidden; margin-top:8px}
 .bar>i{display:block; height:100%; width:0; background:var(--brand); transition:width .2s}
+
+/* checklist and folded proof steps (End-sem sheet) */
+.checklist{list-style:none; padding:0; margin:14px 0}
+.checklist li{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius); margin:8px 0; background:var(--card)}
+.checklist label{display:flex; gap:11px; align-items:flex-start; cursor:pointer; flex:1}
+.checklist input{width:18px; height:18px; margin-top:3px; accent-color:var(--brand); flex:none}
+.checklist li.done{background:var(--brand-soft); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.checklist li.done label{color:var(--muted-fg); text-decoration:line-through; text-decoration-color:var(--border-2)}
+.checklist a{flex:none; font-size:.88rem; font-weight:600; padding-top:2px}
+.checkbar{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:6px 0 10px; font-weight:600}
+.checkbar button, .pf .stepbtn{font:inherit; font-size:.85rem; font-weight:600; border-radius:8px; padding:7px 14px; cursor:pointer; border:1px solid var(--border-2); background:var(--card); color:var(--fg)}
+.pf .stepbtn{margin:4px 0 6px}
+.pf .stepbtn[aria-expanded="true"]{background:var(--muted)}
+.linkbtn{font:inherit; background:none; border:0; padding:0; color:var(--brand); text-decoration:underline; cursor:pointer}
+.pf .steps[hidden]{display:none}
+@media print{.pf .steps[hidden]{display:block} .pf .stepbtn,.checkbar button,.linkbtn{display:none}}
 </style>
 <style>
 /* page switcher, shared by the sidebar and the phone menu */
@@ -285,6 +301,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
 </div>
 
   <nav id="tocnav">
+    <a href="#check">Your checklist</a>
     <a href="#syllabus">The syllabus</a>
     <a href="#asked">What they've asked before</a>
     <a href="#plan">How to use this page</a>
@@ -323,6 +340,7 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
 </div>
 
     <div class="mgrp">Sections on this page</div>
+    <a href="#check">Your checklist</a>
     <a href="#syllabus">The syllabus</a>
     <a href="#asked">What they've asked before</a>
     <a href="#plan">How to use this page</a>
@@ -340,6 +358,22 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
   </div>
   </details>
 </div>
+
+<section>
+<h2 id="check">Your checklist</h2>
+<p class="about">This is the whole end-sem in seven proofs. Tick one off when you can write it out with the page closed. Your browser remembers the ticks.</p>
+<ol class="checklist" id="checklist">
+<li><label><input type="checkbox" data-k="ba"><span>The BA rate <math><mrow><mfrac><mrow><mi>d</mi><msub><mi>k</mi><mi>i</mi></msub></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mfrac><msub><mi>k</mi><mi>i</mi></msub><mrow><mn>2</mn><mi>t</mi></mrow></mfrac></mrow></math>, then <math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>k</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> by continuum theory</span></label> <a href="#pf-ba-rate">Go</a></li>
+<li><label><input type="checkbox" data-k="master"><span>The master equation for BA</span></label> <a href="#pf-ba-master">Go</a></li>
+<li><label><input type="checkbox" data-k="variants"><span>No preferential attachment, no growth and nonlinear <math><mrow><mi mathvariant="normal">Π</mi><mspace></mspace></mrow></math>. They all use the BA method with a different <math><mrow><mi mathvariant="normal">Π</mi><mspace></mspace></mrow></math>.</span></label> <a href="#pf-model-a">Go</a></li>
+<li><label><input type="checkbox" data-k="sw"><span>Small world at <math><mrow><mi>p</mi><mo>=</mo><mn>0</mn></mrow></math> and <math><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow></math>, meaning <math><mi>C</mi></math> and <math><mover><mi>ℓ</mi><mo stretchy="false" class="wbk-acc" style="math-depth:0;">‾</mo></mover></math> for each</span></label> <a href="#pf-ring-c">Go</a></li>
+<li><label><input type="checkbox" data-k="ws"><span><math><mrow><mi>C</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>p</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>C</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>3</mn></msup></mrow></math></span></label> <a href="#pf-ws">Go</a></li>
+<li><label><input type="checkbox" data-k="sync"><span>Two coupled oscillators, with the lock condition and <math><mrow><mi mathvariant="normal">Ω</mi><mspace></mspace></mrow></math></span></label> <a href="#pf-twoosc">Go</a></li>
+<li><label><input type="checkbox" data-k="lorenz"><span>Lorenz fixed points and Jacobians</span></label> <a href="#pf-lorenz">Go</a></li>
+</ol>
+<div class="checkbar"><span id="checkcount">0 of 7 done</span><button type="button" id="checkreset">Clear ticks</button></div>
+<p class="small">Each proof below shows its question and its one-line idea. Try to write the steps yourself before you press "Show the steps". <button type="button" class="linkbtn" id="stepsall">Show all steps</button></p>
+</section>
 
 <section>
 <h2 id="syllabus">The syllabus</h2>
@@ -985,6 +1019,40 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
   var mo=new MutationObserver(drawAll);
   mo.observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
   if(window.matchMedia){ try{ window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",drawAll); }catch(e){} }
+})();
+</script>
+<script>
+/* Checklist ticks (kept in this browser) and folded proof steps */
+(function(){
+  var KEY='dpcn-endsem-check', ticks={};
+  try{ ticks=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ ticks={}; }
+  var boxes=[].slice.call(document.querySelectorAll('#checklist input[data-k]'));
+  var count=document.getElementById('checkcount');
+  function render(){
+    var n=0;
+    boxes.forEach(function(b){ b.checked=!!ticks[b.dataset.k]; b.closest('li').classList.toggle('done',b.checked); if(b.checked) n++; });
+    if(count) count.textContent = n===boxes.length ? 'All '+n+' done. Now try the past questions.' : n+' of '+boxes.length+' done';
+  }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(ticks)); }catch(e){} }
+  boxes.forEach(function(b){ b.addEventListener('change',function(){ if(b.checked) ticks[b.dataset.k]=1; else delete ticks[b.dataset.k]; save(); render(); }); });
+  var reset=document.getElementById('checkreset');
+  if(reset) reset.addEventListener('click',function(){ ticks={}; save(); render(); });
+  render();
+
+  var toggles=[];
+  document.querySelectorAll('main .pf').forEach(function(pf){
+    var idea=pf.querySelector(':scope > .idea'); if(!idea) return;
+    var steps=document.createElement('div'); steps.className='steps'; steps.hidden=true;
+    while(idea.nextSibling) steps.appendChild(idea.nextSibling);
+    var btn=document.createElement('button'); btn.type='button'; btn.className='stepbtn';
+    btn.setAttribute('aria-expanded','false'); btn.textContent='Show the steps';
+    function set(open){ steps.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); btn.textContent=open?'Hide the steps':'Show the steps'; }
+    btn.addEventListener('click',function(){ set(steps.hidden); });
+    pf.appendChild(btn); pf.appendChild(steps);
+    toggles.push(set);
+  });
+  var all=document.getElementById('stepsall'), allOpen=false;
+  if(all) all.addEventListener('click',function(){ allOpen=!allOpen; toggles.forEach(function(f){ f(allOpen); }); all.textContent=allOpen?'Hide all steps':'Show all steps'; });
 })();
 </script>
 <script>

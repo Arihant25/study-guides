@@ -231,6 +231,22 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .filters button[aria-pressed="true"]{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
 .bar{height:6px; border-radius:3px; background:var(--muted); overflow:hidden; margin-top:8px}
 .bar>i{display:block; height:100%; width:0; background:var(--brand); transition:width .2s}
+
+/* checklist and folded proof steps (End-sem sheet) */
+.checklist{list-style:none; padding:0; margin:14px 0}
+.checklist li{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius); margin:8px 0; background:var(--card)}
+.checklist label{display:flex; gap:11px; align-items:flex-start; cursor:pointer; flex:1}
+.checklist input{width:18px; height:18px; margin-top:3px; accent-color:var(--brand); flex:none}
+.checklist li.done{background:var(--brand-soft); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.checklist li.done label{color:var(--muted-fg); text-decoration:line-through; text-decoration-color:var(--border-2)}
+.checklist a{flex:none; font-size:.88rem; font-weight:600; padding-top:2px}
+.checkbar{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:6px 0 10px; font-weight:600}
+.checkbar button, .pf .stepbtn{font:inherit; font-size:.85rem; font-weight:600; border-radius:8px; padding:7px 14px; cursor:pointer; border:1px solid var(--border-2); background:var(--card); color:var(--fg)}
+.pf .stepbtn{margin:4px 0 6px}
+.pf .stepbtn[aria-expanded="true"]{background:var(--muted)}
+.linkbtn{font:inherit; background:none; border:0; padding:0; color:var(--brand); text-decoration:underline; cursor:pointer}
+.pf .steps[hidden]{display:none}
+@media print{.pf .steps[hidden]{display:block} .pf .stepbtn,.checkbar button,.linkbtn{display:none}}
 </style>
 <!--include:shared/nav-style.html-->
 </head>
