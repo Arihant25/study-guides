@@ -32,4 +32,13 @@ body[data-pg="mid"] .pages a[data-pg="mid"] b, body[data-pg="after"] .pages a[da
   html,body{overflow-x:clip}
   .tocwrap-mobile{margin:0 -16px; padding:8px 16px}
 }
+
+/* back-to-top arrow, shown once the page is scrolled */
+.totop{position:fixed; right:14px; bottom:14px; z-index:20; width:42px; height:42px; border-radius:50%; display:grid; place-items:center;
+  background:var(--card); color:var(--fg); border:1px solid var(--border); box-shadow:var(--shadow-sm); cursor:pointer;
+  font:inherit; font-size:1.2rem; line-height:1; opacity:0; visibility:hidden; transform:translateY(8px); transition:opacity .2s, transform .2s, visibility .2s}
+.totop:hover{background:var(--muted)}
+.totop.show{opacity:1; visibility:visible; transform:none}
+@media(max-width:1059px){.totop{bottom:62px}}
+@media print{.totop{display:none}}
 </style>
