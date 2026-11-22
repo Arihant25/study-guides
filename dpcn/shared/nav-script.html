@@ -1,0 +1,23 @@
+<script>
+/* Phone menu: close it after a link is tapped, or on Escape */
+(function(){
+  var m=document.getElementById('mtoc'); if(!m) return;
+  m.addEventListener('click',function(e){ if(e.target.closest('a')) m.open=false; });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') m.open=false; });
+})();
+</script>
+<script>
+/* Back-to-top arrow */
+(function(){
+  var b=document.createElement('button'); b.type='button'; b.className='totop';
+  b.setAttribute('aria-label','Back to top'); b.title='Back to top'; b.textContent='↑';
+  document.body.appendChild(b);
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  b.addEventListener('click',function(){
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    if(history.replaceState&&location.hash) history.replaceState(null,'',location.pathname+location.search);
+  });
+  function upd(){ b.classList.toggle('show', window.scrollY>600); }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+})();
+</script>

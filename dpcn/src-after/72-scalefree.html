@@ -1,0 +1,339 @@
+<div class="part">Part 8<span>Scale-free networks</span></div>
+<section>
+<h2 id="ba"><span class="num">19</span>Hubs, growth and preferential attachment</h2>
+<span class="board">Deck 14 · slides 1–32</span>
+<p class="about">The random graph of the Mid-sem guide gives every node about the same number of links. Real networks do not look like that. The Web, the cell and the film-actor network all have a few nodes with a huge number of links, called hubs, next to a great many nodes with very few. This section says why the random graph cannot make hubs, and gives the model that does: the Barabási–Albert (BA) model.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Name the two ingredients of the BA model and say what each one means. Asked in 2024 Quiz 2 (<a href="#pyq">§29</a>).</li>
+<li>Write the preferential attachment probability \(\Pi(k_i) = k_i/\sum_jk_j\).</li>
+<li>Say what "scale-free" means, and why the Erdős–Rényi model fails to produce hubs.</li>
+</ul>
+</div>
+
+<h3>What was measured</h3>
+<p>In 1999 Barabási and Albert sent a crawler through the <code>nd.edu</code> web domain: about 300,000 pages, with an average of 11 clicks between two pages. Two things stood out. Distances were short (for the 800 million pages of the 1999 Web the estimate was only 19 clicks, not thousands). And there were hubs: in one study 82% of pages had fewer than 3 incoming links, while 42 pages had more than 1000.</p>
+<p>The degree distribution was a power law, \(P(k)\sim k^{-\gamma}\), a straight line on log-log axes (<a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>), not the bell-shaped Poisson curve of a random graph. A network whose degree distribution is a power law is called <strong>scale-free</strong>. The name says that there is no typical degree: the ratio of hubs to ordinary nodes stays the same as the network grows, so a small copy looks like a scaled version of the large one.</p>
+
+<h3>Why the random graph fails · two wrong assumptions</h3>
+<table class="tbl">
+<tr><th>Random graph (ER) assumes</th><th>Real networks</th><th>Examples from the slides</th></tr>
+<tr><td>The number of nodes \(N\) is fixed.</td><td><strong>Growth.</strong> Nodes keep arriving, one after another.</td><td>The Web went from one page in 1991 to over \(10^{12}\). Every new paper adds a node to the citation network, every new film to the actor network.</td></tr>
+<tr><td>A node picks its partners at random.</td><td><strong>Preferential attachment.</strong> New nodes prefer to link to nodes that already have many links.</td><td>We link to pages we know (Google, Facebook), cite the papers that are already cited a lot, cast the actors who have been in many films.</td></tr>
+</table>
+
+<h3>The Barabási–Albert model</h3>
+<p>Start with \(m_0\) nodes. Then repeat two steps.</p>
+<ol>
+<li><strong>Growth.</strong> At each time step add one new node with \(m\) links (\(m\le m_0\)) that connect it to \(m\) nodes already in the network.</li>
+<li><strong>Preferential attachment.</strong> The probability that a link of the new node goes to node \(i\) is proportional to the degree of node \(i\):</li>
+</ol>
+<div class="eq boxed">\[\Pi(k_i) = \frac{k_i}{\sum_j k_j}\]</div>
+<p class="sym">\(k_i\) is the degree of node \(i\) now. The sum in the bottom runs over all nodes already in the network, so the probabilities add up to 1. \(m\) is the number of links each new node brings. \(m_0\) is the number of starting nodes.</p>
+<p>This is a rule about chances. A new node may still link to a node with one link. But a node with 4 links is twice as likely to be chosen as a node with 2 links. The rich get richer.</p>
+<p>After \(t\) steps the network has \(N = t + m_0\) nodes and \(m_0 + mt\) links. Its degree distribution is a power law with exponent \(\gamma = 3\). The next two sections derive this.</p>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>A network has four nodes with degrees 1, 2, 3 and 6, so \(\sum_jk_j = 12\). A new node arrives with one link. The chances are \(\frac1{12}\), \(\frac2{12}\), \(\frac3{12}\) and \(\frac6{12}\). The node with degree 6 gets the link half the time.</p>
+</div>
+
+<div class="card ex"><span class="tag">The questions on slide 58 · derived on the <a href="{{ROOT}}endsem/#nopa">End-sem sheet</a></span>
+<ul>
+<li><strong>Growth without preferential attachment</strong> (new nodes pick partners at random): the degree distribution decays exponentially, so there are no hubs.</li>
+<li><strong>Preferential attachment without growth</strong> (fixed \(N\), keep adding links): there is no steady distribution. The network keeps filling up until every node is linked to every other.</li>
+<li>So both ingredients are needed together.</li>
+<li><strong>Measuring preferential attachment</strong>: follow a real network over time and plot how many new links a node gains in a short interval against its degree \(k\). A straight line through the origin means \(\Pi\propto k\).</li>
+<li><strong>Nonlinear preferential attachment</strong>, \(\Pi\propto k^\alpha\): for \(\alpha<1\) the hubs are smaller than in the BA model, for \(\alpha = 1\) we get the BA model, and for \(\alpha>1\) a few nodes take almost all the links (winner takes all).</li>
+</ul>
+</div>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>Scale-free: \(P(k)\sim k^{-\gamma}\), hubs exist, no typical degree.</li>
+<li>BA model = growth (one node with \(m\) links per step) + preferential attachment \(\Pi(k_i) = k_i/\sum_jk_j\).</li>
+<li>After \(t\) steps: \(N = t + m_0\) nodes, \(m_0 + mt\) links, \(\gamma = 3\).</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>A new node chooses between a node of degree 2 and a node of degree 10 only. What is the chance it links to each?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\sum k = 12\), so \(2/12 = 1/6\) and \(10/12 = 5/6\).</p></div></details>
+<details class="q"><summary><span class="qt">Explain</span><span>Why can the Erdős–Rényi model not produce hubs?</span><span class="chev">›</span></summary>
+<div class="ans"><p>It has a fixed number of nodes and every pair is linked with the same probability, so every node gets about ⟨k⟩ links and the Poisson distribution falls off very fast for large \(k\). Hubs need growth (old nodes have had more time) and preferential attachment (nodes with many links collect more).</p></div></details>
+</section>
+
+<section>
+<h2 id="badeg"><span class="num">20</span>How the degree of a node grows</h2>
+<span class="board">Deck 14 · slides 33–44</span>
+<p class="about">Follow one node of the BA model through time. It joins with \(m\) links, and every later arrival may give it one more. This section finds its degree as a function of time. The result explains hubs in one line: a node's degree depends only on when it joined, and the earliest nodes are the largest.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Prove that \(\frac{dk_i}{dt} = \frac{k_i}{2t}\), that is, the rate at which a node gains links is proportional to \(k_i/t\). Asked in 2024 Quiz 2.</li>
+<li>Solve it to get \(k_i(t) = m\,(t/t_i)^{1/2}\) and name the dynamical exponent \(\beta = \frac12\).</li>
+<li>Explain the first-mover advantage and why the growth is slower than linear.</li>
+</ul>
+</div>
+
+<div class="card exam"><span class="tag">Derivation to learn · the degree of node \(i\) over time</span>
+<ol class="steps">
+<li><strong>Treat the degree as a smooth quantity.</strong> \(k_i\) really jumps by whole numbers. We replace it by its average over many runs of the model, which changes smoothly, so we can write a differential equation for it.</li>
+<li><strong>Rate of gaining links.</strong> Each time step one new node arrives with \(m\) links. Each of the \(m\) links picks node \(i\) with probability \(\Pi(k_i)\). So node \(i\) has \(m\) chances per step: \[\frac{dk_i}{dt} = m\,\Pi(k_i) = m\,\frac{k_i}{\sum_{j=1}^{N-1}k_j}.\] The sum runs over all nodes except the one being added.</li>
+<li><strong>Find the sum.</strong> Every link adds 2 to the total degree (one for each end). After \(t\) steps there are about \(mt\) links, so the total degree is \(2mt\). Leaving out the \(m\) of the new node: \[\sum_{j=1}^{N-1}k_j = 2mt - m.\]</li>
+<li><strong>Put it in.</strong> \[\frac{dk_i}{dt} = \frac{mk_i}{2mt - m} = \frac{k_i}{2t - 1}\approx\frac{k_i}{2t}\quad\text{for large } t.\] This is the first exam result: the rate is proportional to \(k_i/t\).</li>
+<li><strong>Separate the variables.</strong> \[\frac{dk_i}{k_i} = \frac12\,\frac{dt}{t}.\]</li>
+<li><strong>Integrate</strong> from the moment the node joined, \(t_i\), when it had \(k_i(t_i) = m\) links, up to time \(t\): \[\ln\frac{k_i(t)}{m} = \frac12\ln\frac{t}{t_i}.\]</li>
+<li><strong>Result.</strong> \[k_i(t) = m\Big(\frac{t}{t_i}\Big)^{\beta},\qquad\beta = \frac12.\]</li>
+</ol>
+</div>
+<p class="sym">\(t\) is the time now, which is also the number of nodes added so far. \(t_i\) is the time when node \(i\) joined. \(m\) is the number of links each node arrives with. \(\beta\) is called the dynamical exponent.</p>
+
+<figure class="fig"><!--plot:ba-growth--><figcaption>Degree against time on log-log axes for \(m = 3\) and three joining times. All three lines have the same slope \(\frac12\). The node that joined first stays ahead for ever.</figcaption></figure>
+
+<h3>What the result says</h3>
+<ul>
+<li><strong>Every node follows the same law.</strong> The degree of each node grows as \(t^{1/2}\). Only the starting time \(t_i\) differs.</li>
+<li><strong>First-mover advantage.</strong> A smaller \(t_i\) gives a larger \(k_i(t)\). Hubs are large because they arrived early.</li>
+<li><strong>Growth is sublinear</strong> (\(\beta<1\)). Each new node has more nodes to choose from than the one before, so every existing node competes for links with a growing crowd.</li>
+<li><strong>The rate slows down.</strong> Differentiate the result: \[\frac{dk_i}{dt} = \frac m2\,\frac{1}{\sqrt{t_i\,t}}.\] Older nodes (small \(t_i\)) gain more links per step, and for every node the rate falls as \(t^{-1/2}\). This is the same equation as \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) with the result for \(k_i\) put in.</li>
+</ul>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>\(m = 2\). Node A joined at \(t_A = 10\), node B at \(t_B = 1000\). At \(t = 100{,}000\): \(k_A = 2\sqrt{100000/10} = 2\times100 = 200\), and \(k_B = 2\sqrt{100000/1000} = 2\times10 = 20\). A joined 100 times earlier and has \(\sqrt{100} = 10\) times the degree.</p>
+</div>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>\(\frac{dk_i}{dt} = m\Pi(k_i) = \frac{mk_i}{2mt - m}\approx\frac{k_i}{2t}\).</li>
+<li>\(k_i(t) = m\,(t/t_i)^{1/2}\), with \(k_i(t_i) = m\). Dynamical exponent \(\beta = \frac12\).</li>
+<li>\(\frac{dk_i}{dt} = \frac{m}{2\sqrt{t_it}}\): old nodes gain faster, and everyone slows down.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Drill</span><span>Why is the total degree \(2mt\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Each step adds \(m\) links, so after \(t\) steps there are \(mt\) links. Each link has two ends and adds 1 to the degree of each, so the degrees add up to \(2mt\) (the handshaking lemma).</p></div></details>
+<details class="q"><summary><span class="qt">Calc</span><span>\(m = 3\). How long after joining does a node reach degree 30?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(30 = 3\sqrt{t/t_i}\), so \(t/t_i = 100\). The network must grow to 100 times the size it had when the node joined.</p></div></details>
+</section>
+
+<section>
+<h2 id="bapk"><span class="num">21</span>The degree distribution of the BA model</h2>
+<span class="board">Deck 14 · slides 45–59, 68, 89</span>
+<p class="about">Now turn the growth law of one node into the degree distribution of the whole network. The trick is that degree and joining time are tied together, and joining times are spread evenly. The answer is \(P(k) = 2m^2k^{-3}\): a power law with exponent 3, whatever \(m\) is.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Derive \(P(k) = 2m^2k^{-3}\) from \(k_i(t) = m(t/t_i)^{1/2}\) (continuum theory).</li>
+<li>Write the rate equation for the number of degree-\(k\) nodes and get \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\).</li>
+<li>State the three properties: \(\gamma = 3\) independent of \(m\), independent of time, coefficient \(\propto m^2\).</li>
+</ul>
+</div>
+
+<div class="card exam"><span class="tag">Derivation to learn · continuum theory</span>
+<ol class="steps">
+<li><strong>Invert the growth law.</strong> From \(k_i = m(t/t_i)^{1/2}\): \[t_i = \frac{m^2t}{k_i^2}.\] A larger degree means an earlier joining time.</li>
+<li><strong>Turn a question about degree into one about time.</strong> A node has degree less than \(k\) exactly when it joined too late to reach \(k\): \[P(k_i<k) = P\Big(t_i>\frac{m^2t}{k^2}\Big).\]</li>
+<li><strong>Joining times are uniform.</strong> One node is added at every step, so \(t_i\) is equally likely to be any time between 1 and \(t\). The fraction of nodes that joined after time \(T\) is \[P(t_i>T) = 1 - \frac Tt.\]</li>
+<li><strong>Put \(T = m^2t/k^2\).</strong> \[P(k_i<k) = 1 - \frac{m^2t}{k^2\,t} = 1 - \frac{m^2}{k^2}.\] The time \(t\) has cancelled. This is the cumulative distribution.</li>
+<li><strong>Differentiate</strong> to get the distribution itself: \[P(k) = \frac{d}{dk}\Big(1 - \frac{m^2}{k^2}\Big) = \frac{2m^2}{k^3}.\]</li>
+</ol>
+</div>
+<div class="eq boxed">\[P(k) = 2m^2\,k^{-3},\qquad\gamma = 3\]</div>
+<p>In words: degree grows as \(t^{1/2}\) and joining times are uniform, so the number of nodes with degree above \(k\) falls as \(1/k^2\), and the distribution falls as \(1/k^3\).</p>
+<p class="small">Slide 47 gives the same idea with numbers: if a node born at time \(T\) has degree 100 now, then the nodes with degree up to 100 are the ones born at or after \(T\), a fraction \((t - T)/t\). Slide 89 writes it with a general \(\beta\): \(P(k_i<k) = 1 - (m/k)^{1/\beta}\) and \(P(k) = \frac1\beta\frac{m^{1/\beta}}{k^{1/\beta+1}}\), which is \(2m^2k^{-3}\) for \(\beta = \frac12\).</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the rate equation (exact answer)</span>
+<p>The continuum theory treats \(k\) as smooth. The rate equation counts whole nodes, and gives the exact distribution. Let \(P(k,t)\) be the fraction of nodes with degree \(k\) at time \(t\). With one node added per step, \(N = t\), so the number of degree-\(k\) nodes is \(N\,P(k,t)\).</p>
+<ol class="steps">
+<li><strong>Preferential attachment with the sum filled in.</strong> \(\sum_jk_j = 2mt\), so \[\Pi(k) = \frac{k}{2mt}.\]</li>
+<li><strong>Links that land on degree-\(k\) nodes in one step.</strong> (chance per node) × (number of such nodes) × (links of the new node): \[\frac{k}{2mt}\times N\,P(k,t)\times m = \frac k2\,P(k,t).\] Each such link turns a degree-\(k\) node into a degree-\((k+1)\) node.</li>
+<li><strong>Balance for \(k>m\).</strong> Degree-\(k\) nodes are gained from degree \(k-1\) and lost to degree \(k+1\): \[(N+1)P(k,t+1) = N\,P(k,t) + \frac{k-1}{2}P(k-1,t) - \frac k2P(k,t).\]</li>
+<li><strong>Balance for \(k = m\).</strong> No node has fewer than \(m\) links, so nothing comes up from below. Instead the new node itself arrives with degree \(m\), which adds 1: \[(N+1)P(m,t+1) = N\,P(m,t) + 1 - \frac m2P(m,t).\]</li>
+<li><strong>Steady state.</strong> For large \(t\) assume \(P(k,t)\) stops changing and call it \(P(k)\). Then \((N+1)P(k) - N\,P(k) = P(k)\), so the left side minus the first term on the right is just \(P(k)\): \[P(k) = \frac{k-1}{2}P(k-1) - \frac k2P(k),\qquad P(m) = 1 - \frac m2P(m).\]</li>
+<li><strong>Solve each for \(P\).</strong> \[P(k) = \frac{k-1}{k+2}\,P(k-1)\quad(k>m),\qquad P(m) = \frac{2}{m+2}.\]</li>
+<li><strong>Climb up from \(m\).</strong> \[P(m+1) = \frac{m}{m+3}P(m) = \frac{2m}{(m+2)(m+3)},\] \[P(m+2) = \frac{m+1}{m+4}P(m+1) = \frac{2m(m+1)}{(m+2)(m+3)(m+4)},\] \[P(m+3) = \frac{m+2}{m+5}P(m+2) = \frac{2m(m+1)}{(m+3)(m+4)(m+5)}.\] The pattern: the top stays \(2m(m+1)\) and the bottom is three numbers in a row ending two above the degree.</li>
+<li><strong>Result.</strong> \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\;\sim\;2m^2k^{-3}\quad\text{for large }k.\]</li>
+</ol>
+</div>
+<p class="small">Check with \(k = m\): \(\frac{2m(m+1)}{m(m+1)(m+2)} = \frac{2}{m+2}\), which matches step 6. Slide 56 rewrites the recursion as \(P(k+1) = \frac{k}{k+2}P(k)\); as the slide's own note says, the bottom should be \(k+3\).</p>
+
+<h3>Three things the result predicts</h3>
+<ol>
+<li><strong>The exponent \(\gamma = 3\) does not depend on \(m\).</strong></li>
+<li><strong>The distribution does not depend on time or on \(N\).</strong> The network keeps growing but its degree distribution stays the same: a stationary scale-free state. This fits real networks of very different ages and sizes having the same kind of distribution.</li>
+<li><strong>The coefficient is proportional to \(m^2\).</strong></li>
+</ol>
+
+<h3>Distances and clustering of the BA model</h3>
+<table class="tbl">
+<tr><th>Quantity</th><th>BA model</th><th>Random graph</th><th>Meaning</th></tr>
+<tr><td>Diameter and average distance (for \(m>1\), large \(N\))</td><td>\(\langle d\rangle\sim\dfrac{\ln N}{\ln\ln N}\)</td><td>\(\sim\ln N\)</td><td>Distances grow more slowly than in a random graph of the same size. The hubs act as shortcuts. The extra \(\ln\ln N\) only shows for large \(N\), about \(10^4\) and above.</td></tr>
+<tr><td>Clustering coefficient</td><td>\(\langle C\rangle\sim\dfrac{(\ln N)^2}{N}\)</td><td>\(\sim\dfrac1N\)</td><td>Still falls with \(N\), but the \((\ln N)^2\) factor makes it larger than in a random graph.</td></tr>
+</table>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>\(m = 2\). Exact: \(P(2) = \frac{2}{4} = 0.5\), \(P(3) = \frac{2\cdot2\cdot3}{3\cdot4\cdot5} = 0.2\), \(P(4) = \frac{12}{4\cdot5\cdot6} = 0.1\), \(P(10) = \frac{12}{10\cdot11\cdot12} = 0.0091\). The continuum formula gives \(P(10) = 2\cdot4/1000 = 0.008\), close for large \(k\). Half of all nodes still have only the 2 links they arrived with.</p>
+</div>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>\(t_i = m^2t/k^2\); \(P(k_i<k) = P(t_i>m^2t/k^2) = 1 - m^2/k^2\); differentiate: \(P(k) = 2m^2k^{-3}\).</li>
+<li>Rate equation: \(P(k) = \frac{k-1}{k+2}P(k-1)\), \(P(m) = \frac{2}{m+2}\), so \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\).</li>
+<li>\(\gamma = 3\), independent of \(m\) and of time; coefficient \(\propto m^2\).</li>
+<li>BA: \(\langle d\rangle\sim\ln N/\ln\ln N\), \(\langle C\rangle\sim(\ln N)^2/N\).</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Drill</span><span>In the continuum derivation, where does the time \(t\) disappear, and why does that matter?</span><span class="chev">›</span></summary>
+<div class="ans"><p>In \(P(k_i<k) = 1 - \frac{m^2t}{k^2}\cdot\frac1t\). The \(t\) from the growth law cancels the \(t\) from the uniform joining times. So the distribution is the same at all times: the network is in a stationary state while it grows.</p></div></details>
+<details class="q"><summary><span class="qt">Calc</span><span>For \(m = 1\), what fraction of nodes has degree 1, and degree 2?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(P(1) = \frac{2}{3}\). \(P(2) = \frac{2\cdot1\cdot2}{2\cdot3\cdot4} = \frac16\).</p></div></details>
+</section>
+
+<section>
+<h2 id="kmax"><span class="num">22</span>The largest hub and the role of the exponent</h2>
+<span class="board">Deck 14 · slides 60–67 · Deck 15 · slides 1–5</span>
+<p class="about">A real network is finite, so its largest degree is finite too. This section estimates the degree of the biggest hub, \(k_{\max}\), from the power law. It grows as a power of \(N\), far faster than in a random network. The same exponent \(\gamma\) also sorts networks into three regimes.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Normalise a power law in the discrete and the continuous form.</li>
+<li>Derive \(k_{\max} = k_{\min}N^{1/(\gamma-1)}\).</li>
+<li>Say what happens to \(k_{\max}\), ⟨k⟩ and ⟨k²⟩ for \(\gamma<2\), \(2<\gamma<3\) and \(\gamma>3\).</li>
+</ul>
+</div>
+
+<h3>Power law revisited · two ways to write it</h3>
+<table class="tbl">
+<tr><th></th><th>Discrete (degrees are whole numbers)</th><th>Continuous (degree treated as a real number)</th></tr>
+<tr><td>Form</td><td>\(p_k = Ck^{-\gamma}\), \(k = 1, 2, 3,\dots\)</td><td>\(p(k) = Ck^{-\gamma}\), \(k\ge k_{\min}\)</td></tr>
+<tr><td>Normalise</td><td>\(\sum_{k=1}^\infty p_k = 1\)</td><td>\(\int_{k_{\min}}^\infty p(k)\,dk = 1\)</td></tr>
+<tr><td>Constant</td><td>\(C = \dfrac{1}{\sum_{k=1}^\infty k^{-\gamma}} = \dfrac{1}{\zeta(\gamma)}\)</td><td>\(C = (\gamma-1)\,k_{\min}^{\gamma-1}\)</td></tr>
+<tr><td>Result</td><td>\(p_k = \dfrac{k^{-\gamma}}{\zeta(\gamma)}\)</td><td>\(p(k) = (\gamma-1)\,k_{\min}^{\gamma-1}\,k^{-\gamma}\)</td></tr>
+<tr><td>Meaning</td><td>\(p_k\) is the probability that a node has exactly \(k\) links.</td><td>Only \(\int_{k_1}^{k_2}p(k)\,dk\) has a meaning: the probability of a degree between \(k_1\) and \(k_2\).</td></tr>
+</table>
+<p class="sym">\(\zeta(\gamma) = \sum_{k=1}^\infty k^{-\gamma}\) is the Riemann zeta function, just a name for that sum. \(k_{\min}\) is the smallest degree in the network. The continuous constant is derived in the <a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the size of the largest hub</span>
+<ol class="steps">
+<li><strong>The idea.</strong> In a network of \(N\) nodes we expect about one node with degree above \(k_{\max}\). So the probability of a degree above \(k_{\max}\) is about \(1/N\): \[\int_{k_{\max}}^\infty P(k)\,dk\approx\frac1N.\] This is called the natural upper cutoff.</li>
+<li><strong>Do the integral</strong> with \(P(k) = (\gamma-1)k_{\min}^{\gamma-1}k^{-\gamma}\): \[\int_{k_{\max}}^\infty P(k)\,dk = (\gamma-1)k_{\min}^{\gamma-1}\Big[\frac{k^{-\gamma+1}}{-\gamma+1}\Big]_{k_{\max}}^\infty = \frac{k_{\min}^{\gamma-1}}{k_{\max}^{\gamma-1}}.\]</li>
+<li><strong>Set it equal to \(1/N\)</strong> and solve: \(\Big(\dfrac{k_{\max}}{k_{\min}}\Big)^{\gamma-1} = N\), so \[k_{\max} = k_{\min}\,N^{\frac{1}{\gamma-1}}.\]</li>
+</ol>
+</div>
+
+<figure class="fig"><!--plot:kmax--><figcaption>Largest expected degree against network size, on log-log axes, with \(k_{\min} = 1\). In a scale-free network it grows as a power of \(N\). In a random network it grows only like \(\ln N\). The top line, \(N - 1\), is a node linked to everyone.</figcaption></figure>
+
+<div class="card ex"><span class="tag">Numbers from the slides · the Web sample</span>
+<p>\(N\approx3\times10^5\) pages, \(k_{\min} = 1\).</p>
+<ul>
+<li>If the degrees followed an exponential \(e^{-\lambda k}\) with \(\lambda = 1\), then \(k_{\max}\approx k_{\min} + \frac{\ln N}{\lambda} = 1 + 12.6\approx14\).</li>
+<li>Scale-free with \(\gamma = 2.1\): \(k_{\max} = N^{1/1.1} = (3\times10^5)^{0.909}\approx95{,}000\).</li>
+<li>Measured: the largest in-degree in the sample is 10,721, the scale-free order of magnitude and nowhere near 14.</li>
+</ul>
+<p>In a random network hubs are effectively forbidden. In a scale-free network they come naturally.</p>
+</div>
+
+<h3>The role of the degree exponent</h3>
+<table class="tbl">
+<tr><th>\(\gamma\)</th><th>⟨k⟩</th><th>⟨k²⟩</th><th>Largest hub</th><th>Name</th></tr>
+<tr><td>\(\gamma<2\)</td><td>diverges</td><td>diverges</td><td>\(k_{\max}\) grows faster than \(N\). The hub would need more links than there are nodes.</td><td>Anomalous regime. No large network can exist here.</td></tr>
+<tr><td>\(\gamma = 2\)</td><td></td><td></td><td>\(k_{\max}\sim N\). The biggest hub is linked to a fixed fraction of all nodes.</td><td>Boundary</td></tr>
+<tr><td>\(2<\gamma<3\)</td><td>finite</td><td>diverges</td><td>\(k_{\max}\) grows more slowly than \(N\), so the hub holds a shrinking fraction of the links.</td><td>Scale-free regime. Most real scale-free networks are here (Web, actors, metabolism, protein interactions).</td></tr>
+<tr><td>\(\gamma>3\)</td><td>finite</td><td>finite</td><td>Small hubs.</td><td>Random regime. Hard to tell apart from a random network (citations, collaboration, Internet in the slides' table).</td></tr>
+</table>
+<p>The divergence conditions are those of the <a href="{{ROOT}}midsem/#moments">Mid-sem guide §1</a>: ⟨k⟩ is finite for \(\gamma>2\) and ⟨k²⟩ is finite for \(\gamma>3\). The BA model sits exactly on the edge, \(\gamma = 3\).</p>
+<p class="small">Other slides in this block: twelve measured power laws from Newman (word counts, citations, city sizes, earthquakes, wealth), the 80/20 rule of Pareto ("80% of the wealth is in the hands of the richest 20%", another name for a power law), and the table of ten real networks with their exponents. In that table the power grid is the one that is not scale-free; its degrees follow an exponential.</p>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>Discrete: \(p_k = k^{-\gamma}/\zeta(\gamma)\). Continuous: \(p(k) = (\gamma-1)k_{\min}^{\gamma-1}k^{-\gamma}\).</li>
+<li>\(\int_{k_{\max}}^\infty P(k)\,dk\approx1/N\) gives \(k_{\max} = k_{\min}N^{1/(\gamma-1)}\).</li>
+<li>Random network: \(k_{\max}\sim\ln N\). Scale-free: a power of \(N\).</li>
+<li>\(\gamma<2\) anomalous; \(2<\gamma<3\) scale-free (⟨k²⟩ diverges); \(\gamma>3\) like random.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>\(N = 10^6\), \(k_{\min} = 2\). Find \(k_{\max}\) for \(\gamma = 3\) and for \(\gamma = 2.5\).</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(\gamma = 3\): \(2\times(10^6)^{1/2} = 2000\). \(\gamma = 2.5\): \(2\times(10^6)^{1/1.5} = 2\times10^4 = 20{,}000\).</p></div></details>
+<details class="q"><summary><span class="qt">Explain</span><span>Why is \(\gamma<2\) called anomalous?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(1/(\gamma-1)>1\), so \(k_{\max}\) grows faster than \(N\). For large \(N\) the biggest hub would need more links than there are other nodes, which is impossible without repeated links.</p></div></details>
+</section>
+
+<section>
+<h2 id="sfpath"><span class="num">23</span>Distances in scale-free networks</h2>
+<span class="board">Deck 14 · slides 69–88</span>
+<p class="about">How many steps separate two nodes? For a random graph the answer was \(\ln N/\ln\langle k\rangle\). This section repeats that counting argument for any degree distribution. The only change is that a neighbour reached along a link has more links than an average node, the friendship paradox of the Mid-sem guide. With hubs, distances become even shorter than in a random graph.</p>
+
+<div class="card goal"><span class="tag">What the exam can ask</span>
+<ul>
+<li>Show that the number of second neighbours is \(z_2 = \langle k^2\rangle - \langle k\rangle\), and that it is \(\langle k\rangle^2\) for a Poisson network.</li>
+<li>Derive \(L = 1 + \dfrac{\ln(N/\langle k\rangle)}{\ln\big[(\langle k^2\rangle - \langle k\rangle)/\langle k\rangle\big]}\).</li>
+<li>State how the average distance scales with \(N\) for each range of \(\gamma\).</li>
+</ul>
+</div>
+
+<h3>Neighbours of neighbours</h3>
+<p>Recall from the <a href="{{ROOT}}midsem/#knn">Mid-sem guide §7</a>: following a link, the chance of arriving at a node of degree \(k\) is \(q_k = kP(k)/\langle k\rangle\), and the average degree of a neighbour is</p>
+<div class="eq">\[\langle k_{nn}\rangle = \sum_k k\,q_k = \frac{\langle k^2\rangle}{\langle k\rangle}.\]</div>
+<p>For a Poisson distribution with mean \(z\): \(\langle k\rangle = z\) and \(\langle k^2\rangle = z^2 + z\), so \(\langle k_{nn}\rangle = z + 1 = \langle k\rangle + 1\). This does not depend on which node we start from, which is what "uncorrelated" means.</p>
+
+<div class="card exam"><span class="tag">Derivation to learn · the average path length for any degree distribution</span>
+<ol class="steps">
+<li><strong>First neighbours.</strong> Start at a typical node \(i\). In one step it reaches \(z_1 = \langle k\rangle\) nodes.</li>
+<li><strong>Branching number.</strong> Step from \(i\) to a neighbour \(j\). Node \(j\) has \(\langle k_{nn}\rangle\) links on average, but one of them is the link we came along, which leads back to \(i\). So the number of new nodes \(j\) leads to is \[\rho = \langle k_{nn}\rangle - 1 = \frac{\langle k^2\rangle}{\langle k\rangle} - 1 = \frac{\langle k^2\rangle - \langle k\rangle}{\langle k\rangle}.\] This assumes the network is like a tree near \(i\): no two branches meet again.</li>
+<li><strong>Second neighbours.</strong> Each of the \(z_1\) first neighbours gives \(\rho\) new nodes: \[z_2 = \rho\,z_1 = \Big(\frac{\langle k^2\rangle}{\langle k\rangle} - 1\Big)\langle k\rangle = \langle k^2\rangle - \langle k\rangle.\]</li>
+<li><strong>Further shells.</strong> Each step multiplies by \(\rho\) again: \(z_3 = \rho z_2 = \rho^2z_1\), and in general \(z_d = \rho^{d-1}z_1\).</li>
+<li><strong>Stop when the network is used up.</strong> The nodes within distance \(L\) number \(z_1 + \rho z_1 + \dots + \rho^{L-1}z_1\), and the last term is the largest. Setting it to the size of the network: \[N\approx\rho^{L-1}z_1.\]</li>
+<li><strong>Take logs.</strong> \(\ln N = (L-1)\ln\rho + \ln\langle k\rangle\), so \[L = 1 + \frac{\ln(N/\langle k\rangle)}{\ln\rho} = 1 + \frac{\ln\dfrac{N}{\langle k\rangle}}{\ln\dfrac{\langle k^2\rangle - \langle k\rangle}{\langle k\rangle}}.\]</li>
+</ol>
+</div>
+<p class="sym">\(z_d\) is the number of nodes exactly \(d\) steps away. \(\rho\) is the branching number: how many new nodes each node on the edge of the explored region adds. \(L\) is the average path length.</p>
+<p><strong>Check with a Poisson network.</strong> \(\rho = \langle k\rangle + 1 - 1 = \langle k\rangle\), so \(z_2 = \langle k\rangle^2\) and \(L = 1 + \frac{\ln N - \ln\langle k\rangle}{\ln\langle k\rangle} = \frac{\ln N}{\ln\langle k\rangle}\), the random-graph result. The slides also get it directly: the nodes within distance \(d\) number \(N(d)\approx1 + \langle k\rangle + \dots + \langle k\rangle^d = \frac{\langle k\rangle^{d+1} - 1}{\langle k\rangle - 1}\), and setting \(N(d_{\max})\approx N\) with \(\langle k\rangle\gg1\) gives \(\langle k\rangle^{d_{\max}}\approx N\).</p>
+<p><strong>What hubs do.</strong> A large ⟨k²⟩ makes \(\rho\) large, so the shells grow faster and \(L\) gets smaller. In a scale-free network with \(\gamma<3\), ⟨k²⟩ grows with \(N\) (<a href="#kmax">§22</a>), and \(L\) shrinks below the random-graph value.</p>
+<p class="small">Slide 75 calls \(z_1 + z_2 + \dots + z_m\) the number of nodes "exactly at distance \(m\)"; it is the number within distance \(m\).</p>
+
+<div class="card ex"><span class="tag">Numbers</span>
+<p>\(N = 10^6\), \(\langle k\rangle = 4\).</p>
+<ul>
+<li>Poisson: \(\langle k^2\rangle = 4^2 + 4 = 20\), \(\rho = 16/4 = 4\), \(L = 1 + \frac{\ln250000}{\ln4} = 1 + \frac{12.43}{1.386} = 9.97\).</li>
+<li>With hubs, \(\langle k^2\rangle = 100\): \(\rho = 96/4 = 24\), \(L = 1 + \frac{12.43}{3.178} = 4.91\).</li>
+</ul>
+<p>Same number of nodes and links, half the distance.</p>
+</div>
+
+<h3>Small world and ultra-small world</h3>
+<table class="tbl">
+<tr><th>Exponent</th><th>Average distance \(\langle l\rangle\) grows as</th><th>Why</th></tr>
+<tr><td>\(\gamma = 2\)</td><td>constant</td><td>The biggest hub has of order \(N\) links. Most nodes are within two steps of each other through it, whatever the size.</td></tr>
+<tr><td>\(2<\gamma<3\)</td><td>\(\dfrac{\ln\ln N}{\ln(\gamma-1)}\)</td><td><strong>Ultra-small world.</strong> Most paths run through the few hubs, so distances grow more slowly than a logarithm.</td></tr>
+<tr><td>\(\gamma = 3\)</td><td>\(\dfrac{\ln N}{\ln\ln N}\)</td><td>The BA model (<a href="#bapk">§21</a>).</td></tr>
+<tr><td>\(\gamma>3\)</td><td>\(\ln N\)</td><td><strong>Small world.</strong> ⟨k²⟩ is finite, so the network behaves like a random one.</td></tr>
+</table>
+<p>For small networks such as the human protein interaction network (\(N\sim10^4\)) the four formulas give nearly the same distance. For networks the size of society or the Web the difference is large, and \(\ln N/\ln\langle k\rangle\) overestimates the real distance. The slides' table shows this: Facebook in 2011 had \(N = 7.21\times10^8\) and \(\langle k\rangle = 191.4\), so \(\ln N/\ln\langle k\rangle = 3.88\) against a measured 4.74; the Web in 2000 had \(N = 2\times10^8\), \(\langle k\rangle = 15\), giving 7.06 against a measured 6.83.</p>
+
+<h3>Error and attack tolerance (slides 86–88)</h3>
+<p>The slides show two figures from Albert, Jeong and Barabási (2000), who removed a fraction \(f\) of the nodes from an exponential (random) network and from a scale-free one.</p>
+<ul>
+<li><strong>Random failures</strong> (nodes removed at random): the scale-free network hardly notices. Its diameter stays flat, because a random node is almost always a small one.</li>
+<li><strong>Attacks</strong> (the most connected nodes removed first): the diameter of the scale-free network rises quickly and the network breaks into pieces at a small \(f\), because the hubs hold it together.</li>
+<li>The exponential network behaves the same under failure and attack, since all its nodes are alike.</li>
+</ul>
+<p>So hubs make a network robust to accidents and fragile to targeted attack. The measured Internet and Web behave like the scale-free model.</p>
+<p class="small">Slides 80–85 show pages of the Watts–Strogatz paper; that model is <a href="#ws">§26</a>.</p>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>\(\langle k_{nn}\rangle = \langle k^2\rangle/\langle k\rangle\); Poisson: \(\langle k\rangle + 1\).</li>
+<li>\(\rho = \langle k_{nn}\rangle - 1\); \(z_2 = \rho z_1 = \langle k^2\rangle - \langle k\rangle\); Poisson: \(z_2 = \langle k\rangle^2\).</li>
+<li>\(N\approx\rho^{L-1}z_1\) gives \(L = 1 + \ln(N/\langle k\rangle)/\ln\rho\).</li>
+<li>\(\langle l\rangle\): constant (\(\gamma = 2\)), \(\ln\ln N\) (\(2<\gamma<3\)), \(\ln N/\ln\ln N\) (\(\gamma = 3\)), \(\ln N\) (\(\gamma>3\)).</li>
+<li>Scale-free: robust to random failure, fragile to attack on hubs.</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Calc</span><span>A network has \(\langle k\rangle = 3\) and \(\langle k^2\rangle = 30\). How many second neighbours does a typical node have, and what is \(\rho\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(z_2 = 30 - 3 = 27\). \(\rho = 27/3 = 9\). A Poisson network with the same ⟨k⟩ would have \(z_2 = 9\).</p></div></details>
+<details class="q"><summary><span class="qt">Explain</span><span>Why do we subtract 1 from \(\langle k_{nn}\rangle\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>One of the neighbour's links is the one we arrived along. It leads back to the starting node, so it adds no new node.</p></div></details>
+</section>

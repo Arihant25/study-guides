@@ -1,0 +1,104 @@
+
+<section>
+<h2 id="start"><span class="num">·</span>Start here · what the mid-sem examined</h2>
+<p class="about">The professor wrote this list on the board before the mid-sem. Each line points to the section of this page that teaches it.</p>
+
+<table class="tbl">
+<tr><th>Syllabus item (from the board)</th><th>What it is about, in plain words</th><th>Section</th></tr>
+<tr><td>Power law \(P(k) = k^{-\beta}\): ⟨k⟩ = ?, ⟨k²⟩ = ?, critical β, range of β, "not discrete"</td><td>In many networks a few nodes have a huge number of links. We describe this with a formula called a power law and work out its average and its "average of squares".</td><td><a href="#moments">§1</a></td></tr>
+<tr><td>How \(k_{\min}\), ⟨k⟩ and β are related</td><td>One formula connects the smallest degree, the average degree and the exponent of the power law.</td><td><a href="#moments">§1</a></td></tr>
+<tr><td>Binning: linear and log (log-log scale)</td><td>How to draw a chart of the degrees so that a power law is easy to see.</td><td><a href="#binning">§2</a></td></tr>
+<tr><td>Average path length and degree of star, chain, closed chain, ring with degree k</td><td>For a few simple network shapes, how many steps it takes on average to get from one node to another.</td><td><a href="#simple">§3</a></td></tr>
+<tr><td>ER 1. Binomial, Poisson, ⟨k⟩, var(k); second moment for Poisson</td><td>A network built by coin flips. How many links a node gets, and why it follows a formula called Poisson.</td><td><a href="#er">§4</a></td></tr>
+<tr><td>ER 2. GCC, S, self-consistent equation</td><td>When a random network has one big connected piece, and how big it is.</td><td><a href="#gcc">§5</a></td></tr>
+<tr><td>ER 3. \(S \sim (\langle k\rangle - 1)^\beta\), behaviour at the critical point</td><td>How that big piece starts to grow just after it appears.</td><td><a href="#gcc">§5</a></td></tr>
+<tr><td>ER 4. ⟨l⟩, ⟨CC⟩, relation with real-world networks</td><td>Distances and triangles in a random network, compared with real networks.</td><td><a href="#erlc">§6</a></td></tr>
+<tr><td>ER 4. \(k_{nn}\), ⟨\(k_{nn}\)⟩, is ⟨\(k_{nn}\)⟩ = ⟨k⟩? (slide 67, friendship paradox, starred)</td><td>Why your friends have more friends than you, on average.</td><td><a href="#knn">§7</a></td></tr>
+<tr><td>Bifurcation + network dynamics</td><td>How a system changes over time, when it settles down, and how that behaviour can suddenly change. Then disease spreading and "flow" on a network.</td><td><a href="#fixed">§8</a> to <a href="#netdyn">§13</a></td></tr>
+</table>
+
+<div class="card watch"><span class="tag">One letter, three meanings</span>
+<p>The letter \(\beta\) (Greek "beta") is used for three different things in this course.</p>
+<ol>
+<li>In your syllabus notes, the <strong>power-law exponent</strong>: \(P(k) = k^{-\beta}\). The slides and past papers call this \(\gamma\) (Greek "gamma") instead, and so do these notes. It is the same thing.</li>
+<li>In ER item 3, the <strong>critical exponent</strong> in \(S \sim (\langle k\rangle - 1)^\beta\).</li>
+<li>In disease models, the <strong>infection rate</strong>.</li>
+</ol>
+<p>Always check which one a question means from the context.</p>
+</div>
+
+<div class="card goal"><span class="tag">Derivations from this page that past papers asked</span>
+<p>These derivations have been asked in past papers. Each one is a likely 4 to 7 mark question. Learn them in this order.</p>
+<ol>
+<li>Solve the SIS disease model and say when the disease dies out (<a href="#epi">§11</a>). 2024 mid-sem.</li>
+<li>Find fixed points, check stability, and name the bifurcation (<a href="#bif">§9</a>). 2024 mid-sem.</li>
+<li>Power law: the constant, the average ⟨k⟩ and ⟨k²⟩, and when they become infinite (<a href="#moments">§1</a>). 2024 Quiz 2.</li>
+<li>The giant-component equation and why it needs average degree above 1 (<a href="#gcc">§5</a>). 2024 Quiz 2.</li>
+<li>Binomial to Poisson (<a href="#er">§4</a>). 2024 Quiz 2.</li>
+<li>Average path length of a star (<a href="#simple">§3</a>). 2024 Quiz 1.</li>
+<li>Disease spreading on a network (<a href="#netdyn">§13</a>). 2024 mid-sem.</li>
+</ol>
+</div>
+
+<p>Sections use the same layout as on page 1, and the maths they rely on is in <a href="{{ROOT}}quiz1/#maths">section M on page 1</a>.</p>
+
+</section>
+
+
+
+<section>
+<h2 id="basics"><span class="num">0</span>Network words, recapped</h2>
+<p class="about">These terms come from the Quiz 1 guide. They are gathered here on one example graph, which §12 and §13 use again.</p>
+
+<figure class="fig">
+<svg class="gr" viewBox="0 0 320 200" role="img" aria-label="Five-node example graph"
+  data-spec='{"r":16,"nodes":{"1":[60,110],"2":[150,32],"3":[165,118],"4":[272,112],"5":[105,178]},"edges":[["1","2"],["1","5"],["2","3"],["2","4"],["3","4"],["3","5"]]}'></svg>
+<figcaption>The example network. It has 5 nodes (circles) and 6 links (lines). This is the network on the Laplacian slides, and it is used again in §12 and §13.</figcaption>
+</figure>
+
+<ul>
+<li>A <strong>node</strong> (also called a vertex) is one of the things. \(N\) is the number of nodes. Here \(N = 5\).</li>
+<li>A <strong>link</strong> (also called an edge) is a connection between two nodes. \(L\) is the number of links. Here \(L = 6\).</li>
+<li>Two nodes joined by a link are <strong>neighbours</strong>.</li>
+</ul>
+
+<h3>The adjacency matrix A</h3>
+<p>A computer stores a network as a table \(A\) with one row and one column for each node. The entry in row \(i\), column \(j\), written \(A_{ij}\), is 1 if nodes \(i\) and \(j\) are linked and 0 if not.</p>
+<div class="eq">\[A = \begin{pmatrix} 0&1&0&0&1\\ 1&0&1&1&0\\ 0&1&0&1&1\\ 0&1&1&0&0\\ 1&0&1&0&0\end{pmatrix}\]</div>
+<p>Row 1 has 1s in columns 2 and 5 because node 1 is linked to nodes 2 and 5. The table is symmetric (row \(i\) column \(j\) equals row \(j\) column \(i\)) because a link between 1 and 2 is also a link between 2 and 1.</p>
+
+<h3>Degree</h3>
+<p>The <strong>degree</strong> \(k_i\) of node \(i\) is its number of links. Here \(k_1 = 2\), \(k_2 = 3\), \(k_3 = 3\), \(k_4 = 2\), \(k_5 = 2\). It is also the sum of row \(i\) of \(A\): \(k_i = \sum_j A_{ij}\).</p>
+<p>The <strong>average degree</strong> is \(\langle k\rangle = 12/5 = 2.4\). There is a shortcut: every link has two ends, so adding up all degrees counts each link twice, and \(\sum_i k_i = 2L\). So \(\langle k\rangle = 2L/N = 12/5\).</p>
+
+<h3>Degree distribution P(k)</h3>
+<p>\(P(k)\) is the fraction of nodes that have exactly \(k\) links. Here three of the five nodes have degree 2 and two have degree 3, so \(P(2) = 3/5\) and \(P(3) = 2/5\). All other values are 0. The fractions always add up to 1. It is the network version of "what fraction of the class has 2 friends, 3 friends, and so on".</p>
+
+<h3>Path length and diameter</h3>
+<p>The <strong>distance</strong> between two nodes is the smallest number of links you must walk along to get from one to the other. Nodes 1 and 3 are not neighbours, but 1 → 2 → 3 takes 2 steps, so their distance is 2.</p>
+<p>The <strong>average path length</strong> \(\langle l\rangle\) is the distance averaged over every pair of nodes. With 5 nodes there are \(\binom52 = 10\) pairs. Six of them are neighbours (distance 1) and the other four (1–3, 1–4, 2–5, 4–5) are at distance 2. So \(\langle l\rangle = (6\times1 + 4\times2)/10 = 14/10 = 1.4\).</p>
+<p>The <strong>diameter</strong> is the largest distance between any pair. Here it is 2.</p>
+
+<h3>Clustering coefficient</h3>
+<p>Clustering measures whether your neighbours are also neighbours of each other ("are my friends friends with each other?"). For node \(i\) with \(k_i\) neighbours, there are \(\frac{k_i(k_i-1)}{2}\) possible pairs of neighbours. The clustering \(C_i\) is the fraction of those pairs that are actually linked.</p>
+<div class="eq">\[C_i = \frac{\text{number of links between neighbours of } i}{k_i(k_i-1)/2}\]</div>
+<p>Node 2 has neighbours 1, 3 and 4. The possible pairs are 1–3, 1–4, 3–4, and only 3–4 is a link. So \(C_2 = 1/3\). Node 4 has neighbours 2 and 3, one pair, and it is linked, so \(C_4 = 1\). The average over all nodes is \(\langle C\rangle = (0 + \frac13 + \frac13 + 1 + 0)/5 = \frac13\).</p>
+
+<h3>Link density p</h3>
+<p>\(p\) is the fraction of all possible links that exist. With 5 nodes there are 10 possible links and 6 exist, so \(p = 0.6\). Each node could link to \(N - 1\) others and actually links to a fraction \(p\) of them, which gives \(\langle k\rangle = p(N-1) = 0.6\times4 = 2.4\). This was a 2024 Quiz 1 question.</p>
+
+<div class="card remember"><span class="tag">What to remember</span>
+<ul>
+<li>\(N\) nodes, \(L\) links. \(k_i\) = degree of node \(i\). \(\langle k\rangle = 2L/N\).</li>
+<li>\(P(k)\) = fraction of nodes with degree \(k\).</li>
+<li>\(\langle l\rangle\) = distance averaged over all \(N(N-1)/2\) pairs. Diameter = largest distance.</li>
+<li>\(C_i\) = fraction of pairs of \(i\)'s neighbours that are linked.</li>
+<li>\(p\) = fraction of possible links present. \(\langle k\rangle = p(N-1)\).</li>
+</ul>
+</div>
+<div class="checkrow">Check yourself</div>
+<details class="q"><summary><span class="qt">Quick</span><span>A network has 8 nodes and 12 links. What is the average degree? What is the link density p?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Average degree \(= 2L/N = 24/8 = 3\). Possible links \(= 8\times7/2 = 28\), so \(p = 12/28 \approx 0.43\). Check: \(p(N-1) = 0.43\times7 = 3\).</p></div></details>
+<details class="q"><summary><span class="qt">Quick</span><span>What is the clustering of node 3 in the example network?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Node 3's neighbours are 2, 4 and 5. The pairs are 2–4, 2–5, 4–5. Only 2–4 is a link, so \(C_3 = 1/3\).</p></div></details>
+</section>
