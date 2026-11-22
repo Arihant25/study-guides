@@ -123,8 +123,8 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
 <div class="col">
 <header>
   <div class="kicker">EC5.406 · Detection theory · simple version</div>
-  <h1>Is the signal there or not? <em>That's the whole course.</em></h1>
-  <p class="lede">Each topic gives the idea in plain words, the one formula worth remembering, an example and the common traps. The full derivations are on the <a href="full.html">detailed page</a>.</p>
+  <h1>Is the signal there <em>or not?</em></h1>
+  <p class="lede">Detection theory in plain words, with only the formulas you need for the exam. The derivations are on the <a href="full.html">detailed page</a>.</p>
   <div class="hbtns">
     <a class="btn primary" href="#idea">Start reading</a>
     <a class="btn" href="#sheet">Jump to cheat sheet</a>
@@ -139,9 +139,9 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <p class="q">What is a detection problem?</p>
   <p>You get some noisy measurements and must answer a yes/no question:</p>
   <ul>
-    <li><b>Radar:</b> is there an aircraft, or just noise?</li>
-    <li><b>Phone/Wi-Fi:</b> was a 0 sent or a 1?</li>
-    <li><b>ECG:</b> is this heartbeat normal or not?</li>
+    <li>A radar asks whether there's an aircraft or just noise.</li>
+    <li>A Wi-Fi receiver asks whether a 0 or a 1 was sent.</li>
+    <li>An ECG monitor asks whether a heartbeat is normal.</li>
   </ul>
   <p>The two possible answers are called hypotheses: <span class="h0">H₀ = "nothing there"</span> and <span class="h1">H₁ = "signal there"</span>.</p>
   <div class="big">Every detector in this course works the same way: <b>compute one number from the data, compare it to a threshold, and say yes if it's bigger.</b> The topics differ only in <i>which number</i> and <i>where the threshold comes from</i>.</div>
@@ -166,7 +166,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <ul>
     <li>\(P_D + P_M = 1\): catching more means missing less.</li>
     <li>You can't make both errors small for free. Always saying "yes" means zero misses, but every noise blip is a false alarm.</li>
-    <li>So the real question is which trade-off you want. That's what the next two sections answer.</li>
+    <li>You have to choose a trade-off. Bayes and Neyman–Pearson (next two sections) are two ways of choosing it.</li>
   </ul>
   <div class="trap"><div class="lbl">Other names for the same thing</div>
     <ul><li>False alarm = Type I error = α (also called the "size")</li><li>Miss = Type II error = β; detection = "power" = 1 − β</li></ul></div>
@@ -200,10 +200,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <p>In communications you know 0s and 1s are sent equally often, and you know what each mistake costs. Bayes uses that knowledge to minimise the average cost.</p>
   <div class="formula"><div class="lbl">Bayes threshold</div>
     \[\gamma=\frac{P(\text{no signal})\times\text{cost of a false alarm}}{P(\text{signal})\times\text{cost of a miss}}\]</div>
-  <ul>
-    <li><b>All mistakes cost the same</b> → γ = P(H₀)/P(H₁). This is called <b>MAP</b> (pick the more probable answer).</li>
-    <li><b>Also equal priors</b> → γ = 1. This is called <b>ML</b> (pick the answer that best explains the data).</li>
-  </ul>
+  <p>If both mistakes cost the same, γ = P(H₀)/P(H₁). This is the <b>MAP</b> detector: pick the more probable answer. If the priors are also equal, γ = 1, and you get the <b>ML</b> detector: pick the answer that best explains the data.</p>
   <div class="big">Priors and costs <b>only move the threshold</b>. The test number stays the same.</div>
   <div class="eg"><div class="lbl">Intuition</div>If the signal is usually there (P(H₁) = ¾), the threshold drops and you say "yes" more easily. You accept a few more false alarms to cut misses.</div>
   <p>With <b>more than two</b> answers (M hypotheses), pick the one with the lowest expected cost. With equal costs that means picking the most probable one.</p>
@@ -233,7 +230,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
 <!-- DC -->
 <section id="dc">
   <h2>The main example: a constant in noise</h2>
-  <p class="q">This one example appears everywhere. Know it cold.</p>
+  <p class="q">Most other topics build on this example.</p>
   <p>You get N samples. With no signal they're pure noise (variance σ²). With the signal, each sample has a constant A added.</p>
   <div class="big">The test: <b>average the samples, and say yes if the average is big.</b></div>
   <p>Averaging N samples shrinks the noise by a factor of N but keeps A, so more samples means better detection.</p>
@@ -269,7 +266,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <ul>
     <li>It always goes from (0,0) to (1,1) and stays above the diagonal.</li>
     <li>It's concave (bulges up), and its slope at any point equals the threshold used there.</li>
-    <li><b>Using it:</b> the spec fixes P<sub>FA</sub>, you need some P<sub>D</sub>, so read off the d² (signal strength) you need.</li>
+    <li>To design with it, take P<sub>FA</sub> from the spec and the P<sub>D</sub> you need, then read off the d² (signal strength) that gets you there.</li>
   </ul>
   <div class="trap"><div class="lbl">Trap</div>Only compare two detectors at the <b>same</b> false-alarm rate.</div>
 </section>
@@ -298,7 +295,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <ul>
     <li>It's called a "matched filter" because you can build it as a filter whose response is the signal flipped in time, sampled at the end.</li>
     <li>It gives the highest possible SNR of any linear filter.</li>
-    <li><b>Surprise:</b> in white noise only the signal's <b>energy</b> matters, not its shape. A pulse, a chirp and a sine with equal energy are equally easy to detect.</li>
+    <li>In white noise only the signal's <b>energy</b> matters. A pulse, a chirp and a sine with equal energy are equally easy to detect.</li>
   </ul>
   <h3>Coloured (correlated) noise</h3>
   <p>If the noise samples are correlated, or some are noisier than others:</p>
@@ -309,7 +306,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <ul>
     <li>Now the signal's <b>shape matters</b>. Put the signal's energy where the noise is weakest.</li>
     <li>If some samples are noisier, trust them less (divide each by its noise variance).</li>
-    <li>If two noise samples are almost identical, subtracting them cancels the noise. Correlated noise can actually <i>help</i> you.</li>
+    <li>If two noise samples are almost identical, subtracting them cancels the noise. So correlated noise can make detection easier.</li>
   </ul>
 </section>
 
@@ -348,13 +345,13 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <h2>When something is unknown</h2>
   <p class="q">What if you don't know the amplitude, the phase or the noise level?</p>
   <p>The likelihood ratio needs those values, so you can't compute it directly. Three situations:</p>
-  <h3>1. Lucky case: one test works for every value (UMP)</h3>
+  <h3>1. One test works for every value (UMP)</h3>
   <p>If you know A is <b>positive</b> but not its size, "average is big → yes" works for every A &gt; 0, and the threshold doesn't depend on A. That's called <b>uniformly most powerful (UMP)</b>.</p>
   <div class="trap"><div class="lbl">Trap</div>If A could be <b>positive or negative</b>, no single test is best. "Big average" catches positive A and "small average" catches negative A. <b>No UMP exists</b> for two-sided problems.</div>
   <h3>2. Fix 1: average over the unknown (Bayesian)</h3>
   <p>Assume a probability for each possible A and average it out.</p>
   <h3>3. Fix 2: plug in your best guess (GLRT)</h3>
-  <p>Estimate the unknown from the data (its maximum-likelihood estimate), then use the normal test as if that guess were true. It's the most-used approach in practice.</p>
+  <p>Estimate the unknown from the data (its maximum-likelihood estimate), then use the normal test as if that guess were true. It's usually easier to carry out than the Bayesian route.</p>
   <div class="eg"><div class="lbl">Example: DC level, A unknown, could be ±</div>
     <ul>
       <li>Both fixes give the same answer: <b>square the average</b>, i.e. say yes if |average| is big. Sign doesn't matter any more.</li>
@@ -385,7 +382,7 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
     <li>The real error rates come out <b>a bit better</b> than you asked for (the score overshoots the line). The guarantee is that the two real errors together are at most α + β.</li>
     <li>It needs about <b>half</b> the samples of a fixed-N test on average, or even fewer. That's why it was a wartime secret.</li>
     <li>Average samples needed ≈ (how far the line is) ÷ (how fast the score drifts). The drift is the <b>KL divergence</b>, a "distance" between the two distributions.</li>
-    <li><b>Downsides:</b> any single run can take a long time, you must know both distributions exactly, and it assumes independent samples.</li>
+    <li>It has costs too. A single run can take a long time, you must know both distributions exactly, and the theory assumes independent samples.</li>
   </ul>
 </section>
 
@@ -394,12 +391,12 @@ footer{margin:64px 0 80px;padding-top:18px;border-top:1px solid var(--border);co
   <h2>Extra ideas from the textbook (Kay)</h2>
   <p class="q">Short versions of the book results the lectures point to.</p>
   <ul>
-    <li><b>Sine wave with unknown phase:</b> correlate with both a cosine and a sine, square and add. That's the <b>periodogram</b> (an FFT bin). Unknown frequency too → look for the <b>tallest FFT peak</b>. This is why every radar and sonar receiver uses an FFT.</li>
-    <li><b>The more you don't know, the more you lose:</b> known signal (matched filter) &gt; unknown amplitude &gt; unknown phase &gt; unknown frequency &gt; know only the energy (energy detector).</li>
-    <li><b>GLRT for lots of data:</b> 2 × log of the GLRT follows a chi-squared distribution when there's no signal, so you can always set the threshold.</li>
-    <li><b>Weak signals (LMP test):</b> use the slope of the log-likelihood at "no signal". For the DC level it's just the average again.</li>
-    <li><b>Non-Gaussian noise:</b> pass each sample through a nonlinearity, then use a matched filter. Spiky noise (Laplacian, Cauchy) → <b>clip or ignore huge samples</b>, because a big spike is probably noise.</li>
-    <li><b>Fading channels:</b> error rate falls only like 1/SNR instead of exponentially. That's why fading is so damaging.</li>
+    <li>For a sine wave with unknown phase, correlate with both a cosine and a sine, then square and add. That's the <b>periodogram</b> (one FFT bin). If the frequency is unknown too, look for the tallest FFT peak, which is why nearly all narrowband detectors contain an FFT.</li>
+    <li>Each unknown costs some performance. From best to worst: known signal (matched filter), unknown amplitude, unknown phase, unknown frequency, and knowing only the energy (energy detector).</li>
+    <li>With lots of data, 2 × log of the GLRT follows a chi-squared distribution when there's no signal, so you can always set the threshold.</li>
+    <li>For weak signals, the LMP test uses the slope of the log-likelihood at "no signal". For the DC level that's the average again.</li>
+    <li>In non-Gaussian noise, pass each sample through a nonlinearity and then use a matched filter. With spiky noise (Laplacian, Cauchy) the nonlinearity clips or ignores huge samples, because a big spike is probably noise.</li>
+    <li>On a fading channel the error rate falls only like 1/SNR, compared with exponentially without fading.</li>
   </ul>
 </section>
 
