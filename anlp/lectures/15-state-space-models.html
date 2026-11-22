@@ -1,0 +1,1680 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Lecture 15 · State Space Models — ANLP Study Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Lecture 15 of Advanced NLP, Monsoon 2026 IIIT-H: state space models, from the continuous SSM and discretization through the recurrent and convolutional views, HiPPO, S4 and S4D, to Mamba's selective scan.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://arihant25.github.io/anlp-study-guide/lectures/15-state-space-models.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="State space models: from S4 to Mamba | ANLP">
+  <meta property="og:description"
+    content="A first-principles tour of state space models: discretization, the RNN and convolution views, HiPPO memory, S4, diagonal SSMs, and Mamba's input-dependent selection and parallel scan.">
+  <meta property="og:url" content="https://arihant25.github.io/anlp-study-guide/lectures/15-state-space-models.html">
+  <meta property="og:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L15-state-space-models/slide-01.png">
+  <meta property="og:image:alt" content="Advanced NLP State Space Models lecture title slide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="State space models: from S4 to Mamba | ANLP">
+  <meta name="twitter:description"
+    content="How a linear recurrence from control theory became Mamba: every step of the lecture, worked through with small numbers.">
+  <meta name="twitter:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L15-state-space-models/slide-01.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP Lecture 15: State Space Models","url":"https://arihant25.github.io/anlp-study-guide/lectures/15-state-space-models.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"lecture notes","educationalLevel":"graduate"}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="rail-left">
+      <div class="brand">
+        <a href="../index.html" style="text-decoration:none;color:inherit">an attention<br><em>lab notebook</em></a>
+        <small>ANLP · Monsoon '26</small>
+      </div>
+      <nav>
+        <div class="grp">On this page</div>
+        <a href="#deck">The deck at a glance</a>
+        <a href="#why">§1 · Why state space models</a>
+        <a href="#ssm">§2 · The continuous SSM</a>
+        <a href="#discrete">§3 · Discretization, two views</a>
+        <a href="#hippo">§4 · HiPPO and S4</a>
+        <a href="#diag">§5 · Diagonal A, and language</a>
+        <a href="#selection">§6 · Mamba: selection</a>
+        <a href="#scan">§7 · The selective scan</a>
+        <a href="#block">§8 · The Mamba block, results</a>
+        <a href="#wrap">§9 · Comparison and takeaways</a>
+
+        <div class="grp">Elsewhere</div>
+        <a href="14-rnn-advances.html">← Lecture 14: RNN Advances</a>
+        <a href="16-diffusion-lms.html">Next: Lecture 16 · Diffusion LMs →</a>
+        <a href="../assignments/3-mamba-deltanet-gnn.html#ssm">Assignment 3 · SSMs to Mamba</a>
+        <a href="../seminars/sian-shinjo-linear-rnns.html">Seminar · Linear RNNs</a>
+        <a href="../index.html">Home</a>
+      </nav>
+    </aside>
+
+    <div class="topbar">
+      <div class="brand"><a href="../index.html" style="color:inherit;text-decoration:none">an attention <em>lab
+            notebook</em></a></div>
+      <button class="theme-toggle" onclick="__toggleTheme()">◑ dark</button>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="kicker">Lecture 15 · 48 slides</div>
+        <h1>State space models: <em>train like a convolution, generate like an RNN.</em></h1>
+        <p class="lead">
+          A Transformer pays for its perfect memory with a KV cache that
+          grows with every token and attention that costs <em>O</em>(<em>L</em><sup>2</sup>).
+          State space models keep a fixed-size state instead. This
+          lecture starts from the continuous-time SSM of control theory,
+          turns it into a recurrence you can run token by token and a
+          convolution you can train in parallel, shows how HiPPO and S4
+          gave that state a memory that lasts, and ends with Mamba,
+          which lets each token decide what the state keeps.
+        </p>
+        <div class="meta">
+          <span class="pill heat">Lecture 15</span>
+          <span class="pill">48 slides</span>
+          <span class="pill">Manish Shrivastava · Aparajitha</span>
+        </div>
+      </section>
+
+      <section id="deck">
+        <h2><span class="num">§0</span>The deck at a glance</h2>
+<p class="section-intro">
+          The deck has four numbered parts. Slides 1–2 place the lecture
+          right after the one on modern RNNs. Part 1 (slides 3–5) asks why
+          we need anything beyond Transformers and answers with the Long
+          Range Arena benchmark and a table of what each classic sequence
+          model gets wrong. Part 2 (slides 6–19) builds the state space
+          model from scratch. It starts as a differential equation, gets
+          discretized into a linear recurrence, and turns out to be a long
+          convolution too. Then it becomes a layer you can stack, and the
+          part ends with why the naive version does not work. Part 3
+          (slides 20–29) fixes the two problems. HiPPO picks an
+          <em>A</em> matrix that remembers, S4 computes the convolution
+          kernel fast, and S4D shows that a diagonal <em>A</em> is enough.
+          H3 then shows that these models still fall short on language.
+          Part 4 (slides 30–43) is Mamba. It makes the SSM's parameters
+          depend on the input, pays for that with a hardware-aware parallel
+          scan, and wraps it into one block. Slides 44–48 compare all the
+          models, list the takeaways and give reading material.
+        </p>
+        <p>
+          One distinction runs through the whole lecture, so it is worth
+          fixing now. If the SSM's matrices are the same at every time step
+          (a <em>linear time-invariant</em>, or LTI, system), the model can
+          be computed as a convolution and trained fast, but it treats every
+          token the same way. If the matrices change with the input, as in
+          Mamba, the model can choose what to remember, but the convolution
+          is gone and you need a scan instead. S4 sits on one side of this
+          line and Mamba on the other.
+        </p>
+        <div class="callout gotcha">
+          <div class="callout-label">⚠ Notation</div>
+          <p>The deck uses two notations. Up to slide 29 (following S4), the input is <em>u</em>, the state is
+            <em>x</em> and the output is <em>y</em>. From slide 33 on (following Mamba), the input is
+            <em>x</em> and the state is <em>h</em>. The borrowed diagrams on slides 7, 10–12, 26 and 40 already use
+            the Mamba letters. Same model, different letters.</p>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="why">
+        <h2><span class="num">§1</span>Why state space models</h2>
+        <p class="section-intro">
+Every sequence model before this lecture gives up something.
+          RNNs train slowly and forget, CNNs see only a window, and
+          Transformers cost <em>L</em><sup>2</sup>. SSMs are pitched as a
+          way to keep the good parts of all three.
+        </p>
+
+        <div class="slide" id="s1">
+          <div class="slide-frame">
+            <div class="tag">Slide 01 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-01.png"
+              alt="Title slide: State Space Models, Advanced NLP M26. Manish Shrivastava + Aparajitha, IIIT Hyderabad logo, October 26, 2026.">
+            <div class="slide-caption">slide 01 · title</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Lecture 15 of Advanced NLP Monsoon 2026, given on 26 October 2026. The topic is state space models
+              (SSMs), the family that leads to Mamba.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s2">
+          <div class="slide-frame">
+            <div class="tag">Slide 02 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-02.png"
+              alt="Where we are: from modern RNNs (L20) to state space models (today). Left, last lecture: fixed-size state so O(1) memory per generated token (no KV cache); linear recurrences can be trained in parallel with a scan; linear attention, RetNet, RWKV, LRU, Griffin, xLSTM, GLA; the catch: a fixed state limits recall. Right, today: 1. Why SSMs? Very long-range dependencies. 2. SSM basics: continuous to discrete to recurrence / convolution. 3. HiPPO and S4: memory that lasts, computed fast. 4. Mamba: selection and a hardware-aware scan. 5. Mamba-2: state space duality (SSMs and attention). 6. 2025–26: hybrids, Mamba-3, limitations.">
+            <div class="slide-caption">slide 02 · recap and plan</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>A recap of the previous lecture on RNNs and the plan for this one. The deck numbers the previous
+              lecture "L20". In this guide it is <a href="14-rnn-advances.html">Lecture 14, RNN Advances</a>.</p>
+            <h4>Why the recap matters here</h4>
+            <p>The left column is the whole motivation in four lines. A model with a fixed-size state needs the
+              same memory for token 10 and for token 100,000, because it never looks back at old tokens. It only
+              updates its state. A Transformer, by contrast, keeps every key and value it has seen. If the state
+              update is <em>linear</em> in the state, training can still run in parallel using a scan. SSMs are
+              exactly such linear recurrences, but they come with a theory, borrowed from signal processing, for
+              choosing the recurrence so that the state remembers far back.</p>
+            <p>The last bullet is the price, and it comes back at the end of the lecture. A state of fixed size can
+              only hold so much, so a recurrent model cannot recall arbitrary old details the way attention can.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>Items 5 and 6 of the plan (Mamba-2 and the 2025–26 models) do not get their own slides in this
+                deck. They appear only in the comparison table on slide 44 and the takeaways on slide 45, so this
+                guide covers them there.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s3">
+          <div class="slide-frame">
+            <div class="tag">Slide 03 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-03.png"
+              alt="Part 1: Why state space models?">
+            <div class="slide-caption">slide 03 · part 1 divider</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Section divider for Part 1, the motivation.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s4">
+          <div class="slide-frame">
+            <div class="tag">Slide 04 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-04.png"
+              alt="The long-range problem: Long Range Arena (LRA), a stress test for Transformers. LRA has 6 tasks with sequences of 1K–16K steps: ListOps, text, retrieval, image, Pathfinder, Path-X. Path-X: a 128 × 128 image fed pixel by pixel, so 16,384 steps. Are the two dots connected by a dashed path? Every Transformer variant in LRA scored at chance (50%) on Path-X. Right: a black Path-X example image with white dashed curves and two white dots.">
+            <div class="slide-caption">slide 04 · Long Range Arena and Path-X</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Long Range Arena (LRA) is a benchmark of six tasks with sequences of 1K to 16K steps. The hardest,
+              Path-X, flattens a 128 × 128 image into a sequence of 16,384 pixels and asks whether two dots are
+              joined by a dashed path. No Transformer variant did better than coin-flipping on it.</p>
+            <h4>Why Path-X is so hard for a sequence model</h4>
+            <p>A person solves this by tracing the line with their eye. A sequence model sees the image one pixel
+              at a time, row by row. Two neighbouring pixels of the same dash can be 128 steps apart (one row up),
+              and the two dots can be more than 10,000 steps apart. To answer, the model has to combine evidence
+              spread over the whole sequence, with no local shortcut.</p>
+            <p>For a Transformer, length itself is the first problem. One attention matrix over 16,384 tokens has
+              16,384<sup>2</sup> ≈ 2.7 × 10<sup>8</sup> entries, about 1.1 GB in FP32 for a single head in a single
+              layer. The "efficient Transformers" in LRA approximate attention to fit, and on Path-X none of them
+              learned anything.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>Path-X is the benchmark to remember. Slide 25 shows S4 as the first model to solve it, which is
+                what put SSMs on the map.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s5">
+          <div class="slide-frame">
+            <div class="tag">Slide 05 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-05.png"
+              alt="The ideal sequence layer? Each classic family gets something wrong. Table with columns Parallel training, Cost per new token, Inference memory, Long context. RNN / LSTM: sequential (cross), O(1), O(1) state, vanishing grads (cross). CNN: tick, O(window), O(window), fixed window (cross). Transformer: tick but O(L²), O(L), O(L) KV cache, tick. Wish list: tick, O(1), O(1), tick. Callout: The SSM promise: train like a CNN (parallel convolution), generate like an RNN (fixed-size state), with a principled long memory.">
+            <div class="slide-caption">slide 05 · what each family gets wrong</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>A scorecard of RNNs, CNNs and Transformers on four properties, and the wish list that SSMs are meant
+              to meet. The wish is parallel training, constant cost and memory per generated token, and long context.</p>
+            <h4>Reading the table row by row</h4>
+            <ul>
+              <li><strong>RNN / LSTM.</strong> Generation is cheap because the state has a fixed size. But step
+                <em>t</em> needs the state from step <em>t</em> − 1, so training cannot run over positions in
+                parallel, and gradients through many steps vanish (the problem LSTMs were built to soften, not
+                solve).</li>
+              <li><strong>CNN.</strong> All positions are computed at once, which is great for training. But each
+                output sees only a window of inputs, so anything older than the window is invisible.</li>
+              <li><strong>Transformer.</strong> Parallel and sees everything. But attention compares every pair of
+                tokens, so training costs <em>O</em>(<em>L</em><sup>2</sup>), and generating token <em>L</em>
+                means reading a KV cache of length <em>L</em>.</li>
+            </ul>
+            <p>The SSM promise in the callout is a direct answer. The same model will be computed as a convolution
+              during training (the CNN column) and as a recurrence during generation (the RNN column). Slides
+              15–17 show why one model can be both. "Principled long memory" refers to HiPPO in Part 3.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="ssm">
+        <h2><span class="num">§2</span>The state space model</h2>
+        <p class="section-intro">
+Before any deep learning, an SSM is a pair of equations from
+          control theory. A hidden state evolves over time, input pushes on
+          it, and the output is read off it.
+        </p>
+
+        <div class="slide" id="s6">
+          <div class="slide-frame">
+            <div class="tag">Slide 06 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-06.png"
+              alt="Part 2: State space models: the basics.">
+            <div class="slide-caption">slide 06 · part 2 divider</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Section divider for Part 2, which builds the SSM from scratch.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s7">
+          <div class="slide-frame">
+            <div class="tag">Slide 07 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-07.png"
+              alt="State Space Model diagram: a continuous input sequence x(t), drawn as a red wave, goes into a dark box labelled State Space Model (SSM), which outputs a continuous output sequence y(t), drawn as a purple wave. Caption: it takes a continuous input sequence and predicts a continuous output sequence. Credit: Intuition behind Mamba and State Space Models, Maarten Grootendorst.">
+            <div class="slide-caption">slide 07 · a map from signal to signal</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>An SSM takes a continuous input signal and produces a continuous output signal. This diagram uses
+              <em>x</em>(<em>t</em>) for the input, as Mamba does.</p>
+            <h4>What "continuous" buys you</h4>
+            <p>Text is not continuous. It is a list of tokens. The trick of the whole lecture is to define the
+              model on continuous time first and only then sample it at the token positions. The continuous view
+              is where the good choices come from (which matrix gives long memory, slide 23), and the sampled view
+              is what you actually compute (slide 14).</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s8">
+          <div class="slide-frame">
+            <div class="tag">Slide 08 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-08.png"
+              alt="SSM Characteristics. SSMs are continuous: the SSM itself is a differential equation, so it can simulate continuous processes, handle missing data and adapt to different sampling rates. SSMs are recurrent: the SSM can be discretized into a linear recurrence and simulated during inference as a stateful recurrent model with constant memory and computation per time step. SSMs are convolutional: SSMs are linear time-invariant systems that can be represented as a continuous convolution, and the discrete-time version can be parallelized during training using discrete convolutions. Credit: Modeling Sequences with Structured State Spaces, Albert Gu.">
+            <div class="slide-caption">slide 08 · continuous, recurrent, convolutional</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Three properties of SSMs, from Albert Gu's thesis. They are continuous (a differential equation),
+              recurrent (they can be stepped one token at a time with constant memory) and convolutional (an LTI
+              SSM is a convolution, which trains in parallel).</p>
+            <h4>Why each one matters</h4>
+            <ul>
+              <li><strong>Continuous.</strong> Because the model lives in continuous time, the sampling step is a
+                parameter you choose. If samples arrive twice as fast, you halve the step. Mamba later turns this
+                step into something each token sets for itself.</li>
+              <li><strong>Recurrent.</strong> This is the RNN column of slide 5. Constant cost per token at
+                generation time.</li>
+              <li><strong>Convolutional.</strong> This is the CNN column, with one difference. The convolution
+                kernel is as long as the whole sequence, so there is no window limit.</li>
+            </ul>
+            <p>Keep in mind that the third property needs the system to be time-invariant. Slide 16 makes that
+              precise, and slide 33 is where Mamba gives it up.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s9">
+          <div class="slide-frame">
+            <div class="tag">Slide 09 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-09.png"
+              alt="The state space model: a classic from control theory and signal processing. Boxed equations: x&#x27;(t) = A x(t) + B u(t), y(t) = C x(t) + D u(t). A map from a function u(t) to a function y(t) through a hidden state x(t). Bullets: u(t) in R: input signal (one channel). x(t) in R^N: hidden state, the model&#x27;s memory. A (N × N): how the state evolves on its own. B: how the input is written into the state. C: how the output is read from the state. Du: a skip connection (often dropped). Callout: In deep learning A, B, C, D are learned. One SSM maps 1-D to 1-D, so we run one copy per channel.">
+            <div class="slide-caption">slide 09 · the two equations</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mtable columnalign="left">
+                  <mtr><mtd>
+                    <msup><mi>x</mi><mo>′</mo></msup><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo>
+                    <mi>A</mi><mi>x</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>+</mo><mi>B</mi><mi>u</mi><mo>(</mo><mi>t</mi><mo>)</mo>
+                  </mtd></mtr>
+                  <mtr><mtd>
+                    <mi>y</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo>
+                    <mi>C</mi><mi>x</mi><mo>(</mo><mi>t</mi><mo>)</mo><mo>+</mo><mi>D</mi><mi>u</mi><mo>(</mo><mi>t</mi><mo>)</mo>
+                  </mtd></mtr>
+                </mtable>
+              </math>
+            </div>
+            <p>The first equation says how fast the state changes. The second says how to read the output.</p>
+            <h4>Shapes, for one channel</h4>
+            <table>
+              <thead>
+                <tr><th>Symbol</th><th>Shape</th><th>Job</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><em>u</em>(<em>t</em>)</td><td>scalar</td><td>the input at time <em>t</em></td></tr>
+                <tr><td><em>x</em>(<em>t</em>)</td><td><em>N</em></td><td>the state, the model's memory</td></tr>
+                <tr><td><em>A</em></td><td><em>N</em> × <em>N</em></td><td>how the state changes on its own (decay, rotation, mixing)</td></tr>
+                <tr><td><em>B</em></td><td><em>N</em> × 1</td><td>how the input is written into each state dimension</td></tr>
+                <tr><td><em>C</em></td><td>1 × <em>N</em></td><td>how the state dimensions are combined into the output</td></tr>
+                <tr><td><em>D</em></td><td>scalar</td><td>a direct path from input to output</td></tr>
+              </tbody>
+            </table>
+            <h4>A one-number example</h4>
+            <p>Take <em>N</em> = 1, <em>A</em> = −1, <em>B</em> = 1 and no input. The equation
+              <em>x</em>′ = −<em>x</em> says the state shrinks at a rate equal to its size, so it decays
+              exponentially, <em>x</em>(<em>t</em>) = <em>x</em>(0) <em>e</em><sup>−<em>t</em></sup>. A negative
+              <em>A</em> means "forget slowly". A more negative <em>A</em> forgets faster. If <em>A</em> were
+              positive the state would blow up. With <em>N</em> state dimensions, <em>A</em> can hold many decay
+              speeds at once, and that is how the state remembers both recent and older input.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>One SSM maps one scalar signal to one scalar signal. A language model has <em>H</em> channels
+                (the hidden size), so the layer runs <em>H</em> independent SSMs side by side, one per channel. The
+                <em>N</em> here is the state size <em>per channel</em>, not the model width. Slide 18 shows how the
+                channels then get mixed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s10">
+          <div class="slide-frame">
+            <div class="tag">Slide 10 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-10.png"
+              alt="SSM Equations. State equation: describes how state changes based on input, x&#x27;(t) = Ax(t) + Bu(t). Output equation: describes how state is translated to the output, y(t) = Cx(t) + Du(t).">
+            <div class="slide-caption">slide 10 · state equation and output equation</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The same two equations with their names. The <em>state equation</em> updates the memory, the
+              <em>output equation</em> reads it.</p>
+            <h4>How to think about the split</h4>
+            <p>The split is the same as in an RNN. Writing to memory and reading from memory are separate steps
+              with separate parameters. <em>B</em> controls writing, <em>C</em> controls reading, and <em>A</em>
+              controls what happens to the memory in between. Mamba will later make <em>B</em> and <em>C</em>
+              depend on the current token, so the model can decide per token what to write and what to read.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s11">
+          <div class="slide-frame">
+            <div class="tag">Slide 11 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-11.png"
+              alt="SSM Visually. Top: x&#x27;(t) = Ax(t) + Bu(t) drawn as h&#x27;(t) (state update) = A times h(t) (how the current state evolves over time) + B times x(t) (how the input influences the state), with A drawn as a square grid, h(t) as a grid and B as a row. Bottom: y(t) = Cx(t) + Du(t) drawn as y(t) (output) = C times h(t) (how the current state translates to the output) + D times x(t) (how the input directly influences the output). Credit: Maarten Grootendorst.">
+            <div class="slide-caption">slide 11 · the equations as matrix pictures</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The same two equations drawn as coloured matrices, from Grootendorst's visual guide. Here the state is
+              called <em>h</em> and the input <em>x</em>.</p>
+            <h4>What the picture adds</h4>
+            <p>It labels each term with its job, which is the useful part. <em>A</em> times the state is "how the
+              current state evolves", <em>B</em> times the input is "how the input influences the state",
+              <em>C</em> times the state is "how the state becomes the output", and <em>D</em> times the input is
+              the shortcut. The grids are schematic. The diagram draws the state as a grid and <em>A</em> as
+              larger than <em>N</em> × <em>N</em>, which you should not read as real shapes. Use the table on
+              slide 9 for that.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s12">
+          <div class="slide-frame">
+            <div class="tag">Slide 12 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-12.png"
+              alt="SSM Visually, block diagram. Input x(t) goes through B (multiply) to a sum node, then to the state h (state representation). The state feeds through A (multiply) back into the sum node, forming a loop. The state also goes through C (multiply) to a second sum node that produces the output y(t). A top path takes x(t) through D (multiply) directly to the output sum node. Credit: Maarten Grootendorst.">
+            <div class="slide-caption">slide 12 · the SSM as a block diagram</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The SSM as a signal-flow diagram. The input goes through <em>B</em> into the state, the state loops
+              back to itself through <em>A</em>, the state goes out through <em>C</em>, and <em>D</em> skips the
+              state entirely.</p>
+            <h4>Why the loop matters</h4>
+            <p>The loop through <em>A</em> is where memory lives. Without it the state would be just
+              <em>B</em> times the current input, and the model would see one time step only. With it, every past
+              input keeps circulating, scaled by <em>A</em> each time around. Whether it fades, persists or explodes
+              depends on <em>A</em>, which is the question Part 3 answers.</p>
+            <p>The <em>D</em> path is a residual connection inside the layer. In practice it is often dropped,
+              because the block around the SSM already has a residual (slide 18).</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s13">
+          <div class="slide-frame">
+            <div class="tag">Slide 13 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-13.png"
+              alt="A concrete example: a mass on a spring. State = (position, velocity), input = force. Newton: m y&#x27;&#x27;(t) = u(t) − b y&#x27;(t) − k y(t). As an SSM with x = [y, y&#x27;]^T: A = [[0, 1], [−k/m, −b/m]], B = [0, 1/m]^T, C = [1 0]. Bullets: C reads out the position. The force enters through B into the velocity. A couples them (spring + friction). Right: two plots, Force u_k with two smooth bumps up to 1.0, and Position y_k, a smooth wave rising to about 0.015 and back. Example and plot from Rush and Karamcheti, The Annotated S4 (blog); here k = 40, b = 5, m = 1.">
+            <div class="slide-caption">slide 13 · mass on a spring</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>A physical system written as an SSM. A mass on a spring with friction is pushed by a force
+              <em>u</em>(<em>t</em>). The state is its position and velocity, and the output is its position.</p>
+            <h4>Reading each matrix</h4>
+            <p>With <em>k</em> = 40, <em>b</em> = 5, <em>m</em> = 1 as on the slide,</p>
+            <ul>
+              <li><em>A</em> = [[0, 1], [−40, −5]]. The first row says "the rate of change of position is the
+                velocity". The second row says "the velocity changes by −40 × position (the spring pulls back)
+                and −5 × velocity (friction slows it)".</li>
+              <li><em>B</em> = [0, 1]<sup>⊤</sup>. The force changes only the velocity directly (Newton's
+                <em>F</em> = <em>ma</em>). Position changes only because velocity does.</li>
+              <li><em>C</em> = [1, 0]. The output picks the first state entry, the position, and ignores
+                velocity.</li>
+            </ul>
+            <h4>What the plot shows</h4>
+            <p>Each push of force (top) moves the mass, and the position (bottom) keeps responding after the force
+              has stopped. That lag is the point. The output at time <em>t</em> depends on inputs from earlier,
+              carried forward by the state. A sequence model wants exactly this, with <em>A</em>, <em>B</em>,
+              <em>C</em> learned instead of set by physics.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="discrete">
+        <h2><span class="num">§3</span>Discretization and the two views</h2>
+        <p class="section-intro">
+Tokens arrive at discrete steps, so the continuous model has to be
+          sampled. Once sampled, the same model can be computed in two ways,
+          and the lecture uses each for a different job.
+        </p>
+
+        <div class="slide" id="s14">
+          <div class="slide-frame">
+            <div class="tag">Slide 14 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-14.png"
+              alt="Discretization: from functions to sequences, u_k = u(kΔ). Pick a step size Δ (learned). This turns (Δ, A, B) into discrete (Ā, B̄). Zero-order hold (used by Mamba): Ā = exp(ΔA), B̄ = (ΔA)^−1 (exp(ΔA) − I) ΔB. S4 used the bilinear rule. Any rule works: it is just the first step of the forward pass. Right: a smooth curve u over time t with orange sample points spaced Δ apart, labelled samples u_k. Callout: Intuition (stable A): small Δ gives Ā ≈ I: keep the state, long memory. Large Δ gives Ā ≈ 0: forget the past, focus on the current input.">
+            <div class="slide-caption">slide 14 · zero-order hold and the step size Δ</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>To get a sequence model, sample the signal every Δ time units and convert (Δ, <em>A</em>,
+              <em>B</em>) into discrete matrices (<em>Ā</em>, <em>B̄</em>). Mamba uses the zero-order hold rule</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mtable columnalign="left">
+                  <mtr><mtd>
+                    <mover><mi>A</mi><mo>¯</mo></mover><mo>=</mo>
+                    <msup><mi>e</mi><mrow><mi>Δ</mi><mi>A</mi></mrow></msup>
+                  </mtd></mtr>
+                  <mtr><mtd>
+                    <mover><mi>B</mi><mo>¯</mo></mover><mo>=</mo>
+                    <msup><mrow><mo>(</mo><mi>Δ</mi><mi>A</mi><mo>)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup>
+                    <mo>(</mo><msup><mi>e</mi><mrow><mi>Δ</mi><mi>A</mi></mrow></msup><mo>−</mo><mi>I</mi><mo>)</mo>
+                    <mi>Δ</mi><mi>B</mi>
+                  </mtd></mtr>
+                </mtable>
+              </math>
+            </div>
+            <h4>Where the formula comes from</h4>
+            <p>"Zero-order hold" means you assume the input stays constant between two samples. Over one step of
+              length Δ with no input, the state equation <em>x</em>′ = <em>Ax</em> is solved by
+              <em>x</em>(<em>t</em> + Δ) = <em>e</em><sup>Δ<em>A</em></sup> <em>x</em>(<em>t</em>). That is
+              <em>Ā</em>, the factor by which the old state survives one step. <em>B̄</em> is how much of a
+              constant input accumulates in the state over the same step, which is what the integral of
+              <em>e</em><sup><em>sA</em></sup><em>B</em> over the step works out to.</p>
+            <h4>Worked example with one state dimension</h4>
+            <p>Take <em>A</em> = −1 and <em>B</em> = 1. Then <em>Ā</em> = <em>e</em><sup>−Δ</sup> and
+              <em>B̄</em> = 1 − <em>e</em><sup>−Δ</sup>.</p>
+            <table>
+              <thead>
+                <tr><th>Δ</th><th><em>Ā</em> (old state kept)</th><th><em>B̄</em> (new input written)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>0.01</td><td>0.990</td><td>0.010</td></tr>
+                <tr><td>0.1</td><td>0.905</td><td>0.095</td></tr>
+                <tr><td>2</td><td>0.135</td><td>0.865</td></tr>
+                <tr><td>5</td><td>0.007</td><td>0.993</td></tr>
+              </tbody>
+            </table>
+            <p>This is the callout on the slide in numbers. A small step means little time passes, so the state
+              barely changes and the input barely gets in. A large step means a lot of time passes, so the old state
+              decays away and the state is mostly the new input. Here the two columns always add to 1, so the update
+              is a weighted average of old state and new input. Keep this table in mind for slide 34.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The intuition "Δ small means long memory" only holds when <em>A</em> is stable (its eigenvalues have
+                negative real parts, like −1 here). Also note that Δ is learned. Discretization is not a
+                preprocessing step done once. It is the first computation inside the layer's forward pass, so
+                gradients flow into Δ, <em>A</em> and <em>B</em> through it.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s15">
+          <div class="slide-frame">
+            <div class="tag">Slide 15 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-15.png"
+              alt="View 1: the SSM is a linear RNN. Great for generation. Boxed: x_k = Ā x_{k−1} + B̄ u_k, y_k = C x_k. Diagram: a chain of states x_{k−2}, x_{k−1}, x_k connected by arrows labelled Ā, each with input u below and output y above. Bullets: An RNN with no nonlinearity in the state update (the linear recurrences from L20). Generation: O(N²) per token, or O(N) if A is diagonal. Memory is constant: just x_k, no KV cache. But running it step by step during training is slow and sequential.">
+            <div class="slide-caption">slide 15 · the recurrent view</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>After discretization the SSM is a recurrence, <em>x<sub>k</sub></em> = <em>Ā x</em><sub><em>k</em>−1</sub> +
+              <em>B̄ u<sub>k</sub></em> and <em>y<sub>k</sub></em> = <em>C x<sub>k</sub></em>. It is an RNN whose
+              update has no nonlinearity.</p>
+            <h4>Cost per token</h4>
+            <p>Each new token needs one matrix–vector product <em>Ā x</em> (<em>N</em> × <em>N</em> times
+              <em>N</em>, so <em>N</em><sup>2</sup> multiplications) plus two vector operations. With
+              <em>N</em> = 64 that is 4,096 multiplications for a dense <em>Ā</em>, or 64 if <em>Ā</em> is
+              diagonal (each state entry just gets scaled by its own number). Either way the cost does not depend on
+              how many tokens came before. Compare a Transformer, where token <em>L</em> attends over all
+              <em>L</em> cached keys.</p>
+            <h4>Why "no nonlinearity" is the key word</h4>
+            <p>A classic RNN computes tanh(<em>W h</em> + <em>U x</em>). Because of the tanh, you cannot know
+              <em>h</em><sub>100</sub> without computing <em>h</em><sub>1</sub> to <em>h</em><sub>99</sub> in order.
+              A linear update can be unrolled into a closed formula, which is what makes the convolution on the next
+              slide (and the parallel scan on slide 37) possible. The nonlinearity moves out of the recurrence and
+              into the layers around it (slide 18).</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s16">
+          <div class="slide-frame">
+            <div class="tag">Slide 16 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-16.png"
+              alt="View 2: the SSM is a long convolution. Great for training. Unroll the recurrence from x_−1 = 0: y_2 = CĀ²B̄ u_0 + CĀB̄ u_1 + CB̄ u_2, and in general: boxed y = K̄ ∗ u, K̄ = (CB̄, CĀB̄, ..., CĀ^(L−1)B̄). Bullets: The kernel is as long as the sequence. Compute K̄ ∗ u with an FFT: O(L log L), fully parallel. Callout: Remember: the convolution exists only because (Ā, B̄, C) are the same at every step. This is linear time invariance (LTI). Mamba gives it up.">
+            <div class="slide-caption">slide 16 · the convolutional view</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Unroll the recurrence and every output is a weighted sum of all past inputs, with weights
+              <em>CB̄</em>, <em>CĀB̄</em>, <em>CĀ</em><sup>2</sup><em>B̄</em>, … These weights form a kernel
+              <em>K̄</em> as long as the sequence, and the output is the convolution <em>y</em> = <em>K̄</em> ∗
+              <em>u</em>.</p>
+            <h4>Worked example: both views give the same answer</h4>
+            <p>Use one state dimension with <em>Ā</em> = 0.5, <em>B̄</em> = 1, <em>C</em> = 2 and inputs
+              <em>u</em> = (1, 2, 3).</p>
+            <p><strong>Recurrence.</strong> Start from <em>x</em> = 0.</p>
+            <ul>
+              <li>k = 0: <em>x</em> = 0.5·0 + 1 = 1, <em>y</em> = 2</li>
+              <li>k = 1: <em>x</em> = 0.5·1 + 2 = 2.5, <em>y</em> = 5</li>
+              <li>k = 2: <em>x</em> = 0.5·2.5 + 3 = 4.25, <em>y</em> = 8.5</li>
+            </ul>
+            <p><strong>Convolution.</strong> The kernel is <em>K̄</em> = (<em>CB̄</em>, <em>CĀB̄</em>,
+              <em>CĀ</em><sup>2</sup><em>B̄</em>) = (2, 1, 0.5). Then <em>y</em><sub>2</sub> = 0.5·<em>u</em><sub>0</sub> +
+              1·<em>u</em><sub>1</sub> + 2·<em>u</em><sub>2</sub> = 0.5 + 2 + 6 = 8.5. The same as the recurrence.</p>
+            <p>The kernel reads naturally. The most recent input gets weight 2, one step back gets 1, two steps back
+              gets 0.5. Each step into the past multiplies by <em>Ā</em> once more. That is the memory decaying.</p>
+            <h4>Why this helps training</h4>
+            <p>The recurrence needs <em>L</em> steps in order. The convolution computes all <em>L</em> outputs at
+              once, and with the FFT it costs <em>O</em>(<em>L</em> log <em>L</em>) instead of the
+              <em>O</em>(<em>L</em><sup>2</sup>) of summing directly. That fills the "parallel training" column of
+              slide 5.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>The convolution exists only because the same <em>Ā</em>, <em>B̄</em>, <em>C</em> are used at every
+                step. If <em>B̄</em> were different at step 1 and step 2, the weight on <em>u</em><sub>1</sub> would
+                not be the same number for every output, and there would be no single kernel. This is the property
+                Mamba trades away on slide 33.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s17">
+          <div class="slide-frame">
+            <div class="tag">Slide 17 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-17.png"
+              alt="One model, three views: continuous, recurrent and convolutional. Figure 1 of S4 with three panels. Left, Continuous State Space: block diagram u to x to y with A in a loop, a wavy curve, equations ẋ = Ax + Bu, y = Cx + Du. Middle, Long-Range Dependencies: a curve with a dashed arrow from the end back to the start, and the matrix A = [[1,0,0],[1,2,0],[1,3,3]]. Right, Discrete Representations: a chain of boxes, sampled points, equations x = Āx + B̄u, y = C̄x + D̄u, and y = K̄ ∗ u with a kernel shape. Callout: Train with the convolution (parallel). Generate with the recurrence (O(1) per token). The middle panel, which A gives long memory, comes next.">
+            <div class="slide-caption">slide 17 · one model, three views</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Figure 1 of the S4 paper. The same SSM as a continuous system, a recurrence and a convolution, with
+              the question of long-range memory in the middle.</p>
+            <h4>The practical rule</h4>
+            <p>During training you have the whole sequence, so use the convolution and compute every position in
+              parallel. During generation tokens arrive one at a time, so switch to the recurrence and keep only the
+              <em>N</em>-dimensional state. The parameters are the same in both modes. Only the algorithm changes.</p>
+            <p>The middle panel is the open question. Nothing so far says how to choose <em>A</em>. A random one
+              gives a kernel that either dies out after a few steps or blows up, so the model still cannot reach far
+              back. The lower-triangular matrix drawn there hints at the answer, the HiPPO matrix of slide 23.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s18">
+          <div class="slide-frame">
+            <div class="tag">Slide 18 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-18.png"
+              alt="An SSM as a deep learning layer: SSMs mix along time, linear layers mix across channels. Diagram: input (L × H) goes through LayerNorm, then H independent SSMs (one per channel, state in R^N), then GELU, then Linear / GLU (mixes channels), then added to a residual from the input, giving out. Bullets: Stack many such blocks, exactly like Transformer blocks. The SSM is the sequence mixer (the role attention plays). The linear layer is the channel mixer (the role the MLP plays). Learned per layer: B, C, Δ, D (and A), for each of the H channels. Block structure as in Rush and Karamcheti, The Annotated S4 (SequenceBlock).">
+            <div class="slide-caption">slide 18 · the SSM block</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>How an SSM becomes a layer. Normalize, run <em>H</em> independent SSMs (one per channel), apply
+              GELU, mix channels with a linear layer, add the residual. Then stack these blocks like Transformer
+              blocks.</p>
+            <h4>Shape bookkeeping</h4>
+            <p>Say <em>L</em> = 1,024 tokens, <em>H</em> = 256 channels and <em>N</em> = 64.</p>
+            <ul>
+              <li>Input: <em>L</em> × <em>H</em> = 1,024 × 256.</li>
+              <li>SSM step: channel <em>h</em> is a length-1,024 signal. Its own SSM (its own <em>A</em>,
+                <em>B</em>, <em>C</em>, Δ) maps it to another length-1,024 signal. Channels do not talk to each
+                other here. Output: still 1,024 × 256.</li>
+              <li>GELU, then the linear layer. Each token's 256-vector is multiplied by a 256 × 256 matrix, and tokens
+                do not talk to each other here.</li>
+            </ul>
+            <p>So the two parts split the work cleanly. The SSM moves information along time, within a channel. The
+              linear layer moves information across channels, within a token. This is the same split as attention
+              (mixes tokens) and the MLP (mixes features) in a Transformer block from Lecture 2.</p>
+            <div class="callout mechanism">
+              <div class="callout-label">Under the hood</div>
+              <p>The SSM itself is linear. All of the network's nonlinearity comes from the GELU and the gating
+                around it. That is the deal that makes the convolution and the scan possible. Keep the time
+                mixing linear and put the nonlinearity between layers.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s19">
+          <div class="slide-frame">
+            <div class="tag">Slide 19 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-19.png"
+              alt="Naive SSM Drawbacks. Far slower than comparably-sized RNNs and CNNs. Struggle to remember long dependencies, e.g. inheriting the vanishing gradient problem from RNNs. Infeasible to use in practice as deep sequence models because of prohibitive computation and memory requirements induced by the state representation x(t) in R^N. With SSM state dimension N and sequence length L, computing the full latent state x alone requires O(N²L) operations and O(NL) space. Credit: Modeling Sequences with Structured State Spaces, Albert Gu.">
+            <div class="slide-caption">slide 19 · why the naive SSM fails</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The plain SSM does not work as is. It is slow, it forgets like an RNN, and storing or computing the
+              full state sequence is too expensive.</p>
+            <h4>Where the costs come from</h4>
+            <p>Running the recurrence over <em>L</em> steps with a dense <em>N</em> × <em>N</em> matrix
+              <em>Ā</em> costs <em>N</em><sup>2</sup> per step, so <em>N</em><sup>2</sup><em>L</em> in total.
+              Keeping all <em>L</em> states (needed for the backward pass) takes <em>NL</em> memory, per channel.
+              The convolution view does not escape either, because building the kernel needs
+              <em>Ā</em><sup>0</sup>, <em>Ā</em><sup>1</sup>, …, <em>Ā</em><sup><em>L</em>−1</sup>, which is the
+              same chain of <em>L</em> matrix products.</p>
+            <p>The forgetting problem is the same one LSTMs were invented for. The kernel entries are
+              <em>CĀ</em><sup><em>k</em></sup><em>B̄</em>, and powers of a matrix either shrink to zero or grow
+              without bound as <em>k</em> grows. Slide 21 turns these two complaints into the two problems Part 3
+              solves.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="hippo">
+        <h2><span class="num">§4</span>HiPPO and S4</h2>
+        <p class="section-intro">
+Two fixes turn the basic SSM into a working layer. HiPPO answers
+          which <em>A</em> to use so the state remembers. S4 answers how to
+          compute the long kernel quickly and stably once <em>A</em> has that
+          structure.
+        </p>
+
+        <div class="slide" id="s20">
+          <div class="slide-frame">
+            <div class="tag">Slide 20 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-20.png"
+              alt="Part 3: HiPPO and S4: long memory, computed fast.">
+            <div class="slide-caption">slide 20 · part 3 divider</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Section divider for Part 3.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s21">
+          <div class="slide-frame">
+            <div class="tag">Slide 21 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-21.png"
+              alt="Problem: a random A does not remember. Two obstacles between the basic SSM and a useful layer. 1. Modeling: which A? The kernel contains powers Ā^k. Eigenvalues above 1 explode, below 1 vanish exponentially in k. This is the RNN vanishing/exploding gradient problem again. Switching from a random A to the HiPPO matrix raised sequential MNIST accuracy from 60% to 98%. 2. Compute: how to get K̄ fast? Naively, K̄ needs L successive multiplications by Ā. That is O(N²L) operations and O(NL) memory, and numerically unstable. S4&#x27;s contribution is a stable, fast algorithm for structured A. Citation: Gu, Goel and Ré (2022), S4, Sec. 2.2, which reports the LSSL finding.">
+            <div class="slide-caption">slide 21 · two obstacles</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Two problems stand between the basic SSM and a useful layer. The modelling problem is which
+              <em>A</em> gives long memory. The compute problem is how to get the kernel <em>K̄</em> without
+              <em>L</em> matrix products.</p>
+            <h4>The modelling problem in numbers</h4>
+            <p>Think of one state dimension with <em>Ā</em> = λ. The kernel weight on an input <em>k</em> steps
+              back is proportional to λ<sup><em>k</em></sup>. With λ = 0.9, after 100 steps the weight is
+              0.9<sup>100</sup> ≈ 2.7 × 10<sup>−5</sup>, effectively zero. With λ = 1.1 it is about
+              1.4 × 10<sup>4</sup>, which swamps everything. Path-X needs memory over thousands of steps, and a
+              random <em>A</em> gives you neither.</p>
+            <p>The evidence on the slide is striking. The architecture was unchanged and only the initial
+              <em>A</em> was swapped for the HiPPO matrix. Accuracy on sequential MNIST (classifying a digit fed in
+              pixel by pixel, 784 steps) went from 60% to 98%.</p>
+            <h4>The compute problem</h4>
+            <p>This is slide 19's cost again. HiPPO's <em>A</em> is not diagonal, so computing
+              <em>Ā</em><sup><em>k</em></sup> for every <em>k</em> up to <em>L</em> is slow, and repeated
+              multiplication also loses precision. S4 is the algorithm that gets around this (slide 24).</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s22">
+          <div class="slide-frame">
+            <div class="tag">Slide 22 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-22.png"
+              alt="HiPPO: memory as approximation. Keep a compressed summary of the whole history, online. Figure 1 of HiPPO: a function f(t) sampled at points f1 to f5; a projection step where at times t0 and t1 the history is approximated by polynomials g(t0) and g(t1) under measures μ(t0) and μ(t1); coefficient vectors c(t0) and c(t1); a continuous-time HiPPO ODE d/dt c(t) = A(t)c(t) + B(t)f(t), discretized into the discrete-time HiPPO recurrence c_{k+1} = A_k c_k + B_k f_k; a cartoon hippo thinking. Bullets: At every t, fit a polynomial to the whole history f(s), s ≤ t. Its N coefficients c(t) are the state. HiPPO derives the ODE d/dt c(t) = Ac(t) + Bf(t) that keeps them optimal. Discretize it to get a recurrence.">
+            <div class="slide-caption">slide 22 · memory as polynomial approximation</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>HiPPO's idea is to define memory as approximation. At every moment, fit a polynomial to the entire
+              input history so far. The <em>N</em> coefficients of that polynomial are the state. HiPPO works out an
+              ODE that keeps those coefficients correct as new input arrives, and that ODE has exactly the SSM
+              form.</p>
+            <h4>Why this is a good definition of memory</h4>
+            <p>Suppose you may store only <em>N</em> numbers about a long signal. A natural choice is the
+              <em>N</em> coefficients of the best degree-(<em>N</em> − 1) polynomial fit to it. From those you can
+              redraw an approximate version of the whole history, smooth but recognisable. The question HiPPO solves
+              is how to update those coefficients when one more input arrives, without refitting from scratch. The
+              answer is a linear update, <em>c</em>′(<em>t</em>) = <em>A c</em>(<em>t</em>) + <em>B
+                f</em>(<em>t</em>). That is an SSM, so this "best polynomial memory" can be dropped straight into the
+              layer of slide 18 by using HiPPO's <em>A</em> and <em>B</em>.</p>
+            <p>In the figure, the red and blue shaded regions are the weightings (measures) used at two times
+              <em>t</em><sub>0</sub> and <em>t</em><sub>1</sub>. The blue one covers the whole history up to
+              <em>t</em><sub>1</sub>, which is what "scaled" in HiPPO-LegS on the next slide means. The window grows
+              with time, so nothing is ever cut off.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s23">
+          <div class="slide-frame">
+            <div class="tag">Slide 23 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-23.png"
+              alt="The HiPPO matrix: the state holds Legendre polynomial coefficients. HiPPO-LegS (used to initialize S4): A_nk = − (2n+1)^(1/2) (2k+1)^(1/2) if n &gt; k; n+1 if n = k; 0 if n &lt; k. Bullets: Lower-triangular, simple, computed once. The state compresses the past well enough to approximately reconstruct the history. Right: a 3-D plot with bars for state values (Legendre coefficients), blue curves for the basis functions and a red curve for the reconstructed signal. Citation: Gu et al. (2020), HiPPO; formula and plot from The Annotated S4.">
+            <div class="slide-caption">slide 23 · the HiPPO-LegS matrix</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The formula for the HiPPO-LegS matrix that S4 uses to initialise <em>A</em> (the minus sign applies to
+              all three cases).</p>
+            <h4>Worked example, N = 3</h4>
+            <p>Index rows <em>n</em> and columns <em>k</em> from 0. Entries above the diagonal are 0, the diagonal is
+              −(<em>n</em> + 1), and below the diagonal it is −√(2<em>n</em> + 1)·√(2<em>k</em> + 1).</p>
+            <table>
+              <thead>
+                <tr><th></th><th>k = 0</th><th>k = 1</th><th>k = 2</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>n = 0</td><td>−1</td><td>0</td><td>0</td></tr>
+                <tr><td>n = 1</td><td>−√3 ≈ −1.73</td><td>−2</td><td>0</td></tr>
+                <tr><td>n = 2</td><td>−√5 ≈ −2.24</td><td>−√15 ≈ −3.87</td><td>−3</td></tr>
+              </tbody>
+            </table>
+            <h4>What to notice</h4>
+            <ul>
+              <li><strong>Lower-triangular.</strong> Coefficient <em>n</em> is updated using only coefficients
+                0 to <em>n</em>. The low-order coefficients (the coarse shape of the history) do not depend on the
+                fine detail.</li>
+              <li><strong>Stable.</strong> For a triangular matrix the eigenvalues are the diagonal entries, here
+                −1, −2, −3. All negative, so the state never blows up. Compare slide 21, where a random matrix
+                could have eigenvalues anywhere.</li>
+              <li><strong>Fixed.</strong> It is a formula, not something learned from data. S4 uses it as the
+                starting value of <em>A</em> and training adjusts it from there.</li>
+            </ul>
+            <p>The plot shows what the state means. Each bar is one coefficient, each blue curve is the Legendre
+              polynomial it multiplies, and the red curve is their weighted sum, an approximate redraw of the input
+              history. That is the sense in which the state "remembers" the past.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s24">
+          <div class="slide-frame">
+            <div class="tag">Slide 24 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-24.png"
+              alt="S4: computing the kernel fast (optional). Structure in A turns matrix powers into cheap sums. HiPPO is normal plus low-rank, which is equivalent to diagonal plus low-rank (DPLR) after a change of basis: A = Λ − PQ*. 1. Generating function: evaluate the sum over l of C Ā^l B̄ z^l at the roots of unity, then inverse FFT. Matrix powers become one matrix inverse (I − Āz)^−1. 2. Diagonal part: the inverse becomes a Cauchy kernel sum over i of c_i / (ω_j − λ_i), a well-studied, stable computation. 3. Low-rank part: folded back in with the Woodbury identity. Result: Õ(N + L) compute and O(N + L) memory. S4 is up to 30× faster with 400× less memory than its predecessor (LSSL). You do not need the details to use S4.">
+            <div class="slide-caption">slide 24 · S4's fast kernel (optional)</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>How S4 computes the kernel <em>K̄</em> for the HiPPO matrix without <em>L</em> matrix powers. The
+              slide marks it optional.</p>
+            <h4>The idea in plain terms</h4>
+            <p>Computing <em>CB̄</em>, <em>CĀB̄</em>, <em>CĀ</em><sup>2</sup><em>B̄</em>, … one by one is the slow
+              part. S4 avoids it in three moves.</p>
+            <ol>
+              <li>Instead of the kernel entries themselves, compute a sum of all of them weighted by powers of a
+                number <em>z</em>. A geometric series of matrices sums to a single inverse,
+                (<em>I</em> − <em>Āz</em>)<sup>−1</sup>, so <em>L</em> powers become one inverse. Doing this at
+                <em>L</em> special values of <em>z</em> and applying an inverse FFT recovers the kernel.</li>
+              <li>If <em>A</em> were diagonal, that inverse would be trivial, a sum of simple fractions (the Cauchy
+                kernel).</li>
+              <li>HiPPO is not diagonal, but it is diagonal minus a low-rank piece. The Woodbury identity corrects
+                the diagonal result for the low-rank piece cheaply.</li>
+            </ol>
+            <p>The outcome is a kernel computed in roughly <em>O</em>(<em>N</em> + <em>L</em>) time and memory
+              instead of <em>O</em>(<em>N</em><sup>2</sup><em>L</em>). As the slide says, you can use S4 without
+              following this derivation. What matters for the rest of the lecture is the conclusion that structure
+              in <em>A</em> buys speed. Slide 28 shows that dropping the low-rank part entirely works almost as well,
+              which removes most of this machinery.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s25">
+          <div class="slide-frame">
+            <div class="tag">Slide 25 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-25.png"
+              alt="S4 on Long Range Arena: the first model to solve Path-X. Table (accuracy, %): Model, ListOps, Text, Retrieval, Image, Pathfinder, Path-X, Avg. Transformer 36.37, 64.27, 57.46, 42.44, 71.40, fail, 53.66. Reformer 37.27, 56.10, 53.40, 38.07, 68.50, fail, 50.56. BigBird 36.05, 64.02, 59.29, 40.83, 74.87, fail, 54.17. Linear Trans. 16.13, 65.90, 53.09, 42.34, 75.30, fail, 50.46. Performer 18.01, 65.40, 53.82, 42.77, 77.05, fail, 51.18. FNet 35.33, 65.11, 59.61, 38.67, 77.80, fail, 54.42. Nyströmformer 37.15, 65.52, 79.56, 41.58, 70.94, fail, 57.46. Luna-256 37.25, 64.57, 79.29, 47.38, 77.72, fail, 59.37. S4 59.60, 86.82, 90.90, 88.65, 94.20, 96.35, 86.09. Bullets: S4 beats all efficient-Transformer baselines on every LRA task, and solves Path-X (16,384 steps). It also generates about 60× faster than a vanilla Transformer by switching to recurrent mode. ✗ means no better than chance.">
+            <div class="slide-caption">slide 25 · S4 on LRA</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The LRA results table from the S4 paper. S4 wins every task and is the only model that does better
+              than chance on Path-X.</p>
+            <h4>How to read it</h4>
+            <ul>
+              <li><strong>Average.</strong> The best Transformer variant (Luna-256) averages 59.37. S4 averages 86.09,
+                a gap of almost 27 points.</li>
+              <li><strong>Path-X.</strong> Every other row has ✗, meaning about 50%, a coin flip. S4 gets 96.35%.
+                This is the slide 4 benchmark that no Transformer could learn.</li>
+              <li><strong>Image.</strong> This task is CIFAR images fed pixel by pixel. S4 gets 88.65 against at most
+                47.38 for the others. Long sequences of smooth, signal-like data are where an SSM's continuous-time
+                origin helps most.</li>
+            </ul>
+            <p>The second bullet is the recurrent view paying off. Generating with the recurrence means constant work
+              per new token, while a vanilla Transformer recomputes attention over everything before it, so S4
+              generates about 60 times faster.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>LRA is not language modelling. Its tasks reward smooth long-range signal processing. S4's success
+                here does not mean it is good at text, and slides 27 and 29 show that it is not.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s26">
+          <div class="slide-frame">
+            <div class="tag">Slide 26 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-26.png"
+              alt="S4 Visually: S4 is drawn as three parts added together. A block diagram of the SSM (x through B into state h, looped through A, read by C to y, with a D skip), plus a plot labelled HiPPO showing a red signal and its blue reconstruction over time 0 to 4, plus a plot of discrete sample points over time 0 to 4 labelled Training mode (convolutional) and Inference mode (recurrence). Credit: Maarten Grootendorst.">
+            <div class="slide-caption">slide 26 · S4 = SSM + HiPPO + discretization</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>S4 summed up as three ingredients. The SSM equations, the HiPPO matrix for memory, and discretization,
+              which allows convolutional training and recurrent inference.</p>
+            <h4>Putting the three together</h4>
+            <p>Each ingredient solves one problem from earlier. The SSM gives a linear recurrence. HiPPO's
+              <em>A</em> makes the state a compressed record of the whole history, which fixes the forgetting from
+              slide 21. Discretization with a learned Δ turns it into a sequence model that can switch between the
+              two views of slides 15–16. The fast kernel of slide 24 is the implementation detail that makes the
+              convolutional mode affordable.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="diag">
+        <h2><span class="num">§5</span>A simpler A, and the gap on language</h2>
+        <p class="section-intro">
+S4 works on long signals, but two follow-ups shape everything
+          after it. Its complicated <em>A</em> turns out to be unnecessary,
+          and its time-invariance turns out to be the real limit on
+          language.
+        </p>
+
+        <div class="slide" id="s27">
+          <div class="slide-frame">
+            <div class="tag">Slide 27 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-27.png"
+              alt="Structured State Space for Seq Modeling, Drawbacks. Struggle with crucial LM tasks: selective focus or ignoring specific inputs (treats each token equally); no content aware reasoning (Linear Time Invariant); B matrix is independent of input (unlike attention in transformers).">
+            <div class="slide-caption">slide 27 · what S4 cannot do</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>S4's weaknesses on language. It treats every token the same, it cannot reason based on content
+              because it is time-invariant, and its <em>B</em> does not depend on the input.</p>
+            <h4>What "treats each token equally" means concretely</h4>
+            <p>Look back at the kernel on slide 16. The weight on a token <em>k</em> positions back is
+              <em>CĀ</em><sup><em>k</em></sup><em>B̄</em>, a number that depends only on the distance
+              <em>k</em>. Whether that token was "the" or the name of the main character, it gets the same weight
+              at the same distance. Attention is different. The weight comes from comparing the query and the key,
+              so it depends on what the tokens <em>are</em>.</p>
+            <p>A concrete case. In "Alice met Bob. … Later, Alice said hello to", predicting "Bob" needs the model
+              to find Alice's earlier mention by its content and look next to it. A fixed kernel cannot do that,
+              because it only knows distances. This is the gap Mamba targets (slides 31–33).</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s28">
+          <div class="slide-frame">
+            <div class="tag">Slide 28 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-28.png"
+              alt="Simplification: a diagonal A is enough. DSS and S4D. DSS: drop the low-rank term. A purely diagonal A matches S4 on LRA and Speech Commands. S4D: the diagonal version of S4. Its kernel takes about 2 lines of code, and it averages about 85% on LRA. The initialization matters: the diagonal part of HiPPO recovers S4&#x27;s kernel as N goes to infinity. Right: with A = diag(λ1, ..., λN), K̄_ℓ = sum over n = 1 to N of C_n B̄_n λ̄_n^ℓ. Each state dimension is an independent (complex) exponential decay. Callout: From here on, every model uses a diagonal (Mamba) or even scalar (Mamba-2) state matrix.">
+            <div class="slide-caption">slide 28 · DSS and S4D</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Two follow-up papers show that the low-rank part of S4's <em>A</em> can be dropped. With a diagonal
+              <em>A</em>, the kernel is a sum of <em>N</em> exponential decays, and results stay about the same if the
+              diagonal is initialised from HiPPO.</p>
+            <h4>Why diagonal makes the kernel easy</h4>
+            <p>If <em>Ā</em> is diagonal with entries λ̄<sub>1</sub>, …, λ̄<sub><em>N</em></sub>, then
+              <em>Ā</em><sup>ℓ</sup> is diagonal with entries λ̄<sub><em>n</em></sub><sup>ℓ</sup>. No matrix products
+              are needed. The kernel is</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mover><mi>K</mi><mo>¯</mo></mover><mi>ℓ</mi></msub><mo>=</mo>
+                <munderover><mo>∑</mo><mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover>
+                <msub><mi>C</mi><mi>n</mi></msub><msub><mover><mi>B</mi><mo>¯</mo></mover><mi>n</mi></msub>
+                <msubsup><mover><mi>λ</mi><mo>¯</mo></mover><mi>n</mi><mi>ℓ</mi></msubsup>
+              </math>
+            </div>
+            <p>which is a small matrix (<em>N</em> × <em>L</em> table of powers) times a vector. That is the "about
+              2 lines of code".</p>
+            <h4>Worked example, N = 2</h4>
+            <p>Take λ̄ = (0.9, 0.5) and <em>C<sub>n</sub>B̄<sub>n</sub></em> = 1 for both. Then</p>
+            <ul>
+              <li><em>K̄</em><sub>0</sub> = 1 + 1 = 2</li>
+              <li><em>K̄</em><sub>1</sub> = 0.9 + 0.5 = 1.4</li>
+              <li><em>K̄</em><sub>2</sub> = 0.81 + 0.25 = 1.06</li>
+              <li><em>K̄</em><sub>3</sub> = 0.729 + 0.125 = 0.854</li>
+            </ul>
+            <p>The fast-decaying dimension (0.5) covers the last few tokens and is gone by ℓ = 5 or so. The slow one
+              (0.9) carries the longer tail. With <em>N</em> dimensions at different speeds, the kernel can have
+              short-range and long-range parts at once. The values λ<sub><em>n</em></sub> can be complex, which adds
+              oscillation to the decay. That is the "(complex)" on the slide.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>The structure of HiPPO mattered mainly as a good <em>initialisation</em>, not as a full matrix to
+                keep. Diagonal <em>A</em> is the form every later model uses, which also makes each recurrence step
+                cost <em>O</em>(<em>N</em>) instead of <em>O</em>(<em>N</em><sup>2</sup>) (slide 15).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s29">
+          <div class="slide-frame">
+            <div class="tag">Slide 29 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-29.png"
+              alt="The road to language: H3. LTI SSMs lagged attention on text. On synthetic language tasks, existing SSMs struggled with two abilities: recalling earlier tokens; comparing tokens across the sequence. H3: two SSMs combined with multiplicative gates, designed for these abilities. Within 0.4 perplexity of Transformers on OpenWebText. A 125M hybrid that keeps 2 attention layers beat Transformers by 1.0 perplexity. Callout: Language needs content-based interactions, and a fixed (LTI) filter cannot provide them. This sets up Mamba (and, later, hybrids).">
+            <div class="slide-caption">slide 29 · H3</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>H3 ("Hungry Hungry Hippos") was built to close the gap between SSMs and attention on text. It combines
+              two SSMs with multiplicative gates. It comes within 0.4 perplexity of a Transformer, and a hybrid
+              that keeps two attention layers beats one.</p>
+            <h4>Why multiplication helps</h4>
+            <p>An LTI SSM computes a fixed weighted sum of past inputs, which is linear in the input. Multiplying two
+              signals together, as H3's gates do, makes the output depend on products of tokens, which is a crude
+              way of comparing them. Attention gets its power from the product of a query with a key (Lecture 5),
+              so H3 borrows that ingredient.</p>
+            <p>The results tell two stories. Gating gets an SSM close to a Transformer on language, but not past it.
+              And the best model keeps two attention layers, which suggests that something attention does is still
+              missing. The callout names it. The model needs to treat tokens differently based on their content,
+              and a time-invariant filter cannot. Mamba builds that into the SSM itself.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="selection">
+        <h2><span class="num">§6</span>Mamba: selective state spaces</h2>
+        <p class="section-intro">
+Mamba's change to the SSM is small to write down. Δ, <em>B</em>
+          and <em>C</em> become functions of the current token. The effects
+          are large. The model can now choose what to remember, and it can no
+          longer be computed as a convolution.
+        </p>
+
+        <div class="slide" id="s30">
+          <div class="slide-frame">
+            <div class="tag">Slide 30 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-30.png"
+              alt="Part 4: Mamba: selective state spaces.">
+            <div class="slide-caption">slide 30 · part 4 divider</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Section divider for Part 4, Mamba.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s31">
+          <div class="slide-frame">
+            <div class="tag">Slide 31 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-31.png"
+              alt="Why LTI models fail on language: synthetic tasks that need content-awareness. Figure 2 of Mamba. Copying: coloured input tokens followed by blanks, output repeats the coloured tokens at the end; the solution is a set of spikes at fixed offsets, perfectly solved by LTI (e.g. convolutional) models that do not need to look at the actual inputs. Selective Copying: coloured tokens scattered at random positions among blanks, output lists them in order. Induction Heads: a sequence of coloured tokens, later a blue token reappears followed by a query, answer is the token that followed blue earlier. Bullets: Copying (fixed spacing): a fixed convolution kernel solves it. It only needs to know when. Selective copying (random spacing): the model must know which tokens matter. Induction heads (associative recall): after seeing A B ... A, output B.">
+            <div class="slide-caption">slide 31 · copying, selective copying, induction heads</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Three toy tasks from the Mamba paper. Plain copying can be solved by a fixed kernel. Selective copying
+              and induction heads need the model to look at what the tokens are.</p>
+            <h4>Why the first is easy and the other two are not</h4>
+            <ul>
+              <li><strong>Copying.</strong> The tokens to copy always sit at the same positions, say 1 to 4, and
+                must come out at positions 21 to 24. A kernel that reaches back exactly 20 steps does it, whatever
+                the tokens are. Timing alone is enough, which is what an LTI model has.</li>
+              <li><strong>Selective copying.</strong> The same four coloured tokens appear at random positions among
+                blank "noise" tokens. Now no fixed offset works. The model has to notice "this is a coloured token,
+                store it" and "this is a blank, skip it". That decision depends on the token's content.</li>
+              <li><strong>Induction heads.</strong> After "… A B … A", output "B". The model must find the earlier
+                A by matching content and return what followed it. This is the "Alice … Bob" example from slide 27,
+                and it is the mechanism attention-based models use for in-context copying.</li>
+            </ul>
+            <p>These tasks are small, but they isolate the abilities language needs. Slide 41 shows Mamba's
+              selection solving both hard ones.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s32">
+          <div class="slide-frame">
+            <div class="tag">Slide 32 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-32.png"
+              alt="Selection as compression: the efficiency/effectiveness trade-off in one picture. Attention: no compression, a row of boxes labelled KV cache grows. RNN / SSM: fixed state, a row of boxes feeding into a single state box. Bullets: Attention keeps everything: effective but slow. A recurrent model is only as good as its compression of the context. Compressing well means selecting: keep what is relevant, filter out the rest. Callout: Mamba&#x27;s principle: selectivity. The input itself decides what enters and leaves the state.">
+            <div class="slide-caption">slide 32 · selection as compression</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Attention stores everything and pays for it. A recurrent model compresses the past into a fixed state,
+              so its quality depends on how well it compresses. Compressing well means choosing what to keep, and in
+              Mamba the input makes that choice.</p>
+            <h4>The trade-off, made concrete</h4>
+            <p>Say a layer has width 2,048 and the context is 100,000 tokens. Attention's cache for that layer holds
+              keys and values for all 100,000 tokens, which grows with every token. An SSM layer with state size 16
+              per channel holds 2,048 × 16 ≈ 33,000 numbers, the same at token 10 and at token 100,000. It cannot keep
+              everything, so the only question is what it keeps.</p>
+            <p>An LTI model answers that question the same way for every token, by distance alone (slide 27). A
+              selective model can write an important token strongly, let a filler word pass without touching the
+              state, and wipe the state at a document boundary. The next three slides show how.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s33">
+          <div class="slide-frame">
+            <div class="tag">Slide 33 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-33.png"
+              alt="S6: Δ, B, C depend on the input. New notation (as in Mamba): input x_t, state h_t. Algorithm 1, SSM (S4): input x: (B, L, D), output y: (B, L, D). A: (D, N) parameter. B: (D, N) parameter. C: (D, N) parameter. Δ: (D) from τΔ(Parameter). Ā, B̄: (D, N) from discretize(Δ, A, B). y = SSM(Ā, B̄, C)(x), time-invariant: recurrence or convolution. Algorithm 2, SSM + Selection (S6): A: (D, N) parameter. B: (B, L, N) = s_B(x). C: (B, L, N) = s_C(x). Δ: (B, L, D) = τΔ(Parameter + s_Δ(x)). Ā, B̄: (B, L, D, N) = discretize(Δ, A, B). y = SSM(Ā, B̄, C)(x), time-varying: recurrence (scan) only. Bullets: B_t = Linear_N(x_t), C_t = Linear_N(x_t), Δ_t = softplus(param + Linear(x_t)). A stays fixed, but Ā_t = exp(Δ_t A) now depends on the input through Δ_t. Price: time-varying parameters, so no convolution. Only the recurrence (a scan) remains.">
+            <div class="slide-caption">slide 33 · S6: making Δ, B, C input-dependent</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Mamba's Algorithm 1 (S4) and Algorithm 2 (S6, the selective SSM) side by side. The only differences,
+              shown in red, are that <em>B</em>, <em>C</em> and Δ are now computed from the input by linear
+              projections. <em>A</em> stays a learned parameter.</p>
+            <h4>Shape bookkeeping</h4>
+            <p>Here <em>B</em> (in shapes) is the batch size, <em>L</em> the length, <em>D</em> the number of
+              channels and <em>N</em> the state size per channel. Take batch 1, <em>L</em> = 4, <em>D</em> = 3,
+              <em>N</em> = 2.</p>
+            <table>
+              <thead>
+                <tr><th>Tensor</th><th>S4</th><th>S6</th><th>What changed</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><em>A</em></td><td>(3, 2)</td><td>(3, 2)</td><td>nothing</td></tr>
+                <tr><td><em>B</em></td><td>(3, 2)</td><td>(1, 4, 2)</td><td>one per token, shared across channels</td></tr>
+                <tr><td><em>C</em></td><td>(3, 2)</td><td>(1, 4, 2)</td><td>one per token</td></tr>
+                <tr><td>Δ</td><td>(3)</td><td>(1, 4, 3)</td><td>one per token and channel</td></tr>
+                <tr><td><em>Ā</em>, <em>B̄</em></td><td>(3, 2)</td><td>(1, 4, 3, 2)</td><td>one per token, channel and state entry</td></tr>
+              </tbody>
+            </table>
+            <p>In S4 there is one <em>Ā</em> for the whole sequence. In S6 every token gets its own, because
+              <em>Ā<sub>t</sub></em> = <em>e</em><sup>Δ<sub><em>t</em></sub><em>A</em></sup> and Δ<sub><em>t</em></sub>
+              comes from token <em>t</em>.</p>
+            <h4>The price</h4>
+            <p>Go back to the kernel of slide 16. It existed because the weight on an input <em>k</em> steps back was
+              the same number for every output. Now the weight on <em>x</em><sub>1</sub> as seen from step 3 is
+              <em>C</em><sub>3</sub><em>Ā</em><sub>3</sub><em>Ā</em><sub>2</sub><em>B̄</em><sub>1</sub>, which
+              involves the specific tokens in between. There is no single kernel, so the FFT trick is gone. Only the
+              recurrence remains, and slides 36–38 are about making it fast.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>Softplus, log(1 + <em>e</em><sup><em>z</em></sup>), is there to keep Δ positive. A negative step size
+                would make <em>Ā</em> larger than 1 for a stable <em>A</em> and the state would grow. The letters also
+                change here. From this slide on <em>x</em> is the input and <em>h</em> the state, and the <em>B</em> in
+                shapes means batch size, not the matrix.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s34">
+          <div class="slide-frame">
+            <div class="tag">Slide 34 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-34.png"
+              alt="What does Δ do? Selection generalizes RNN gating (Mamba, Theorem 1). With N = 1, A = −1, B = 1 and Δ_t = softplus(z_t) where z_t = Linear(x_t): Ā_t = exp(−Δ_t) = 1 − σ(z_t), B̄_t = 1 − exp(−Δ_t) = σ(z_t). Boxed: g_t = σ(Linear(x_t)), h_t = (1 − g_t) h_{t−1} + g_t x_t. This is exactly a gated RNN update. Bullets: Large Δ_t (g_t → 1): reset the state and focus on the current token. Small Δ_t (g_t → 0): ignore the token and keep the state. Uses: skip filler (um), drop irrelevant context, reset between packed documents. In ablations, Δ is the most important selective parameter.">
+            <div class="slide-caption">slide 34 · Δ is a gate</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>In the simplest case (one state dimension, <em>A</em> = −1, <em>B</em> = 1), the selective SSM is
+              exactly a gated RNN. Δ<sub><em>t</em></sub> plays the role of the gate.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>h</mi><mi>t</mi></msub><mo>=</mo>
+                <mo>(</mo><mn>1</mn><mo>−</mo><msub><mi>g</mi><mi>t</mi></msub><mo>)</mo>
+                <msub><mi>h</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo>
+                <msub><mi>g</mi><mi>t</mi></msub><msub><mi>x</mi><mi>t</mi></msub>
+              </math>
+            </div>
+            <h4>Checking the algebra</h4>
+            <p>With Δ = softplus(<em>z</em>) = log(1 + <em>e</em><sup><em>z</em></sup>), we get
+              <em>e</em><sup>−Δ</sup> = 1 / (1 + <em>e</em><sup><em>z</em></sup>), which is 1 − σ(<em>z</em>).
+              From slide 14, with <em>A</em> = −1 and <em>B</em> = 1, <em>Ā</em> = <em>e</em><sup>−Δ</sup> and
+              <em>B̄</em> = 1 − <em>e</em><sup>−Δ</sup> = σ(<em>z</em>). So the recurrence
+              <em>h<sub>t</sub></em> = <em>Ā h</em><sub><em>t</em>−1</sub> + <em>B̄ x<sub>t</sub></em> becomes the
+              gated update in the box, with <em>g<sub>t</sub></em> = σ(<em>z<sub>t</sub></em>).</p>
+            <h4>Worked example</h4>
+            <table>
+              <thead>
+                <tr><th><em>z<sub>t</sub></em></th><th>Δ<sub><em>t</em></sub></th><th>keep (1 − <em>g</em>)</th><th>write (<em>g</em>)</th><th>effect</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>3</td><td>3.05</td><td>0.047</td><td>0.953</td><td>state is replaced by this token</td></tr>
+                <tr><td>0</td><td>0.69</td><td>0.5</td><td>0.5</td><td>half and half</td></tr>
+                <tr><td>−3</td><td>0.049</td><td>0.953</td><td>0.047</td><td>token is mostly ignored</td></tr>
+              </tbody>
+            </table>
+            <p>Now the bullets make sense. If the projection learns to give a filler word like "um" a very negative
+              <em>z</em>, its Δ is tiny and the state passes through untouched. If a document-separator token gets
+              a large <em>z</em>, the state is wiped and restarted. An LTI model has one fixed Δ, so it would have to
+              treat "um" and a separator the same way.</p>
+            <div class="callout mechanism">
+              <div class="callout-label">Under the hood</div>
+              <p>This is the same mechanism as the forget gate in an LSTM or the update gate in a GRU, so selection is
+                not an exotic idea. What is new is that it sits inside a <em>linear</em> recurrence, so Mamba keeps
+                the parallel scan of slide 37, which a GRU cannot use. With <em>N</em> &gt; 1 and different
+                <em>A</em> values per state entry, one Δ<sub><em>t</em></sub> moves all the decay rates together
+                (the same table as slide 14, applied to each entry).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s35">
+          <div class="slide-frame">
+            <div class="tag">Slide 35 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-35.png"
+              alt="The selective SSM at a glance: Mamba, Figure 1, Selective State Space Model with Hardware-aware State Expansion. The previous state h_{t−1}, drawn as stacked orange lines for several channels, flows through A to the new state h_t. The input x_t is projected (Project, the selection mechanism) to produce B_t, C_t and Δ_t, with Δ_t feeding a Discretize step. B_t writes x_t into the state, C_t reads the state into y_t. A small pyramid shows GPU SRAM on top of GPU HBM. Bullets: D channels, each with an N-dimensional state (N = 16 in Mamba-1), so DN numbers of state per token. Δ_t, B_t, C_t are projected from x_t. The expanded state lives only in fast on-chip SRAM.">
+            <div class="slide-caption">slide 35 · Mamba Figure 1</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Mamba's Figure 1. Each of the <em>D</em> channels carries an <em>N</em>-dimensional state (the orange
+              lines). The current token is projected into Δ<sub><em>t</em></sub>, <em>B<sub>t</sub></em> and
+              <em>C<sub>t</sub></em>, which control how the state is updated and read. The state is kept in fast
+              on-chip memory.</p>
+            <h4>How big the state is</h4>
+            <p>With <em>D</em> = 1,536 channels and <em>N</em> = 16, the state is 1,536 × 16 = 24,576 numbers per
+              sequence per layer. During generation that is all the layer remembers, no matter how long the context.
+              That is the "fixed state" entry in slide 44's table.</p>
+            <p>"Hardware-aware state expansion" refers to the problem on the next slide. The state is
+              <em>N</em> times bigger than the input, and if it were written to GPU main memory at every step the
+              layer would be very slow. The pyramid hints at the fix. Keep the expanded state in the small, fast SRAM
+              and write only the outputs back.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="scan">
+        <h2><span class="num">§7</span>Making the recurrence fast</h2>
+        <p class="section-intro">
+Without a convolution, Mamba has to run the recurrence during
+          training. These three slides show how it does that without being
+          slow, by keeping the big state in fast memory and running the
+          recurrence as a parallel scan.
+        </p>
+
+        <div class="slide" id="s36">
+          <div class="slide-frame">
+            <div class="tag">Slide 36 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-36.png"
+              alt="The price of selection: Mamba&#x27;s answer, a hardware-aware selective scan. Bullets: Naive: store all states (B, L, D, N) in GPU memory. That is huge and memory-bound. FLOPs are fine: O(BLDN) vs. O(BLD log L) for a convolution. Three classic tricks: 1. Kernel fusion: discretize and scan in SRAM, write back only y. 2. Parallel scan instead of a loop (next). 3. Recomputation: recompute states in the backward pass. Right diagram: SRAM (small, fast: Ā, B̄, states h) above GPU HBM (large, slow: x, Δ, B, C and y), with arrows load from HBM to SRAM and write y from SRAM to HBM. Callout: Memory equals a FlashAttention Transformer. Up to 40× faster than a PyTorch scan.">
+            <div class="slide-caption">slide 36 · the hardware-aware scan</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Running the selective recurrence naively would store every state in GPU main memory (HBM), which is
+              too much data to move. Mamba uses three tricks from FlashAttention to avoid that. It fuses the steps
+              into one kernel that works in SRAM, uses a parallel scan, and recomputes states during the backward
+              pass instead of storing them.</p>
+            <h4>How much memory the naive way needs</h4>
+            <p>Take one sequence, <em>L</em> = 2,048, <em>D</em> = 1,536, <em>N</em> = 16. All the states together
+              are 2,048 × 1,536 × 16 ≈ 50 million numbers, about 200 MB in FP32, for one layer. The input to that layer
+              is only 2,048 × 1,536 ≈ 3 million numbers. The state tensor is <em>N</em> = 16 times larger than the
+              data it is computed from.</p>
+            <p>The arithmetic is not the problem. Each state entry needs a multiply and an add, so the cost is
+              <em>O</em>(<em>BLDN</em>), modest by GPU standards. The problem is moving data. Writing 200 MB to HBM
+              and reading it back takes far longer than the arithmetic. This is the same diagnosis as for attention in
+              FlashAttention. The bottleneck is memory traffic, not FLOPs.</p>
+            <h4>The three tricks</h4>
+            <ul>
+              <li><strong>Kernel fusion.</strong> Load <em>x</em>, Δ, <em>B</em>, <em>C</em> from HBM once
+                (size <em>BLD</em> or <em>BLN</em>, not <em>BLDN</em>). Discretize, run the recurrence and compute
+                <em>y</em> all inside SRAM. Write only <em>y</em> back. The 50-million-number state never touches
+                HBM.</li>
+              <li><strong>Parallel scan.</strong> Run the recurrence in <em>O</em>(log <em>L</em>) parallel steps
+                instead of <em>L</em> sequential ones (next slide).</li>
+              <li><strong>Recomputation.</strong> The backward pass needs the states. Recomputing them from the
+                inputs is cheaper than storing and reloading them.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" id="s37">
+          <div class="slide-frame">
+            <div class="tag">Slide 37 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-37.png"
+              alt="Parallel scan: linear recurrences are associative. h_k = a_k h_{k−1} + b_k x_k, with a_k, b_k varying in k. Store each step as a pair (a_k, b_k x_k) and combine: (a1, b1) ⊕ (a2, b2) = (a1 a2, a2 b1 + b2). Bullets: ⊕ is associative, so we can combine in a tree. All h_1, ..., h_L in O(L) work and O(log L) depth. Cumulative sum is the case a_k = 1. Triton: tl.associative_scan. Right: a binary tree diagram, combining in a tree, in parallel. Citation: Rush, Mamba: The Hard Way; Blelloch (1990), Prefix sums and their applications.">
+            <div class="slide-caption">slide 37 · parallel scan</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>A linear recurrence <em>h<sub>k</sub></em> = <em>a<sub>k</sub></em> <em>h</em><sub><em>k</em>−1</sub> +
+              <em>b<sub>k</sub></em> can be computed in parallel. Represent each step as a pair and combine pairs with
+              an associative operation, then reduce in a tree.</p>
+            <h4>What a pair means</h4>
+            <p>The pair (<em>a</em>, <em>b</em>) stands for the function "<em>h</em> ↦ <em>a h</em> + <em>b</em>". Doing
+              step 1 then step 2 gives <em>a</em><sub>2</sub>(<em>a</em><sub>1</sub><em>h</em> + <em>b</em><sub>1</sub>)
+              + <em>b</em><sub>2</sub> = (<em>a</em><sub>1</sub><em>a</em><sub>2</sub>) <em>h</em> +
+              (<em>a</em><sub>2</sub><em>b</em><sub>1</sub> + <em>b</em><sub>2</sub>), which is the pair on the
+              slide. Composing functions is associative, so you can group the steps however you like.</p>
+            <h4>Worked example</h4>
+            <p>Four steps with <em>a</em> = 0.5 each time and <em>b</em> = 1, 2, 3, 4, starting from <em>h</em> = 0.</p>
+            <p><strong>Sequentially:</strong> <em>h</em> = 1, then 0.5·1 + 2 = 2.5, then 0.5·2.5 + 3 = 4.25,
+              then 0.5·4.25 + 4 = 6.125.</p>
+            <p><strong>As a tree:</strong></p>
+            <ul>
+              <li>Level 1, in parallel: (0.5, 1) ⊕ (0.5, 2) = (0.25, 0.5·1 + 2) = (0.25, 2.5), and
+                (0.5, 3) ⊕ (0.5, 4) = (0.25, 5.5).</li>
+              <li>Level 2: (0.25, 2.5) ⊕ (0.25, 5.5) = (0.0625, 0.25·2.5 + 5.5) = (0.0625, 6.125).</li>
+            </ul>
+            <p>Starting from <em>h</em> = 0, the final state is the second entry, 6.125, the same as the loop. The
+              first level's left pair also gives <em>h</em><sub>2</sub> = 2.5 directly. A second pass down the tree
+              fills in the remaining prefixes (<em>h</em><sub>3</sub>) the same way. Total work stays
+              <em>O</em>(<em>L</em>), but the number of sequential rounds drops to about log<sub>2</sub> <em>L</em>,
+              which is 11 for <em>L</em> = 2,048.</p>
+            <div class="callout mechanism">
+              <div class="callout-label">Under the hood</div>
+              <p>This only works because the recurrence is linear in <em>h</em>. With tanh(<em>a h</em> + <em>b</em>),
+                composing two steps does not give another step of the same form, so there is nothing to combine.
+                That is why Mamba keeps the recurrence linear and the nonlinearity outside it (slide 18). In
+                <a href="../assignments/3-mamba-deltanet-gnn.html#code-scan-triton">Assignment 3</a> you write this
+                scan in Triton with <code>tl.associative_scan</code>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s38">
+          <div class="slide-frame">
+            <div class="tag">Slide 38 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-38.png"
+              alt="Scanning long sequences in blocks: only a block fits in fast memory at a time. Left: a diagram of four blocks of four steps. Row 1: each block scanned independently, ending in a light green total. Row 2: a scan over the four block totals, producing dark green carries. Row 3: each block re-scanned starting from its incoming dark green state. Right: 1. Block scans: scan every block independently, in parallel. 2. Scan over block totals (dark green) to get each block&#x27;s incoming state. 3. Re-scan each block, starting from its incoming state. The backward pass is also a scan, run right to left. Mamba runs this for every channel and every one of the N state dimensions, on top of discretization.">
+            <div class="slide-caption">slide 38 · block-wise scan</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>A whole long sequence does not fit in SRAM, so the scan runs in blocks. Scan each block on its own,
+              scan the block totals to find what state enters each block, then re-scan each block from its correct
+              starting state.</p>
+            <h4>Worked example</h4>
+            <p>Use the same four steps as slide 37 (<em>a</em> = 0.5, <em>b</em> = 1, 2, 3, 4), split into two
+              blocks of two.</p>
+            <ol>
+              <li><strong>Block scans.</strong> Each block computes its own pair as if it started from zero.
+                Block 1 gives (0.25, 2.5). Block 2 gives (0.25, 5.5). These run in parallel.</li>
+              <li><strong>Scan over totals.</strong> Block 1 starts from 0, so it hands 2.5 to block 2. With more
+                blocks, this step is itself a small scan.</li>
+              <li><strong>Re-scan.</strong> Block 2 restarts from 2.5: 0.5·2.5 + 3 = 4.25, then 0.5·4.25 + 4 =
+                6.125. Every <em>h</em> is now correct.</li>
+            </ol>
+            <p>Only one block at a time needs to live in SRAM, and the blocks work in parallel. The last bullet is a
+              reminder of the scale. This scan runs for each of the <em>D</em> channels and each of the
+              <em>N</em> state entries, so for <em>D</em> = 1,536 and <em>N</em> = 16 there are about 24,600
+              independent scans per layer, which is plenty of parallel work to fill a GPU.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="block">
+        <h2><span class="num">§8</span>The Mamba block and its results</h2>
+        <p class="section-intro">
+The selective SSM goes into one block that replaces both attention
+          and the MLP. Then three slides of results, on toy tasks, on
+          language modelling and on speed.
+        </p>
+
+        <div class="slide" id="s39">
+          <div class="slide-frame">
+            <div class="tag">Slide 39 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-39.png"
+              alt="The Mamba block: one homogeneous block instead of attention + MLP. Figure 3 of Mamba: three diagrams. H3: three linear projections, a Conv, a multiplication, an SSM, another multiplication, and an output projection. Gated MLP: two projections, one through σ, multiplied, then projected out. Arrow: H3 combined with Gated MLP gives Mamba: two projections, one through Conv, σ, SSM, the other through σ, multiplied together, then an output projection. Legend: linear projection, sequence transformation, nonlinearity (activation or multiplication). Bullets: H3 + gated MLP in one block: expand D to 2D, short conv, SiLU, selective SSM, SiLU gate. Two Mamba blocks ≈ parameters of one Transformer layer (MHA + MLP ≈ 12D²).">
+            <div class="slide-caption">slide 39 · the Mamba block</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Mamba's block merges H3 and a gated MLP into one unit that is stacked uniformly, instead of
+              alternating attention and MLP blocks.</p>
+            <h4>The block, step by step</h4>
+            <p>For a token vector of width <em>D</em>:</p>
+            <ol>
+              <li>Project up to 2<em>D</em> twice, giving a main branch and a gate branch.</li>
+              <li>Main branch: a short causal convolution over the last few tokens (width 4 in Mamba), then SiLU,
+                then the selective SSM.</li>
+              <li>Gate branch: SiLU.</li>
+              <li>Multiply the two branches elementwise, then project back down to <em>D</em>.</li>
+            </ol>
+            <p>The short convolution mixes each token with its immediate neighbours before the SSM sees it, and the
+              gate does the job of an MLP's nonlinearity. Note that the SSM runs on the 2<em>D</em>-wide expanded
+              branch. That is the <em>D</em> in slide 33's shapes, so a model with width 768 runs 1,536 channels of
+              SSM.</p>
+            <h4>Checking the parameter count</h4>
+            <p>The two input projections are <em>D</em> × 2<em>D</em> each, 4<em>D</em><sup>2</sup> together, and the
+              output projection is 2<em>D</em> × <em>D</em> = 2<em>D</em><sup>2</sup>. So one block has about
+              6<em>D</em><sup>2</sup> parameters (the SSM's own parameters are small by comparison). A Transformer layer
+              has 4<em>D</em><sup>2</sup> in attention (<em>Q</em>, <em>K</em>, <em>V</em>, output) plus
+              8<em>D</em><sup>2</sup> in a 4×-wide MLP, 12<em>D</em><sup>2</sup> in total. Two Mamba blocks match one
+              Transformer layer, which is why Mamba models have twice as many blocks as a Transformer of the same
+              size.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s40">
+          <div class="slide-frame">
+            <div class="tag">Slide 40 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-40.png"
+              alt="Mamba Block Visually: the input Hello! My name is goes into a Mamba Block with two projections. The left branch goes through Convolution, a SiLU activation and a Selective SSM. The right branch goes through a SiLU activation. The two are multiplied (x), then projected down. Below the block: RMS Norm, then Linear + Softmax. Credit: Maarten Grootendorst.">
+            <div class="slide-caption">slide 40 · the Mamba block, drawn</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The same block drawn as a picture, with the language-model head after it. Stacked Mamba blocks are
+              followed by RMSNorm and a linear layer with softmax over the vocabulary.</p>
+            <h4>What to take from it</h4>
+            <p>The model around the block is an ordinary language model. Tokens are embedded, passed through many
+              identical blocks with residual connections, normalized, and projected to next-token probabilities.
+              Only the sequence mixer has changed. Where a Transformer uses attention, which looks back over a
+              KV cache, Mamba uses the selective SSM, which carries a fixed state forward.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s41">
+          <div class="slide-frame">
+            <div class="tag">Slide 41 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-41.png"
+              alt="Results I: synthetic tasks. Selection solves selective copying and induction heads. Left table, selective copying accuracy (%): Model, Arch., Layer, Acc. S4, No gate, S4, 18.3. -, No gate, S6, 97.0. H3, H3, S4, 57.0. Hyena, H3, Hyena, 30.1. -, H3, S6, 99.7. -, Mamba, S4, 56.4. -, Mamba, Hyena, 28.4. Mamba, Mamba, S6, 99.8. Middle: Induction Heads Extrapolation plot, accuracy against test sequence length from 10^2 to 10^6 for MHA-Absolute, MHA-RoPE, MHA-xPos, H3, Hyena, Mamba and Random; trained on length 256. Mamba stays at 1.0 across all lengths while the others fall to chance soon after the training length. Bullets: Replacing the S4 layer with S6 takes accuracy from 18.3% to 97.0%, even without gating. Mamba extrapolates perfectly from 256 to about 1M (2^20) tokens. The attention variants fail at lengths much beyond training.">
+            <div class="slide-caption">slide 41 · results on synthetic tasks</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Selection fixes the toy tasks from slide 31. On selective copying, swapping S4 for S6 helps
+              regardless of the block design. On induction heads, Mamba trained on length 256 still works at about a
+              million tokens.</p>
+            <h4>How to read the table</h4>
+            <p>The table varies two things separately, the block architecture and the SSM layer inside it. Read it
+              by the Layer column.</p>
+            <ul>
+              <li>With an S4 layer, accuracy is 18.3 to 57.0, whatever the block.</li>
+              <li>With Hyena (another LTI long-convolution layer), 28.4 to 30.1.</li>
+              <li>With S6, 97.0 to 99.8, in every block, even the one with no gating at all.</li>
+            </ul>
+            <p>So it is the selective layer that solves the task, not the gating around it. That supports slide 31's
+              argument that content-aware selection is what LTI models lack.</p>
+            <h4>The extrapolation plot</h4>
+            <p>Every model was trained on sequences of 256 tokens and then tested on longer ones. The attention models
+              (with absolute, RoPE or xPos position encodings, see Lecture 4) fall to chance not far past the
+              training length. Mamba stays at 100% up to 2<sup>20</sup> ≈ 1 million tokens, about 4,000 times longer
+              than training. Its state update does not depend on position, so a longer sequence is just more steps of
+              the same rule.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s42">
+          <div class="slide-frame">
+            <div class="tag">Slide 42 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-42.png"
+              alt="Results II: language modeling. First attention-free model to match Transformer++. Two plots of Scaling Laws on The Pile, perplexity (log scale) against FLOPs (log scale), one at sequence length 2048 and one at 8192, with lines for Hyena, RWKV, Transformer, RetNet, H3++, Transformer++ and Mamba. Mamba&#x27;s line is at or below Transformer++ in both. Bullets: Pile, 125M–1.3B: Mamba matches Transformer++ (RoPE, SwiGLU, RMSNorm), more clearly at length 8192. Zero-shot (300B tokens): Mamba-3B matches Transformers twice its size.">
+            <div class="slide-caption">slide 42 · results on language modelling</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Scaling curves on the Pile at context lengths 2,048 and 8,192. Mamba matches Transformer++, a strong
+              modern Transformer recipe, at the same compute. On zero-shot benchmarks, Mamba-3B matches
+              Transformers of about 6B parameters.</p>
+            <h4>How to read the plots</h4>
+            <p>Each line shows how perplexity falls as training compute grows. Lower is better, and a line further
+              down means the same quality for less compute. "Transformer" is the original recipe, and
+              "Transformer++" adds the improvements from earlier lectures, RoPE (Lecture 4), SwiGLU (Lecture 8) and
+              RMSNorm (Lecture 7). The other recurrent models (RWKV, RetNet, H3++, Hyena) sit above Transformer++.
+              Mamba is the first attention-free model to reach it, and its lead is a bit clearer at 8,192 tokens,
+              where longer context helps a model that can use it.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>These models are small by current standards (up to 1.3B on the plots, 3B for zero-shot). Matching a
+                Transformer on perplexity is also not the same as matching it on every task. Exact recall of long
+                passages is still a weakness of a fixed state (slide 44).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s43">
+          <div class="slide-frame">
+            <div class="tag">Slide 43 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-43.png"
+              alt="Results III: efficiency. Fast training kernel, and no KV cache at inference. Left plot: Scan vs Convolution vs Attention time (A100 80GB PCIe), time in ms (log scale) against sequence length from 512 to 512k, for FlashAttention-2, Convolution, Scan (PyTorch) and Scan (ours), with OOM marks. Scan (ours) is lowest beyond about 2k. Right bar chart: Inference throughput on A100 80GB (prompt length 2048), tokens per second against batch size 1 to 128, for Mamba 1.4B, Transformer 1.3B, Mamba 6.9B and Transformer 6.7B. Mamba bars grow much taller with batch size, while the Transformer bars stay far lower. Bullets: Left: fused scan beats FlashAttention-2 beyond 2K tokens, and a PyTorch scan by up to 40×. Right: 4–5× generation throughput vs. a similar-size Transformer (no KV cache, bigger batches). Also strong on DNA and audio, improving up to million-length sequences.">
+            <div class="slide-caption">slide 43 · results on efficiency</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Speed results. The fused scan kernel beats FlashAttention-2 for sequences longer than about 2K tokens,
+              and Mamba generates 4 to 5 times more tokens per second than a Transformer of similar size.</p>
+            <h4>Why each plot looks the way it does</h4>
+            <ul>
+              <li><strong>Left.</strong> Attention's cost grows like <em>L</em><sup>2</sup>, so its line is the
+                steepest on the log–log plot. The scan grows like <em>L</em>. At short lengths attention's
+                well-tuned kernel wins, but past 2K the scan is faster, and the gap widens with length. The naive
+                PyTorch scan is linear too, but it moves all the states through HBM (slide 36), so it is far slower
+                and runs out of memory.</li>
+              <li><strong>Right.</strong> A Transformer must keep a KV cache for every sequence in the batch, and that
+                cache grows with length. The GPU fills up, so batch size is capped. Mamba keeps only a fixed-size state
+                per sequence, so it fits much larger batches, and throughput (tokens per second across the batch)
+                keeps rising with batch size.</li>
+            </ul>
+            <p>The DNA and audio bullet is a reminder that SSMs began as models for long signals (slide 25). Those
+              domains have very long sequences where attention's cost is the main obstacle.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="soft">
+
+      <section id="wrap">
+        <h2><span class="num">§9</span>Comparison and takeaways</h2>
+        <p class="section-intro">
+The deck closes with a table that places Transformers, S4, Mamba
+          and Mamba-2 side by side, a list of takeaways, and reading
+          material.
+        </p>
+
+        <div class="slide" id="s44">
+          <div class="slide-frame">
+            <div class="tag">Slide 44 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-44.png"
+              alt="Summary: how the models compare. Table with columns Transformer, S4 (LTI SSM), Mamba (selective), Mamba-2 (SSD). Training: parallel O(L²); parallel FFT conv O(L log L); parallel scan O(L); chunked matmuls O(L). Per new token: O(L), KV cache grows; O(1), fixed state; O(1), fixed state; O(1), fixed state. Content selection: tick; cross; tick; tick (scalar decay). State per layer: entire context; N per channel; N = 16 per channel; N = 64–256 per head. Exact recall: strong; weak; limited by state; better, still limited.">
+            <div class="slide-caption">slide 44 · the four models compared</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The whole lecture in one table, comparing Transformers, S4, Mamba and Mamba-2 on training cost,
+              generation cost, content selection, state size and exact recall.</p>
+            <h4>The story the table tells</h4>
+            <ul>
+              <li><strong>Transformer to S4.</strong> S4 gains cheap training (<em>L</em> log <em>L</em>) and
+                constant-cost generation, but loses content selection and recall. Every token is weighted by
+                distance alone.</li>
+              <li><strong>S4 to Mamba.</strong> Mamba gets selection back by making Δ, <em>B</em>, <em>C</em> depend
+                on the input. It loses the convolution and trains with a scan, which is still linear in
+                <em>L</em>.</li>
+              <li><strong>Mamba to Mamba-2.</strong> The deck does not cover Mamba-2 in its own slides. The table
+                says enough to place it. It makes <em>A</em> a single number per head (a "scalar decay") instead of a
+                diagonal. That restriction lets the scan be rewritten as ordinary matrix multiplications over chunks of
+                the sequence, which GPUs run very fast. The state can then be much bigger, 64 to 256 per head
+                instead of 16 per channel.</li>
+            </ul>
+            <p>The last row is the honest one. No row other than the Transformer says "strong" for exact recall. A
+              fixed state is a compression of the past (slide 32), and a bigger state, as in Mamba-2, helps but does
+              not remove the limit.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s45">
+          <div class="slide-frame">
+            <div class="tag">Slide 45 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-45.png"
+              alt="Key takeaways. 1. An SSM is a linear recurrence from a discretized ODE. It can be computed as an RNN (inference) or, when LTI, as a long convolution (training). 2. HiPPO gives the state a principled long memory. S4 made it fast, and S4D showed a diagonal A is enough. 3. Mamba: input-dependent Δ, B, C (selection ≈ gating) plus a hardware-aware parallel scan. 4. Mamba-2 / SSD: a scalar decay makes the SSM a form of masked linear attention, computed with matmuls in chunks. 5. In practice (2025–26): hybrids with a few attention layers. Open problems are recall and state tracking, which Mamba-3 and negative eigenvalues begin to address.">
+            <div class="slide-caption">slide 45 · key takeaways</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Five takeaways, one per part of the lecture plus one on where the field stands.</p>
+            <h4>The two that need unpacking</h4>
+            <p><strong>Takeaway 4.</strong> Linear attention, from the previous lecture, keeps a state that is a running
+              sum of <em>k</em><sup>⊤</sup><em>v</em> outer products. An SSM whose decay <em>Ā<sub>t</sub></em> is a
+              single number per step does almost the same thing. It adds <em>B<sub>t</sub></em> times
+              <em>x<sub>t</sub></em> to a state that is shrunk by <em>Ā<sub>t</sub></em> each step, and reads it with
+              <em>C<sub>t</sub></em>. Match <em>C</em> to the query, <em>B</em> to the key and <em>x</em> to the
+              value, and the SSM is linear attention where older tokens are down-weighted by the product of the
+              decays since then. That is "masked linear attention". It is why Mamba-2 can be computed with matrix
+              multiplications in chunks.</p>
+            <p><strong>Takeaway 5.</strong> The H3 result on slide 29 (a few attention layers help) turned out to be
+              the practical answer. Several production models since 2025, listed on slide 48, mix many Mamba-style
+              layers with a few attention layers. The SSM layers keep the cost and memory low, and the attention layers handle exact
+              recall. The deck lists the open problems without going into them, so for this course it is enough to
+              know that recall and state tracking are where pure SSMs still fall short.</p>
+            <div class="callout link">
+              <div class="callout-label">→ In practice</div>
+              <p><a href="../assignments/3-mamba-deltanet-gnn.html#ssm">Assignment 3</a> builds this lecture's path
+                from a one-number memory to Mamba and then trains a hybrid. Its §3 is a good second pass over Parts
+                2–4 of this deck.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s46">
+          <div class="slide-frame">
+            <div class="tag">Slide 46 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-46.png"
+              alt="Resources: start with the two annotated blogs. The Annotated S4: Rush and Karamcheti, srush.github.io/annotated-s4. Mamba: The Hard Way: Rush, srush.github.io/annotated-mamba/hard.html. State Space Duality (Mamba-2), Parts I–IV: Dao and Gu, goombalab.github.io/blog/2024/mamba2-part1-model. A Visual Guide to Mamba and State Space Models: Grootendorst, newsletter.maartengrootendorst.com. Structured State Spaces for Sequence Modeling (S4): Hazy Research blog, Jan 2022, hazyresearch.stanford.edu/blog. Albert Gu&#x27;s PhD thesis: Modeling Sequences with Structured State Spaces (Stanford, 2023), purl.stanford.edu/mb976vf9362. Code: github.com/state-spaces/mamba, github.com/srush/annotated-mamba.">
+            <div class="slide-caption">slide 46 · resources</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>Recommended reading. The two annotated blogs by Sasha Rush are the suggested starting point.</p>
+            <h4>Which to read for what</h4>
+            <ul>
+              <li><a href="https://srush.github.io/annotated-s4/" target="_blank" rel="noopener">The Annotated S4</a>
+                covers Parts 2 and 3 with runnable code. The spring example (slide 13), the HiPPO plot (slide 23) and
+                the SSM block (slide 18) all come from it.</li>
+              <li><a href="https://srush.github.io/annotated-mamba/hard.html" target="_blank" rel="noopener">Mamba:
+                  The Hard Way</a> covers the scan of slides 36–38 in Triton, which is useful for Assignment 3.</li>
+              <li>Grootendorst's visual guide is the source of the "Visually" slides and is the gentlest of the
+                set.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" id="s47">
+          <div class="slide-frame">
+            <div class="tag">Slide 47 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-47.png"
+              alt="References (I): Tay et al. (2021), Long Range Arena. Gu, Dao, Ermon, Rudra, Ré (2020), HiPPO. Gu, Johnson, Goel, Saab, Dao, Rudra, Ré (2021), LSSL. Gu, Goel, Ré (2022), S4. Gupta, Gu, Berant (2022), Diagonal State Spaces. Gu, Gupta, Goel, Ré (2022), S4D. Fu, Dao, Saab, Thomas, Rudra, Ré (2023), Hungry Hungry Hippos. Gu, Dao (2023), Mamba. Dao, Gu (2024), Transformers are SSMs (state space duality). Lahoti et al. (2026), Mamba-3.">
+            <div class="slide-caption">slide 47 · references I</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>The papers behind the lecture, roughly in the order they appear. The ones to know by name for this
+              course are HiPPO, S4, S4D, H3 and Mamba.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s48">
+          <div class="slide-frame">
+            <div class="tag">Slide 48 / 48</div>
+            <img src="../assets/slides/L15-state-space-models/slide-48.png"
+              alt="References (II): Jelassi, Brandfonbrener, Kakade, Malach (2024), Repeat After Me: Transformers are Better than State Space Models at Copying. Merrill, Petty, Sabharwal (2024), The Illusion of State in State-Space Models. Grazzi, Siems, Zela, Franke, Hutter, Pontil (2025), Unlocking State-Tracking in Linear RNNs Through Negative Eigenvalues. Lieber et al. (2024), Jamba. Glorioso et al. (2024), Zamba. Ren et al. (2025), Samba. NVIDIA (2025), Nemotron-H. Falcon LLM Team (2025), Falcon-H1. NVIDIA (2025), Nemotron 3 Nano; NVIDIA (2026), Nemotron 3 Ultra. IBM (2025), Granite 4.0 announcement. Blelloch (1990), Prefix Sums and Their Applications.">
+            <div class="slide-caption">slide 48 · references II</div>
+          </div>
+          <div class="explain">
+<h4>On the slide</h4>
+            <p>References for the limitations and hybrids mentioned in takeaway 5. The first three papers are about
+              what SSMs cannot do (copying long passages, tracking state). The rest are hybrid production models
+              that mix Mamba layers with attention, plus Blelloch's paper on the parallel scan from slide 37.</p>
+          </div>
+        </div>
+
+        <p class="section-intro" style="margin-top:1.5rem">
+          Zoom out. An SSM is a linear recurrence obtained by sampling a
+          continuous system every Δ time units. Because it is linear and,
+          in S4, the same at every step, it can be trained as one long
+          convolution and run at generation time as an RNN with a fixed
+          state and no KV cache. A random <em>A</em> forgets, so HiPPO
+          chooses one whose state is the best polynomial summary of the
+          history, and S4 computes the resulting kernel fast. S4D then
+          showed that a diagonal <em>A</em> is enough. On language these
+          models fall short because they weight tokens by distance, not
+          content. Mamba fixes that by computing Δ, <em>B</em> and
+          <em>C</em> from each token, which turns Δ into a gate that can
+          keep the state or overwrite it. The cost is losing the
+          convolution, and Mamba pays it with a parallel scan that keeps the
+          large state in SRAM. For an exam, be able to discretize a
+          one-dimensional SSM, compute a short kernel and check it against
+          the recurrence, explain why selection breaks the convolution, and
+          show that Δ acts as a gate.
+        </p>
+
+      </section>
+
+      <div class="pager">
+        <a class="prev" href="14-rnn-advances.html">
+          <span class="dir">← back</span>
+          <span class="lbl">14 · RNN Advances</span>
+        </a>
+        <a class="next" href="16-diffusion-lms.html">
+          <span class="dir">next →</span>
+          <span class="lbl">16 · Diffusion Language Models</span>
+        </a>
+      </div>
+
+      <footer class="foot">
+        <div>Lecture 15 · State Space Models · ANLP Monsoon '26</div>
+        <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/anlp-study-guide" target="_blank"
+            rel="noopener">github ↗</a></div>
+      </footer>
+    </main>
+
+    <aside class="rail-right">
+      <div class="kicker">progress</div>
+      <div class="heatmap-rail" aria-hidden="true"></div>
+      <div class="kicker">sections</div>
+      <div class="rail-toc">
+        <a href="#deck">at a glance</a>
+        <a href="#why">§1 why SSMs</a>
+        <a href="#ssm">§2 continuous SSM</a>
+        <a href="#discrete">§3 two views</a>
+        <a href="#hippo">§4 HiPPO & S4</a>
+        <a href="#diag">§5 diagonal & H3</a>
+        <a href="#selection">§6 Mamba selection</a>
+        <a href="#scan">§7 selective scan</a>
+        <a href="#block">§8 block & results</a>
+        <a href="#wrap">§9 takeaways</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

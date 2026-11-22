@@ -1,0 +1,1637 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Lecture 16 · Diffusion Language Models — ANLP Study Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Lecture 16 of Advanced NLP, Monsoon 2026 IIIT-H: diffusion language models, from the generative-model landscape and image diffusion through continuous and discrete text diffusion, D3PM, MDLM, LLaDA and Mercury, to diffusion drafters for speculative decoding (DFlash, DSpark).">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://arihant25.github.io/anlp-study-guide/lectures/16-diffusion-lms.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="Diffusion Language Models: write by unmasking | ANLP">
+  <meta property="og:description"
+    content="How diffusion, built for images, was adapted to text: noise in embedding space, [MASK] tokens as noise, MDLM and LLaDA, Mercury's speed, and diffusion drafters for speculative decoding.">
+  <meta property="og:url" content="https://arihant25.github.io/anlp-study-guide/lectures/16-diffusion-lms.html">
+  <meta property="og:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L16-diffusion-lms/slide-01.png">
+  <meta property="og:image:alt" content="Advanced NLP Diffusion Language Models lecture title slide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Diffusion Language Models: write by unmasking | ANLP">
+  <meta name="twitter:description"
+    content="Instead of writing left to right, start from a fully masked answer and fill it in over a few parallel steps. Every model in the lecture, worked through with small examples.">
+  <meta name="twitter:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L16-diffusion-lms/slide-01.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP Lecture 16: Diffusion Language Models","url":"https://arihant25.github.io/anlp-study-guide/lectures/16-diffusion-lms.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"lecture notes","educationalLevel":"graduate"}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="rail-left">
+      <div class="brand">
+        <a href="../index.html" style="text-decoration:none;color:inherit">an attention<br><em>lab notebook</em></a>
+        <small>ANLP · Monsoon '26</small>
+      </div>
+      <nav>
+        <div class="grp">On this page</div>
+        <a href="#deck">The deck at a glance</a>
+        <a href="#landscape">§1 · Generative models before diffusion</a>
+        <a href="#diffusion">§2 · What diffusion is</a>
+        <a href="#text">§3 · Diffusion meets text</a>
+        <a href="#continuous">§4 · Continuous text diffusion</a>
+        <a href="#discrete">§5 · Discrete diffusion</a>
+        <a href="#masked">§6 · Masked diffusion: MDLM &amp; LLaDA</a>
+        <a href="#mercury">§7 · Mercury</a>
+        <a href="#versus">§8 · Diffusion vs autoregressive</a>
+        <a href="#drafters">§9 · Diffusion drafters: DFlash &amp; DSpark</a>
+
+        <div class="grp">Elsewhere</div>
+        <a href="15-state-space-models.html">← Lecture 15: State Space Models</a>
+        <a href="../seminars/vishal-rao-data-creation.html">Next: Seminar · Data Creation →</a>
+        <a href="10-decoding.html">Lecture 10 · Decoding</a>
+        <a href="11-speculative-decoding.html">Lecture 11 · Speculative Decoding</a>
+        <a href="../seminars/vansh-nawander-diffusion-lms.html">Seminar · Diffusion LMs</a>
+        <a href="../index.html">Home</a>
+      </nav>
+    </aside>
+
+    <div class="topbar">
+      <div class="brand"><a href="../index.html" style="color:inherit;text-decoration:none">an attention <em>lab
+            notebook</em></a></div>
+      <button class="theme-toggle" onclick="__toggleTheme()">◑ dark</button>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="kicker">Lecture 16 · 59 slides</div>
+        <h1>Diffusion language models: <em>write the whole answer at once, then sharpen it.</em></h1>
+        <p class="lead">
+          Every language model so far in the course writes left to right,
+          one token per forward pass. Diffusion models, which took over
+          image generation, work differently. They learn to undo a
+          gradual corruption, so they can start from pure noise and clean
+          up every position in parallel over a handful of steps. This
+          lecture asks how that idea carries over to text, where you
+          cannot add "a little noise" to a word. It covers noise in
+          embedding space (Diffusion-LM), noise as [MASK] tokens (D3PM,
+          MDLM, LLaDA), a fast commercial model (Mercury), and two recent
+          ways of using a small diffusion model to speed up an ordinary
+          autoregressive one (DFlash, DSpark).
+        </p>
+        <div class="meta">
+          <span class="pill heat">Lecture 16</span>
+          <span class="pill">59 slides</span>
+          <span class="pill">Manish Shrivastava · Aparajitha</span>
+        </div>
+      </section>
+
+      <section id="deck">
+        <h2><span class="num">§0</span>The deck at a glance</h2>
+        <p class="section-intro">
+          Slides 1–12 survey generative models (autoencoders, VAEs, GANs,
+          autoregressive LMs) and list what each one is bad at, which
+          sets up the gaps diffusion is meant to fill. Slides 13–20
+          explain diffusion on images. A fixed forward process slowly
+          turns data into noise, and a network learns to reverse it one
+          step at a time. Slides 21–24 raise the central problem of the
+          lecture, that text is discrete, and split the solutions into
+          continuous ones (add noise to vectors) and discrete ones
+          (corrupt tokens). Slides 25–34 cover the continuous route,
+          ending with Diffusion-LM. Slides 35–44 cover the discrete
+          route, from transition matrices and D3PM to masked diffusion
+          (MDLM) and the 8B-scale LLaDA. Slides 45–48 show Mercury's
+          speed and benchmark numbers. Slides 49–53 weigh diffusion
+          against autoregressive models, and slides 54–59 end with
+          DFlash and DSpark, which use diffusion as the draft model in
+          speculative decoding.
+        </p>
+        <p>
+          The idea to hold on to is that the masked diffusion LM is a
+          BERT-style masked language model trained at <em>every</em>
+          masking ratio from 0% to 100%. Training it is just "hide some
+          tokens, predict them". Generating with it means starting from
+          an all-[MASK] answer and repeatedly filling in the positions
+          the model is surest about. Almost everything else in the
+          second half of the lecture is a variation on that loop.
+        </p>
+      </section>
+
+      <hr class="soft">
+
+      <section id="landscape">
+        <h2><span class="num">§1</span>Generative models before diffusion</h2>
+        <p class="section-intro">
+          A quick tour of the older generative models, mostly to collect
+          their weaknesses. Each weakness reappears later as a reason to
+          try diffusion.
+        </p>
+
+        <div class="slide" id="s1">
+          <div class="slide-frame">
+            <div class="tag">Slide 01 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-01.png"
+              alt="Title slide: Diffusion Language Models, Advanced NLP M26. Manish Shrivastava + Aparajitha, IIIT Hyderabad logo, Nov 16, 2026.">
+            <div class="slide-caption">slide 01 · title</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Lecture 16, given on 16 November 2026. The topic is language models that generate text by
+              diffusion instead of left-to-right prediction.</p>
+            <h4>Where this fits</h4>
+            <p>Lectures 10 and 11 treated generation as a fixed loop of one token per forward pass and then tried to
+              make that loop cheaper (better sampling, speculative decoding). Lectures 14 and 15 changed the
+              architecture inside the loop. This lecture changes the loop itself.</p>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s2s3">
+          <div class="slide" id="s2">
+            <div class="slide-frame">
+              <div class="tag">Slide 02 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-02.png"
+                alt="Generative Models. Classical Probabilistic Models: Naive Bayes, Gaussian Mixture Models, Hidden Markov Models. Early Neural: Boltzmann Machines.">
+              <div class="slide-caption">slide 02 · classical generative models</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>Classical generative models (Naive Bayes, Gaussian mixtures, HMMs) and early neural ones
+                (Boltzmann machines).</p>
+            </div>
+          </div>
+          <div class="slide" id="s3">
+            <div class="slide-frame">
+              <div class="tag">Slide 03 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-03.png"
+                alt="Generative Models. Deep Neural Models: Variational Auto Encoders (VAE), Generative Adversarial Networks (GANs), Normalizing Flows, Deep Autoregressive Models. Transformers. Diffusion Models.">
+              <div class="slide-caption">slide 03 · deep generative models</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The deep families are VAEs, GANs, normalizing flows, autoregressive models, transformers and
+                diffusion models.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>What "generative" means here</h4>
+            <p>A generative model learns a probability distribution over data, <em>p</em>(<em>x</em>), well enough to
+              draw new samples from it. Naive Bayes and HMMs already do this for text (an HMM can generate a tag
+              sequence and then words). The deep families differ mainly in <em>how</em> they make sampling possible.
+              A GPT-style model, for example, is a "deep autoregressive model" that factorizes <em>p</em>(<em>x</em>)
+              into next-token probabilities.</p>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s4s5">
+          <div class="slide" id="s4">
+            <div class="slide-frame">
+              <div class="tag">Slide 04 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-04.png"
+                alt="Generative Models Timeline, vertical: 1950s-2000s HMMs, mixture models; 1985 Boltzmann machines; 2006 Deep belief networks; 2013 Variational autoencoders; 2014 GANs; 2015 Normalizing flows; 2016 PixelCNN, WaveNet; 2017 Transformer; 2018-2020 GPT-1 to GPT-3; 2020-2021 DDPM, score-based models; 2022 Stable Diffusion, DALL-E 2; Late 2022 ChatGPT; 2022-2023 DiT, flow matching; 2023 Consistency models; 2024 Video diffusion (Sora).">
+              <div class="slide-caption">slide 04 · timeline</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>A timeline from HMMs to video diffusion. Diffusion-type models (orange) take over image generation
+                from about 2020.</p>
+            </div>
+          </div>
+          <div class="slide" id="s5">
+            <div class="slide-frame">
+              <div class="tag">Slide 05 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-05.png"
+                alt="Timeline: 2013 VAE, 2014 GAN, 2015 Diffusion, 2017 Transformer, 2020 DDPM. 2022 ChatGPT, Dall-E 2, Stable Diffusion, Diffusion-LM; 2023 Mamba; 2025 Mercury, Gemini Diffusion, LLaDA.">
+              <div class="slide-caption">slide 05 · where text diffusion appears</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The same story with text diffusion added. Diffusion-LM appears in 2022, then Mercury, Gemini Diffusion and
+                LLaDA around 2025.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>Reading the timeline</h4>
+            <p>Diffusion was proposed in 2015 but only worked well on images after DDPM in 2020. Text lagged by a few
+              more years because of the discreteness problem in §3. The models this lecture ends on (MDLM, LLaDA,
+              Mercury) are all from 2024 onward.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s6">
+          <div class="slide-frame">
+            <div class="tag">Slide 06 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-06.png"
+              alt="Generative Models Overview. Left: Standard Autoencoder, input data passes through encoder to a small latent space (encoded data) then decoder to reconstructed data. Right: Variational Autoencoder, encoder outputs latent state distributions (mu and sigma), a sample is drawn from them and passed to the decoder.">
+            <div class="slide-caption">slide 06 · autoencoder vs VAE</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A standard autoencoder squeezes the input into a small latent vector and reconstructs it. A VAE has
+              the encoder output a distribution (a mean and a spread for each latent dimension), samples from it, and
+              decodes the sample.</p>
+            <h4>Why the difference matters for generation</h4>
+            <p>To <em>generate</em>, you want to pick a random latent and decode it. A plain autoencoder never
+              promised anything about latents it did not see in training, so a random point usually decodes to junk.
+              A VAE forces the encoder's distributions to stay close to a standard Gaussian, so random Gaussian
+              samples land in regions the decoder knows how to handle.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s7">
+          <div class="slide-frame">
+            <div class="tag">Slide 07 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-07.png"
+              alt="Generative Models Overview figure from Lilian Weng's blog. GAN: adversarial training, discriminator D(x) outputs 0/1, generator G(z) maps z to x'. VAE: maximize variational lower bound, encoder q_phi(z|x) to z, decoder p_theta(x|z) to x'. Flow-based models: invertible transform of distributions, flow f(x) to z, inverse f^-1(z) to x'. Diffusion models: gradually add Gaussian noise and then reverse, x0 to x1 to x2 ... to z.">
+            <div class="slide-caption">slide 07 · four families in one picture</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The four families side by side. Each one connects data <em>x</em> to a simple random variable
+              <em>z</em> in a different way.</p>
+            <h4>One way to compare them</h4>
+            <ul>
+              <li><strong>GAN.</strong> A generator maps <em>z</em> to an image, and a second network (the
+                discriminator) is trained to tell fakes from real data. No encoder, no likelihood.</li>
+              <li><strong>VAE.</strong> A learned encoder and decoder, trained by maximizing a lower bound on the
+                likelihood (the ELBO).</li>
+              <li><strong>Flow.</strong> One invertible function <em>f</em>, so the same network maps both ways and
+                the likelihood is exact.</li>
+              <li><strong>Diffusion.</strong> The "encoder" is not learned at all. It is a fixed recipe that adds a
+                bit of noise many times. Only the way back is learned, and it is learned as many small steps rather
+                than one big jump.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" id="s8">
+          <div class="slide-frame">
+            <div class="tag">Slide 08 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-08.png"
+              alt="Standard Autoencoders Drawbacks. Can't generate meaningfully: encoder maps data to a latent space, no distribution; sampling a random latent usually gives garbage. Latent space is sparse: approximating/rounding values leads to incorrect decoding. Arrow: a latent space you can sample from.">
+            <div class="slide-caption">slide 08 · autoencoder drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>An autoencoder's latent space has no distribution attached, so random latents decode to garbage, and
+              its training points are scattered sparsely, so even small rounding moves you off them. The fix
+              wanted is a latent space you can sample from.</p>
+            <div class="callout link">
+              <div class="callout-label">→ Comes back later</div>
+              <p>"Rounding a vector leads to incorrect decoding" is exactly the problem continuous text diffusion
+                hits in slides 28 and 31, where the denoised vector has to be snapped back to a real word.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s9">
+          <div class="slide-frame">
+            <div class="tag">Slide 09 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-09.png"
+              alt="Variational Autoencoders Drawbacks. Blurry output: simple Gaussian decoder effectively averages over plausible outputs. The ELBO is only a lower bound on the likelihood. The prior and aggregate posterior don't match: holes in latent space. Arrow: sharper samples.">
+            <div class="slide-caption">slide 09 · VAE drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>VAEs give blurry samples, optimize only a lower bound on the likelihood, and still have "holes" in
+              latent space where the decoder was never trained.</p>
+            <h4>Why a Gaussian decoder blurs</h4>
+            <p>Suppose one latent could equally well be a handwritten "1" or a "7". A Gaussian decoder is trained
+              with squared error, and the output that minimizes expected squared error over two equally likely
+              targets is their pixel-wise average. Half a 1 overlaid on half a 7 is a smudge. The model is not
+              wrong on average, it just has no way to commit to one sharp answer.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s10">
+          <div class="slide-frame">
+            <div class="tag">Slide 10 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-10.png"
+              alt="Generative Adversarial Networks Drawbacks. Training is unstable: no single converging loss, sensitive to architecture and hyperparameters. Generator covers only part of the data distribution. No likelihood: evaluating or comparing models is hard; no natural encoder for inverting real images. Discrete data like text is very hard, because gradients can't pass through discrete sampling. Scaling to huge, diverse, text-conditioned datasets proved difficult.">
+            <div class="slide-caption">slide 10 · GAN drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>GANs are unstable to train, tend to cover only part of the data (mode collapse), give no likelihood,
+              struggle with text and were hard to scale.</p>
+            <h4>Why text in particular breaks GANs</h4>
+            <p>The generator learns from the gradient of the discriminator's score with respect to the generator's
+              output. For an image, nudging a pixel by 0.01 changes the score smoothly. For text, the generator's
+              output is a token chosen by sampling or argmax, and there is no "0.01 of a different word". The
+              gradient of the score with respect to that discrete choice is zero almost everywhere, so the generator
+              gets no learning signal. Text diffusion has to solve the same discreteness problem in §3.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s11">
+          <div class="slide-frame">
+            <div class="tag">Slide 11 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-11.png"
+              alt="Autoregressive Language Modeling Overview. For a sequence x = (x^1, ..., x^L) of L tokens, p_theta(x | c) = product from i=1 to L of p_theta(x^i | c, x^<i). During inference, each token depends on previously sampled tokens, so standard decoding requires L sequential decisions.">
+            <div class="slide-caption">slide 11 · the autoregressive factorization</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>p</mi><mi>θ</mi></msub><mo>(</mo><mi>x</mi><mo>∣</mo><mi>c</mi><mo>)</mo><mo>=</mo>
+                <munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>L</mi></munderover>
+                <msub><mi>p</mi><mi>θ</mi></msub><mo>(</mo><msup><mi>x</mi><mi>i</mi></msup><mo>∣</mo><mi>c</mi><mo>,</mo><msup><mi>x</mi><mrow><mo>&lt;</mo><mi>i</mi></mrow></msup><mo>)</mo>
+              </math>
+            </div>
+            <p>The probability of a sequence given a prompt <em>c</em> is a product of next-token probabilities. To
+              sample, you have to pick token 1 before you can compute the distribution for token 2, so an
+              <em>L</em>-token answer takes <em>L</em> sequential steps.</p>
+            <h4>The number to compare against</h4>
+            <p>A 500-token answer costs 500 forward passes of the full model, one after another, no matter how
+              many GPUs you have. Lecture 11 explained that each pass is memory-bandwidth bound. Diffusion's main
+              selling point is that it replaces "<em>L</em> passes" with "<em>T</em> passes", where the number of
+              denoising steps <em>T</em> can be much smaller than <em>L</em>.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s12">
+          <div class="slide-frame">
+            <div class="tag">Slide 12 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-12.png"
+              alt="Autoregressive Models Drawbacks. Error propagation / no error correction. Difficult to control. Causal attention O(n^2). Token-by-token generation: slow generation; fixed generation order, unnatural for non-sequential data. Arrow: parallel generation for images and text.">
+            <div class="slide-caption">slide 12 · autoregressive drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Autoregressive models cannot fix earlier mistakes, are hard to steer, pay quadratic attention cost,
+              and are slow and locked into left-to-right order.</p>
+            <h4>The two drawbacks that matter most here</h4>
+            <p><strong>No error correction.</strong> Once a token is sampled it is part of the context forever.
+              If the model writes "The capital of Australia is Sydney", every later token has to live with "Sydney".
+              <strong>Fixed order.</strong> Some content is easier to write out of order. To fill a code template
+              you might want to write the function signature and the return statement first and the body last. A
+              left-to-right model has to commit to the first line before it has "seen" the last.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="diffusion">
+        <h2><span class="num">§2</span>What diffusion is</h2>
+        <p class="section-intro">
+          Diffusion on images, the setting where it was developed. Destroy
+          an image with many small doses of noise using a fixed rule, and
+          train a network to undo one dose at a time.
+        </p>
+
+        <div class="slide" id="s13">
+          <div class="slide-frame">
+            <div class="tag">Slide 13 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-13.png"
+              alt="Diffusion Models: Fill the gaps. Iterative refinement / mistakes can be corrected. Explicit control. Faster/parallel sampling. Bidirectional context.">
+            <div class="slide-caption">slide 13 · what diffusion promises</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The four things diffusion offers, each the answer to a drawback from slide 12.</p>
+            <table>
+              <thead>
+                <tr><th>Autoregressive problem (slide 12)</th><th>Diffusion answer</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>No error correction</td><td>Every step revisits the whole output, so a bad guess can be
+                    changed later</td></tr>
+                <tr><td>Hard to control</td><td>A constraint can be applied to the whole sequence at every step</td></tr>
+                <tr><td>Token-by-token, slow</td><td>All positions are updated in parallel</td></tr>
+                <tr><td>Only left context</td><td>Every position sees both sides</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s14s15">
+          <div class="slide" id="s14">
+            <div class="slide-frame">
+              <div class="tag">Slide 14 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-14.png"
+                alt="Diffusion Models Overview. Inspired by non-equilibrium statistical physics. Systematically and slowly destroy structure in a data distribution: iterative forward diffusion process. Learn a reverse diffusion process: restores structure in data. Citation Sohl-Dickstein et al. 2015.">
+              <div class="slide-caption">slide 14 · destroy, then learn to restore</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The 2015 idea from physics is to slowly destroy the structure in data with a forward process, then learn
+                a reverse process that restores it.</p>
+            </div>
+          </div>
+          <div class="slide" id="s15">
+            <div class="slide-frame">
+              <div class="tag">Slide 15 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-15.png"
+                alt="Diffusion Models Gains. Highly flexible and tractable generative model of the data. Rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps. Compute conditional and posterior probabilities under the learned model.">
+              <div class="slide-caption">slide 15 · why it was attractive</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The original paper claimed the model is flexible yet tractable, can have thousands of steps, and
+                lets you compute conditional probabilities.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>Why many small steps are easier than one big one</h4>
+            <p>Mapping pure noise to a photo in one shot is what a GAN generator tries to do, and it is hard. Removing
+              a tiny bit of noise from an almost-clean photo is easy, because the answer is very close to the input.
+              Diffusion breaks the hard problem into a long chain of easy ones and trains one network to do all of
+              them, with the step number <em>t</em> given as an extra input so the network knows how noisy its input
+              is. "Tractable" on slide 15 means each small step has a simple form (a Gaussian for images) that you can
+              write down and train with an ordinary loss.</p>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s16s17">
+          <div class="slide" id="s16">
+            <div class="slide-frame">
+              <div class="tag">Slide 16 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-16.png"
+                alt="Diffusion Models Overview. Illustration: four glasses of blue water; a drop of purple ink falls into the first, spreads in the second and third, and the fourth glass is uniformly purple.">
+              <div class="slide-caption">slide 16 · ink in water</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>A drop of ink spreading through water until the whole glass is one uniform colour.</p>
+            </div>
+          </div>
+          <div class="slide" id="s17">
+            <div class="slide-frame">
+              <div class="tag">Slide 17 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-17.png"
+                alt="Diffusion Overview. Drop of ink completely merges after some time when dropped in a clean water glass. Practically impossible to reverse: can't get the drop from the mixture.">
+              <div class="slide-caption">slide 17 · easy forward, hard backward</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The forward direction happens on its own. Reversing it, getting the drop back from the mixture, is
+                practically impossible.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>What the analogy is for</h4>
+            <p>The end state of the glass is the same no matter where the drop started. That is the property diffusion
+              needs. After enough noise, every image looks like the same featureless static, so at generation time you
+              can start from fresh static without knowing which image it "came from". The reverse direction is
+              impossible for the physical glass, but a neural network can learn a <em>probabilistic</em> version of
+              it. Given this slightly mixed glass, what did it most likely look like one moment earlier?</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s18">
+          <div class="slide-frame">
+            <div class="tag">Slide 18 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-18.png"
+              alt="Diffusion Models Overview. Gaussian noise is added step-by-step to the training images to turn them completely into junk noisy images. Through this process, the model learns to remove the noise step-by-step. Capable of turning any Gaussian noisy image into a new diverse image.">
+            <div class="slide-caption">slide 18 · noise in, image out</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Training adds Gaussian noise step by step until an image is pure noise, and the model learns to
+              remove it step by step. At generation time any fresh noise image can be turned into a new image.</p>
+            <h4>Why the outputs are diverse</h4>
+            <p>Different starting noise leads to different images, and most samplers add a little fresh noise at
+              every reverse step too. So the same model gives many different outputs, the way sampling with a
+              temperature does for an LM.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s19">
+          <div class="slide-frame">
+            <div class="tag">Slide 19 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-19.png"
+              alt="Diffusion Models Overview. The forward process corrupts training examples according to a known distribution q. The model learns reverse transitions p_theta that generate data from the terminal noise distribution. Diagram: Clean data x0 to Corrupted x_t to Noise x_T via known q; arrows back labelled learned p_theta.">
+            <div class="slide-caption">slide 19 · q forward, p<sub>θ</sub> backward</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Two processes over a chain <em>x</em><sub>0</sub> (clean) → <em>x<sub>t</sub></em> → <em>x<sub>T</sub></em>
+              (pure noise). The forward one, <em>q</em>, is fixed and known. The reverse one, <em>p</em><sub>θ</sub>,
+              is the neural network.</p>
+            <h4>How training uses this</h4>
+            <ol>
+              <li>Take a clean training example <em>x</em><sub>0</sub>.</li>
+              <li>Pick a random step <em>t</em> and corrupt <em>x</em><sub>0</sub> to <em>x<sub>t</sub></em> with
+                <em>q</em>. For the processes used in practice you can jump straight to step <em>t</em> without
+                running the steps in between.</li>
+              <li>Ask the network to predict the clean data (or the noise that was added) from <em>x<sub>t</sub></em>
+                and <em>t</em>. Since you made the corruption yourself, you know the right answer, so this is plain
+                supervised learning.</li>
+            </ol>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>Diffusion training needs no adversary and no learned encoder. You corrupt data with a rule you
+                chose and train a network to undo the corruption. Every model in this lecture is trained this way.
+                Only the choice of corruption changes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s20">
+          <div class="slide-frame">
+            <div class="tag">Slide 20 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-20.png"
+              alt="Diffusion Models Overview. Top box Forward SDE: dx = f(x,t)dt + sigma(t)dw. DDPM: x_t = sqrt(1 - beta_t) x_{t-1} + sqrt(beta_t) z_t, z_t ~ N(0, I). NCSN: x_t = x_{t-1} + sqrt(sigma_t^2 - sigma_{t-1}^2) z_t. Middle: a row of rabbit photos from data x0 through x_{t-1}, x_t, x_{t+1} to pure noise x_T. Bottom box Reverse SDE: dx = [f(x,t) - sigma(t)^2 grad_x log p_t(x)]dt + sigma(t)dw. DDPM: x_{t-1} = mu_theta(x_t, t) + sqrt(beta_t) z_t. NCSN: annealed Langevin dynamics.">
+            <div class="slide-caption">slide 20 · the image diffusion equations</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The same picture in equations. The top box is the forward noising, written as a continuous-time
+              stochastic differential equation (SDE) and as its two common discrete versions, DDPM and NCSN. The
+              bottom box is the matching reverse process.</p>
+            <h4>The DDPM forward step with numbers</h4>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>x</mi><mi>t</mi></msub><mo>=</mo>
+                <msqrt><mn>1</mn><mo>−</mo><msub><mi>β</mi><mi>t</mi></msub></msqrt><mspace width="0.2em"/><msub><mi>x</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                <mo>+</mo><msqrt><msub><mi>β</mi><mi>t</mi></msub></msqrt><mspace width="0.2em"/><msub><mi>z</mi><mi>t</mi></msub><mo>,</mo>
+                <mspace width="1em"/><msub><mi>z</mi><mi>t</mi></msub><mo>∼</mo><mi>𝒩</mi><mo>(</mo><mn>0</mn><mo>,</mo><mi>I</mi><mo>)</mo>
+              </math>
+            </div>
+            <p>Take one pixel with value 0.8 and a noise level β<sub><em>t</em></sub> = 0.02. Then
+              √0.98 ≈ 0.990 and √0.02 ≈ 0.141, so</p>
+            <p style="text-align:center"><em>x<sub>t</sub></em> ≈ 0.792 + 0.141 <em>z</em>.</p>
+            <p>The signal shrinks a little and a little noise is added. The two square roots are chosen so that if
+              <em>x</em><sub><em>t</em>−1</sub> has variance 1, so does <em>x<sub>t</sub></em>, since
+              (1 − β) · 1 + β · 1 = 1. Repeat this a thousand times and the original 0.8 has shrunk to almost
+              nothing while the noise has taken over, which is the "pure noise" end of the chain.</p>
+            <h4>The reverse step</h4>
+            <p>The DDPM reverse step is <em>x</em><sub><em>t</em>−1</sub> = μ<sub>θ</sub>(<em>x<sub>t</sub></em>,
+              <em>t</em>) + √β<sub><em>t</em></sub> <em>z</em>. The network predicts where the slightly cleaner
+              image is centred, and a bit of fresh noise is added back. You only need the intuition here. The
+              rest of the lecture swaps Gaussian noise for something that works on words.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="text">
+        <h2><span class="num">§3</span>Diffusion meets text</h2>
+        <p class="section-intro">
+          Gaussian noise needs numbers that can move a little. Words cannot.
+          These slides lay out the two ways around that.
+        </p>
+
+        <div class="slide" id="s21">
+          <div class="slide-frame">
+            <div class="tag">Slide 21 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-21.png"
+              alt="Diffusion Models: Text? Diffusion models work well in continuous domains like image data. Intuitive to add Gaussian noise to images. How do we deal with text? Words and tokens are discrete. We cannot add a small amount of Gaussian noise to a word in the same way we can to a pixel.">
+            <div class="slide-caption">slide 21 · the discreteness problem</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Images are continuous, so Gaussian noise is natural. Tokens are discrete, so "a word plus a little
+              noise" has no meaning.</p>
+            <h4>Make it concrete</h4>
+            <p>A pixel of 0.8 plus noise 0.03 is 0.83, which is still a valid, slightly different pixel. Token id
+              4821 ("cat") plus 0.03 is 4821.03, which is not a token. Rounding gives back "cat", so the noise did
+              nothing, and adding a large amount jumps to some unrelated id like 9134 ("tax"), because neighbouring
+              ids have no relationship in meaning. There is no smooth path from "cat" to noise.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s22">
+          <div class="slide-frame">
+            <div class="tag">Slide 22 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-22.png"
+              alt="Diffusion Language Models: Adding Noise to Text. Discrete: change token, often replace with [MASK]. Continuous: add noise in token/latent embedding space.">
+            <div class="slide-caption">slide 22 · two ways to add noise to text</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Either corrupt tokens directly (usually by turning them into [MASK]) or move to a continuous space
+              (embeddings) and add Gaussian noise there.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s23">
+          <div class="slide-frame">
+            <div class="tag">Slide 23 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-23.png"
+              alt="Diffusion Language Models: Continuous and Discrete Diffusion. Table with columns Choice, Discrete diffusion, Continuous diffusion. State: tokens and special symbols vs real-valued vectors. Corruption: mask or replace tokens vs add Gaussian noise. Prediction: categorical probabilities vs noise, clean vectors, or score. Text output: token states are already discrete vs requires a token decoder. Note: The state space can be discrete even when diffusion time is continuous, as in the masking process used by LLaDA.">
+            <div class="slide-caption">slide 23 · continuous vs discrete, side by side</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A comparison table. Discrete diffusion keeps tokens as tokens and predicts a probability over the
+              vocabulary. Continuous diffusion works on vectors and needs a final step to turn vectors back into
+              words.</p>
+            <h4>The practical difference</h4>
+            <p>The "Text output" row decides a lot. In discrete diffusion the network's output is a softmax over the
+              vocabulary at each position, exactly like the output head of BERT or GPT, so you train it with
+              cross-entropy and read off words directly. In continuous diffusion the output is a vector, and you need
+              an extra rounding or decoding step, which §4 shows is where things go wrong.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>"Discrete" refers to the <em>state</em> (what each position holds), not to time. LLaDA corrupts
+                with a masking ratio <em>t</em> that can be any real number in [0, 1], yet each position is always
+                either its original token or [MASK].</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s24">
+          <div class="slide-frame">
+            <div class="tag">Slide 24 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-24.png"
+              alt="Diffusion Language Models: Adding Noise to Text. Latent Embedding. Token Embedding. Tokens.">
+            <div class="slide-caption">slide 24 · three places to put the noise</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Noise can be added at three levels, namely a latent embedding of the whole text, the per-token
+              embeddings, or the tokens themselves. The next slides go through them in this order.</p>
+            <p>The first two are continuous (§4). The third is discrete (§5 and §6).</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="continuous">
+        <h2><span class="num">§4</span>Continuous text diffusion</h2>
+        <p class="section-intro">
+          Turn text into vectors, run image-style Gaussian diffusion on the
+          vectors, then turn the result back into text. The trouble is in
+          the last step.
+        </p>
+
+        <div class="slide-strip" id="s25s26">
+          <div class="slide" id="s25">
+            <div class="slide-frame">
+              <div class="tag">Slide 25 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-25.png"
+                alt="Diffusion Language Models: Noise to Latent Embedding. Input Text to Encoder to Latent Vector, then add noise in steps to Noisy Latent.">
+              <div class="slide-caption">slide 25 · latent route, forward</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>An encoder compresses the text into a latent vector, and noise is added to that vector in steps.</p>
+            </div>
+          </div>
+          <div class="slide" id="s26">
+            <div class="slide-frame">
+              <div class="tag">Slide 26 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-26.png"
+                alt="Diffusion Language Models: Noise to Latent Embedding. Noisy Input, denoise in steps, Latent Vector, Decoder, Output Text.">
+              <div class="slide-caption">slide 26 · latent route, backward</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>Generation runs the other way. Denoise a random vector step by step into a clean latent, then a
+                decoder turns the latent into text.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>How this is the image recipe in disguise</h4>
+            <p>This is the same move Stable Diffusion makes for images, which do diffusion in a compact latent space instead
+              of on raw pixels. The diffusion model never sees words. It only learns to generate latent vectors that
+              look like those produced by the encoder, and a separate decoder does the language part.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s27">
+          <div class="slide-frame">
+            <div class="tag">Slide 27 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-27.png"
+              alt="Diffusion Language Models: Noise to Latent Embedding. Noisy Input, denoise, Latent Vector, Decoder labelled in red Autoregressive Decoder, Output Text.">
+            <div class="slide-caption">slide 27 · the decoder is autoregressive</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The same pipeline, with the decoder marked in red as autoregressive.</p>
+            <h4>Why that is a catch</h4>
+            <p>Turning one latent vector into a sentence of variable length is itself a sequence generation problem,
+              and the usual way to solve it is a left-to-right decoder. So the final text is still written one token
+              at a time. You keep the slow loop you wanted to get rid of, and add a diffusion model in front of
+              it.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s28">
+          <div class="slide-frame">
+            <div class="tag">Slide 28 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-28.png"
+              alt="Diffusion Language Models: Latent Embedding Drawbacks. Hybrid: diffusion + autoregressive model. Latent space must be diffusion friendly. Autoregressive decoder.">
+            <div class="slide-caption">slide 28 · latent route drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The latent route is a hybrid that still uses an autoregressive decoder, and it only works if the
+              latent space is "diffusion friendly".</p>
+            <h4>What "diffusion friendly" means</h4>
+            <p>Diffusion ends by producing a latent that is close to, but not exactly, one the encoder would make.
+              The decoder must turn such near-miss latents into sensible text. This is the autoencoder problem from
+              slide 8 again. If the encoder's latents are scattered sparsely, a vector slightly off any of them may
+              decode to nonsense, so the latent space has to be smooth for the whole thing to work.</p>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s29s30">
+          <div class="slide" id="s29">
+            <div class="slide-frame">
+              <div class="tag">Slide 29 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-29.png"
+                alt="Diffusion Language Models: Noise to Token Embedding. Input Text to Token Embeddings, add noise in steps, Noised Token Embeddings.">
+              <div class="slide-caption">slide 29 · token-embedding route, forward</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>Look up each token's embedding vector and add Gaussian noise to the whole sequence of vectors.</p>
+            </div>
+          </div>
+          <div class="slide" id="s30">
+            <div class="slide-frame">
+              <div class="tag">Slide 30 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-30.png"
+                alt="Diffusion Language Models: Noise to Token Embedding. Noised Token Embeddings, denoise in steps, Denoised Token Embeddings, Rounding, Output Text.">
+              <div class="slide-caption">slide 30 · token-embedding route, backward</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>Denoise the sequence of vectors, then round each one to the nearest word embedding to get text.</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>What changed from the latent route</h4>
+            <p>Now there is one vector <em>per position</em>, so the output length is fixed by the number of vectors
+              and every position is denoised in parallel. No autoregressive decoder is needed. The last step is a
+              nearest-neighbour lookup that finds, for each position, the vocabulary word whose embedding is closest to the
+              denoised vector.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s31">
+          <div class="slide-frame">
+            <div class="tag">Slide 31 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-31.png"
+              alt="Diffusion Language Models: Token Embedding Drawbacks. Rounding errors. Embedding geometry is not necessarily semantic: Euclidean closeness between embeddings doesn't mean a token is a safe substitute, can break grammar or meaning; unlike pixels, where small changes are visually invisible.">
+            <div class="slide-caption">slide 31 · rounding and geometry</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Rounding can pick the wrong word, and being close in embedding space does not make two words
+              interchangeable.</p>
+            <h4>A small example</h4>
+            <p>Imagine a 2-D embedding space with "hot" at (1.0, 0.0) and "cold" at (0.9, 0.2). Words that appear
+              in the same contexts ("the soup is ___") get similar embeddings, so antonyms often end up close
+              together. Suppose denoising ends at (0.93, 0.12). The distances are</p>
+            <ul>
+              <li>to "hot": √(0.07² + 0.12²) = √0.0193 ≈ 0.139</li>
+              <li>to "cold": √(0.03² + 0.08²) = √0.0073 ≈ 0.085</li>
+            </ul>
+            <p>Rounding picks "cold". The vector was a small error away from "hot", but the meaning of the sentence
+              flips. For an image, an error of 0.05 in a pixel is invisible. For text, the same size of error can
+              change a word, and a single wrong word can break the grammar or reverse the meaning.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s32">
+          <div class="slide-frame">
+            <div class="tag">Slide 32 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-32.png"
+              alt="Diffusion Language Models: Diffusion LM. End-to-end training: embedding function that maps discrete text into a continuous space; rounding method to map vectors in embedding space back to words. Diagram: Gaussian noise x_T, arrows through x_t to x_{t-1} labelled denoising p_theta(x_{t-1}|x_t) and noising q(x_t|x_{t-1}), to x_0, then rounding p_theta(w|x_0) to text w, and embedding q_phi(x_0|w) back. Citation Li et al. 2022.">
+            <div class="slide-caption">slide 32 · Diffusion-LM</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Diffusion-LM (Li et al., 2022) follows the token-embedding route but trains the embedding and the
+              rounding step together with the denoiser. The chain gains one link at each end, going from
+              text <em>w</em> → embedding <em>x</em><sub>0</sub> (via <em>q</em><sub>φ</sub>) and
+              <em>x</em><sub>0</sub> → text (via <em>p</em><sub>θ</sub>(<em>w</em> | <em>x</em><sub>0</sub>)).</p>
+            <h4>Why learn the embeddings end to end</h4>
+            <p>With frozen embeddings (say, taken from GPT-2) you are stuck with whatever geometry they have, like
+              "hot" next to "cold" above. When the embeddings are trained with the diffusion loss, the model is
+              rewarded for placing words so that denoised vectors round to the right word. It can push apart words
+              that it keeps confusing. The rounding step <em>p</em><sub>θ</sub>(<em>w</em> | <em>x</em><sub>0</sub>)
+              is a softmax over the vocabulary at each position, trained with cross-entropy.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s33">
+          <div class="slide-frame">
+            <div class="tag">Slide 33 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-33.png"
+              alt="Diffusion Language Models: Diffusion LM. Starts from pure noise. Denoises for many steps. Rounds each final vector to the nearest word.">
+            <div class="slide-caption">slide 33 · how Diffusion-LM generates</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Generation has three steps. Sample one Gaussian vector per position, denoise for many steps, round
+              each vector to its nearest word.</p>
+            <p>"Many steps" is the catch. Diffusion-LM used thousands of denoising steps, so even though each
+              step handles all positions in parallel, generation was not faster than an autoregressive model.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s34">
+          <div class="slide-frame">
+            <div class="tag">Slide 34 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-34.png"
+              alt="Diffusion Language Models: Diffusion LM. Clamping at generation time: snaps the prediction to the nearest real word embeddings before computing the next, less noisy step. Controllable generation: steer the whole sentence toward a constraint (a syntax pattern, a sentiment) during denoising. Since all positions are denoised together, constraints like length or structure apply globally.">
+            <div class="slide-caption">slide 34 · clamping and control</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Two tricks. <strong>Clamping</strong> snaps the model's prediction to the nearest real word embedding
+              at each step, not only at the end. <strong>Control</strong> nudges the whole sentence towards a target
+              property during denoising.</p>
+            <h4>Why clamping helps</h4>
+            <p>Without clamping, the vectors can drift through the empty space between words for many steps and
+              only get snapped at the very end, where a small error flips a word (slide 31). Clamping keeps
+              every intermediate prediction on a real word, so small errors are corrected early instead of piling
+              up.</p>
+            <h4>Why control is easier than in an autoregressive model</h4>
+            <p>Say you want a sentence with a given syntax pattern, or a positive sentiment. A separate classifier
+              can score the current noisy vectors, and its gradient tells you how to move <em>all</em> of them to
+              raise the score. You add that nudge at each denoising step. An autoregressive model can only steer
+              the next token, with no say over tokens already written and no view of tokens still to come. A
+              constraint like "exactly 10 words" or "the sentence must end with a question" is hard to enforce left
+              to right, but trivial when all positions exist from the start.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="discrete">
+        <h2><span class="num">§5</span>Discrete diffusion</h2>
+        <p class="section-intro">
+          Skip the vectors. Corrupt the tokens themselves, by replacing them
+          with random tokens or with [MASK]. Then the model predicts tokens
+          directly and there is nothing to round.
+        </p>
+
+        <div class="slide" id="s35">
+          <div class="slide-frame">
+            <div class="tag">Slide 35 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-35.png"
+              alt="Diffusion Language Models: Discrete Diffusion. [MASK] tokens as noise. Three rows: The cat sat on the mat; [M] cat sat [M] [M] mat; [M] [M] [M] [M] [M] [M].">
+            <div class="slide-caption">slide 35 · [MASK] as noise</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>"The cat sat on the mat" becomes partly masked, then fully masked. Masking plays the role that
+              Gaussian noise played for images.</p>
+            <h4>The analogy to images</h4>
+            <table>
+              <thead>
+                <tr><th></th><th>Image diffusion</th><th>Masked text diffusion</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Clean data</td><td>Photo</td><td>The cat sat on the mat</td></tr>
+                <tr><td>Partly noisy</td><td>Photo with some static</td><td>[M] cat sat [M] [M] mat</td></tr>
+                <tr><td>Pure noise</td><td>Static</td><td>[M] [M] [M] [M] [M] [M]</td></tr>
+                <tr><td>One reverse step</td><td>Remove a little static</td><td>Fill in some of the [M]s</td></tr>
+              </tbody>
+            </table>
+            <p>As with the ink in water, the fully noised state is the same for every sentence of length 6, so
+              generation can always start from it.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s36">
+          <div class="slide-frame">
+            <div class="tag">Slide 36 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-36.png"
+              alt="Diffusion Language Models: Discrete Diffusion. Transition Matrix: a table of probabilities for how one token turns into another in one corruption step.">
+            <div class="slide-caption">slide 36 · the transition matrix</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The discrete forward process is described by a transition matrix <em>Q<sub>t</sub></em>. Entry
+              [<em>Q<sub>t</sub></em>]<sub><em>ij</em></sub> is the probability that a token in state <em>i</em> becomes state
+              <em>j</em> in one corruption step.</p>
+            <h4>A tiny example</h4>
+            <p>With a three-word vocabulary {cat, dog, [MASK]}, one possible <em>Q</em> is</p>
+            <table>
+              <thead>
+                <tr><th>from \ to</th><th>cat</th><th>dog</th><th>[MASK]</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>cat</td><td>0.9</td><td>0</td><td>0.1</td></tr>
+                <tr><td>dog</td><td>0</td><td>0.9</td><td>0.1</td></tr>
+                <tr><td>[MASK]</td><td>0</td><td>0</td><td>1</td></tr>
+              </tbody>
+            </table>
+            <p>Each row sums to 1 because a token has to end up somewhere. This matrix says that every step, a real
+              word has a 10% chance of being masked, and a mask stays a mask. It is the discrete counterpart of
+              DDPM's "shrink the signal a bit, add a bit of noise".</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s37">
+          <div class="slide-frame">
+            <div class="tag">Slide 37 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-37.png"
+              alt="Diffusion Language Models: Discrete Diffusion. Transition matrix is every text * every text. Assume tokens are independent of each other: vocab * vocab (128k * 128k ~ 10B). Avoid matrix and instead define a rule.">
+            <div class="slide-caption">slide 37 · the matrix is too big</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A transition matrix over whole texts is impossibly large. Corrupting each token independently brings
+              it down to vocabulary × vocabulary, which is still huge, so in practice you define a simple rule
+              instead of storing a matrix.</p>
+            <h4>The sizes</h4>
+            <ul>
+              <li><strong>Over whole texts.</strong> A 6-token sequence with a 128k vocabulary has 128,000<sup>6</sup>
+                ≈ 4 × 10<sup>30</sup> possible states. A matrix over those is out of the question.</li>
+              <li><strong>Per token.</strong> If each position is corrupted independently, the same
+                <em>V</em> × <em>V</em> matrix is applied at every position. With <em>V</em> = 128,000 that is
+                128,000² ≈ 1.6 × 10<sup>10</sup> entries (the slide rounds to "~10B"), or about 65 GB in FP32. Still
+                far too big to store, and you would need one per step.</li>
+              <li><strong>As a rule.</strong> If the matrix has a fixed pattern, such as "stay with probability
+                1 − β, otherwise go to [MASK]", you only store β. The next two slides give two such rules.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" id="s38">
+          <div class="slide-frame">
+            <div class="tag">Slide 38 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-38.png"
+              alt="Diffusion Language Models: D3PM. Character-level transition matrix: generation quality was compromised. Rule for corruption: [Q_t]_ij = 1 - beta_t if j = i; beta_t / |V| if j != i. Citation Austin et al. 2021.">
+            <div class="slide-caption">slide 38 · D3PM uniform noise</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>D3PM (Austin et al., 2021) uses a rule where each token stays the same with probability 1 − β<sub><em>t</em></sub>
+              and otherwise turns into a uniformly random token. It was tried at the character level, and quality
+              suffered.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mrow><mo>[</mo><msub><mi>Q</mi><mi>t</mi></msub><mo>]</mo></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo>
+                <mrow><mo>{</mo><mtable columnalign="left">
+                  <mtr><mtd><mn>1</mn><mo>−</mo><msub><mi>β</mi><mi>t</mi></msub><mo>,</mo></mtd><mtd><mi>j</mi><mo>=</mo><mi>i</mi></mtd></mtr>
+                  <mtr><mtd><mfrac><msub><mi>β</mi><mi>t</mi></msub><mrow><mo>|</mo><mi>V</mi><mo>|</mo></mrow></mfrac><mo>,</mo></mtd><mtd><mi>j</mi><mo>≠</mo><mi>i</mi></mtd></mtr>
+                </mtable></mrow>
+              </math>
+            </div>
+            <h4>Why uniform noise is hard for the model</h4>
+            <p>Take "The cat sat" and corrupt "cat" into a random token, say "tax". The model now sees "The tax sat"
+              and has to decide, for <em>every</em> position, whether the token there is real or a random
+              replacement. Corrupted positions look like ordinary words, so the model must spend effort finding them
+              before it can fix them. With [MASK] (next slide) the corrupted positions announce themselves.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>Written exactly as on the slide, a row does not quite sum to 1. With |<em>V</em>| = 4 and β = 0.2,
+                the diagonal is 0.8 and the three off-diagonal entries are 0.2 / 4 = 0.05 each, for a total of
+                0.95. In the D3PM paper the uniform jump can also land back on the same token, so the diagonal is
+                1 − β + β/|<em>V</em>| = 0.85, and the row sums to 0.85 + 0.15 = 1. For a 128k vocabulary the
+                difference is negligible, but use the corrected form if asked to check that rows sum to 1.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s39">
+          <div class="slide-frame">
+            <div class="tag">Slide 39 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-39.png"
+              alt="Diffusion Language Models. beta_t is the noise schedule value at step t, the amount of corruption added at that step. beta_t close to 0: the token almost always stays. beta_t close to 1: the token is almost always replaced. [Q_t]_ij = 1 - beta_t if j = i; beta_t if j = [MASK]; 0 otherwise.">
+            <div class="slide-caption">slide 39 · the absorbing [MASK] rule</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mrow><mo>[</mo><msub><mi>Q</mi><mi>t</mi></msub><mo>]</mo></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo>
+                <mrow><mo>{</mo><mtable columnalign="left">
+                  <mtr><mtd><mn>1</mn><mo>−</mo><msub><mi>β</mi><mi>t</mi></msub><mo>,</mo></mtd><mtd><mi>j</mi><mo>=</mo><mi>i</mi></mtd></mtr>
+                  <mtr><mtd><msub><mi>β</mi><mi>t</mi></msub><mo>,</mo></mtd><mtd><mi>j</mi><mo>=</mo><mo>[</mo><mi>MASK</mi><mo>]</mo></mtd></mtr>
+                  <mtr><mtd><mn>0</mn><mo>,</mo></mtd><mtd><mtext>otherwise</mtext></mtd></mtr>
+                </mtable></mrow>
+              </math>
+            </div>
+            <p>Each step, a token stays with probability 1 − β<sub><em>t</em></sub> or becomes [MASK] with probability
+              β<sub><em>t</em></sub>. It never turns into another word. β<sub><em>t</em></sub> is the noise schedule.</p>
+            <h4>Running it forward</h4>
+            <p>Once a token is masked, it stays masked (the [MASK] row is all zeros except a 1 on [MASK] itself),
+              which is why this is called <em>absorbing</em> noise. So a token is still visible at step <em>t</em>
+              only if it survived every step so far. With a constant β = 0.1,</p>
+            <p style="text-align:center">P(still visible after 5 steps) = 0.9<sup>5</sup> ≈ 0.59.</p>
+            <p>For "The cat sat on the mat", you expect about 6 × 0.41 ≈ 2.5 of the 6 tokens to be masked after 5
+              steps, something like "[M] cat sat [M] [M] mat" from slide 35. Keep going and the survival probability
+              heads to 0, giving all [MASK].</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>Because masked tokens never turn into other words, a visible token in a noisy sentence is always
+                correct. The model's only job is to fill the blanks, which is exactly the masked language modelling
+                task BERT was trained on. That is why absorbing noise beat uniform noise and became the standard
+                for text.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="masked">
+        <h2><span class="num">§6</span>Masked diffusion: MDLM and LLaDA</h2>
+        <p class="section-intro">
+          With absorbing [MASK] noise, training reduces to masked language
+          modelling at a random masking ratio, and generation reduces to
+          filling in masks a few at a time. MDLM showed this works.
+          LLaDA scaled it to an 8B chat model.
+        </p>
+
+        <div class="slide" id="s40">
+          <div class="slide-frame">
+            <div class="tag">Slide 40 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-40.png"
+              alt="Diffusion Language Models: Masked Diffusion Language Model (MDLM). Left: Diffusion training, average of unmasking losses. Input x: Masked diffusion for discrete data. Stack of masked versions from t=0 to t=1; MDLM: expectation over masking rates. A network theta predicts x_theta^1 to x_theta^L, losses only on masked positions. Right: Simplified Masked Diffusion LM. Masking rate is random, not fixed. Objective is a variational lower bound. Admits fast ancestral sampling. Objective is a simple average of MLM losses. Improved implementation relative to previous masked diffusion. Bar chart of LM1B perplexity: Diffusion LM 118.6, D3PM 76.9, Diffusion BERT 63.8, SEDD 32.8, MDLM 23.0; dashed AR line at 20.9. Citation Sahoo et al. 2024.">
+            <div class="slide-caption">slide 40 · MDLM</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>MDLM (Sahoo et al., 2024) trains a transformer to predict masked tokens, where the masking rate is
+              drawn at random for each example instead of being fixed at BERT's 15%. The loss is an average of
+              these masked-LM losses over masking rates, and it is a bound on the log-likelihood. On LM1B its
+              perplexity (23.0) is close to an autoregressive model's (20.9) and far better than earlier text
+              diffusion models.</p>
+            <h4>One training step, by hand</h4>
+            <p>Take <em>x</em> = "Masked diffusion for discrete data" (L = 5).</p>
+            <ol>
+              <li>Draw a masking rate, say <em>t</em> = 0.4.</li>
+              <li>Mask each token independently with probability 0.4. Suppose this gives
+                "[M] diffusion for [M] data".</li>
+              <li>Run the transformer (with full bidirectional attention) and read off its softmax at the two masked
+                positions. Say it gives the right word "Masked" probability 0.5 and "discrete" probability 0.25.</li>
+              <li>The loss is cross-entropy on the masked positions only, so it is −ln 0.5 − ln 0.25 ≈ 0.693 + 1.386 = 2.079.
+                Positions that were visible contribute nothing, since the model can just copy them.</li>
+            </ol>
+            <p>Next example, next random <em>t</em>. Over training the model sees every masking ratio from almost
+              nothing hidden to everything hidden, which is the "expectation over masking rates" on the left of the
+              slide.</p>
+            <h4>The weighting that makes it a likelihood bound</h4>
+            <p>In the bound, each example's loss is multiplied by 1/<em>t</em> (for the linear masking schedule, as in
+              LLaDA). The reason is easy to see. At <em>t</em> = 0.1 only about 10% of tokens are masked, so the
+              raw loss is a sum over very few positions. Dividing by <em>t</em> scales it back up. The expected
+              number of masked tokens is <em>tL</em>, and <em>tL</em> × 1/<em>t</em> = <em>L</em>, so every masking
+              rate contributes on the same scale. That is the "simple average of MLM losses" in the slide's
+              right-hand box.</p>
+            <h4>Reading the bar chart</h4>
+            <p>Lower perplexity is better. Diffusion-LM (continuous, §4) is at 118.6, D3PM (uniform discrete noise)
+              at 76.9, and MDLM at 23.0, almost on the autoregressive line at 20.9. Most of that improvement came from
+              choosing absorbing [MASK] noise and a clean training objective, not from a bigger model.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The diffusion numbers are upper bounds on perplexity (they come from the likelihood bound), while
+                the AR number is exact. So the true gap may be smaller than 23.0 vs 20.9 suggests, but the chart
+                cannot show that.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s41">
+          <div class="slide-frame">
+            <div class="tag">Slide 41 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-41.png"
+              alt="LLaDA (Large Language Diffusion with mAsking). Figure 2: Overview of LLaDA. (a) Pre-training: mask all tokens independently with mask ratio t ~ U(0,1), a mask predictor predicts the masked tokens. (b) SFT: prompt and response, only response tokens are possibly masked. (c) Sampling: start at t=1 with the response fully masked, the mask predictor predicts all masks, some predictions are kept and others remasked, an intermediate step, repeated until t=0. Legend: mask token, non-mask token, remask, random mask. Citation Nie et al.">
+            <div class="slide-caption">slide 41 · LLaDA pre-training, SFT, sampling</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>LLaDA in three panels. (a) Pre-training is MDLM-style. Draw <em>t</em> uniformly from [0, 1], mask
+              each token with probability <em>t</em>, and predict the masked ones. (b) Supervised fine-tuning is
+              the same, except the prompt is never masked and only the response is. (c) Sampling starts with the
+              prompt followed by a fully masked response and unmasks it over several steps.</p>
+            <h4>SFT, concretely</h4>
+            <p>Prompt: "What is 2 + 3?" Response: "The answer is 5." During SFT the prompt stays fully visible, and
+              some of the response tokens are masked, for example "The [M] is [M]." The model learns to fill in a
+              response given a complete prompt. This is the masked counterpart of training a chat model only on
+              the response tokens.</p>
+            <h4>Sampling, step by step</h4>
+            <p>Suppose the response has 6 slots and we take 3 steps, so we fix 2 tokens per step.</p>
+            <table>
+              <thead>
+                <tr><th>Step</th><th>Input response</th><th>Model's guesses (confidence)</th><th>Keep</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>[M] [M] [M] [M] [M] [M]</td><td>The (0.9) answer (0.8) is (0.7) 3 (0.3) . (0.6) 5 (0.4)</td><td>The, answer</td></tr>
+                <tr><td>2</td><td>The answer [M] [M] [M] [M]</td><td>is (0.95) 5 (0.5) . (0.9) &lt;eos&gt; (0.4)</td><td>is, .</td></tr>
+                <tr><td>3</td><td>The answer is [M] . [M]</td><td>5 (0.97) &lt;eos&gt; (0.9)</td><td>both</td></tr>
+              </tbody>
+            </table>
+            <p>Each step predicts every masked slot at once, keeps the most confident guesses and puts [MASK] back on
+              the rest. This is called low-confidence remasking. Notice that in step 1 the model guessed "3"
+              for the number slot with low confidence, so it was thrown away. By step 3 the context "The answer is
+              ___ ." was clear enough to get "5" right. Six tokens took three forward passes instead of six.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s42">
+          <div class="slide-frame">
+            <div class="tag">Slide 42 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-42.png"
+              alt="Diffusion Language Models: LLaDA. Avoids continuous noise. Training hides a random fraction of tokens, from a few up to all: model predicts the hidden ones using context from both sides. To generate, starts with a fully masked response and fills it in over several steps: unmasking the tokens it's most confident about first and keeping the rest masked for later passes. BERT-like?">
+            <div class="slide-caption">slide 42 · LLaDA in words, and is it just BERT?</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The same points as the figure, in words, ending with the question "BERT-like?"</p>
+            <h4>So is it BERT?</h4>
+            <p>The network is the same kind of thing, a bidirectional transformer with an output softmax at every
+              position, trained to predict masked tokens. Two differences make it a generative model.</p>
+            <ul>
+              <li><strong>The masking ratio.</strong> BERT always masks about 15%, so it has never seen a sentence
+                that is 100% masked and cannot start from nothing. LLaDA is trained on every ratio from 0 to 1,
+                including fully masked inputs, so it can run the whole path from blank to finished text.</li>
+              <li><strong>A probabilistic objective.</strong> The 1/<em>t</em>-weighted loss is a bound on the
+                log-likelihood, so LLaDA is a proper language model with a perplexity you can compare. BERT's fixed-ratio
+                loss is not.</li>
+            </ul>
+            <p>For a short exam answer, say that LLaDA is BERT trained at all masking ratios with a likelihood-based
+              weighting, and used iteratively to generate.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s43">
+          <div class="slide-frame">
+            <div class="tag">Slide 43 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-43.png"
+              alt="Decoding: Autoregressive vs Diffusion. Left: Cat -> ate -> fish. Right: [M] [M] [M], first step gives Cat [M] fish, second step gives Cat ate fish.">
+            <div class="slide-caption">slide 43 · left-to-right vs fill-in</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>An autoregressive model writes "Cat", then "ate", then "fish". The diffusion model starts from three
+              masks, fills in "Cat" and "fish" first, and then "ate".</p>
+            <h4>Why that order is useful</h4>
+            <p>Once both ends are known, the middle word is heavily constrained. It has to be something a cat does to a fish.
+              A left-to-right model choosing the second word has to guess without knowing the object. Diffusion
+              lets the model write the easy, informative tokens first and use them as context for the hard ones.
+              The order is not fixed in advance. It comes from the model's confidence.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s44">
+          <div class="slide-frame">
+            <div class="tag">Slide 44 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-44.png"
+              alt="Generation. Left: Autoregressive Models, a staircase of coloured columns, each column one token, each new token appearing one step later than the previous, giving a triangular shape. Right: Masked Diffusion Models, coloured columns of different heights, tokens across the whole sequence resolved at different steps in no fixed order.">
+            <div class="slide-caption">slide 44 · when each token gets decided</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Each column is one position in the output and time runs downwards. On the left (autoregressive) the
+              positions are finished strictly one after another, giving a triangle as tall as the sequence is long.
+              On the right (masked diffusion) positions all over the sequence get decided in the same steps, and
+              the whole picture is much shorter.</p>
+            <p>The height of each picture is the number of sequential forward passes. That is the speed argument
+              of the whole lecture in one image.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="mercury">
+        <h2><span class="num">§7</span>Mercury: diffusion at production speed</h2>
+        <p class="section-intro">
+          Mercury Coder from Inception Labs is a commercial diffusion LM
+          for code. The slides show its reported results, which are about the same
+          quality as small fast autoregressive models, at many times the
+          throughput.
+        </p>
+
+        <div class="slide" id="s45">
+          <div class="slide-frame">
+            <div class="tag">Slide 45 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-45.png"
+              alt="Diffusion Language Models: Mercury. Scatter plot, Coding Index vs Output Speed: Smaller models, from Artificial Analysis. X axis output speed in tokens per second from 0 to 1200; y axis coding index. Most attractive quadrant shaded green top right. Claude 3.5 Haiku, Codestral, Mistral Small 3, GPT-4o mini and Gemini 2.0 Flash-Lite are at high quality but under about 250 tokens per second. DeepSeek Coder V2 Lite, Llama 3.1 8B, Nova Micro, Qwen2.5 Coder 7B, Command-R+ are lower. Mercury Coder Small sits at about 740 tokens per second in the attractive quadrant, Mercury Coder Mini at about 1100 tokens per second. Caption: Mercury Coder models outperform other frontier models by up to 10x in throughput while maintaining comparable quality.">
+            <div class="slide-caption">slide 45 · quality vs speed</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A third-party chart of coding quality against output speed. All the autoregressive models are
+              stuck below roughly 250 tokens per second. Mercury Coder Small reaches about 740 and Mercury Coder
+              Mini about 1100, at quality comparable to the fast autoregressive models.</p>
+            <h4>Where the speed comes from</h4>
+            <p>An autoregressive model's speed is capped by one forward pass per token (slide 11). Mercury fills in
+              many tokens per forward pass, as in the LLaDA example, so it can produce more tokens per second on the
+              same GPU even if each pass is a bit more expensive.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s46">
+          <div class="slide-frame">
+            <div class="tag">Slide 46 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-46.png"
+              alt="Mercury Table 1: Performance (pass@1) comparison of various models across coding benchmarks: HumanEval, MBPP, EvalPlus, MultiPL-E, LCB, BCB, Speed. Open-weights: Llama 3.1 8B Instruct 66.5, 59.2, 60.2, 50.1, 12.0, 32.3, 153; DeepSeek Coder V2 Lite 79.0, 59.8, 68.3, 57.0, 16.0, 44.4, 93; Mistral Small 3 84.8, 69.6, 72.3, 70.1, 25.0, 42.7, 126; Qwen 2.5 Coder 7B Instruct 88.0, 80.0, 79.3, 75.3, 9.0, 41.4, 195. Frontier speed-optimized: Nova Micro 79.3, 65.4, 72.1, 56.7, 14.0, -, 148; Codestral 2501 85.0, 72.2, 75.6, 73.4, 24.0, 46.1, 171; GPT 4o Mini 88.0, 74.6, 78.5, 72.0, 23.0, 46.8, 59; Claude 3.5 Haiku 86.0, 78.0, 75.1, 72.3, 31.0, 45.4, 61; Gemini 2.0 Flash Lite 90.0, 75.0, 77.3, 79.5, 18.0, 44.4, 201. Frontier: DeepSeek V3 92.1, 81.0, 82.1, 79.1, 36.0, 50.0, 27; Claude 3.5 Sonnet 90.2, 81.2, 77.3, 81.9, 38.0, 44.8, 76; GPT 4o 90.2, 82.2, 82.4, 77.6, 31.0, 49.9, 61. Our models: Mercury Coder Mini 88.0, 77.1, 78.6, 74.1, 17.0, 42.0, 1109; Mercury Coder Small 90.0, 76.6, 80.4, 76.2, 25.0, 45.5, 737.">
+            <div class="slide-caption">slide 46 · coding benchmarks and speed</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>pass@1 scores on six coding benchmarks plus output speed in tokens per second, for open models,
+              speed-optimized frontier models, frontier models and the two Mercury models.</p>
+            <h4>How to read it</h4>
+            <ul>
+              <li><strong>Like for like.</strong> GPT-4o Mini scores 88.0 on HumanEval at 59 tokens/s. Mercury Coder
+                Mini also scores 88.0, at 1109 tokens/s, about 19× faster.</li>
+              <li><strong>Not a frontier model.</strong> On the harder LiveCodeBench (LCB) column Mercury Coder Mini
+                gets 17.0 and Small 25.0, against 36–38 for DeepSeek V3 and Claude 3.5 Sonnet. Mercury matches the
+                small fast models, not the largest ones.</li>
+              <li><strong>Small vs Mini.</strong> Small is better on most benchmarks and slower (737 vs 1109
+                tokens/s). It is the usual size-versus-speed trade-off.</li>
+            </ul>
+            <p>pass@1 is the fraction of problems solved by the first program the model writes, with no
+              retries.</p>
+          </div>
+        </div>
+
+        <div class="slide-strip" id="s47s48">
+          <div class="slide" id="s47">
+            <div class="slide-frame">
+              <div class="tag">Slide 47 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-47.png"
+                alt="Mercury Table 2: performance on MultiPL-E across languages CPP, Java, JS, PHP, Bash, TS, Avg. Frontier models average 79.1 (DeepSeek V3), 81.9 (Claude 3.5 Sonnet), 77.6 (GPT 4o). Speed-optimized models average between 56.7 (Nova Micro) and 79.5 (Gemini 2.0 Flash Lite). Mercury Coder Mini 78.9, 74.5, 78.9, 72.7, 56.5, 83.2, avg 74.1. Mercury Coder Small 82.0, 80.1, 83.9, 78.3, 50.1, 82.6, avg 76.2.">
+              <div class="slide-caption">slide 47 · across programming languages</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>The MultiPL-E benchmark split by language. Mercury Coder Small averages 76.2 and Mini 74.1, in the
+                same range as the speed-optimized autoregressive models. Bash is the weakest language for both
+                (50.1 and 56.5).</p>
+            </div>
+          </div>
+          <div class="slide" id="s48">
+            <div class="slide-frame">
+              <div class="tag">Slide 48 / 59</div>
+              <img src="../assets/slides/L16-diffusion-lms/slide-48.png"
+                alt="Mercury Table 4: Co-Pilot Arena model comparison by latency, Elo scores and ranks. DeepSeek V2.5 (FIM) latency 2.07 s, latency rank 11, Elo 1025, Elo rank 1. Claude 3.5 Sonnet 1.46, 8, 1003, 1. Mercury Coder Mini 0.25, 1, 993, 2 (bold). Codestral 0.31, 2, 992, 2. Meta Llama 3.1 405B 1.84, 10, 982, 3. GPT-4o 0.76, 5, 980, 3. Gemini 1.5 Flash 0.59, 3, 977, 3. Gemini 1.5 Pro 1.48, 9, 977, 5. Meta Llama 3.1 70B 1.17, 7, 970, 5. Qwen 2.5 Coder 32B 0.91, 6, 949, 12. GPT-4o Mini 0.84, 4, 939, 12.">
+              <div class="slide-caption">slide 48 · Copilot Arena</div>
+            </div>
+            <div class="explain">
+              <h4>On the slide</h4>
+              <p>In Copilot Arena, where developers pick between code completions in their editor, Mercury Coder
+                Mini has the lowest latency (0.25 s, rank 1) and is tied for second on Elo (993).</p>
+            </div>
+          </div>
+          <div class="explain">
+            <h4>Why Copilot Arena is a good fit</h4>
+            <p>Code completion in an editor is the use case where speed matters most. A suggestion that arrives
+              after 2 seconds is often ignored because the programmer has already typed past it. Mercury is about 8×
+              faster than the top-Elo model here (0.25 s vs 2.07 s) at nearly the same preference rating. Lecture 12
+              described Chatbot Arena, which turns pairwise human votes into an Elo-style rating, and Copilot
+              Arena works the same way inside the editor.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="versus">
+        <h2><span class="num">§8</span>Diffusion vs autoregressive</h2>
+        <p class="section-intro">
+          A balanced look. Diffusion has real costs in training efficiency
+          and per-step expense, and its speed advantage depends on the
+          number of steps.
+        </p>
+
+        <div class="slide" id="s49">
+          <div class="slide-frame">
+            <div class="tag">Slide 49 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-49.png"
+              alt="Diffusion Models Drawbacks. Sampling is slow: the original DDPM needed hundreds to thousands of denoising steps. Training and inference are compute-hungry. The likelihood is only a bound, and noise schedules involve many design choices. Discrete data like text is harder than for autoregressive models. Arrow: faster sampling through DDIM and distillation, consistency models, and the simpler formulation of flow matching.">
+            <div class="slide-caption">slide 49 · diffusion drawbacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Diffusion has its own problems. It needs many sampling steps and heavy compute, its likelihood is only
+              a bound, the noise schedule involves many design choices, and text is harder than images. The arrow lists the image-side
+              fixes for slow sampling (DDIM, distillation, consistency models, flow matching).</p>
+            <h4>Why step count decides everything</h4>
+            <p>The parallel advantage only pays off if the number of steps <em>T</em> is small. DDPM used 1000
+              steps for an image. If a text diffusion model needed 1000 steps to write 200 tokens, it would be five
+              times <em>slower</em> than autoregressive decoding. All the fixes on the arrow aim to get good samples
+              in fewer steps.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s50">
+          <div class="slide-frame">
+            <div class="tag">Slide 50 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-50.png"
+              alt="Diffusion vs AR. How do humans write text? Core concept -> structure -> words and phrasing. How do autoregressive models produce? Left to right. How about diffusion models? Coarse to fine.">
+            <div class="slide-caption">slide 50 · how text gets written</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>People write by going from an idea to a structure to the exact words. Autoregressive models go left
+              to right. Diffusion models go coarse to fine, which is closer to the human process.</p>
+            <p>In the LLaDA example on slide 41, the model fixed "The answer" and the full stop before the number.
+              It laid out the frame of the sentence first and filled in the detail last.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s51">
+          <div class="slide-frame">
+            <div class="tag">Slide 51 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-51.png"
+              alt="Diffusion vs AR: Training. How do autoregressive models train? Autoregressive LM can obtain gradient signal from each refinement step, because we can parallelize all tokens by causal masking. How about diffusion models? For each forward pass, diffusion-LM can only obtain gradient signal from one noise level.">
+            <div class="slide-caption">slide 51 · training signal per forward pass</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>An autoregressive model gets a loss at every position from one forward pass. A diffusion model gets a
+              loss only at one noise level per forward pass.</p>
+            <h4>Count the losses</h4>
+            <p>Take a 1000-token training sequence.</p>
+            <ul>
+              <li><strong>Autoregressive.</strong> Thanks to the causal mask (Lecture 2), one forward pass gives a
+                next-token loss at all 1000 positions. In effect it trains on all 1000 generation steps at once.</li>
+              <li><strong>Masked diffusion.</strong> One forward pass uses one random <em>t</em>. Loss is only on the
+                masked positions, on average <em>t</em> × 1000 = 500 of them. And it only teaches the model about
+                that one noise level, out of the whole range it will need at generation time.</li>
+            </ul>
+            <p>So diffusion LMs need more training compute to reach the same quality. The LM1B gap in slide 40 (23.0
+              vs 20.9) is part of this cost.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s52">
+          <div class="slide-frame">
+            <div class="tag">Slide 52 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-52.png"
+              alt="Diffusion vs AR: Decoding. Autoregressive models: O(SequenceLength). Diffusion models: O(DiffusionSteps). Diffusion might become more beneficial with longer text. But not all steps are equally costly.">
+            <div class="slide-caption">slide 52 · decoding cost</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Autoregressive decoding takes a number of passes equal to the sequence length. Diffusion takes a
+              number equal to the denoising steps. Longer text favours diffusion, but the steps do not cost the
+              same.</p>
+            <h4>Why the steps are not equal</h4>
+            <p>An autoregressive step, with a KV cache, processes only the one new token and reuses stored keys and
+              values for the rest (the KV cache from Lectures 5 and 6). A diffusion step uses bidirectional attention, so changing any token
+              can change every position's representation, and the simple version recomputes the whole sequence each
+              step. So for a 256-token answer in 64 steps, diffusion runs 4× fewer passes, but each pass processes
+              256 positions instead of 1. It can still win because, as Lecture 11 explained, a single-token pass
+              is limited by reading the weights from memory, and a 256-position pass reads the same weights once
+              while using far more of the GPU's arithmetic.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s53">
+          <div class="slide-frame">
+            <div class="tag">Slide 53 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-53.png"
+              alt="Diffusion vs AR: Decoding. Flexible order generation: diffusion. Controllable text generation: diffusion.">
+            <div class="slide-caption">slide 53 · where diffusion clearly wins</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Diffusion has the edge in two decoding features, generating in any order and controlling the
+              whole output.</p>
+            <p>Both follow from the same fact. Every position exists from the first step and can see every other
+              position. That is what lets the model fill in the middle of a code template, honour a fixed length, or
+              be steered by a classifier as in slide 34.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="drafters">
+        <h2><span class="num">§9</span>Diffusion drafters: DFlash and DSpark</h2>
+        <p class="section-intro">
+          The last part uses diffusion differently. The final answer still
+          comes from a normal autoregressive model, and diffusion only
+          writes the <em>draft</em> in speculative decoding.
+        </p>
+
+        <div class="slide" id="s54">
+          <div class="slide-frame">
+            <div class="tag">Slide 54 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-54.png"
+              alt="DFlash Overview. Diffusion idea to speed up a normal autoregressive model. DFlash replaces drafter model with a lightweight block diffusion model that predicts an entire draft block in a single forward pass. DFlash conditions a small diffusion drafter on hidden features from the AR target model. The drafter predicts a token block in one forward pass, after which the target verifies the candidates and extends the accepted prefix. Flow: AR target context features -> small diffusion drafter -> parallel AR verification.">
+            <div class="slide-caption">slide 54 · DFlash</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>DFlash keeps speculative decoding from Lecture 11 but swaps the small autoregressive draft model for
+              a small diffusion model. The drafter produces a whole block of draft tokens in one forward pass, using
+              hidden features from the big target model, and the target verifies them as usual.</p>
+            <h4>Why this helps speculative decoding</h4>
+            <p>In Lecture 11 the draft model writes <em>k</em> tokens autoregressively, which costs <em>k</em> small
+              forward passes before the big model can verify. That drafting time is overhead. A diffusion drafter
+              starts from <em>k</em> masks and fills them all in one pass, so drafting costs one small pass whatever
+              <em>k</em> is. Because the target model still verifies every token with the accept/reject rule, the
+              output is exactly what the target would have produced. Diffusion only affects speed, not quality.</p>
+            <h4>Why use the target's hidden features</h4>
+            <p>A tiny model guessing several tokens at once has little to go on. The target model's hidden states
+              already encode what it "plans" to say next, so feeding them to the drafter makes its guesses agree
+              with the target much more often, and more drafted tokens get accepted.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s55">
+          <div class="slide-frame">
+            <div class="tag">Slide 55 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-55.png"
+              alt="DFlash Architecture, Figure 2: DFlash inference design. The prompt 'Diffusion is good' goes into the target model, which outputs 'for'. Fused target context features (blue) and the target decode token (orange) plus mask tokens (green) go through the target embedding into draft layers; each draft layer has a KV cache holding the fused target context features, bidirectional attention and an MLP. Several draft layers, then the target LM head outputs 'speculative decoding <eos>'. Hidden context features extracted from the target model are fused and injected into each draft layer's key-value cache to enable conditional speculation.">
+            <div class="slide-caption">slide 55 · DFlash architecture</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The prompt is "Diffusion is good". The target model produces the next token, "for". The drafter
+              takes "for" followed by several mask tokens and, in one pass through a few bidirectional layers,
+              fills the masks with "speculative decoding &lt;eos&gt;". The target's hidden features are placed in
+              each draft layer's KV cache, so every masked position can attend to them.</p>
+            <h4>Tracing one round</h4>
+            <ol>
+              <li>Target model reads "Diffusion is good" and emits "for", as in normal decoding.</li>
+              <li>Drafter reads "for [M] [M] [M]" plus the target's features and fills all three masks in one pass with
+                "speculative decoding &lt;eos&gt;".</li>
+              <li>Target verifies "for speculative decoding &lt;eos&gt;" in a single parallel pass and keeps the
+                longest prefix it agrees with (Lecture 11's rule).</li>
+            </ol>
+            <p>The drafter reuses the target's embedding layer and LM head (the slide labels them "Target
+              Embedding" and "Target LM Head"), so it only needs to train a few small layers in the middle.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s56">
+          <div class="slide-frame">
+            <div class="tag">Slide 56 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-56.png"
+              alt="DSpark Why. Lack of inter-token dependencies leads to rapid acceptance decay. System-level bottleneck due to verifying extended blocks: wastes critical batch capacity on tokens with high rejection risks; severely degrading throughput in high-concurrency serving systems. Citation Cheng et al. 2026.">
+            <div class="slide-caption">slide 56 · the problem with parallel drafts</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Two problems with drafting a whole block in parallel. Tokens drafted together do not depend on each
+              other, so acceptance drops off quickly along the block. And verifying long blocks that will mostly be
+              rejected wastes GPU capacity in a busy server.</p>
+            <h4>Why acceptance decays</h4>
+            <p>In one parallel pass, position 3 is predicted without knowing what was chosen at position 2. If
+              position 2 could be "New" or "Los" and position 3 is predicted separately, you can get "New Angeles".
+              The further along the block, the more such mismatches can stack up. And since the target accepts only
+              a prefix, one rejection throws away everything after it.</p>
+            <h4>Why that hurts a server</h4>
+            <p>A serving system batches many users' requests into each forward pass. Every draft token sent for
+              verification takes a slot in that batch. Draft tokens at the end of a long block are likely to be
+              rejected, so their slots are mostly wasted, and with many concurrent users those slots could have gone
+              to someone else's request.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s57">
+          <div class="slide-frame">
+            <div class="tag">Slide 57 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-57.png"
+              alt="DSpark Overview. Semi-autoregressive architecture: coupling a parallel backbone with a lightweight sequential module. Confidence-scheduled verification: dynamically tailoring the verification length for each request based on estimated prefix survival probabilities and engine-specific throughput profiles.">
+            <div class="slide-caption">slide 57 · DSpark's two fixes</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>DSpark answers both problems. For the dependency problem, a heavy parallel backbone is followed by a
+              light sequential module that lets each draft token see the ones before it. For the wasted capacity, it
+              decides per request how many draft tokens are worth verifying, using its estimate of how likely each
+              prefix is to survive and how fast the serving engine is at each batch size.</p>
+            <h4>"Prefix survival", with numbers</h4>
+            <p>Suppose the drafter's confidences for four draft tokens are 0.9, 0.8, 0.6 and 0.2. A token is only
+              accepted if all tokens before it are, so the chance that the first <em>k</em> tokens all survive is a
+              running product.</p>
+            <table>
+              <thead>
+                <tr><th>Prefix length</th><th>Survival probability</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>0.9</td></tr>
+                <tr><td>2</td><td>0.9 × 0.8 = 0.72</td></tr>
+                <tr><td>3</td><td>0.72 × 0.6 = 0.432</td></tr>
+                <tr><td>4</td><td>0.432 × 0.2 ≈ 0.086</td></tr>
+              </tbody>
+            </table>
+            <p>The expected number of accepted tokens is the sum, about 2.14. The fourth token adds only 0.086 to
+              that, yet it costs a full slot in the verification batch. Under heavy load the scheduler would drop
+              it and verify three, while on an idle server it might keep all four.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s58">
+          <div class="slide-frame">
+            <div class="tag">Slide 58 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-58.png"
+              alt="DSpark Architecture. Revealing a token changes the context available for predicting the remaining positions. dSpark uses correct reference responses to search for reveal schedules that reduce uncertainty earlier in decoding. The model is trained on the resulting schedules, with a KL regularizer that limits changes to the base model's predictions.">
+            <div class="slide-caption">slide 58 · learning a reveal order</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Which token you reveal first changes how easy the rest become. DSpark uses known-correct responses to
+              search for reveal orders that cut uncertainty early, then trains the model on those orders. A KL
+              penalty keeps its predictions close to the original model's.</p>
+            <h4>The link to earlier slides</h4>
+            <p>This is the "Cat … fish, then ate" idea from slide 43, made systematic. Instead of trusting the
+              model's confidence to pick the order, DSpark looks for orders that are known to work on real answers
+              and teaches the model to follow them. The KL term is the same kind of anchor used in RLHF-style
+              fine-tuning. It stops the model from drifting far from what it knew, so it learns a better order
+              without forgetting the language.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s59">
+          <div class="slide-frame">
+            <div class="tag">Slide 59 / 59</div>
+            <img src="../assets/slides/L16-diffusion-lms/slide-59.png"
+              alt="DSpark Architecture, Figure 1: the DSpark architecture and decoding cycle. Step 1: given prompt tokens A B C, the target model generates next token D, the anchor for drafting. Step 2: D and three Mask tokens go through a heavy parallel block producing logits, then a lightweight sequential block producing draft tokens E F G H with confidence scores c1 to c4. A hardware-aware prefix scheduler keeps E F G and drops H. Step 3: the target model verifies D E F G in parallel; E and F are accepted, G is rejected, and the target generates a corrected token G* to complete the round.">
+            <div class="slide-caption">slide 59 · one DSpark round</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>One round in three steps. (1) The target model reads "A B C" and produces "D". (2) The drafter takes
+              "D" and three masks, runs the parallel block and then the sequential block, and outputs "E F G H" with
+              confidences <em>c</em><sub>1</sub> to <em>c</em><sub>4</sub>. The scheduler keeps "E F G" and drops
+              the low-confidence "H". (3) The target verifies, accepts "E" and "F", rejects "G" and replaces it with
+              its own token "G*".</p>
+            <h4>What the round achieved</h4>
+            <p>The target ran two forward passes (one to produce D, one to verify) and the output grew by four
+              tokens (D, E, F and G*). Plain autoregressive decoding would have needed four passes. Dropping H cost
+              nothing here, since it would have been thrown away anyway after G was rejected. That is the
+              scheduler doing its job.</p>
+            <div class="callout link">
+              <div class="callout-label">→ Back to Lecture 11</div>
+              <p>The verification step, including generating a corrected token at the first rejection, is exactly
+                the speculative decoding algorithm from Lecture 11. DFlash and DSpark only change how the draft is
+                produced and how much of it is sent for checking.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="section-intro" style="margin-top:1.5rem">
+          Zoom out. Older generative models each had a weak spot (VAEs
+          blur, GANs fail on text, autoregressive models are slow and
+          cannot revise), and diffusion offered parallel, revisable,
+          controllable generation. For text the obstacle is that words
+          are discrete. Adding Gaussian noise to embeddings (Diffusion-LM)
+          works but suffers from rounding errors and needs many steps.
+          Corrupting the tokens themselves works better, and absorbing
+          [MASK] noise works best, because then a diffusion LM is a
+          masked language model trained at every masking ratio. MDLM
+          brought its perplexity close to autoregressive models, LLaDA
+          scaled it to a chat model that generates by filling in its
+          most confident masks first, and Mercury showed that this can
+          be many times faster in practice. The costs are weaker training
+          signal per pass and more expensive steps. Finally, DFlash and
+          DSpark keep an autoregressive model in charge and use a small
+          diffusion model only to draft blocks for speculative decoding.
+          For an exam, be able to run the absorbing [MASK] forward process
+          by hand, explain why masked diffusion is "BERT at all masking
+          ratios", trace a few LLaDA unmasking steps, and say why
+          parallel drafts lose acceptance along the block.
+        </p>
+      </section>
+
+      <div class="pager">
+        <a class="prev" href="15-state-space-models.html">
+          <span class="dir">← back</span>
+          <span class="lbl">15 · State Space Models</span>
+        </a>
+        <a class="next" href="../seminars/vishal-rao-data-creation.html">
+          <span class="dir">next →</span>
+          <span class="lbl">Seminar · Data Creation</span>
+        </a>
+      </div>
+
+      <footer class="foot">
+        <div>Lecture 16 · Diffusion Language Models · ANLP Monsoon '26</div>
+        <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/anlp-study-guide" target="_blank"
+            rel="noopener">github ↗</a></div>
+      </footer>
+    </main>
+
+    <aside class="rail-right">
+      <div class="kicker">progress</div>
+      <div class="heatmap-rail" aria-hidden="true"></div>
+      <div class="kicker">sections</div>
+      <div class="rail-toc">
+        <a href="#deck">at a glance</a>
+        <a href="#landscape">§1 before diffusion</a>
+        <a href="#diffusion">§2 what diffusion is</a>
+        <a href="#text">§3 diffusion meets text</a>
+        <a href="#continuous">§4 continuous</a>
+        <a href="#discrete">§5 discrete</a>
+        <a href="#masked">§6 MDLM &amp; LLaDA</a>
+        <a href="#mercury">§7 Mercury</a>
+        <a href="#versus">§8 vs autoregressive</a>
+        <a href="#drafters">§9 DFlash &amp; DSpark</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

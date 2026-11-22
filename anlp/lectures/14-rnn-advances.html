@@ -1,0 +1,1499 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Lecture 14 · RNN Advances — ANLP Study Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Lecture 14 of Advanced NLP, Monsoon 2026 IIIT-H: modern RNNs. Why the KV cache brought recurrence back, linear recurrences and parallel scans, RetNet, RWKV, LRU, Griffin, xLSTM, minGRU, GLA, DeltaNet, test-time training, recall limits and production hybrids.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://arihant25.github.io/anlp-study-guide/lectures/14-rnn-advances.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="RNN Advances: train like a Transformer, decode like an RNN | ANLP">
+  <meta property="og:description"
+    content="A first-principles tour of modern RNNs: linear recurrence, parallel scan, RetNet, RWKV, Griffin, xLSTM, GLA, DeltaNet, TTT, the recall limit, and the hybrids that ship today.">
+  <meta property="og:url" content="https://arihant25.github.io/anlp-study-guide/lectures/14-rnn-advances.html">
+  <meta property="og:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L14-rnn-advances/slide-01.png">
+  <meta property="og:image:alt" content="Advanced NLP Current RNN Advances lecture title slide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RNN Advances: train like a Transformer, decode like an RNN | ANLP">
+  <meta name="twitter:description"
+    content="Why recurrence came back, how one matrix state plus an update rule describes RetNet, RWKV, xLSTM, GLA and DeltaNet, and why production models still keep some attention.">
+  <meta name="twitter:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/slides/L14-rnn-advances/slide-01.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP Lecture 14: Current RNN Advances","url":"https://arihant25.github.io/anlp-study-guide/lectures/14-rnn-advances.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"lecture notes","educationalLevel":"graduate"}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="rail-left">
+      <div class="brand">
+        <a href="../index.html" style="text-decoration:none;color:inherit">an attention<br><em>lab notebook</em></a>
+        <small>ANLP · Monsoon '26</small>
+      </div>
+      <nav>
+        <div class="grp">On this page</div>
+        <a href="#deck">The deck at a glance</a>
+        <a href="#why">§1 · Why RNNs again</a>
+        <a href="#classic">§2 · Why classic RNNs lost</a>
+        <a href="#linear">§3 · The linear-recurrence trick</a>
+        <a href="#early">§4 · QRNN, RetNet, RWKV</a>
+        <a href="#lru">§5 · LRU, Griffin, xLSTM, minGRU</a>
+        <a href="#gating">§6 · Data-dependent decay &amp; delta</a>
+        <a href="#unify">§7 · One table for all of them</a>
+        <a href="#ttt">§8 · Test-time training</a>
+        <a href="#limits">§9 · Limits: recall &amp; copying</a>
+        <a href="#production">§10 · Hybrids in production</a>
+        <a href="#wrap">§11 · Summary &amp; what's next</a>
+
+        <div class="grp">Elsewhere</div>
+        <a href="13-quantization.html">← Lecture 13: Quantization</a>
+        <a href="15-state-space-models.html">Next: Lecture 15 · State Space Models →</a>
+        <a href="6-more-attention.html#linear">Lecture 6 · Linear attention</a>
+        <a href="../assignments/3-mamba-deltanet-gnn.html#delta">A3 · Linear attention &amp; the delta rule</a>
+        <a href="../seminars/sian-shinjo-linear-rnns.html">Seminar · Linear RNNs</a>
+        <a href="../index.html">Home</a>
+      </nav>
+    </aside>
+
+    <div class="topbar">
+      <div class="brand"><a href="../index.html" style="color:inherit;text-decoration:none">an attention <em>lab
+            notebook</em></a></div>
+      <button class="theme-toggle" onclick="__toggleTheme()">◑ dark</button>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="kicker">Lecture 14 · 41 slides</div>
+        <h1>RNN advances: <em>train like a Transformer, decode like an RNN.</em></h1>
+        <p class="lead">
+          Every token a Transformer generates has to look at the keys and
+          values of every earlier token, so the KV cache and the cost per
+          token both grow with the context. An RNN keeps a fixed-size
+          state instead. This lecture explains why classic RNNs lost
+          anyway, the one change (making the recurrence linear in the
+          state) that lets them train in parallel again, and how RetNet,
+          RWKV, Griffin, xLSTM, GLA and DeltaNet all turn out to be the same
+          matrix-valued memory with different update rules. It ends with
+          what a fixed state cannot do, and why the models shipping in
+          2025 and 2026 mix a few attention layers back in.
+        </p>
+        <div class="meta">
+          <span class="pill heat">Lecture 14</span>
+          <span class="pill">41 slides</span>
+          <span class="pill">Manish Shrivastava · Aparajitha Allamraju</span>
+        </div>
+      </section>
+
+      <section id="deck">
+        <h2><span class="num">§0</span>The deck at a glance</h2>
+        <p class="section-intro">
+          This is the first of three lectures on alternatives to
+          attention. The next two cover state space models and diffusion
+          language models. Slides 1–4 make the case for recurrence by
+          counting KV-cache memory. Slides 5–6 recap the LSTM and GRU and
+          list why they lost to Transformers. Slides 7–10 give the key
+          trick: if the gates depend only on the current input and not on
+          the previous state, the recurrence becomes linear and can be
+          computed for all positions at once. Slides 11–25 tour the model
+          families in roughly historical order, from QRNN (2016) through
+          RetNet, RWKV, LRU, Griffin, xLSTM and minGRU to gated linear
+          attention and DeltaNet. Slides 26–27 put them all in one table.
+          Slides 28–30 cover test-time training, where the state is
+          itself a small model. Slides 31–33 show what a fixed-size state
+          cannot do well, and slides 34–38 show the hybrids that are used
+          in practice. Slides 39–41 summarise and point to the next
+          lecture.
+        </p>
+        <p>
+          One equation carries most of the lecture. The state is a
+          matrix <em>S<sub>t</sub></em>, the model writes to it with an
+          outer product <em>v<sub>t</sub>k<sub>t</sub></em><sup>⊤</sup>
+          and reads from it by multiplying with a query,
+          <em>o<sub>t</sub> = S<sub>t</sub>q<sub>t</sub></em>. The models
+          differ only in what they do to the old state before writing,
+          which is the matrix <em>M<sub>t</sub></em> in
+          <em>S<sub>t</sub> = S<sub>t−1</sub>M<sub>t</sub> +
+          v<sub>t</sub>k<sub>t</sub></em><sup>⊤</sup>. If you can say what
+          <em>M<sub>t</sub></em> is for each model, and why the richer
+          choices remember better, you understand the lecture.
+        </p>
+      </section>
+
+      <hr class="soft">
+
+      <section id="why">
+        <h2><span class="num">§1</span>Why RNNs again</h2>
+        <p class="section-intro">
+          Transformers train well. The problem is generation, where the
+          KV cache grows with every token. Long contexts and long
+          reasoning traces made that cost too big to ignore.
+        </p>
+
+        <div class="slide" id="s1">
+          <div class="slide-frame">
+            <div class="tag">Slide 01 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-01.png"
+              alt="Title slide: Current RNN Advances, Advanced NLP M26. Manish Shrivastava and Aparajitha Allamraju, IIIT Hyderabad logo, October 19, 2026.">
+            <div class="slide-caption">slide 01 · title</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Current RNN Advances, taught by Manish Shrivastava and Aparajitha Allamraju. The title slide is
+              dated October 19, 2026.</p>
+            <h4>Where this fits</h4>
+            <p>Lecture 2 explained that Transformers replaced RNNs because attention lets every position be
+              computed at once during training. This lecture asks whether that trade was necessary. Most of the
+              answer is that RNNs can be trained in parallel too, provided their update is built the right way.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s2">
+          <div class="slide-frame">
+            <div class="tag">Slide 02 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-02.png"
+              alt="Today's Roadmap. Alternate Architectures, part 1 of 3. 1. Why RNNs again? The inference cost of attention. 2. Why classic RNNs lost, and the trick that fixes training. 3. Modern RNN families: RetNet, RWKV, LRU, Griffin, xLSTM, minGRU, GLA. 4. A unifying view: matrix state + update rule. 5. Frontier: the state as a learned model (TTT). 6. Limits: recall and copying, hybrids. 7. In production (as of Oct 2026). Sidebar: Where this sits in the course. Done: attention variants (L5); linear, sparse and delta-rule attention (L6); MoE (L9). Today (L20): modern RNNs. Next (L21): SSMs: S4, Mamba. Then (L22): diffusion LMs.">
+            <div class="slide-caption">slide 02 · roadmap</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Seven parts, from the cost of attention through model families and their limits to what is used
+              in production. This lecture is part 1 of 3 on alternate architectures.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>The sidebar uses the course's own session numbers (L20, L21, L22), which don't match the deck
+                numbers on this site. Here this deck is Lecture 14, state space models are Lecture 15 and
+                diffusion LMs are Lecture 16. The linear attention it calls "L6" is in
+                <a href="6-more-attention.html#linear">Lecture 6 §5</a> on this site, and the delta rule is worked
+                through in <a href="../assignments/3-mamba-deltanet-gnn.html#delta">Assignment 3 §4</a>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s3">
+          <div class="slide-frame">
+            <div class="tag">Slide 03 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-03.png"
+              alt="Why RNNs Again? Attention trains well but is costly at inference. Table comparing softmax attention and RNN. Training (length T): O(T squared) parallel vs O(T). Decode compute per token: O(T) vs O(1). Decode memory: KV cache O(T) vs state O(1). Exact look-back: yes vs compressed. Plot of KV cache size in GiB for Llama-2-7B fp16 rising linearly from 0 to 64 GiB at 128K tokens, with a flat dashed RNN line near zero. KV per token = 2 x 32 layers x 4096 x 2 B = 0.5 MiB, so 16 GiB at 32K and 64 GiB at 128K per sequence. Bullets: long contexts, agents and reasoning traces make decode cost dominate; an RNN compresses the past into a fixed-size state.">
+            <div class="slide-caption">slide 03 · the KV cache grows, an RNN state does not</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Attention costs O(<em>T</em>) compute and O(<em>T</em>) memory for each generated token, while an
+              RNN costs O(1) for both. The price is that the RNN only keeps a compressed summary of the past.</p>
+            <h4>Checking the KV-cache arithmetic</h4>
+            <p>For every token, every layer stores one key vector and one value vector of size <em>d</em>. In
+              FP16 each number takes 2 bytes. For Llama-2-7B that gives</p>
+            <p style="text-align:center">2 (K and V) × 32 layers × 4096 × 2 bytes = 524,288 bytes = 0.5 MiB per
+              token.</p>
+            <p>At 32K tokens that is 32,768 × 0.5 MiB = 16 GiB, and at 128K it is 64 GiB, for a single sequence.
+              The weights themselves are only about 13.5 GB. Serve a few users with long contexts and the cache,
+              not the model, decides how many fit on a GPU.</p>
+            <h4>What a fixed state costs, for comparison</h4>
+            <p>Take a recurrent model with the same shape (32 layers, <em>d</em> = 4096) that splits each layer
+              into 32 heads of size 128 and keeps a 128 × 128 matrix state per head. Each
+              layer then stores 32 × 128 × 128 = 524,288 numbers, which is 1 MiB in FP16, and the whole model
+              stores 32 MiB. That is the same as the KV cache of just 64 tokens, and it stays at 32 MiB whether
+              the context is 1K or 1M tokens.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>The last row of the table is the whole trade-off. Attention keeps every past token exactly, so it
+                can always look back. A recurrent model has to decide what to squeeze into a fixed budget. The rest
+                of the lecture is about making that squeeze as smart as possible, and slides 31–33 show where it
+                still falls short.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s4">
+          <div class="slide-frame">
+            <div class="tag">Slide 04 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-04.png"
+              alt="The Impossible Triangle. What every architecture here is trying to achieve. Penrose-triangle figure from the RetNet paper with corners Low-Cost Inference, Training Parallelism and Strong Performance; Linear Transformer on the edge between parallelism and low-cost inference, Recurrent Network between low-cost inference and performance, Transformer between parallelism and performance, RetNet in the centre. Bullets: Transformer: parallel training + strong performance, costly inference. Classic RNN: cheap inference, but sequential training. Linear Transformer: parallel + cheap, but quality lagged. Box: The modern-RNN programme: train like a Transformer, infer like an RNN, and close the quality gap.">
+            <div class="slide-caption">slide 04 · the "impossible triangle"</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>There are three things you want. Training should be parallel, inference cheap and quality strong.
+              Each older architecture gets two of the three, and the RetNet paper drew this as an "impossible"
+              triangle with its own model in the middle.</p>
+            <h4>Reading the triangle</h4>
+            <ul>
+              <li>A Transformer computes all positions of a training sequence at once and is strong, but
+                decoding grows with context (slide 3).</li>
+              <li>An LSTM decodes in O(1) and was strong for its time, but training must walk through the sequence
+                one step at a time (slide 6).</li>
+              <li>Linear attention (Lecture 6) trains in parallel and decodes in O(1), but its quality was clearly
+                below softmax attention.</li>
+            </ul>
+            <p>Every model in slides 11–25 is an attempt to sit in the middle. The approach shared by all of them
+              is to start from the linear-attention corner, which already has two of the three properties, and
+              improve the quality.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="classic">
+        <h2><span class="num">§2</span>Why classic RNNs lost</h2>
+        <p class="section-intro">
+          A short recap of the LSTM and GRU, and the three problems that let
+          Transformers replace them. The first problem turns out to be
+          the important one.
+        </p>
+
+        <div class="slide" id="s5">
+          <div class="slide-frame">
+            <div class="tag">Slide 05 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-05.png"
+              alt="Recap: Classic RNNs. Elman RNN, LSTM, GRU. Elman: h_t = tanh(W_h h_{t-1} + W_x x_t + b). LSTM (1997): c_t = f_t ⊙ c_{t-1} + i_t ⊙ c̃_t, h_t = o_t ⊙ tanh(c_t); f_t, i_t, o_t = σ(W x_t + U h_{t-1} + b) with U h_{t-1} highlighted in orange. GRU (2014): h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t. Gates + additive cell update let information and gradients survive many steps. Diagram: chain of hidden states h1, h2, h3 with inputs x and outputs y; orange arrows between hidden states: each step waits for the previous one.">
+            <div class="slide-caption">slide 05 · Elman, LSTM, GRU</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The three classic recurrent cells. The orange <em>Uh<sub>t−1</sub></em> term in the LSTM gates is
+              the one to watch, because it is what forces each step to wait for the previous one.</p>
+            <h4>What the gates do</h4>
+            <p>The LSTM cell update <em>c<sub>t</sub> = f<sub>t</sub> ⊙ c<sub>t−1</sub> + i<sub>t</sub> ⊙
+                c̃<sub>t</sub></em> is a weighted blend. The forget gate <em>f<sub>t</sub></em> (between 0 and 1)
+              decides how much old memory to keep, and the input gate <em>i<sub>t</sub></em> decides how much of
+              the new candidate <em>c̃<sub>t</sub></em> to add. The GRU does the same with one gate,
+              <em>z<sub>t</sub></em> for "new" and 1 − <em>z<sub>t</sub></em> for "old". Because the old memory is
+              carried forward by multiplying with a gate close to 1 rather than by passing through a tanh and a
+              weight matrix, information can survive many steps.</p>
+            <p>Hold on to the shape of these updates, (gate) ⊙ (old state) + (something new). Almost every model
+              in this lecture keeps that shape. What changes is what the gate is allowed to depend on.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s6">
+          <div class="slide-frame">
+            <div class="tag">Slide 06 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-06.png"
+              alt="Why Classic RNNs Lost to Transformers. Three problems. 1. No parallelism over time: h_t = f(h_{t-1}, x_t) with nonlinear f, step t waits for step t-1, so training needs T sequential steps and GPUs sit idle. 2. Vanishing / exploding gradients: backprop multiplies Jacobians, dh_T/dh_1 = product over t=2..T of dh_t/dh_{t-1}, which shrinks or blows up geometrically. 3. Small state: one d-dimensional vector must summarise the whole past. Box: Transformers won mainly on training parallelism. Modern RNNs fix (1) and (2) first, then attack (3) with matrix-valued states.">
+            <div class="slide-caption">slide 06 · three problems</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Classic RNNs had three weaknesses. Training is sequential, gradients vanish or explode through long
+              products, and the whole past has to fit in one vector. Modern RNNs fix the first two, then the third.</p>
+            <h4>Problem 1 in numbers</h4>
+            <p>A GPU is fast because it does thousands of multiplications at the same time. Training a Transformer
+              on a 4096-token sequence is a handful of large matrix multiplications over all 4096 positions. An
+              LSTM has to run 4096 small steps one after another, because step <em>t</em> needs
+              <em>h<sub>t−1</sub></em> before it can even compute its gates. Most of the GPU sits idle during each
+              of those small steps.</p>
+            <h4>Problem 2 in numbers</h4>
+            <p>The gradient from step 100 back to step 1 is a product of 99 Jacobians. If each one shrinks a
+              vector by a factor of 0.9, the product shrinks it by 0.9<sup>100</sup> ≈ 2.7 × 10<sup>−5</sup>
+              (rounding 99 to 100). If each one grows it by 1.1, the product is 1.1<sup>100</sup> ≈ 13,780. Neither
+              gives a usable training signal. LSTM gating helps but doesn't remove the problem.</p>
+            <h4>Problem 3</h4>
+            <p>An LSTM with <em>d</em> = 1024 has 1024 numbers of state per layer. Compare that with the 32 MiB
+              matrix state from slide 3. A vector state is simply too small to hold many facts, and slide 10 shows
+              how a matrix state fixes this.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="linear">
+        <h2><span class="num">§3</span>The linear-recurrence trick</h2>
+        <p class="section-intro">
+          Make the gates depend only on the current input. The recurrence
+          then becomes linear in the state, which makes it associative,
+          which means a GPU can compute it in parallel. Linear attention
+          from Lecture 6 already has this form.
+        </p>
+
+        <div class="slide" id="s7">
+          <div class="slide-frame">
+            <div class="tag">Slide 07 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-07.png"
+              alt="The Key Trick: Linear Recurrence. Gates may depend on the input, but not on h_{t-1}. h_t = a_t ⊙ h_{t-1} + b_t, with a_t = g(x_t), b_t = u(x_t). Unrolled: h_t = sum over s=1..t of (product over r=s+1..t of a_r) ⊙ b_s. Bullets: all a_t, b_t computed in parallel (one matmul over the sequence); 0 < a_t < 1 acts as a forget gate / decay; nonlinearity moves between layers (MLPs). Compare box: LSTM f_t = σ(W x_t + U h_{t-1}) sequential; Linear RNN a_t = σ(W x_t) parallel. Box: Dropping h_{t-1} from the gates looks like a big loss, but deep stacks of such layers work well. Later: what is lost.">
+            <div class="slide-caption">slide 07 · gates from the input only</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Remove <em>h<sub>t−1</sub></em> from inside the gates. The update becomes
+              <em>h<sub>t</sub> = a<sub>t</sub> ⊙ h<sub>t−1</sub> + b<sub>t</sub></em>, where
+              <em>a<sub>t</sub></em> and <em>b<sub>t</sub></em> come from <em>x<sub>t</sub></em> alone.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>h</mi><mi>t</mi></msub><mo>=</mo>
+                <msub><mi>a</mi><mi>t</mi></msub><mo>⊙</mo><msub><mi>h</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                <mo>+</mo><msub><mi>b</mi><mi>t</mi></msub>
+                <mspace width="1em"/><mo>⟹</mo><mspace width="1em"/>
+                <msub><mi>h</mi><mi>t</mi></msub><mo>=</mo>
+                <munderover><mo>∑</mo><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><mi>t</mi></munderover>
+                <mrow><mo>(</mo>
+                  <munderover><mo>∏</mo><mrow><mi>r</mi><mo>=</mo><mi>s</mi><mo>+</mo><mn>1</mn></mrow><mi>t</mi></munderover>
+                  <msub><mi>a</mi><mi>r</mi></msub><mo>)</mo></mrow>
+                <mo>⊙</mo><msub><mi>b</mi><mi>s</mi></msub>
+              </math>
+            </div>
+            <h4>Why this one change matters</h4>
+            <p>In an LSTM you can't compute <em>f<sub>2</sub></em> until you have <em>h<sub>1</sub></em>. Here
+              <em>a<sub>t</sub></em> = σ(<em>Wx<sub>t</sub></em>) needs only the input, and the inputs are all known
+              at training time. So all the <em>a<sub>t</sub></em> and <em>b<sub>t</sub></em> for a whole sequence
+              come out of one matrix multiplication over a <em>T × d</em> input. What remains is the cheap
+              elementwise recurrence, and slide 8 shows that even that can be parallelised.</p>
+            <h4>A three-step example</h4>
+            <p>Use scalars with <em>h<sub>0</sub></em> = 0, <em>a</em> = (0.9, 0.5, 0.8) and
+              <em>b</em> = (1, 2, 3).</p>
+            <ul>
+              <li>Step by step, <em>h<sub>1</sub></em> = 1, then <em>h<sub>2</sub></em> = 0.5 × 1 + 2 = 2.5, then
+                <em>h<sub>3</sub></em> = 0.8 × 2.5 + 3 = 5.</li>
+              <li>With the unrolled formula, <em>h<sub>3</sub></em> = (<em>a<sub>2</sub>a<sub>3</sub></em>) ·
+                <em>b<sub>1</sub></em> + <em>a<sub>3</sub></em> · <em>b<sub>2</sub></em> + <em>b<sub>3</sub></em> =
+                0.4 × 1 + 0.8 × 2 + 3 = 5.</li>
+            </ul>
+            <p>The unrolled form shows what <em>a</em> means. Input <em>b<sub>1</sub></em> reaches step 3 scaled by
+              every gate after it, 0.5 × 0.8 = 0.4. A gate near 1 lets old information pass, and a gate near 0
+              wipes it out. That is a forget gate, and since it's chosen per token from the input, the model can
+              decide which tokens should trigger forgetting.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>"Linear" means linear in <em>h</em>. The gates are still nonlinear functions of
+                <em>x<sub>t</sub></em>, and the MLP between layers adds the rest of the nonlinearity. What is lost is
+                the ability of a single layer to let its gates react to what it has already stored. Slide 27
+                comes back to this as "state tracking".</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s8">
+          <div class="slide-frame">
+            <div class="tag">Slide 08 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-08.png"
+              alt="Parallel Scan: T Steps in O(log T) Depth. Linear recurrences are an associative prefix sum. Each step is a pair (a_t, b_t); define (a1, b1) • (a2, b2) = (a2 a1, a2 b1 + b2). Composing two affine steps gives an affine step, so • is associative. h_t = prefix sum (a1,b1) • ... • (at,bt). Prefix sums parallelise: O(log T) depth, O(T) work. Up to 9x training speed-ups for linear RNNs (Martin and Cundy). Diagram: Hillis-Steele scan over x1..x8 with three rows of orange edges at offsets 1, 2 and 4 producing h1..h8. Each orange edge applies •: 3 rounds instead of 8 steps.">
+            <div class="slide-caption">slide 08 · parallel scan</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Treat each step as a pair (<em>a<sub>t</sub>, b<sub>t</sub></em>) and define a way to combine two
+              pairs. The combine operation is associative, so the whole sequence can be combined like a prefix sum,
+              in about log<sub>2</sub> <em>T</em> rounds.</p>
+            <h4>Where the combine rule comes from</h4>
+            <p>Each step is the function <em>h</em> ↦ <em>a<sub>t</sub>h + b<sub>t</sub></em>. Apply step 1 and
+              then step 2 and you get <em>a<sub>2</sub></em>(<em>a<sub>1</sub>h + b<sub>1</sub></em>) +
+              <em>b<sub>2</sub></em> = (<em>a<sub>2</sub>a<sub>1</sub></em>)<em>h</em> +
+              (<em>a<sub>2</sub>b<sub>1</sub> + b<sub>2</sub></em>). That is again of the form "multiply, then
+              add", with the pair (<em>a<sub>2</sub>a<sub>1</sub>, a<sub>2</sub>b<sub>1</sub> + b<sub>2</sub></em>).
+              Composing functions is always associative, so it doesn't matter how you group the steps.</p>
+            <h4>Check it on slide 7's numbers</h4>
+            <ul>
+              <li>Left to right, (0.9, 1) • (0.5, 2) = (0.45, 2.5), and then (0.45, 2.5) • (0.8, 3) =
+                (0.36, 0.8 × 2.5 + 3) = (0.36, 5).</li>
+              <li>Right first, (0.5, 2) • (0.8, 3) = (0.4, 4.6), and then (0.9, 1) • (0.4, 4.6) =
+                (0.36, 0.4 × 1 + 4.6) = (0.36, 5).</li>
+            </ul>
+            <p>Both groupings give <em>h<sub>3</sub></em> = 5 (the second number, since <em>h<sub>0</sub></em> = 0).
+              Because grouping is free, the GPU can combine neighbours in parallel. In the diagram, round 1
+              combines each position with the one before it, round 2 with the result two back, and round 3 with
+              the result four back. After 3 rounds every <em>h<sub>t</sub></em> for 8 positions is done. For
+              <em>T</em> = 4096 that is 12 rounds instead of 4096 steps.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The scan drawn on the slide (Hillis–Steele) is the simplest to picture, but it does more total
+                work than a plain loop. Count the orange edges and you get 7 + 6 + 4 = 17 combines for 8 positions,
+                and in general about <em>T</em> log <em>T</em>. The "O(<em>T</em>) work" bullet refers to
+                Blelloch's version, which takes about twice as many rounds but only O(<em>T</em>) combines. Both
+                have O(log <em>T</em>) depth, which is what matters for speed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s9">
+          <div class="slide-frame">
+            <div class="tag">Slide 09 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-09.png"
+              alt="Three Ways to Compute the Same Layer. Recurrent for decoding; parallel or chunkwise for training. 1. Recurrent: O(1) per token, T serial steps. Use: decoding. 2. Parallel: (Q K transpose ⊙ D) V: O(T squared) matmuls. Use: short sequences. Picture of a lower-triangular grid. 3. Chunkwise: parallel in chunks, state between. Use: long training. Picture of small triangles along the diagonal. Same function, three algorithms. Chunkwise kernels make these models fast on GPUs (most FLOPs become matmuls).">
+            <div class="slide-caption">slide 09 · recurrent, parallel, chunkwise</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A linear recurrent layer can be computed three ways that give identical outputs. Decoding uses the
+              recurrent form, and training uses the parallel or the chunkwise form.</p>
+            <h4>The three forms</h4>
+            <ul>
+              <li><strong>Recurrent.</strong> Update the state once per token. This is ideal for generation,
+                where tokens arrive one at a time anyway.</li>
+              <li><strong>Parallel.</strong> Write the output as attention without the softmax,
+                (<em>QK</em><sup>⊤</sup> ⊙ <em>D</em>)<em>V</em>, where <em>D</em> is a lower-triangular mask
+                that also holds the decay factors (slide 12 gives an example). It is all matmuls, but it builds a
+                <em>T</em> × <em>T</em> matrix, so it is only good for short sequences.</li>
+              <li><strong>Chunkwise.</strong> Cut the sequence into chunks of, say, 64 tokens. Inside each chunk use
+                the parallel form, which only needs a 64 × 64 matrix. Between chunks, pass the state along with
+                the recurrent form.</li>
+            </ul>
+            <h4>Why chunkwise wins for training</h4>
+            <p>For <em>T</em> = 4096 and chunks of 64, there are 64 chunks. The sequential part is now 64 state
+              hand-offs instead of 4096, and the work inside each chunk is small dense matrix multiplication, which
+              is what GPU tensor cores are fast at. The quadratic cost is only 64<sup>2</sup> per chunk, so total
+              cost grows linearly with <em>T</em>. Libraries such as flash-linear-attention implement this form
+              for most of the models in this lecture.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s10">
+          <div class="slide-frame">
+            <div class="tag">Slide 10 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-10.png"
+              alt="Recall from L6: Linear Attention Is an RNN. Katharopoulos et al. (2020), Transformers are RNNs. Replace exp(q transpose k) by a kernel phi(q) transpose phi(k): o_t = sum over s≤t of v_s phi(k_s) transpose phi(q_t) divided by sum over s≤t of phi(k_s) transpose phi(q_t) = S_t phi(q_t) / z_t transpose phi(q_t), with running sums S_t = S_{t-1} + v_t phi(k_t) transpose (orange), z_t = z_{t-1} + phi(k_t). Bullets: S_t in R^{dv x dk} is a matrix: an associative memory of key to value pairs. Write: add v_t k_t transpose. Read: multiply by the query. Problem: never forgets, and quality lagged softmax. Box: Most models today = linear attention + a better update rule.">
+            <div class="slide-caption">slide 10 · linear attention as an RNN</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Linear attention from Lecture 6 is already a linear RNN. Its state is a
+              <em>d<sub>v</sub></em> × <em>d<sub>k</sub></em> matrix that adds one outer product per token. It
+              never forgets anything, and that is its main flaw.</p>
+            <h4>From attention to a running sum</h4>
+            <p>Softmax attention can't be split into a running sum because exp(<em>q</em><sup>⊤</sup><em>k</em>)
+              mixes <em>q</em> and <em>k</em> together. With a kernel φ(<em>q</em>)<sup>⊤</sup>φ(<em>k</em>) the
+              query factors out of the sum over past tokens:</p>
+            <p style="text-align:center">Σ<sub><em>s≤t</em></sub> <em>v<sub>s</sub></em>
+              (φ(<em>k<sub>s</sub></em>)<sup>⊤</sup>φ(<em>q<sub>t</sub></em>)) = (Σ<sub><em>s≤t</em></sub>
+              <em>v<sub>s</sub></em>φ(<em>k<sub>s</sub></em>)<sup>⊤</sup>) φ(<em>q<sub>t</sub></em>) =
+              <em>S<sub>t</sub></em> φ(<em>q<sub>t</sub></em>).</p>
+            <p>The bracket doesn't depend on the query, so it can be kept as a running total
+              <em>S<sub>t</sub></em>. That is <em>h<sub>t</sub> = a<sub>t</sub>h<sub>t−1</sub> + b<sub>t</sub></em>
+              with <em>a<sub>t</sub></em> = 1 and <em>b<sub>t</sub></em> =
+              <em>v<sub>t</sub></em>φ(<em>k<sub>t</sub></em>)<sup>⊤</sup>. From here on the deck drops the φ and
+              writes <em>k</em> and <em>q</em> directly.</p>
+            <h4>The state as a key → value memory</h4>
+            <p>Shapes first. <em>v<sub>t</sub></em> is <em>d<sub>v</sub></em> × 1 and <em>k<sub>t</sub></em> is
+              <em>d<sub>k</sub></em> × 1, so <em>v<sub>t</sub>k<sub>t</sub></em><sup>⊤</sup> is
+              <em>d<sub>v</sub></em> × <em>d<sub>k</sub></em>, and <em>S<sub>t</sub>q<sub>t</sub></em> is a
+              <em>d<sub>v</sub></em>-vector. Now a tiny example with <em>d<sub>k</sub></em> =
+              <em>d<sub>v</sub></em> = 2. Store <em>k<sub>1</sub></em> = (1, 0) → <em>v<sub>1</sub></em> = (3, 5)
+              and <em>k<sub>2</sub></em> = (0, 1) → <em>v<sub>2</sub></em> = (−1, 2).</p>
+            <p style="text-align:center"><em>S</em> = <em>v<sub>1</sub>k<sub>1</sub></em><sup>⊤</sup> +
+              <em>v<sub>2</sub>k<sub>2</sub></em><sup>⊤</sup> = [[3, −1], [5, 2]]</p>
+            <p>Query with <em>q</em> = <em>k<sub>1</sub></em> = (1, 0) and you get the first column,
+              <em>Sq</em> = (3, 5) = <em>v<sub>1</sub></em>. The memory returns the value stored under that key.
+              Querying with <em>k<sub>2</sub></em> returns (−1, 2).</p>
+            <h4>"Never forgets", in the same example</h4>
+            <p>Suppose a later token says key <em>k<sub>1</sub></em> should now map to (7, 7). Linear attention
+              adds (7, 7)<em>k<sub>1</sub></em><sup>⊤</sup>, so querying <em>k<sub>1</sub></em> returns
+              (3, 5) + (7, 7) = (10, 12), which is a mix of the old and new values, not the new one. Nothing ever
+              leaves the state. The fixes come in two kinds. Decay shrinks old entries (slides 12–24), and the
+              delta rule overwrites the value for a specific key (slide 25).</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>A matrix state of size <em>d<sub>v</sub></em> × <em>d<sub>k</sub></em> is what solves problem 3
+                from slide 6. With <em>d<sub>k</sub></em> = <em>d<sub>v</sub></em> = 128 it holds 16,384 numbers per
+                head, not 128.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="early">
+        <h2><span class="num">§4</span>QRNN, RetNet and RWKV</h2>
+        <p class="section-intro">
+          The first wave. QRNN showed the linear-recurrence idea in 2016.
+          RetNet and RWKV took linear attention, added decay so the state
+          forgets, and scaled it to billions of parameters.
+        </p>
+
+        <div class="slide" id="s11">
+          <div class="slide-frame">
+            <div class="tag">Slide 11 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-11.png"
+              alt="A Brief Timeline of the RNN Revival, by first arXiv appearance or release. 2016-17: QRNN, SRU. 2020: Linear Transformer. 2023: RWKV-4, LRU, RetNet, HGRN, GLA. 2024: Griffin, RecurrentGemma, RWKV-5/6, HGRN2, xLSTM, DeltaNet, TTT, minGRU, Gated DeltaNet. 2025: Titans, MiniMax-01, RWKV-7, xLSTM 7B, DeltaProduct, ATLAS, Qwen3-Next, Kimi Linear. 2026: Qwen3.5 (hybrid), RWKV-7 G1 checkpoints. Box: 2023: can RNNs match Transformers? 2024: which update rule? 2025-26: which hybrid ships? Footnote: SSMs (S4, Mamba, ...) are omitted here: next lecture.">
+            <div class="slide-caption">slide 11 · timeline</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Ten years of models, grouped by year. The question people asked changed from "can RNNs match
+              Transformers?" (2023) to "which update rule?" (2024) to "which hybrid should we ship?" (2025–26).</p>
+            <h4>How to use this slide</h4>
+            <p>You don't need the dates. Use it as a map of the rest of the lecture. The 2023 column mostly adds
+              decay to linear attention, the 2024 column makes the decay depend on the data and adds the delta
+              rule, and the 2025–26 column is about mixing these layers with attention in large production models.
+              State space models such as Mamba belong on the same timeline but are covered in Lecture 15.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s12">
+          <div class="slide-frame">
+            <div class="tag">Slide 12 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-12.png"
+              alt="Precursors: QRNN and SRU (2016-17). Move the heavy lifting out of the recurrence. Quasi-RNN (Bradbury et al., 2016): gates and candidates from convolutions over the input, for all timesteps in parallel; only a cheap elementwise pooling is sequential: c_t = f_t ⊙ c_{t-1} + (1 - f_t) ⊙ z_t; up to 16x faster than LSTMs (train and test). SRU (Lei et al., 2018): same idea with matmuls. Box, Why it matters today: it is exactly the linear-recurrence recipe, c_t = f_t (labelled a_t) ⊙ c_{t-1} + (1 - f_t) ⊙ z_t (labelled b_t). Missing in 2017: scale, matrix-valued states, fast kernels.">
+            <div class="slide-caption">slide 12 · QRNN and SRU</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>QRNN computed its gates and candidate values with convolutions over the input, so only a cheap
+              elementwise update stayed sequential. It ran up to 16× faster than an LSTM. SRU did the same with
+              matrix multiplications.</p>
+            <h4>Spot the pattern</h4>
+            <p>The QRNN update is slide 7's form with <em>a<sub>t</sub></em> = <em>f<sub>t</sub></em> and
+              <em>b<sub>t</sub></em> = (1 − <em>f<sub>t</sub></em>) ⊙ <em>z<sub>t</sub></em>. Since
+              <em>f<sub>t</sub></em> and <em>z<sub>t</sub></em> come from a convolution over a few neighbouring
+              inputs, never from <em>c<sub>t−1</sub></em>, the expensive part runs in parallel. The idea was there
+              in 2016. What was missing was a big state (QRNN's state is a vector, so problem 3 from slide 6
+              remains), training at scale, and GPU kernels like the chunkwise form.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s13">
+          <div class="slide-frame">
+            <div class="tag">Slide 13 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-13.png"
+              alt="RetNet: Retention (2023). Linear attention + a fixed exponential decay. Recurrent form (decay gamma in (0,1) per head): S_t = gamma S_{t-1} + v_t k_t transpose, o_t = S_t q_t. Parallel form: O = (Q K transpose ⊙ D) V, D_nm = gamma^(n-m) for n ≥ m, else 0. Bullets: different gamma per head: multi-scale retention; plus xPos-style rotation, GroupNorm, and a chunkwise form. Figures: (a) parallel form (training) with Q, K, V, (QK^T ⊙ D)V and GN; (b) recurrent form (inference) with S_{n-1}, gamma, V_n, K_n, Q_n producing S_n and O_n. Box: Decay = forgetting. But gamma is fixed: the model cannot choose what to forget.">
+            <div class="slide-caption">slide 13 · RetNet retention</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>RetNet is linear attention with one change. Before each write, the state is multiplied by a constant
+              γ between 0 and 1, so old entries fade. Each head has its own γ.</p>
+            <h4>Why the two forms agree</h4>
+            <p>Unroll the recurrence. A write made at step <em>m</em> is multiplied by γ once for every later
+              step, so at step <em>n</em> it has been scaled by γ<sup><em>n−m</em></sup>:</p>
+            <p style="text-align:center"><em>o<sub>n</sub></em> = Σ<sub><em>m≤n</em></sub>
+              γ<sup><em>n−m</em></sup> (<em>q<sub>n</sub></em><sup>⊤</sup><em>k<sub>m</sub></em>)
+              <em>v<sub>m</sub></em></p>
+            <p>That is exactly the parallel form. <em>QK</em><sup>⊤</sup> gives the <em>q<sub>n</sub></em> ·
+              <em>k<sub>m</sub></em> scores, and <em>D</em> zeros out the future (causal mask) and applies the decay.
+              For 3 tokens with γ = 0.5,</p>
+            <p style="text-align:center"><em>D</em> = [[1, 0, 0], [0.5, 1, 0], [0.25, 0.5, 1]].</p>
+            <p>Compare this with a Transformer, where the causal mask is 0 or −∞ inside a softmax. Here there is no
+              softmax and the mask has real-valued weights.</p>
+            <h4>Multi-scale: what γ means</h4>
+            <p>A decay of γ keeps information for roughly 1/(1 − γ) tokens. γ = 0.9 remembers about 10 tokens,
+              γ = 0.99 about 100 and γ = 0.999 about 1000. Giving each head a different γ lets some heads track
+              local syntax and others longer-range context. It works a bit like the different frequencies in
+              sinusoidal position encodings (Lecture 4), and the xPos-style rotation RetNet adds is a relative
+              position encoding in the same family as RoPE.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>γ is a fixed number per head, learned or set once and the same for every token. A sentence
+                boundary, a new document or an important name all get forgotten at the same rate. That is the
+                weakness the next models attack.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s14">
+          <div class="slide-frame">
+            <div class="tag">Slide 14 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-14.png"
+              alt="RetNet: What the Recurrent Form Buys. 7B model, 8K input, vs. a Transformer (authors' numbers). Inference Cost bar charts: GPU memory 3.4x lower for RetNet, throughput 8.4x higher, latency 15.6x lower. Scaling Curve: LM perplexity vs model size 1, 3, 7B; RetNet worse than Transformer at 1B but better by 7B. Bullets: gains come from having no KV cache: the state does not grow with length. Caveat: fixed decay later proved weaker in quality than data-dependent gating (next slides).">
+            <div class="slide-caption">slide 14 · RetNet inference numbers</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The RetNet authors' 7B model at 8K input used 3.4× less GPU memory, had 8.4× the throughput and
+              15.6× lower latency than a Transformer of the same size.</p>
+            <h4>Where the gains come from</h4>
+            <p>All three numbers follow from slide 3. With no KV cache, memory per sequence is fixed, so more
+              sequences fit in a batch (throughput), and each new token does a fixed amount of work instead of
+              reading 8K cached keys (latency). The gap grows with input length. These are the authors' own
+              numbers, and the slide warns that later work found fixed decay weaker on quality than the
+              data-dependent gating of GLA and Mamba-2.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s15">
+          <div class="slide-frame">
+            <div class="tag">Slide 15 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-15.png"
+              alt="RWKV-4: Reinventing RNNs (2023). Receptance, Weight, Key, Value. Time-mix (replaces attention), per channel: wkv_t = [sum over i<t of e^(-(t-1-i)w + k_i) ⊙ v_i + e^(u + k_t) ⊙ v_t] / [sum over i<t of e^(-(t-1-i)w + k_i) + e^(u + k_t)]. Bullets: output o_t = W_o(σ(r_t) ⊙ wkv_t); w: learned per-channel decay; u: bonus for the current token; r: receptance. Token shift: mix x_t with x_{t-1} before projections. Numerator and denominator are linear recurrences: train as a Transformer, infer as an RNN. Scaled to 14B, on par with similar-size Transformers at the time. Figure: stacked blocks of LayerNorm, Time Mix, LayerNorm, Channel Mix, LM Head over tokens My, name, is, with states and token shift passed to the right.">
+            <div class="slide-caption">slide 15 · RWKV-4 time-mix</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>RWKV-4 replaces attention with a "time-mix" that, for each channel, takes a weighted average of past
+              values. The weights decay exponentially with distance. A separate bonus <em>u</em> applies to the
+              current token, and a sigmoid gate (the receptance <em>r</em>) scales the output.</p>
+            <h4>Read it as a softmax with a recency penalty</h4>
+            <p>Each past value <em>v<sub>i</sub></em> gets weight exp(<em>k<sub>i</sub></em> −
+              (<em>t</em>−1−<em>i</em>)<em>w</em>), and the weights are normalised by their sum. So it is a softmax
+              over past tokens with score <em>k<sub>i</sub></em> − (distance) × <em>w</em>. Unlike attention, the
+              score has no query in it. How much token <em>i</em> counts depends on its own key and its age, not on
+              what the current token is looking for. The receptance σ(<em>r<sub>t</sub></em>) is the only
+              current-token control, and it just scales the result per channel.</p>
+            <h4>A small example</h4>
+            <p>One channel, at <em>t</em> = 3, with <em>w</em> = ln 2 (each step halves the weight), all keys 0,
+              <em>u</em> = 0 and values <em>v<sub>1</sub></em> = 1, <em>v<sub>2</sub></em> = 3,
+              <em>v<sub>3</sub></em> = 5. The weights are <em>e</em><sup>−ln 2</sup> = 0.5 for token 1 (one step
+              old), <em>e</em><sup>0</sup> = 1 for token 2 and <em>e</em><sup><em>u</em>+<em>k</em><sub>3</sub></sup>
+              = 1 for the current token, so</p>
+            <p style="text-align:center"><em>wkv<sub>3</sub></em> = (0.5 × 1 + 1 × 3 + 1 × 5) / (0.5 + 1 + 1) =
+              8.5 / 2.5 = 3.4.</p>
+            <h4>Why it is an RNN</h4>
+            <p>Call the numerator sum (including token <em>t</em> with no bonus) <em>A<sub>t</sub></em>. Every older
+              term gains one more factor of <em>e</em><sup>−<em>w</em></sup> per step, so
+              <em>A<sub>t</sub></em> = <em>e</em><sup>−<em>w</em></sup><em>A<sub>t−1</sub></em> +
+              <em>e</em><sup><em>k<sub>t</sub></em></sup><em>v<sub>t</sub></em>, which is slide 7's form again. The
+              denominator works the same way. RWKV-4 keeps a numerator and a denominator per channel as its state, so
+              its state is still a vector, and RWKV-5 changes that.</p>
+            <p>Token shift is a cheap trick. Before computing <em>r</em>, <em>k</em> and <em>v</em>, each token's
+              input is blended with the previous token's input, which gives every layer a direct look at the
+              immediately preceding token.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s16">
+          <div class="slide-frame">
+            <div class="tag">Slide 16 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-16.png"
+              alt="RWKV-5/6 and RWKV-7. Fixed decay to data-dependent decay to delta rule. RWKV-5: multi-head matrix-valued states, S_t = S_{t-1} diag(w) + v_t k_t transpose. RWKV-6: data-dependent decay w_t, S_t = S_{t-1} diag(w_t) + v_t k_t transpose. RWKV-7: generalised delta rule, S_t = S_{t-1}(diag(w_t) - κ̂_t (a_t ⊙ κ̂_t) transpose) + v_t k̃_t transpose. a_t: vector-valued in-context learning rate; κ̂_t: normalised removal key. Figure of the RWKV-7 state update for one head as coloured matrices. Bullets: RWKV-7 can track state and recognise all regular languages; 2.9B model, 3.1T-token multilingual corpus, Apache-2.0; official RWKV-7 G1 checkpoints up to 13.3B (2026).">
+            <div class="slide-caption">slide 16 · RWKV-5, 6 and 7</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Three versions, three steps forward. RWKV-5 moves to a matrix state with a fixed decay per key
+              channel. RWKV-6 lets the decay depend on the current token. RWKV-7 adds a delta-rule term that removes
+              old content before writing new content.</p>
+            <h4>What multiplying by diag(<em>w</em>) on the right does</h4>
+            <p><em>S</em> diag(<em>w</em>) scales column <em>j</em> of <em>S</em> by <em>w<sub>j</sub></em>.
+              Column <em>j</em> holds whatever was written under key dimension <em>j</em>, so each key dimension
+              forgets at its own rate. RetNet used one scalar γ for the whole head. RWKV-5 uses a vector, and
+              RWKV-6 lets that vector change with each token (<em>w<sub>t</sub></em>). A token like "." can then
+              push some channels' decay toward 0 to clear them, while other tokens keep the decay near 1.</p>
+            <h4>RWKV-7 as a delta rule</h4>
+            <p>Set the decay to 1 and the learning rate to a scalar β, and the RWKV-7 transition becomes
+              <em>I</em> − βκ̂κ̂<sup>⊤</sup>. That is DeltaNet's transition from slide 25. Multiplying by it removes
+              the part of the state stored along the key direction κ̂ before the new value is written. RWKV-7
+              generalises it with a per-channel decay and a per-channel learning rate <em>a<sub>t</sub></em>.
+              Slide 27 explains why this extra structure lets it "track state".</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s17">
+          <div class="slide-frame">
+            <div class="tag">Slide 17 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-17.png"
+              alt="RWKV-7 Architecture. Attention replaced by a recurrent Time Mix. Left figure: Embedding, LayerNorm, then L x [LayerNorm, Time Mix, residual add, LayerNorm, ReLU squared MLP, residual add], LayerNorm, Head. Right figure: Time Mix block with Token Shift, Weight Prepare producing G R W K V A, the WKV7 Kernel taking wkv_{t-1} and producing wkv_t, then Readout. Bullets: Block = Time Mix (the RNN) + ReLU squared MLP; token shift to weight prepare gives per-token r, w, k, v, a, g; the WKV7 kernel carries the state: a 64 x 64 matrix per head; constant memory and time per generated token. Box: Keep the Transformer block; replace attention with a recurrent token mixer.">
+            <div class="slide-caption">slide 17 · RWKV-7 block</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>An RWKV-7 block looks like a pre-norm Transformer block with the attention sublayer replaced by
+              Time Mix. The state is a 64 × 64 matrix per head.</p>
+            <h4>The general design pattern</h4>
+            <p>This is how almost every model in the lecture is built. A Transformer block has two parts, a token
+              mixer (attention, which moves information between positions) and a channel mixer (the MLP from
+              Lecture 8, which works on each position separately). Modern RNNs keep the residual stream, the
+              norms (Lecture 7) and the MLP, and replace only the token mixer. Time Mix computes six per-token
+              vectors from the shifted input, <em>r</em>, <em>w</em>, <em>k</em>, <em>v</em>, <em>a</em> and a
+              gate <em>g</em>, and the WKV7 kernel applies the slide 16 update to the state.</p>
+            <p>A 64 × 64 state per head is 4,096 numbers. Whatever the context length, the memory and work for each
+              new token stay the same.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="lru">
+        <h2><span class="num">§5</span>LRU, Griffin, xLSTM and minGRU</h2>
+        <p class="section-intro">
+          Four more routes to the same place. LRU strips a classic RNN
+          down to see which parts matter. Griffin adds gating and local
+          attention. xLSTM and minGRU start from the LSTM and GRU and end
+          up at a linear recurrence anyway.
+        </p>
+
+        <div class="slide" id="s18">
+          <div class="slide-frame">
+            <div class="tag">Slide 18 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-18.png"
+              alt="LRU: Resurrecting RNNs (2023). Which ingredients matter? A bridge to SSMs (next lecture). Figure: Linear Recurrent Unit x_k = diag(lambda) x_{k-1} + gamma ⊙ B u_k; lambda_j = exp(-exp(nu_j log) + i exp(theta_j log)), stable exponential parametrization with magnitude and phase; gamma_j = (1 - |lambda_j| squared)^(1/2), normalization. Architecture: linear encoder, stacked LRU and MLP/GLU layers with skip connections, linear layer. Plot: test accuracy on LRA tasks (sCIFAR, ListOps, PathFinder, PathX) rising across variants tanh dense, linear dense, linear diag, + stable + ring init, + gamma norm (LRU), reaching the S4/5 level. Text: Starting from a tanh RNN: 1. linearise the recurrence; 2. diagonalise it (complex lambda_j); 3. stable exponential parameterisation, |lambda_j| < 1; 4. normalise the input (gamma). Matches deep SSMs (S4/S5) on Long Range Arena, with no continuous-time theory.">
+            <div class="slide-caption">slide 18 · LRU, four ingredients</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Start from a plain tanh RNN and make four changes, one at a time. The result, the Linear Recurrent
+              Unit, reaches the level of S4 and S5 on Long Range Arena. The plot shows accuracy climbing with each
+              change.</p>
+            <h4>The four steps</h4>
+            <ol>
+              <li><strong>Linearise.</strong> Remove the tanh, so <em>x<sub>k</sub></em> =
+                <em>Ax<sub>k−1</sub></em> + <em>Bu<sub>k</sub></em>. This makes slide 8's parallel scan
+                possible.</li>
+              <li><strong>Diagonalise.</strong> A dense matrix <em>A</em> can almost always be written as
+                <em>P</em>Λ<em>P</em><sup>−1</sup> with Λ diagonal, if complex numbers are allowed. Absorb
+                <em>P</em> into the input and output projections and the recurrence becomes elementwise,
+                <em>x<sub>k</sub></em> = λ ⊙ <em>x<sub>k−1</sub></em> + ..., which is cheap. A complex λ = |λ|
+                <em>e</em><sup><em>i</em>θ</sup> both shrinks (|λ|) and rotates (θ), so each channel can hold a
+                decaying oscillation.</li>
+              <li><strong>Stable parameterisation.</strong> The model learns ν and sets |λ| =
+                exp(−exp(ν)). Whatever value ν takes, exp(ν) > 0, so |λ| is always strictly between 0 and 1 and the
+                state can't blow up. Initialising |λ| close to 1 (the "ring init" on a ring near the unit circle)
+                gives long memory from the start.</li>
+              <li><strong>Normalise with γ.</strong> When |λ| is close to 1, inputs pile up. For unit-variance random
+                inputs the state's variance settles at 1/(1 − |λ|<sup>2</sup>), which is about 50 for |λ| = 0.99.
+                Multiplying the input by γ = (1 − |λ|<sup>2</sup>)<sup>1/2</sup> brings that back to 1.</li>
+            </ol>
+            <div class="callout link">
+              <div class="callout-label">→ Next lecture</div>
+              <p>S4 reaches a very similar diagonal linear recurrence by starting from continuous-time differential
+                equations. LRU's point is that you don't need that theory to get the result. Lecture 15 tells the
+                same story from the SSM side.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s19">
+          <div class="slide-frame">
+            <div class="tag">Slide 19 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-19.png"
+              alt="Griffin and Hawk (DeepMind, 2024). RG-LRU: a gated LRU, mixed with local attention. Real-Gated LRU (diagonal, real): r_t = σ(W_a x_t + b_a) recurrence gate; i_t = σ(W_x x_t + b_x) input gate; a_t = a^(c r_t), a = σ(Λ), c = 8; h_t = a_t ⊙ h_{t-1} + sqrt(1 - a_t squared) ⊙ (i_t ⊙ x_t). Bullets: Hawk: RG-LRU only. Griffin: 2 recurrent : 1 local MQA (window 1024). Figure: (a) residual block with RMSNorm, temporal mixing block, RMSNorm, MLP block; (b) gated MLP block; (c) recurrent block with Linear, GeLU, temporal Conv1D, RG-LRU. The recurrent block (c) also has a short temporal Conv1D.">
+            <div class="slide-caption">slide 19 · RG-LRU, Hawk and Griffin</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>DeepMind's RG-LRU is a real-valued diagonal LRU with two input-dependent gates. Hawk stacks only
+              RG-LRU blocks. Griffin uses two RG-LRU blocks for every local-attention block with a 1024-token
+              window.</p>
+            <h4>How the gate controls the decay</h4>
+            <p>The base decay <em>a</em> = σ(Λ) is learned per channel. The recurrence gate
+              <em>r<sub>t</sub></em> ∈ (0, 1) raises it to a power, <em>a<sub>t</sub></em> =
+              <em>a</em><sup>8<em>r<sub>t</sub></em></sup>. Take a channel with <em>a</em> = 0.9.</p>
+            <ul>
+              <li><em>r<sub>t</sub></em> → 0 gives <em>a<sub>t</sub></em> → 1, and the input factor √(1 −
+                <em>a<sub>t</sub></em><sup>2</sup>) → 0. The state is kept and the token is ignored.</li>
+              <li><em>r<sub>t</sub></em> = 0.5 gives <em>a<sub>t</sub></em> = 0.9<sup>4</sup> ≈ 0.656 and an input
+                factor of about 0.755.</li>
+              <li><em>r<sub>t</sub></em> = 1 gives <em>a<sub>t</sub></em> = 0.9<sup>8</sup> ≈ 0.430 and an input
+                factor of about 0.903. Old state fades fast and the new token mostly replaces it.</li>
+            </ul>
+            <p>So each token decides, through <em>r<sub>t</sub></em>, whether it is worth remembering. That is
+              data-dependent decay, the missing piece from RetNet. The √(1 − <em>a<sub>t</sub></em><sup>2</sup>)
+              factor is the same normaliser as LRU's γ, and it keeps the state's size steady whatever the
+              gate does.</p>
+            <h4>Why mix in local attention</h4>
+            <p>Local attention with a 1024-token window is exact for nearby tokens and its KV cache stops growing
+              at 1024 entries. The recurrent layers carry information further back in compressed form. Griffin's
+              recurrent block also has a short convolution over the last few tokens, which plays the same role as
+              RWKV's token shift.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s20">
+          <div class="slide-frame">
+            <div class="tag">Slide 20 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-20.png"
+              alt="Griffin: Results. Scales like a Transformer, decodes much faster. Left plot: validation loss vs training FLOPs from 10^18 to 10^22 for MQA, Hawk and Griffin; all fall along power laws, Griffin lowest or equal to MQA, Hawk slightly higher. Right bar chart: max tokens/s decoded at 512, 1024, 2048, 4096 tokens for MQA, Griffin, Hawk; MQA throughput falls with length while Hawk stays near 21,000 tokens/s, reaching 14.8x MQA at 4096; Griffin 6.6x at 4096. Bullets: left: power-law scaling, Griffin lowest loss at all budgets. Right: decode throughput at 1B params. Hawk beats reported Mamba scores; Griffin matches Llama-2 with over 6x fewer tokens. Shipped as RecurrentGemma (2B, 9B).">
+            <div class="slide-caption">slide 20 · Griffin results</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The loss curves show Griffin scaling like a Transformer with multi-query attention (MQA). The
+              throughput chart shows decoding speed at 1B parameters. Griffin was released as RecurrentGemma.</p>
+            <h4>Reading the throughput chart</h4>
+            <p>The MQA bars shrink as the number of decoded tokens grows, because each new token has to read a
+              longer KV cache. Hawk's bars stay flat, since its per-token cost doesn't depend on length. Griffin sits
+              in between. Its local attention has a capped cache, so its bars flatten too, at a lower level than
+              Hawk because a third of its layers are attention. By 4096 tokens Hawk is 14.8× faster than MQA and
+              Griffin 6.6×. These are the slide 3 arguments showing up in measurements.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s21">
+          <div class="slide-frame">
+            <div class="tag">Slide 21 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-21.png"
+              alt="xLSTM: Extended LSTM (2024). Hochreiter's group revisits the LSTM with modern tricks. Figure: from LSTM (memory cells, constant error carousel, sigmoid gating, recurrent inference, recurrent training) to sLSTM (+ exponential gating, + new memory mixing) and mLSTM (+ exponential gating, + matrix memory, + parallel training, + covariance update rule), to xLSTM blocks and a stacked xLSTM. Text: Exponential gating i_t = exp(ĩ_t), with a normaliser and stabiliser: memories can be strongly revised. sLSTM: scalar memory + memory mixing (not parallelisable). mLSTM: matrix memory, parallelisable: C_t = f_t C_{t-1} + i_t v_t k_t transpose; h̃_t = C_t q_t / max{|n_t transpose q_t|, 1}.">
+            <div class="slide-caption">slide 21 · xLSTM: sLSTM and mLSTM</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The group behind the original LSTM updated it in two ways. sLSTM keeps a vector state and mixes
+              memory across steps, so it stays sequential. mLSTM switches to a matrix memory with exponential input
+              gates and can be trained in parallel.</p>
+            <h4>mLSTM is linear attention with gates</h4>
+            <p>The mLSTM update <em>C<sub>t</sub> = f<sub>t</sub>C<sub>t−1</sub> + i<sub>t</sub>v<sub>t</sub>k<sub>t</sub></em><sup>⊤</sup>
+              is slide 10's key → value memory with a scalar forget gate <em>f<sub>t</sub></em> on the old state
+              and a scalar input gate <em>i<sub>t</sub></em> on the new write. The read-out divides by a normaliser
+              <em>n<sub>t</sub></em> = <em>f<sub>t</sub>n<sub>t−1</sub></em> + <em>i<sub>t</sub>k<sub>t</sub></em>,
+              which plays the same role as linear attention's denominator <em>z<sub>t</sub></em>. The max with 1
+              stops the division from blowing up when <em>n<sub>t</sub></em><sup>⊤</sup><em>q<sub>t</sub></em> is
+              near 0.</p>
+            <h4>Why an exponential input gate</h4>
+            <p>A sigmoid gate is at most 1. With <em>i<sub>t</sub></em> = exp(<em>ĩ<sub>t</sub></em>) the gate can
+              be 10 or 100, so one important token can write strongly enough to outweigh everything already stored.
+              This is what "memories can be strongly revised" means. Exponentials overflow easily, so xLSTM also
+              tracks a running maximum (the stabiliser) and works with the gates relative to it, the same trick used
+              to compute softmax safely.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s22">
+          <div class="slide-frame">
+            <div class="tag">Slide 22 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-22.png"
+              alt="xLSTM at Scale. xLSTM 7B (2025): an RNN LLM built for fast inference. Bullets: 7B LLM built from mLSTM blocks, optimised for inference speed. Authors report comparable downstream quality to similar-size LLMs, and faster, more efficient inference than Llama- and Mamba-based 7B models. Motivation: test-time compute (reasoning, long outputs) makes decode speed a key metric. Open weights and code (NX-AI/xlstm). Box, Read the mLSTM update again: C_t = f_t C_{t-1} + i_t v_t k_t transpose. This is gated linear attention with a scalar forget gate and an exponential input gate. Different communities, same object.">
+            <div class="slide-caption">slide 22 · xLSTM 7B</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>xLSTM 7B is a 7B model built only from mLSTM blocks. Its authors report quality comparable to
+              similar-size models and faster inference than Llama- and Mamba-based 7B models.</p>
+            <h4>Why decode speed became the selling point</h4>
+            <p>Reasoning models write thousands of tokens of chain-of-thought before answering, so the cost of a
+              query is mostly the cost of generating tokens. That is the O(<em>T</em>)-per-token part of slide 3,
+              and it is where a fixed state helps most. The boxed remark is the main lesson. An LSTM group and a
+              linear-attention group arrived at the same update from opposite ends.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s23">
+          <div class="slide-frame">
+            <div class="tag">Slide 23 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-23.png"
+              alt="minGRU and minLSTM (2024). Were RNNs All We Needed? Figure: GRU equations h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t, z_t = σ(Linear([x_t, h_{t-1}])), r_t = σ(Linear([x_t, h_{t-1}])), h̃_t = tanh(Linear([x_t, r_t ⊙ h_{t-1}])) simplified to minGRU: h_t = (1 - z_t) ⊙ h_{t-1} + z_t ⊙ h̃_t, z_t = σ(Linear(x_t)), h̃_t = Linear(x_t). Plots: training runtime, speed-up and memory vs sequence length on a T4 GPU, batch 64, for GRU, minGRU, LSTM, minLSTM, Mamba. Text: 1. Remove h_{t-1} from gates and candidate. 2. Drop the tanh range restriction. Result: a linear recurrence, trained with a parallel scan. 175x (minGRU) / 235x (minLSTM) faster per training step at length 512; 1324x / 1361x at 4096. Box: The magic is mostly linear-in-state recurrence + parallel training.">
+            <div class="slide-caption">slide 23 · minGRU and minLSTM</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Take a GRU, remove <em>h<sub>t−1</sub></em> from the gate and the candidate, and drop the tanh. What
+              is left is a linear recurrence that trains with a parallel scan, 175× to 1361× faster per step than
+              the original.</p>
+            <h4>Match it to slide 7</h4>
+            <p>minGRU is <em>h<sub>t</sub></em> = (1 − <em>z<sub>t</sub></em>) ⊙ <em>h<sub>t−1</sub></em> +
+              <em>z<sub>t</sub></em> ⊙ <em>h̃<sub>t</sub></em> with <em>z<sub>t</sub></em> and
+              <em>h̃<sub>t</sub></em> computed from <em>x<sub>t</sub></em> alone. So <em>a<sub>t</sub></em> = 1 −
+              <em>z<sub>t</sub></em> and <em>b<sub>t</sub></em> = <em>z<sub>t</sub></em> ⊙
+              <em>h̃<sub>t</sub></em>. Nothing else is needed.</p>
+            <h4>Why the speed-up grows with length</h4>
+            <p>The original GRU needs <em>T</em> sequential steps and the scan needs about log<sub>2</sub>
+              <em>T</em> rounds. Going from 512 to 4096 tokens multiplies the GRU's steps by 8 but adds only 3
+              rounds to the scan, which is why the speed-up jumps from 175× to 1324×. The point of the paper's
+              title is that the gains in this lecture come mostly from linear-in-state recurrence and parallel
+              training, not from any one clever architecture.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="gating">
+        <h2><span class="num">§6</span>Data-dependent decay and the delta rule</h2>
+        <p class="section-intro">
+          Two upgrades to linear attention's update. A forget gate that
+          depends on the current token lets the model erase quickly. The
+          delta rule lets it overwrite one key's value without disturbing
+          the others.
+        </p>
+
+        <div class="slide" id="s24">
+          <div class="slide-frame">
+            <div class="tag">Slide 24 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-24.png"
+              alt="The Gated Linear Attention Family. GLA, HGRN, HGRN2: data-dependent forgetting. GLA (Yang et al., 2024): S_t = S_{t-1} diag(α_t) + v_t k_t transpose, o_t = S_t q_t. α_t in (0,1)^{dk} from x_t: content-aware decay. FlashLinearAttention: I/O-aware chunkwise kernel, faster than FlashAttention-2 as a standalone layer even at 1K. Trained at 2K, generalises beyond 20K. HGRN (2023): forget gates with a learnable lower bound that rises with depth: upper layers long-term, lower layers local. HGRN2 (2024): outer-product state expansion, a bigger state at no parameter cost, in linear-attention form. Box: Data-dependent decay is the biggest single quality jump over fixed decay.">
+            <div class="slide-caption">slide 24 · GLA, HGRN, HGRN2</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Gated linear attention gives every key dimension a forget rate α<sub><em>t</em></sub> computed from
+              the current token. HGRN adds a floor on the forget gate that rises with depth, and HGRN2 enlarges the
+              state with an outer product. The slide calls data-dependent decay the biggest single quality jump
+              over fixed decay.</p>
+            <h4>Fixed versus content-aware decay</h4>
+            <p>Under RetNet's fixed γ = 0.9, a name seen 50 tokens ago has been scaled by 0.9<sup>50</sup> ≈ 0.005
+              whatever happened in between. Under GLA, the tokens in between choose their own α. Filler words can
+              set α near 1 so the name survives, and a token that starts a new topic can set α near 0 to clear the
+              old content. GLA's update is the same as RWKV-6's from slide 16, and it is the "data-dependent
+              diagonal" row in the table on slide 26.</p>
+            <h4>HGRN's rising floor</h4>
+            <p>If the forget gate is forced to be at least some value, the layer can't forget faster than that
+              floor allows. HGRN learns a floor that is low in the bottom layers and high in the top layers, so lower
+              layers handle local patterns and upper layers keep long-range information. It's the same idea as
+              RetNet's multi-scale heads, spread across depth instead of across heads.</p>
+            <h4>Why GLA's kernel matters</h4>
+            <p>FlashLinearAttention is the chunkwise form from slide 9, written to keep data in fast on-chip memory as
+              much as possible. Without a fast kernel, a linear-time layer can still be
+              slower than softmax attention in practice, because GPUs reward large matrix multiplications over
+              many small elementwise steps.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s25">
+          <div class="slide-frame">
+            <div class="tag">Slide 25 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-25.png"
+              alt="Recall from L6: The Delta Rule. From add to memory to correct the memory. DeltaNet: read the memory's prediction for k_t, write only the error: S_t = S_{t-1} + β_t (v_t - S_{t-1} k_t) k_t transpose = S_{t-1}(I - β_t k_t k_t transpose) + β_t v_t k_t transpose, = one step of online gradient descent on 1/2 ||S k_t - v_t|| squared, learning rate β_t. Gated DeltaNet: add a forget gate α_t in (0,1): S_t = S_{t-1} α_t (I - β_t k_t k_t transpose) + β_t v_t k_t transpose. Bullets: gating = fast erasure; delta = targeted overwrite: complementary. Parallel training via a Householder (WY) representation. Gated DeltaNet is the linear layer in Qwen3-Next / Qwen3.5; KDA (Kimi Linear, L6) refines its gate. Box: Update = one learning step leads to TTT later.">
+            <div class="slide-caption">slide 25 · DeltaNet and Gated DeltaNet</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>DeltaNet first asks the memory what it currently returns for key <em>k<sub>t</sub></em>, then writes
+              only the difference between the target <em>v<sub>t</sub></em> and that prediction. Gated DeltaNet
+              adds a forget gate on top.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>S</mi><mi>t</mi></msub><mo>=</mo>
+                <msub><mi>S</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo>
+                <msub><mi>β</mi><mi>t</mi></msub>
+                <mo>(</mo><msub><mi>v</mi><mi>t</mi></msub><mo>−</mo>
+                <msub><mi>S</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><msub><mi>k</mi><mi>t</mi></msub><mo>)</mo>
+                <msubsup><mi>k</mi><mi>t</mi><mo>⊤</mo></msubsup>
+                <mo>=</mo>
+                <msub><mi>S</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                <mo>(</mo><mi>I</mi><mo>−</mo><msub><mi>β</mi><mi>t</mi></msub>
+                <msub><mi>k</mi><mi>t</mi></msub><msubsup><mi>k</mi><mi>t</mi><mo>⊤</mo></msubsup><mo>)</mo>
+                <mo>+</mo><msub><mi>β</mi><mi>t</mi></msub><msub><mi>v</mi><mi>t</mi></msub><msubsup><mi>k</mi><mi>t</mi><mo>⊤</mo></msubsup>
+              </math>
+            </div>
+            <h4>Back to slide 10's example</h4>
+            <p>The memory is <em>S</em> = [[3, −1], [5, 2]], holding (1, 0) → (3, 5) and (0, 1) → (−1, 2). We
+              want <em>k<sub>1</sub></em> = (1, 0) to map to (7, 7) instead. Take β = 1.</p>
+            <ul>
+              <li>Read the prediction, <em>Sk<sub>1</sub></em> = (3, 5).</li>
+              <li>Error = target − prediction = (7, 7) − (3, 5) = (4, 2).</li>
+              <li>Write the error, <em>S</em> + (4, 2)<em>k<sub>1</sub></em><sup>⊤</sup> = [[7, −1], [7, 2]].</li>
+            </ul>
+            <p>Now <em>Sk<sub>1</sub></em> = (7, 7), the new value exactly, and <em>Sk<sub>2</sub></em> is still
+              (−1, 2). Plain linear attention gave (10, 12) here. The delta rule replaced one entry and left the
+              other untouched. With β between 0 and 1 it moves only part of the way toward the target.</p>
+            <h4>Why it is a gradient step</h4>
+            <p>Measure how wrong the memory is for this key with <em>L</em>(<em>S</em>) = ½‖<em>Sk<sub>t</sub></em> −
+              <em>v<sub>t</sub></em>‖<sup>2</sup>. Its gradient is (<em>Sk<sub>t</sub></em> −
+              <em>v<sub>t</sub></em>)<em>k<sub>t</sub></em><sup>⊤</sup>, and one step of gradient descent with
+              learning rate β<sub><em>t</em></sub> gives exactly the update above. Each token trains the memory a
+              little on its own key–value pair. Slide 28 takes this idea further.</p>
+            <h4>Gating and delta do different jobs</h4>
+            <p>The forget gate α<sub><em>t</em></sub> scales the whole state down, which is a fast way to clear
+              everything when the context changes. The delta term edits one key direction and leaves the rest
+              alone. Gated DeltaNet uses both, and it is the recurrent layer in Qwen3-Next and Qwen3.5
+              (slide 36).</p>
+            <div class="callout link">
+              <div class="callout-label">→ See also</div>
+              <p>Assignment 3 implements DeltaNet. <a href="../assignments/3-mamba-deltanet-gnn.html#delta">A3 §4</a>
+                works through the same update with tensor shapes, and the slide's "Householder (WY) representation"
+                is the trick its chunkwise kernel uses to batch many <em>I</em> − β<em>kk</em><sup>⊤</sup> factors
+                into matrix multiplications.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="unify">
+        <h2><span class="num">§7</span>One table for all of them</h2>
+        <p class="section-intro">
+          Every model so far fits one update,
+          <em>S<sub>t</sub> = S<sub>t−1</sub>M<sub>t</sub> + write<sub>t</sub></em>.
+          What separates them is how much structure the transition
+          matrix <em>M<sub>t</sub></em> has.
+        </p>
+
+        <div class="slide" id="s26">
+          <div class="slide-frame">
+            <div class="tag">Slide 26 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-26.png"
+              alt="A Unifying View. State S_t in R^{dv x dk}; S_t = S_{t-1} M_t + write_t; read-out o_t = S_t q_t. Table with columns Model, Transition M_t, Write, Structure of M_t. Linear attention: I, v_t k_t^T, identity (never forgets). RetNet: γI, v_t k_t^T, fixed scalar. Mamba-2: α_t I, v_t k_t^T, data-dependent scalar. mLSTM: f_t I, i_t v_t k_t^T, data-dependent scalar. GLA, RWKV-6: diag(α_t), v_t k_t^T, data-dependent diagonal. DeltaNet: I - β_t k_t k_t^T, β_t v_t k_t^T, identity + rank-1. Gated DeltaNet: α_t(I - β_t k_t k_t^T), β_t v_t k_t^T, scalar x (identity + rank-1). RWKV-7: diag(w_t) - κ̂_t(a_t ⊙ κ̂_t)^T, v_t k̃_t^T, diagonal + rank-1. Box: Richer M_t (identity to scalar to diagonal to diagonal + low-rank) buys recall and state tracking, at the cost of more complex kernels.">
+            <div class="slide-caption">slide 26 · the unifying table</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Eight models in one table, each defined by its transition <em>M<sub>t</sub></em> and its write term.
+              The rows go from the simplest transition (identity) to the richest (diagonal plus rank-1).</p>
+            <h4>How to read <em>M<sub>t</sub></em></h4>
+            <p>Right-multiplying the old state by <em>M<sub>t</sub></em> is what the layer does to its memory before
+              writing. Each step up the table gives the model finer control over what to forget.</p>
+            <ul>
+              <li><strong>Identity.</strong> Keep everything (linear attention).</li>
+              <li><strong>Scalar.</strong> Shrink the whole memory by one number. The number is fixed in RetNet and
+                chosen by the token in Mamba-2 and mLSTM.</li>
+              <li><strong>Diagonal.</strong> Shrink each key dimension by its own amount (GLA, RWKV-6).</li>
+              <li><strong>Identity + rank-1.</strong> Remove what is stored along one key direction and leave the rest
+                (DeltaNet). Gated DeltaNet multiplies this by a scalar decay, and RWKV-7 combines it with a
+                diagonal.</li>
+            </ul>
+            <h4>Why not just use a full matrix?</h4>
+            <p>A general <em>d<sub>k</sub></em> × <em>d<sub>k</sub></em> transition per token would cost
+              <em>d<sub>k</sub></em><sup>3</sup> operations to apply to the state and would have to be stored for
+              every token during training. Diagonal and rank-1 matrices can be applied in
+              <em>d<sub>k</sub></em><sup>2</sup> work and fit the chunkwise kernels of slide 9. The table is a list
+              of the cheapest structures that still give useful control. That is the cost the box refers to.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>Mamba-2 appears in this table as "linear attention with a data-dependent scalar decay". Lecture 15
+                derives the same thing from state space models.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s27">
+          <div class="slide-frame">
+            <div class="tag">Slide 27 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-27.png"
+              alt="The Same Picture in the RWKV-7 Paper. Four properties for comparing update rules. Table from the paper listing models (RWKV-4, RetNet, RWKV-5, Mamba, RWKV-6 and GLA, HGRN-2, Mamba-2, TTT, Longhorn, Gated DeltaNet, Titans, Generalised Delta Rule, RWKV-7) with their state evolution equations, scalars, and check marks for LS, FD, DD, GE; only RWKV-7 and the generalised delta rule have all four. Bullets: LS Large State: matrix-valued (or ≥ 4x model dim). FD Flexible Decay: decay dim ≥ model dim. DD Dynamic Dependence: decay depends on x_t. GE Generalised Eigenvalue: eigenvalues outside [0, 1], needed for state tracking. Row-vector convention: v^T k is an outer product.">
+            <div class="slide-caption">slide 27 · LS, FD, DD, GE</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The RWKV-7 paper compares update rules on four properties. Large state, flexible (per-dimension)
+              decay, decay that depends on the input, and transition eigenvalues allowed outside [0, 1]. The paper
+              writes vectors as rows, so its <em>v</em><sup>⊤</sup><em>k</em> is our
+              <em>vk</em><sup>⊤</sup>.</p>
+            <h4>The first three you already know</h4>
+            <p>LS is slide 10's matrix state, FD is the diagonal row of slide 26 and DD is data-dependent decay from
+              slide 24. The new one is GE.</p>
+            <h4>What GE buys, with parity</h4>
+            <p>Suppose the task is to read a bit string and say whether it has an odd number of 1s. A recurrent
+              model can do it with one number. Start at +1 and flip the sign on every 1, so the state is multiplied
+              by −1 on a 1 and by +1 on a 0. Flipping a sign needs a transition with eigenvalue −1. A decay between
+              0 and 1 can only shrink the state, never flip it, so no setting of the gates in GLA or Mamba can do
+              this in one layer.</p>
+            <p>The delta-rule transition <em>I</em> − β<em>kk</em><sup>⊤</sup> (with ‖<em>k</em>‖ = 1) has
+              eigenvalue 1 − β along <em>k</em> and 1 elsewhere. With β allowed up to 2, that eigenvalue reaches −1,
+              and the transition becomes a reflection. This is the sense in which RWKV-7 "tracks state" and can
+              recognise all regular languages (slide 16). Tracking whose turn it is in a game or which variable
+              holds which value in code needs the same ability.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>This is the loss slide 7 warned about. Dropping <em>h<sub>t−1</sub></em> from the gates removed the
+                classic RNN's way of doing state tracking. Richer transitions are how linear RNNs get some of it
+                back while staying parallel.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="ttt">
+        <h2><span class="num">§8</span>Test-time training: the state as a model</h2>
+        <p class="section-intro">
+          The delta rule is one gradient step on a linear memory. Test-time
+          training makes that the definition. The state is the weights of
+          a small model, and each token trains it.
+        </p>
+
+        <div class="slide" id="s28">
+          <div class="slide-frame">
+            <div class="tag">Slide 28 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-28.png"
+              alt="Test-Time Training (TTT) Layers. The hidden state is a model; the update is a learning step. Figure: input tokens x_1..x_t, hidden states s_0..s_t with s_t = update(s_{t-1}, x_t), output tokens z_t = output(s_t, x_t). Table: Naive RNN: initial state s_0 = vector(), update s_t = σ(θ_ss s_{t-1} + θ_sx x_t), output z_t = θ_zs s_t + θ_zx x_t, cost O(1). Self-attention: s_0 = list(), s_t = s_{t-1}.append(k_t, v_t), z_t = V_t softmax(K_t^T q_t), cost O(t). Naive TTT: W_0 = f.params(), W_t = W_{t-1} - η ∇ℓ(W_{t-1}; x_t), z_t = f(x_t; W_t), cost O(1). Bullets: any sequence layer = state + update rule + output rule. Attention's state is a growing list. TTT: state = weights W of a small model f; each token takes a gradient step on a self-supervised reconstruction loss. TTT-Linear (f linear), TTT-MLP (f 2-layer MLP).">
+            <div class="slide-caption">slide 28 · TTT layers</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Any sequence layer can be described by three things, a state, an update rule and an output rule.
+              For a classic RNN the state is a vector. For attention it is the list of all past keys and values. For
+              TTT it is the weights <em>W</em> of a small model <em>f</em>, updated by one gradient step per
+              token.</p>
+            <h4>The three rows side by side</h4>
+            <p>Attention's "update" is to append, which is why its cost per token is O(<em>t</em>). The RNN and TTT
+              rows both cost O(1) because their state has a fixed size. In TTT the loss ℓ is self-supervised. The
+              token is projected to a "key" view and a "value" view, and <em>f</em> is trained to reconstruct the
+              value from the key, much like slide 25's ½‖<em>Sk</em> − <em>v</em>‖<sup>2</sup>.</p>
+            <h4>Connecting to DeltaNet</h4>
+            <p>If <em>f</em> is linear, <em>f</em>(<em>k</em>; <em>W</em>) = <em>Wk</em>, and the loss is
+              ½‖<em>Wk</em> − <em>v</em>‖<sup>2</sup>, one gradient step is <em>W</em> ← <em>W</em> −
+              η(<em>Wk</em> − <em>v</em>)<em>k</em><sup>⊤</sup>, which is the delta rule. TTT-Linear lives very close
+              to DeltaNet. TTT-MLP replaces the matrix with a two-layer MLP, so the memory can store a nonlinear map
+              from keys to values, at the cost of more computation per token.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s29">
+          <div class="slide-frame">
+            <div class="tag">Slide 29 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-29.png"
+              alt="Why Expressive States Matter. Do later tokens actually get easier to predict? Plot: average perplexity per token position (log scale) from 128 to 32k tokens, 32K context, FLOP-matched, for Transformer, Mamba, TTT-Linear, TTT-MLP; all fall from about 11 to about 8.3; Mamba flattens after about 16k while the others keep falling. Bullets: Transformer keeps improving with more context. Mamba plateaus after about 16K tokens; its state can't use more. TTT-Linear / MLP keep improving like the Transformer (TTT-MLP still has memory-I/O cost). Box: An RNN is limited by how much it can store and how well it updates that store.">
+            <div class="slide-caption">slide 29 · perplexity by position</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Perplexity at each position of a 32K-token document, averaged over many documents. A model that
+              uses its context well should keep getting better further into the document.</p>
+            <h4>How to read the plot</h4>
+            <p>Token 20,000 has seen 20,000 tokens of context, so it should be easier to predict than token 200.
+              The Transformer's curve keeps going down because it can look back at everything. Mamba's flattens
+              after about 16K, meaning the extra context no longer helps because its state is full. TTT's curves
+              keep falling like the Transformer's. The box is the summary. A recurrent layer has two limits, how
+              much its state holds and how well its update decides what to keep.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s30">
+          <div class="slide-frame">
+            <div class="tag">Slide 30 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-30.png"
+              alt="Beyond One Gradient Step (2025). Active research directions, briefly. Titans (Behrouz, Zhong and Mirrokni): a neural long-term memory that learns to memorise at test time; attention is short-term memory. Reported beyond 2M-token context. ATLAS (Behrouz et al.): optimises memory with respect to current and past tokens, not only the latest one. DeltaProduct (Siems et al.): n_h delta steps per token: diagonal + rank-n_h transition (Householder products); better state tracking. Log-linear attention (Guo et al.): a logarithmically growing set of states, between linear and softmax attention; applied to Mamba-2 and Gated DeltaNet.">
+            <div class="slide-caption">slide 30 · research directions</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Four 2025 directions, each extending the "update = learning step" idea in a different way.</p>
+            <h4>One line on each</h4>
+            <ul>
+              <li><strong>Titans</strong> uses a neural memory trained at test time for the long term and attention
+                for the short term, like a hybrid where the recurrent part is a TTT-style learner.</li>
+              <li><strong>ATLAS</strong> fits the memory to a window of recent tokens instead of just the newest one,
+                which is like taking a gradient step on a small batch instead of a single example.</li>
+              <li><strong>DeltaProduct</strong> takes <em>n<sub>h</sub></em> delta steps per token, so the
+                transition becomes a product of <em>n<sub>h</sub></em> reflections. Per slide 27, more reflections
+                mean more state-tracking power.</li>
+              <li><strong>Log-linear attention</strong> keeps about log <em>T</em> states covering spans of
+                different sizes, so memory grows slowly with length. It sits between a fixed state (linear) and a
+                state that grows like <em>T</em> (softmax).</li>
+            </ul>
+            <p>The slide is marked "briefly". Know what problem each addresses rather than how it works.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="limits">
+        <h2><span class="num">§9</span>Limits: recall and copying</h2>
+        <p class="section-intro">
+          A fixed-size state has to choose what to keep before it knows
+          what will be asked. That costs recall and copying, and the
+          cost can be measured.
+        </p>
+
+        <div class="slide" id="s31">
+          <div class="slide-frame">
+            <div class="tag">Slide 31 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-31.png"
+              alt="Limit 1: Associative Recall. Zoology (2023): most of the quality gap is about recall. Associative recall (AR) example: Hakuna Matata means no worries Hakuna Matata it means no → worries. Bullets: 17 attention vs gated-convolution LMs on the Pile: 82% of the perplexity gap comes from recalling earlier tokens. A 70M attention model beats a 1.4B gated-convolution model on AR. New probe: Multi-Query AR (MQAR). Box: Attention looks back exactly. A fixed-size state must decide in advance what to keep, before knowing which key will be asked for. Note: Zoology studied gated convolutions (H3, Hyena, RWKV, ...); the same issue applies to every fixed-state model.">
+            <div class="slide-caption">slide 31 · associative recall</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The Zoology study compared 17 models and found that 82% of the perplexity gap between attention
+              and efficient alternatives comes from tokens that need recalling something seen earlier. On a
+              recall task, a 70M attention model beats a 1.4B gated-convolution model.</p>
+            <h4>What associative recall means</h4>
+            <p>In "Hakuna Matata means no worries ... Hakuna Matata it means no", the next word is "worries"
+              because the text already paired "no" with "worries". To predict it, the model has to find the
+              earlier occurrence of "no" and copy what followed. Attention does this directly with a query that
+              matches the earlier key. A recurrent model can only answer if,
+              when it read "no worries" the first time, it happened to store that pair well enough.</p>
+            <p>Multi-query AR (MQAR) makes the test harder. Many key–value pairs appear first, then many queries,
+              so the model has to hold all the pairs at once.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s32">
+          <div class="slide-frame">
+            <div class="tag">Slide 32 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-32.png"
+              alt="The Recall-Memory Trade-off. Based (2024): recall is bounded by recurrent state size. Scatter plot: associative recall accuracy (0 to 1) vs recurrent state size in bytes (2^14 to 2^22) for attention (full, sliding), linear attention (Based), SSMs (Mamba, H3) and convolution (Hyena); accuracy rises with state size, Based along the upper frontier, full attention top right. Diagram of MQAR input G4 C6 F1 B3 D2 A4 C? and what each model stores: attention a KV cache growing with sequence length, linear attention a state of feature dim, SSM a state, convolution a filter. Bullets: each dot is a model on MQAR; x-axis = state size (bytes) during generation. More state means better recall, across all classes; full attention sits top-right (its state is the KV cache). Theory: any recurrent model solving MQAR needs state growing with the number of pairs to recall. Based = linear attention + tiny sliding window: dial the state size along the Pareto frontier.">
+            <div class="slide-caption">slide 32 · recall vs state size</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Plotting recall accuracy against state size puts every architecture on one trend. More state gives
+              better recall. Based mixes linear attention with a small sliding window to sit on the best part of
+              that curve.</p>
+            <h4>Why state size bounds recall, with slide 10's example</h4>
+            <p>The 2 × 2 memory from slide 10 stored two pairs perfectly because the keys (1, 0) and (0, 1) were
+              orthogonal. Two-dimensional keys allow at most two orthogonal directions. Add a third pair with key
+              (1, 1)/√2 and value (4, 4), and querying (1, 0) now returns (3, 5) + (4, 4) × (1/√2) ≈ (5.83, 7.83)
+              instead of (3, 5). The new pair has leaked into the old one. In general a
+              <em>d<sub>v</sub></em> × <em>d<sub>k</sub></em> memory holds about <em>d<sub>k</sub></em> pairs
+              cleanly, and past that, reads get noisier. That is the theorem on the slide in miniature. To recall
+              <em>N</em> pairs, the state has to grow with <em>N</em>.</p>
+            <p>Full attention escapes this only because its "state", the KV cache, grows with the sequence. That
+              is why it sits in the top-right corner of the plot.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s33">
+          <div class="slide-frame">
+            <div class="tag">Slide 33 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-33.png"
+              alt="Limit 2: Copying. Repeat After Me (2024): Transformers copy better. Three plots: (a) accuracy vs number of training examples, Transformers (RoPE, NoPE, Alibi, HAlibi) reach 100% far sooner than GSSMs (LSTM, Mamba). (b) accuracy vs number of characters in string, Transformers stay near 100% up to 1000 characters while Mamba and LSTM drop after about 50-100. (c) phone-book lookup accuracy vs number of entries: Pythia 410M, 1.4B, 2.8B stay high while Mamba 360M, 1.4B, 2.8B fall toward 0 by 200 entries. Bullets: Theory: a 2-layer Transformer can copy strings exponentially long in its size; a fixed-state model is limited by its state. (a, b) Synthetic copying: Transformers learn faster, generalise longer. (c) Phone-book lookup: Pythia stays accurate, Mamba degrades. (Griffin's authors report a similar gap.)">
+            <div class="slide-caption">slide 33 · copying</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Copying a long string, or looking up a number in a long phone book given in context, is easy for
+              Transformers and hard for fixed-state models. The gap grows with the length of what has to be
+              copied.</p>
+            <h4>Why copying is the extreme case</h4>
+            <p>To copy a string of <em>L</em> random characters, the model has to hold all <em>L</em> of them,
+              because nothing about the string can be compressed. Once <em>L</em> exceeds what the state can hold,
+              accuracy has to drop. That is what plot (b) shows for Mamba and the LSTM. A Transformer keeps every
+              character in its KV cache and, with a position-matching attention pattern, can read them back in order
+              however long the string is.</p>
+            <p>The phone-book task in plot (c) is a realistic version of MQAR. Pythia stays accurate as the book
+              grows, while Mamba of every size falls toward zero by 200 entries. Making Mamba bigger doesn't help,
+              because the problem is the state size per layer, not the parameter count.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="production">
+        <h2><span class="num">§10</span>Hybrids in production</h2>
+        <p class="section-intro">
+          The practical answer to slides 31–33 is to keep a few attention
+          layers for exact recall and make the rest recurrent. The
+          question becomes how few attention layers you can get away with.
+        </p>
+
+        <div class="slide" id="s34">
+          <div class="slide-frame">
+            <div class="tag">Slide 34 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-34.png"
+              alt="The Practical Answer: Hybrids. A few attention layers for recall, RNN layers for the rest. Schematic stacks: Griffin 2:1 (RG-LRU, RG-LRU, local attn, repeating); Qwen3-Next 3:1 (gated attn then three Gated DeltaNet, repeating); MiniMax-01 7:1 (softmax then seven lightning). Blue: recurrent; orange: attention. Bullets: attention layers give exact retrieval; recurrent layers give cheap long-range mixing. KV cache shrinks with the fraction of attention layers (3:1 means 1 in 4 layers cached). Also common: sliding-window attention + recurrence (Griffin, Based). Design knobs: ratio, placement, RNN type, global vs local attention. Box: The question is no longer RNN or Transformer but how much attention you need.">
+            <div class="slide-caption">slide 34 · hybrid stacks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Three hybrid layouts. Griffin uses 2 recurrent layers per local-attention layer, Qwen3-Next 3 Gated
+              DeltaNet layers per attention layer and MiniMax-01 7 lightning-attention layers per softmax layer.</p>
+            <h4>What the ratio buys</h4>
+            <p>Only attention layers keep a KV cache. Using slide 3's numbers, a 32-layer model with full attention
+              everywhere needs 16 GiB of cache at 32K tokens. At 3:1, only 8 of the 32 layers are attention, so the
+              cache is 4 GiB, plus a small fixed recurrent state. At 7:1 it would be 2 GiB. Each attention layer
+              that remains can still look back exactly, so a recall question like slide 31's can be answered by
+              those layers while the recurrent layers handle everything else cheaply.</p>
+            <p>The design knobs listed on the slide are the open questions. They are the ratio, where the attention
+              layers sit in the stack, which recurrent layer to use, and whether attention is global or a sliding
+              window.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s35">
+          <div class="slide-frame">
+            <div class="tag">Slide 35 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-35.png"
+              alt="MiniMax-01 (Jan 2025). 7 lightning-attention blocks per softmax block. Figure: M x [Lightning Attention, RMSNorm, MoE] blocks and 1 x [Softmax Attention, RMSNorm, MoE] block, MoE with router choosing top-2 of N FFNs, and the lightning attention detail with Q, K, V through SiLU and a sigmoid gate G. Bullets: Lightning attention: an I/O-aware tiled linear attention (intra-block parallel, inter-block recurrent). 80 layers, softmax attention every 8th; MoE with 32 experts. 456B total, 45.9B active parameters. Context: 1M tokens in training, extrapolates to 4M at inference. First large-scale commercial linear-attention hybrid.">
+            <div class="slide-caption">slide 35 · MiniMax-01</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>MiniMax-01 has 80 layers, with softmax attention in every 8th and lightning attention in the rest,
+              and an MoE feed-forward with 32 experts. It has 456B parameters in total, 45.9B active per token, and
+              was trained with 1M-token contexts.</p>
+            <h4>Putting it together</h4>
+            <p>Lightning attention is linear attention computed in the chunkwise way of slide 9 (parallel inside a
+              block, recurrent between blocks). With one softmax layer in 8, only 10 of the 80 layers keep a KV
+              cache, which is what makes 1M-token training contexts affordable. The MoE part is the same idea from
+              Assignment 2, where only a few experts run for each token, which is why "active" parameters are a
+              tenth of the total.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s36">
+          <div class="slide-frame">
+            <div class="tag">Slide 36 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-36.png"
+              alt="Qwen3-Next and Qwen3.5. Gated DeltaNet in production: 3 GDN : 1 attention. Figure: 3 x [Gated DeltaNet, Mixture of Experts] then 1 x [Gated Softmax Attention, Mixture of Experts], with zero-centred RMSNorm; the Gated DeltaNet detail has conv, L2 norm on q and k, the gated delta rule and an output gate; the attention detail has partial RoPE and an output gate. Qwen3-Next-80B-A3B (Sep 2025): 48 layers = 12 x [3 x (GDN to MoE), 1 x (Gated Attn to MoE)]; 80B total / 3B active; native 262K context; base model over 10x throughput vs Qwen3-32B-Base beyond 32K context, and better downstream scores. Qwen3.5-397B-A17B (Feb 2026): 60 layers = 15 x [3 GDN + 1 Gated Attn]; only 1 in 4 layers keeps a KV cache.">
+            <div class="slide-caption">slide 36 · Qwen3-Next and Qwen3.5</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Qwen3-Next and Qwen3.5 both repeat a unit of three Gated DeltaNet layers and one gated attention
+              layer, with MoE feed-forwards. Qwen3-Next reports over 10× the throughput of the dense Qwen3-32B beyond
+              32K context.</p>
+            <h4>Details worth noticing in the figure</h4>
+            <p>The Gated DeltaNet block normalises <em>q</em> and <em>k</em> with an L2 norm. That keeps
+              ‖<em>k</em>‖ = 1, which slide 27's eigenvalue argument assumes and which stops the
+              <em>I</em> − β<em>kk</em><sup>⊤</sup> factor from blowing up. It also has a short convolution before
+              the recurrence, playing the same role as RWKV's token shift and Griffin's Conv1D. The attention layer
+              applies RoPE (Lecture 4) to only part of each head, and only these attention layers keep a
+              KV cache. In Qwen3.5 that is 15 of 60 layers.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s37">
+          <div class="slide-frame">
+            <div class="tag">Slide 37 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-37.png"
+              alt="Not Everyone Agrees. Kimi Linear (pro) vs MiniMax-M2 (back to full attention). Kimi Linear (Oct 2025; recall L6): KDA : MLA = 3:1, 48B total / 3B active. With a matched training recipe it outperforms full MLA, with up to 75% less KV cache and up to 6x decoding throughput at 1M context. Efficiency claims need hard, long-horizon evaluations, not just perplexity. MiniMax-M2 (Oct 2025): why full attention? Hybrids matched full attention on standard benchmarks but showed multi-hop reasoning deficits at scale. Such weaknesses only show up on expensive, hard evals. Infra is immature: memory-bound kernels, precision sensitivity, prefix caching and speculative decoding.">
+            <div class="slide-caption">slide 37 · Kimi Linear vs MiniMax-M2</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Two labs reached opposite conclusions in the same month. Kimi Linear (3 KDA layers per MLA layer)
+              reports beating full attention with 75% less KV cache. MiniMax, which shipped the hybrid MiniMax-01,
+              went back to full attention for M2.</p>
+            <h4>Why they can both be right</h4>
+            <p>The 75% saving is just the ratio again, since only 1 layer in 4 keeps a cache. MiniMax's reasons
+              are about what is hard to see. Multi-hop reasoning failures only appeared on expensive evaluations, not
+              on standard benchmarks or perplexity, which matches the recall limit of slides 31–33. The rest are
+              engineering issues. Serving systems have years of optimisation for attention, such as prefix
+              caching and speculative decoding (Lecture 11), and these are harder to apply when part of the
+              model's memory is a recurrent state that can't be cut and reused at an arbitrary token. Lecture 12's
+              point applies here. A claim that one model is "as good" depends on which evaluation you trust.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s38">
+          <div class="slide-frame">
+            <div class="tag">Slide 38 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-38.png"
+              alt="The Landscape in 2026. Open-weight releases are split. Linear-RNN hybrids: Qwen3.5, Qwen3-Coder-Next (Gated DeltaNet + gated attn, 3:1); Ling 2.5 1T (Lightning linear attn + MLA, 1:7 per model card); Kimi Linear. Pure recurrent: RWKV-7 (G1 checkpoints up to 13.3B); xLSTM 7B; RecurrentGemma (2B/9B). Sliding-window hybrids: e.g. Arcee Trinity Large (3:1 SWA:global), Step 3.5 Flash. Full / sparse attention: MiniMax M2.5 (plain GQA); GLM-5 (MLA + DeepSeek Sparse Attention); Kimi K2.5 (MLA). SSM hybrids: Jamba, Nemotron-H, Granite 4, ... next lecture. No consensus yet. Deciding factors: long-context quality, serving infrastructure, cost of long generations.">
+            <div class="slide-caption">slide 38 · the 2026 landscape</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Open-weight models released in early 2026 fall into five groups. Linear-RNN hybrids, purely recurrent
+              models, sliding-window hybrids, full or sparse attention, and SSM hybrids. There is no consensus.</p>
+            <h4>The common thread</h4>
+            <p>Every group is answering slide 3's problem in some way. Even the "full attention" group shrinks the
+              KV cache by other means, with GQA and MLA (Lecture 5) or sparse attention. Sliding-window hybrids cap
+              the cache of most layers at the window size. The groups differ in how much exact look-back they are
+              willing to give up. The slide's three deciding factors are long-context quality, how well serving
+              software supports the design, and how expensive long generations are.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="wrap">
+        <h2><span class="num">§11</span>Summary and what's next</h2>
+        <p class="section-intro">
+          The deck closes with a five-point summary, a preview of state
+          space models, and reading.
+        </p>
+
+        <div class="slide" id="s39">
+          <div class="slide-frame">
+            <div class="tag">Slide 39 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-39.png"
+              alt="Summary. What to remember. 1. RNNs are back because decode cost (KV cache, O(T) per token) dominates long-context and reasoning workloads. 2. The enabling trick: recurrence linear in the state gives parallel scan / chunkwise training and O(1) decoding. 3. Modern RNN = matrix-valued associative memory + update rule: additive, fixed decay, data-dependent decay, delta rule, learned optimiser (TTT). 4. Fixed-size state means limits on recall and copying. 5. Hence hybrids in production, but the debate is open (Qwen3.5 vs MiniMax-M2).">
+            <div class="slide-caption">slide 39 · summary</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Five points. Decode cost brought RNNs back, linearity in the state makes them trainable in
+              parallel, the models differ in their update rule, a fixed state limits recall, and so production
+              models are hybrids, though not everyone agrees.</p>
+            <h4>Point 3 as one line per model</h4>
+            <ul>
+              <li><strong>Additive.</strong> <em>S</em> += <em>vk</em><sup>⊤</sup> (linear attention).</li>
+              <li><strong>Fixed decay.</strong> <em>S</em> ← γ<em>S</em> + <em>vk</em><sup>⊤</sup> (RetNet).</li>
+              <li><strong>Data-dependent decay.</strong> <em>S</em> ← <em>S</em> diag(α<sub><em>t</em></sub>) +
+                <em>vk</em><sup>⊤</sup> (GLA, RWKV-6, Mamba-2, mLSTM, RG-LRU).</li>
+              <li><strong>Delta rule.</strong> <em>S</em> ← <em>S</em> + β(<em>v</em> − <em>Sk</em>)<em>k</em><sup>⊤</sup>
+                (DeltaNet, Gated DeltaNet, RWKV-7).</li>
+              <li><strong>Learned optimiser.</strong> <em>W</em> ← <em>W</em> − η∇ℓ (TTT).</li>
+            </ul>
+            <p>If you can place a new model on this ladder and say what it gains over the step below, you have the
+              main idea of the lecture.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s40">
+          <div class="slide-frame">
+            <div class="tag">Slide 40 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-40.png"
+              alt="Next Time: State Space Models. Where Mamba's row in our table comes from. Bullets: continuous-time systems x'(t) = A x(t) + B u(t) and discretisation; HiPPO and S4: principled long memory; Mamba: selective (input-dependent) SSMs; Mamba-2 / SSD: the duality with linear attention; SSM hybrids and state-tracking limits. Bridge: LRU showed a carefully parameterised linear, diagonal RNN matches S4. Next lecture tells the same story from the SSM side.">
+            <div class="slide-caption">slide 40 · next: state space models</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Lecture 15 starts from continuous-time linear systems and builds up to S4, Mamba and Mamba-2.</p>
+            <h4>What to carry over</h4>
+            <p>You have already met the result twice. LRU (slide 18) is a diagonal linear recurrence that matches S4,
+              and Mamba-2 appears in slide 26's table as linear attention with a data-dependent scalar decay. The
+              next lecture explains where those come from when you start from differential equations instead of
+              from attention.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s41">
+          <div class="slide-frame">
+            <div class="tag">Slide 41 / 41</div>
+            <img src="../assets/slides/L14-rnn-advances/slide-41.png"
+              alt="Resources. To go deeper. Blogs and code: Songlin Yang, DeltaNet Explained (Parts I-III): sustcsonglin.github.io/blog/2024/deltanet-1/; flash-linear-attention (GLA, DeltaNet, RWKV, HGRN, ...): github.com/fla-org/flash-linear-attention; RWKV: github.com/RWKV/RWKV-LM; xLSTM: github.com/NX-AI/xlstm; RecurrentGemma: github.com/google-deepmind/recurrentgemma; MiniMax, Why did M2 end up as a full attention model? (minimax.io/news). Core papers (lecture order): Katharopoulos et al. 2020, Transformers are RNNs; Sun et al. 2023, RetNet; Peng et al., RWKV-4/5/6/7; Orvieto et al. 2023, LRU; De et al. 2024, Griffin; Beck et al. 2024, xLSTM; Feng et al. 2024, minGRU; Yang et al., GLA, DeltaNet, Gated DeltaNet; Sun et al. 2024, TTT; Arora et al., Zoology, Based; Jelassi et al. 2024, Repeat After Me.">
+            <div class="slide-caption">slide 41 · resources</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Blogs, code repositories and the core papers in lecture order.</p>
+            <h4>Where to start</h4>
+            <p>Songlin Yang's three-part DeltaNet blog covers slides 7–10 and 24–27 in more depth, including the
+              chunkwise algorithm and the WY representation. The flash-linear-attention repository has working
+              implementations of most models in slide 26's table, which helps for Assignment 3.</p>
+          </div>
+        </div>
+
+        <p class="section-intro" style="margin-top:1.5rem">
+          Zoom out. A Transformer's cost per generated token grows with
+          the context because it keeps every key and value. A recurrent
+          layer keeps a fixed-size state instead, and the modern versions
+          make that state a <em>d<sub>v</sub></em> × <em>d<sub>k</sub></em>
+          matrix that stores key → value pairs. Two ideas make them
+          practical. Gates that depend only on the current input make the
+          recurrence linear in the state, so it can be trained with a
+          parallel scan or chunk by chunk, and decoded in O(1) per token.
+          The update rule then decides quality. Linear attention only
+          adds, RetNet adds a fixed decay, GLA, Mamba-2 and RWKV-6 let each
+          token choose the decay, and DeltaNet and RWKV-7 overwrite the
+          value for one key, which is a gradient step and leads to TTT. A
+          fixed state still can't recall or copy as much as a growing KV
+          cache, so the models in production keep one attention layer in
+          every four to eight. For an exam, be able to compute a small
+          linear recurrence by hand and with the scan operator, explain
+          the KV-cache arithmetic, write <em>M<sub>t</sub></em> for each
+          model in slide 26's table, and run one delta-rule update on a
+          2 × 2 memory.
+        </p>
+      </section>
+
+      <div class="pager">
+        <a class="prev" href="13-quantization.html">
+          <span class="dir">← back</span>
+          <span class="lbl">13 · Quantization</span>
+        </a>
+        <a class="next" href="15-state-space-models.html">
+          <span class="dir">next →</span>
+          <span class="lbl">15 · State Space Models</span>
+        </a>
+      </div>
+
+      <footer class="foot">
+        <div>Lecture 14 · RNN Advances · ANLP Monsoon '26</div>
+        <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/anlp-study-guide" target="_blank"
+            rel="noopener">github ↗</a></div>
+      </footer>
+    </main>
+
+    <aside class="rail-right">
+      <div class="kicker">progress</div>
+      <div class="heatmap-rail" aria-hidden="true"></div>
+      <div class="kicker">sections</div>
+      <div class="rail-toc">
+        <a href="#deck">at a glance</a>
+        <a href="#why">§1 why RNNs again</a>
+        <a href="#classic">§2 classic RNNs</a>
+        <a href="#linear">§3 linear recurrence</a>
+        <a href="#early">§4 QRNN, RetNet, RWKV</a>
+        <a href="#lru">§5 LRU to minGRU</a>
+        <a href="#gating">§6 gating &amp; delta</a>
+        <a href="#unify">§7 unifying table</a>
+        <a href="#ttt">§8 TTT</a>
+        <a href="#limits">§9 recall &amp; copying</a>
+        <a href="#production">§10 hybrids</a>
+        <a href="#wrap">§11 summary</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

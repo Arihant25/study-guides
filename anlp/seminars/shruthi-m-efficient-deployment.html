@@ -1,0 +1,1600 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Seminar · Efficient Language Models — ANLP Study Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Student seminar by Shruthi Muthukumar for Advanced NLP Monsoon 2026 IIIT-H: efficient language models through pruning (Lottery Ticket, OBD, OBS, Wanda, SparseGPT, PruneNet, MoNE), quantization (DFloat11, QServe) and multiply-add-free attention on CPUs (NoMAD).">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical"
+    href="https://arihant25.github.io/anlp-study-guide/seminars/shruthi-m-efficient-deployment.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="Efficient Language Models: train big, deploy small | ANLP Seminar">
+  <meta property="og:description"
+    content="Pruning from the Lottery Ticket Hypothesis to Wanda, SparseGPT, PruneNet and MoNE, lossless DFloat11, W4A8KV4 QServe, and NoMAD attention on CPUs, with worked numbers for each.">
+  <meta property="og:url"
+    content="https://arihant25.github.io/anlp-study-guide/seminars/shruthi-m-efficient-deployment.html">
+  <meta property="og:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/seminars/S-efficient-lms/slide-01.png">
+  <meta property="og:image:alt" content="Efficient Language Models seminar title slide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Efficient Language Models: train big, deploy small | ANLP Seminar">
+  <meta name="twitter:description"
+    content="How to remove weights, store them in fewer bits, and compute attention without multiplies, worked through slide by slide.">
+  <meta name="twitter:image"
+    content="https://arihant25.github.io/anlp-study-guide/assets/seminars/S-efficient-lms/slide-01.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP Seminar: Efficient Language Models","url":"https://arihant25.github.io/anlp-study-guide/seminars/shruthi-m-efficient-deployment.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"seminar notes","educationalLevel":"graduate"}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="rail-left">
+      <div class="brand">
+        <a href="../index.html" style="text-decoration:none;color:inherit">an attention<br><em>lab notebook</em></a>
+        <small>ANLP · Monsoon '26</small>
+      </div>
+      <nav>
+        <div class="grp">On this page</div>
+        <a href="#deck">The deck at a glance</a>
+        <a href="#why">§1 · Do we need the whole model?</a>
+        <a href="#sparsity">§2 · What sparsity buys on hardware</a>
+        <a href="#obd">§3 · OBD, OBS and the pipeline</a>
+        <a href="#llm-pruning">§4 · Wanda &amp; SparseGPT</a>
+        <a href="#prunenet">§5 · PruneNet</a>
+        <a href="#mone">§6 · Pruning experts: MoNE</a>
+        <a href="#quant">§7 · Quantization basics</a>
+        <a href="#dfloat11">§8 · DFloat11</a>
+        <a href="#qserve">§9 · QServe: W4A8KV4</a>
+        <a href="#nomad">§10 · NoMAD attention on CPUs</a>
+        <a href="#wrap">§11 · Wrap-up</a>
+
+        <div class="grp">Elsewhere</div>
+        <a href="vishal-rao-data-creation.html">← Seminar: Data Creation</a>
+        <a href="trisanu-bhar-ttt-learning.html">Next Seminar: Test-Time Training →</a>
+        <a href="../lectures/13-quantization.html">Lecture 13 · Quantization</a>
+        <a href="../lectures/5-attention.html#kvcache">Lecture 5 · The KV cache</a>
+        <a href="../lectures/8-feed-forward.html#why-moe">Lecture 8 · Mixture of experts</a>
+        <a href="../index.html">Home</a>
+      </nav>
+    </aside>
+
+    <div class="topbar">
+      <div class="brand"><a href="../index.html" style="color:inherit;text-decoration:none">an attention <em>lab
+            notebook</em></a></div>
+      <button class="theme-toggle" onclick="__toggleTheme()">◑ dark</button>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="kicker">Seminar · Shruthi Muthukumar · 49 slides</div>
+        <h1>Efficient language models: <em>train big, prune and quantize smart, deploy small.</em></h1>
+        <p class="lead">
+          A trained LLM has far more weights, and far more bits per weight,
+          than it needs to keep working. This seminar covers three ways to
+          cut that cost. Pruning removes weights, and the talk follows it
+          from the Lottery Ticket Hypothesis and the second-order methods of
+          the early 1990s to Wanda, SparseGPT, PruneNet and expert pruning
+          in MoE models. Quantization stores weights in fewer bits, here
+          through DFloat11 (lossless) and QServe (4-bit weights, 8-bit
+          activations, 4-bit KV cache). The last part changes the
+          computation itself. NoMAD replaces the multiply-adds in attention
+          with table lookups so that LLMs decode quickly on CPUs.
+        </p>
+        <div class="meta">
+          <span class="pill heat">Seminar</span>
+          <span class="pill">49 slides</span>
+          <span class="pill">Shruthi Muthukumar</span>
+        </div>
+      </section>
+
+      <section id="deck">
+        <h2><span class="num">§0</span>The deck at a glance</h2>
+        <p class="section-intro">
+          Slides 1–5 ask whether a model needs its full cost to keep its
+          abilities, and use the Lottery Ticket Hypothesis to argue that you
+          should train a big model and shrink it afterwards. Slides 6–21 are
+          about pruning. They start with what kinds of sparsity hardware can
+          actually use, then cover how to choose which weights to remove
+          (OBD, OBS, Wanda, SparseGPT), how to prune without calibration data
+          (PruneNet), and how to prune whole experts in an MoE model (MoNE).
+          Slides 22–37 are about quantization. After a recap of number formats
+          and the scale-and-zero-point recipe, they cover DFloat11, which
+          compresses BF16 weights to about 11 bits with no loss at all, and
+          QServe, which runs 4-bit weights on 8-bit hardware. Slides 38–48
+          cover NoMAD-Attention, which computes attention scores on a CPU
+          with table lookups in SIMD registers instead of multiply-adds.
+        </p>
+        <p>
+          Lecture 13 already covered the core of quantization (number formats,
+          absmax scaling, outliers, SmoothQuant and GPTQ). This page explains
+          those parts briefly and links back to the lecture, and it spends
+          more time on what the seminar adds.
+        </p>
+      </section>
+
+      <hr class="soft">
+
+      <section id="why">
+        <h2><span class="num">§1</span>Do we need the whole model?</h2>
+        <p class="section-intro">
+          The opening slides pose the question for the whole talk, then use
+          the Lottery Ticket Hypothesis to explain why the answer is
+          "train big, then shrink" rather than "train small".
+        </p>
+
+        <div class="slide" id="s1">
+          <div class="slide-frame">
+            <div class="tag">Slide 01 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-01.png"
+              alt="Title slide: Efficient Language Models, Shruthi Muthukumar, ANLP Seminar.">
+            <div class="slide-caption">slide 01 · title</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Title card for Shruthi Muthukumar's seminar on efficient language models.</p>
+            <h4>Where this fits</h4>
+            <p>"Efficient" here means cheaper to store and run once training is done. The talk has three parts.
+              Pruning removes weights, quantization stores the remaining weights in fewer bits, and NoMAD changes
+              how attention is computed. Lecture 13 covered quantization in depth, so expect some overlap there.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s2">
+          <div class="slide-frame">
+            <div class="tag">Slide 02 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-02.png"
+              alt="Large Model demands: substantial memory, computational resources, high energy. Do we need full computational costs of a large model to retain its capabilities?">
+            <div class="slide-caption">slide 02 · the question</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Large models need a lot of memory, compute and energy. Do we have to pay all of that to keep what the
+              model can do?</p>
+            <h4>Putting a number on it</h4>
+            <p>A 7B-parameter model in FP16 needs 7 × 10<sup>9</sup> × 2 bytes = 14 GB just for its weights, before
+              any KV cache. That already rules out most consumer GPUs. <a class="xref"
+                href="../lectures/13-quantization.html#s2">Lecture 13, slide 2</a> works through why memory size
+              also limits decoding speed.</p>
+            <p>The talk's answer is no. A trained model has a lot of redundancy, both in how many weights it has and
+              in how precisely each one is stored. The hard part is finding the redundancy without damaging the
+              model.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s3">
+          <div class="slide-frame">
+            <div class="tag">Slide 03 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-03.png"
+              alt="Question: If a network can be reduced in size and efficiently deployed, why do we not train this smaller architecture instead in the interest of making training more efficient as well? Answer: The architectures uncovered by pruning are harder to train from the start.">
+            <div class="slide-caption">slide 03 · why not train the small model directly?</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>If a pruned network works just as well, why not train that small network from the start and save the
+              training cost too? The answer given is that the networks found by pruning are harder to train from
+              scratch.</p>
+            <h4>What this means</h4>
+            <p>Pruning gives you a sparse pattern, a mask saying which weights survive. If you take that mask, fill
+              it with fresh random weights and train, you usually get a worse model than the one pruning produced.
+              The sparse shape alone is not enough. How it was found also counts, and the next slide
+              says what.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s4">
+          <div class="slide-frame">
+            <div class="tag">Slide 04 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-04.png"
+              alt="Lottery Ticket Hypothesis. Initialise the model with random weights. Train until convergence. Use magnitude of weights as measure to remove lower weights. 2 kinds of retraining: initialise the weights to the dense model's initial weights, and initialise to random values. Which converges faster? Random initialisation: slower learning and lower test accuracy. Winning tickets uncovered through heavy use of training data: hypothesize that the structure of winning tickets encodes an inductive bias customized to the learning task at hand.">
+            <div class="slide-caption">slide 04 · the Lottery Ticket Hypothesis</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The Lottery Ticket experiment (Frankle and Carbin, 2018). Train a dense network, prune its
+              smallest-magnitude weights, then retrain the survivors in two ways. One resets them to the values they
+              had at initialisation, and the other gives them new random values. The reset version learns faster and
+              reaches higher test accuracy.</p>
+            <h4>The procedure, step by step</h4>
+            <ol>
+              <li>Initialise the dense network with random weights θ<sub>0</sub> and save a copy.</li>
+              <li>Train to convergence, giving θ<sub>T</sub>.</li>
+              <li>Remove, say, the 20% of weights with the smallest |θ<sub>T</sub>|. This gives a mask <em>m</em>.</li>
+              <li>Reset every surviving weight to its value in θ<sub>0</sub>, not θ<sub>T</sub>, and train
+                <em>m</em> ⊙ θ<sub>0</sub> again.</li>
+              <li>Repeat. After <em>n</em> rounds of removing 20%, a fraction 0.8<sup><em>n</em></sup> survives,
+                which is 33% after 5 rounds and 10.7% after 10.</li>
+            </ol>
+            <p>The control experiment uses the same mask but new random starting values. It does worse. So a
+              "winning ticket" is the mask together with the starting values that happened to land in it. The slide's
+              phrase about inductive bias means that the mask, found using the training data, encodes a structure
+              that suits the task.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>This answers slide 3. You can't know the winning ticket before training the big network, because the
+                big network is how you find it. So the practical recipe is to train big and shrink afterwards.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s5">
+          <div class="slide-frame">
+            <div class="tag">Slide 05 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-05.png"
+              alt="The Recipe for a Good Model: Model Architecture × Model Scale × Data Quality × Inductive Bias. Train big. Prune/Quantize smart. Deploy small. Meme of two astronauts: All of machine learning is just inductive biases? Always has been.">
+            <div class="slide-caption">slide 05 · train big, prune/quantize smart, deploy small</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A good model comes from architecture, scale, data quality and inductive bias together. The motto for
+              the rest of the talk is "train big, prune or quantize smart, deploy small".</p>
+            <h4>What to take from it</h4>
+            <p>Scale is what lets training find good structure, as the lottery ticket result showed. Compression
+              then keeps that structure and throws away the rest. Every method that follows is a way of doing the
+              "smart" step, which means deciding what is safe to remove or round.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="sparsity">
+        <h2><span class="num">§2</span>What sparsity buys on real hardware</h2>
+        <p class="section-intro">
+          Setting weights to zero only helps if the zeros can be stored and
+          skipped cheaply. These two slides compare three patterns of
+          sparsity by that test.
+        </p>
+
+        <div class="slide" id="s6">
+          <div class="slide-frame">
+            <div class="tag">Slide 06 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-06.png"
+              alt="Sparsity and Storage. Unstructured: equivalent to having dense model, need exclusive hardware-aware algorithms and kernels designed, CSR storage format; figure of a fine-grained unstructured pattern. Semi-structured: 2:4 sparse matrix figure; NVIDIA's Ampere and later architecture supports semi-structured. Structured: easy, physically slice MLP channels or attention heads; figure of whole rows pruned, leaving a smaller dense matrix.">
+            <div class="slide-caption">slide 06 · unstructured, 2:4 and structured sparsity</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Three kinds of sparsity. Unstructured sparsity lets any weight be zero and needs a sparse format such
+              as CSR plus special kernels. Semi-structured 2:4 sparsity keeps exactly 2 of every 4 consecutive
+              weights, and NVIDIA GPUs from Ampere onwards support it in hardware. Structured sparsity removes whole
+              rows, channels or heads, leaving a smaller dense matrix.</p>
+            <h4>Why unstructured sparsity is "equivalent to dense"</h4>
+            <p>CSR (compressed sparse row) stores each nonzero value together with its column index. Take a matrix
+              at 50% sparsity with FP16 values and 32-bit column indices. Each kept weight costs 2 + 4 = 6 bytes, and
+              half the weights are kept, so the cost is 3 bytes per original weight. The dense matrix costs 2. The
+              sparse version is <em>bigger</em>. With 16-bit indices it costs exactly 2 bytes, so you break even.
+              On top of that, GPUs are bad at skipping zeros scattered at random, so unstructured sparsity rarely
+              makes inference faster unless it is extreme.</p>
+            <h4>Why 2:4 works</h4>
+            <p>Take 8 FP16 weights. Dense storage is 16 bytes. Under 2:4, you keep 4 values (8 bytes) and a 2-bit
+              position for each of them (4 × 2 bits = 1 byte), so 9 bytes in total. Because every group of 4 has the
+              same shape, the hardware knows exactly where to look, which is what slide 7 shows.</p>
+            <h4>Structured</h4>
+            <p>Removing a whole neuron from an MLP deletes a row of the up-projection and the matching column of the
+              down-projection. What is left is an ordinary smaller dense matrix, so any hardware runs it faster. The
+              cost is that you remove large blocks at once, which hurts accuracy more than removing scattered single
+              weights.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s7">
+          <div class="slide-frame">
+            <div class="tag">Slide 07 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-07.png"
+              alt="Dense M×N×K GEMM on a Tensor Core: dense A matrix M×K times dense B matrix K×N into C. Sparse M×N×K GEMM: A is stored as M×K/2 non-zero values plus 2-bit indices; the tensor core selects the matching K/2 elements of B out of K. Caption: Reduce FLOPS from 2MNK to MNK.">
+            <div class="slide-caption">slide 07 · 2:4 sparse GEMM on tensor cores</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>On the left is a normal matrix multiply, <em>A</em> (<em>M</em> × <em>K</em>) times <em>B</em>
+              (<em>K</em> × <em>N</em>). On the right, <em>A</em> is 2:4 sparse and stored as <em>M</em> ×
+              <em>K</em>/2 values plus 2-bit indices. The tensor core uses the indices to pick the matching half of
+              <em>B</em>'s entries and skips the rest.</p>
+            <h4>Counting the work</h4>
+            <p>Each of the <em>M</em> × <em>N</em> outputs is a dot product of length <em>K</em>, which is
+              <em>K</em> multiplies and <em>K</em> adds. That gives 2<em>MNK</em> FLOPs. For <em>M</em> = <em>N</em> =
+              <em>K</em> = 4096 that is about 1.37 × 10<sup>11</sup>. With 2:4 sparsity each dot product only covers
+              the <em>K</em>/2 nonzeros, so the count halves to <em>MNK</em>.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>Halving the FLOPs of the matrix multiply does not halve the model's runtime. Attention, norms and
+                memory traffic are unchanged, so the end-to-end speed-up is smaller than 2×.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="obd">
+        <h2><span class="num">§3</span>Which weight to remove: OBD, OBS and the pipeline</h2>
+        <p class="section-intro">
+          Magnitude is a guess at importance. These slides replace the guess
+          with the actual increase in loss, estimated with second
+          derivatives. The same idea returns in SparseGPT and, in Lecture 13,
+          in GPTQ.
+        </p>
+
+        <div class="slide" id="s8">
+          <div class="slide-frame">
+            <div class="tag">Slide 08 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-08.png"
+              alt="OBD, Optimal Brain Damage. Magnitude as a measure of saliency is not the right measure. What if we consider an objective function? Taylor series expansion: L(w + Δw) ≈ L(w) + ∇L(w)ᵀΔw + ½ΔwᵀHΔw. Change in loss: ΔL ≈ gᵀΔw + ½ΔwᵀHΔw. At local minima, gᵀ is 0.">
+            <div class="slide-caption">slide 08 · OBD estimates the loss increase</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Optimal Brain Damage (LeCun et al., 1989) measures how much the loss would go up if a weight were
+              removed. It uses a second-order Taylor expansion, and at a trained minimum the gradient term drops
+              out.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mi>Δ</mi><mi>L</mi><mo>≈</mo>
+                <mfrac><mn>1</mn><mn>2</mn></mfrac>
+                <mi>Δ</mi><msup><mi mathvariant="bold">w</mi><mi>T</mi></msup>
+                <mi mathvariant="bold">H</mi><mi>Δ</mi><mi mathvariant="bold">w</mi>
+              </math>
+            </div>
+            <h4>Why magnitude is not enough</h4>
+            <p>The Hessian <strong>H</strong> holds the second derivatives of the loss. Its diagonal entry
+              <em>H</em><sub><em>ii</em></sub> says how sharply the loss curves as weight <em>i</em> moves. A small
+              weight in a direction where the loss is very curved can matter more than a large weight in a flat
+              direction. Removing weight <em>i</em> means setting Δ<strong>w</strong> = −<em>w</em><sub><em>i</em></sub>
+              <strong>e</strong><sub><em>i</em></sub>, a move of size <em>w</em><sub><em>i</em></sub> along that one
+              axis, and the formula above says what that costs.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s9">
+          <div class="slide-frame">
+            <div class="tag">Slide 09 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-09.png"
+              alt="OBD, Optimal Brain Damage. Computing Hessian is intractable. Approximate Hessian with its diagonal values; as a result, weights are not correlated. Pruning score of weight i = ½ · w² · H(ii). Remove the bottom weights, reset them to 0.">
+            <div class="slide-caption">slide 09 · OBD's diagonal approximation</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The full Hessian is too large to compute, so OBD keeps only its diagonal. Each weight then gets the
+              score ½ <em>w</em><sub><em>i</em></sub><sup>2</sup> <em>H</em><sub><em>ii</em></sub>, and the
+              lowest-scoring weights are set to zero.</p>
+            <h4>How big is "intractable"?</h4>
+            <p>The Hessian has one entry per pair of weights. A 7B model has 7 × 10<sup>9</sup> weights, so its
+              Hessian has about 4.9 × 10<sup>19</sup> entries. The diagonal has just 7 × 10<sup>9</sup>.</p>
+            <h4>A two-weight example</h4>
+            <p>Let <em>w</em> = (0.1, 2.0) with Hessian diagonal (100, 0.01).</p>
+            <table>
+              <thead>
+                <tr><th>Weight</th><th>|w|</th><th>OBD score ½ w² H<sub>ii</sub></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>w<sub>1</sub></td><td>0.1</td><td>½ × 0.01 × 100 = 0.5</td></tr>
+                <tr><td>w<sub>2</sub></td><td>2.0</td><td>½ × 4 × 0.01 = 0.02</td></tr>
+              </tbody>
+            </table>
+            <p>Magnitude pruning would remove <em>w</em><sub>1</sub>. OBD removes <em>w</em><sub>2</sub>, because
+              the loss hardly changes along that direction.</p>
+            <p>Using only the diagonal means treating weights as independent. Removing one weight then gives no
+              reason to change any other, which is why OBD simply zeroes the losers and leaves the rest alone.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s10">
+          <div class="slide-frame">
+            <div class="tag">Slide 10 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-10.png"
+              alt="OBS, Optimal Brain Surgeon. Same formula but the weights are now correlated. Formulate pruning as a constrained optimisation problem: minimise ½ΔwᵀHΔw subject to e_iᵀΔw = −w_i. How to solve? Lagrangian optimisation. Pruning score S_i = ΔL_i = w_i² / (2[H⁻¹]_ii). Weight updates: Δw = −(w_i / [H⁻¹]_ii) H⁻¹ e_i.">
+            <div class="slide-caption">slide 10 · OBS prunes one weight and fixes the others</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Optimal Brain Surgeon (Hassibi and Stork, 1992) keeps the full Hessian. It asks for the smallest
+              loss increase over all changes Δ<strong>w</strong> that set weight <em>i</em> to zero. Solving with a
+              Lagrange multiplier gives a score for each weight and an update for all the others.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mtable columnalign="left">
+                  <mtr><mtd>
+                    <msub><mi>S</mi><mi>i</mi></msub><mo>=</mo>
+                    <mfrac><msubsup><mi>w</mi><mi>i</mi><mn>2</mn></msubsup>
+                      <mrow><mn>2</mn><msub><mrow><mo>[</mo><msup><mi mathvariant="bold">H</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>]</mo></mrow><mrow><mi>i</mi><mi>i</mi></mrow></msub></mrow></mfrac>
+                  </mtd></mtr>
+                  <mtr><mtd>
+                    <mi>Δ</mi><mi mathvariant="bold">w</mi><mo>=</mo><mo>−</mo>
+                    <mfrac><msub><mi>w</mi><mi>i</mi></msub>
+                      <msub><mrow><mo>[</mo><msup><mi mathvariant="bold">H</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>]</mo></mrow><mrow><mi>i</mi><mi>i</mi></mrow></msub></mfrac>
+                    <msup><mi mathvariant="bold">H</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><msub><mi mathvariant="bold">e</mi><mi>i</mi></msub>
+                  </mtd></mtr>
+                </mtable>
+              </math>
+            </div>
+            <h4>A two-weight example</h4>
+            <p>Let <em>w</em> = (1, 0.5) and <strong>H</strong> = [[2, 1], [1, 2]]. The off-diagonal 1 says the two
+              weights interact. Then <strong>H</strong><sup>−1</sup> = (1/3)[[2, −1], [−1, 2]], so both diagonal
+              entries of <strong>H</strong><sup>−1</sup> are 2/3.</p>
+            <ul>
+              <li>Score for <em>w</em><sub>1</sub> = 1 / (2 × 2/3) = 0.75.</li>
+              <li>Score for <em>w</em><sub>2</sub> = 0.25 / (2 × 2/3) = 0.1875. This is lower, so prune
+                <em>w</em><sub>2</sub>.</li>
+              <li>Update = −(0.5 / (2/3)) × (column 2 of <strong>H</strong><sup>−1</sup>) = −0.75 × (−1/3, 2/3) =
+                (0.25, −0.5).</li>
+              <li>New weights are (1.25, 0). The second weight is gone and the first has grown to make up for it.</li>
+            </ul>
+            <p>The loss increase is ½ Δ<strong>w</strong><sup>T</sup><strong>H</strong>Δ<strong>w</strong> = 0.1875.
+              Had you just zeroed <em>w</em><sub>2</sub> without touching <em>w</em><sub>1</sub>, the increase would
+              be ½ × 0.25 × 2 = 0.25. OBS loses less because the surviving weight takes over part of the removed
+              weight's job.</p>
+            <div class="callout mechanism">
+              <div class="callout-label">Under the hood</div>
+              <p>If <strong>H</strong> is diagonal, [<strong>H</strong><sup>−1</sup>]<sub><em>ii</em></sub> =
+                1/<em>H</em><sub><em>ii</em></sub>, and the OBS score becomes ½ <em>w</em><sub><em>i</em></sub><sup>2</sup>
+                <em>H</em><sub><em>ii</em></sub>, exactly OBD's score. So OBD is the special case of OBS where you
+                pretend the weights don't interact.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s11">
+          <div class="slide-frame">
+            <div class="tag">Slide 11 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-11.png"
+              alt="The pruning pipeline. Phase 01: take calibration dataset (usually WikiText or C4 samples). Phase 02: run it through the model and collect whatever you need (activations, gradients, etc). Phase 03: calculate the score for each weight. Phase 04: remove the low scoring weights. Phase 05: update the unpruned weights (optional). Phase 06: recovery fine tuning (optional).">
+            <div class="slide-caption">slide 11 · the six-phase pruning pipeline</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Most LLM pruning methods follow six steps. Run a small calibration set through the model, collect
+              statistics, score every weight, remove the low scorers, optionally adjust the survivors, and optionally
+              fine-tune to recover accuracy.</p>
+            <h4>Using it as a map</h4>
+            <p>Each method in the next few slides is a choice of which phases to run and how.</p>
+            <table>
+              <thead>
+                <tr><th>Method</th><th>Calibration data</th><th>Score</th><th>Updates survivors</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Magnitude</td><td>no</td><td>|w|</td><td>no</td></tr>
+                <tr><td>Wanda (slide 12)</td><td>yes</td><td>|w| × activation norm</td><td>no</td></tr>
+                <tr><td>SparseGPT (slide 13)</td><td>yes</td><td>OBS score</td><td>yes</td></tr>
+                <tr><td>PruneNet (slide 14)</td><td>no</td><td>learned policy</td><td>no</td></tr>
+              </tbody>
+            </table>
+            <p>Phases 1 and 2 are where calibration data comes in. Methods that look at activations only know about
+              the inputs they saw, so the choice of WikiText or C4 samples affects the result.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="llm-pruning">
+        <h2><span class="num">§4</span>Pruning LLMs in one shot: Wanda and SparseGPT</h2>
+        <p class="section-intro">
+          Retraining a large model after pruning is expensive, so both of
+          these methods prune once, layer by layer, using a few calibration
+          samples. Wanda adds activations to the score. SparseGPT brings OBS to
+          LLM scale.
+        </p>
+
+        <div class="slide" id="s12">
+          <div class="slide-frame">
+            <div class="tag">Slide 12 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-12.png"
+              alt="Wanda. Left: magnitude pruning, S = |W|, weights grouped per layer. Right: Wanda, S = |W| · ||X||₂, with activation norms 1, 2, 8, 3, importance grouped per output row; pruned weights shown for each. Formula S_ij = |W_ij| · ||X_j||₂. Table 1 comparing Magnitude (no weight update, no calibration data, metric |W_ij|, complexity O(1)), SparseGPT (weight update, calibration data, metric |W|²/diag[(XXᵀ+λI)⁻¹], complexity O(d³_hidden)), and Wanda (no weight update, calibration data, |W_ij|·||X_j||₂, O(d²_hidden)).">
+            <div class="slide-caption">slide 12 · Wanda scores weights with activations</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Wanda (Sun et al., 2023) scores each weight by its magnitude times the size of the input feature it
+              multiplies, and compares weights within each output row instead of across the whole layer.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi mathvariant="bold">S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo>
+                <mo>|</mo><msub><mi mathvariant="bold">W</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>|</mo>
+                <mo>·</mo>
+                <msub><mrow><mo>‖</mo><msub><mi mathvariant="bold">X</mi><mi>j</mi></msub><mo>‖</mo></mrow><mn>2</mn></msub>
+              </math>
+            </div>
+            <h4>Why multiply by the activation</h4>
+            <p>Output <em>i</em> of the layer is <em>y</em><sub><em>i</em></sub> = Σ<sub><em>j</em></sub>
+              <em>W</em><sub><em>ij</em></sub><em>x</em><sub><em>j</em></sub>. The contribution of one weight is
+              <em>W</em><sub><em>ij</em></sub><em>x</em><sub><em>j</em></sub>, so its size depends on both factors.
+              ‖<em>X</em><sub><em>j</em></sub>‖<sub>2</sub> is the norm of input feature <em>j</em> over all the
+              calibration tokens. LLMs have a few input channels with very large values (the outliers from <a
+                class="xref" href="../lectures/13-quantization.html#outliers">Lecture 13 §5</a>), and a small weight
+              feeding one of those channels can matter more than a large weight feeding a quiet one.</p>
+            <h4>The figure, row by row</h4>
+            <p>Activation norms are (1, 2, 8, 3), and we keep 2 of 4 weights in each row.</p>
+            <table>
+              <thead>
+                <tr><th>Row of W</th><th>Scores |W|·‖X‖</th><th>Kept</th><th>Pruned row</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>4, 0, 1, −1</td><td>4, 0, 8, 3</td><td>8 and 4</td><td>4, 0, 1, 0</td></tr>
+                <tr><td>3, −2, −1, −3</td><td>3, 4, 8, 9</td><td>9 and 8</td><td>0, 0, −1, −3</td></tr>
+                <tr><td>−3, 1, 0, 2</td><td>3, 2, 0, 6</td><td>6 and 3</td><td>−3, 0, 0, 2</td></tr>
+              </tbody>
+            </table>
+            <p>Look at row 1. The weights 1 and −1 have the same magnitude, but 1 multiplies the channel with norm 8,
+              so it survives, while −1 multiplies a channel with norm 3 and is dropped. In row 2, the 3 is dropped
+              even though it is the joint largest weight, because it sits on the quiet channel with norm 1.</p>
+            <h4>The table</h4>
+            <p>Wanda needs calibration data to compute the norms but never updates the weights that remain. That
+              keeps its cost at about one pass over the weights, O(<em>d</em><sup>2</sup>) per layer. SparseGPT
+              (next slide) inverts a <em>d</em> × <em>d</em> matrix, which costs O(<em>d</em><sup>3</sup>), but it
+              also corrects the survivors.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s13">
+          <div class="slide-frame">
+            <div class="tag">Slide 13 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-13.png"
+              alt="SparseGPT. SparseGPT is entirely local: weight updates designed to preserve the input-output relationship for each layer, without any global gradient information. Objective: argmin over mask M and Ŵ of ||W X − (M ⊙ Ŵ) X||². SparseGPT pruning formula and weight updates are the same as OBS but H = XXᵀ, obtained by taking the second derivative of the objective. δ_m = −(w_m / [H⁻¹]_mm) · H⁻¹_{:,m}, ε_m = w_m² / [H⁻¹]_mm.">
+            <div class="slide-caption">slide 13 · SparseGPT: OBS with H = XXᵀ</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>SparseGPT (Frantar and Alistarh, 2023) prunes one layer at a time. For each layer it looks for a mask
+              and new weights so that the pruned layer gives nearly the same outputs on the calibration inputs as the
+              original. With that objective, the OBS formulas apply directly, with <strong>H</strong> =
+              <strong>XX</strong><sup>T</sup>.</p>
+            <h4>Where H = XX<sup>T</sup> comes from</h4>
+            <p>The layer's loss is ‖<strong>WX</strong> − <strong>ŴX</strong>‖<sup>2</sup>. Take one row of
+              weights. The loss is a quadratic in that row, and the second derivative of a quadratic
+              ‖<strong>w</strong><sup>T</sup><strong>X</strong>‖<sup>2</sup> with respect to <strong>w</strong> is
+              2<strong>XX</strong><sup>T</sup>. The factor 2 cancels in the formulas. So the Hessian only depends on
+              the calibration inputs, and every row of the layer shares it. That is what makes OBS affordable at LLM
+              scale, because one <em>d</em> × <em>d</em> inverse serves the whole layer.</p>
+            <p>Compare with the toy example on slide 10. There, <strong>H</strong> was made up. Here, it is measured
+              from the data the layer actually sees, and the update δ<sub><em>m</em></sub> is the same "let the
+              survivors compensate" step.</p>
+            <div class="callout link">
+              <div class="callout-label">→ Same machinery, different job</div>
+              <p>GPTQ, from the same authors, uses exactly this setup to round weights to 4 bits instead of zeroing
+                them. <a class="xref" href="../lectures/13-quantization.html#gptq">Lecture 13 §8</a> walks through
+                OBQ and GPTQ in detail. The λ<strong>I</strong> in slide 12's table is the same damping term, added
+                so that <strong>XX</strong><sup>T</sup> can always be inverted.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="prunenet">
+        <h2><span class="num">§5</span>Calibration-free pruning: PruneNet</h2>
+        <p class="section-intro">
+          PruneNet removes the calibration data and the recovery fine-tuning
+          from the pipeline. It learns which FFN neurons to slice by looking
+          only at the weights, and judges a slice by whether it keeps the
+          weight matrix's spectrum intact.
+        </p>
+
+        <div class="slide" id="s14">
+          <div class="slide-frame">
+            <div class="tag">Slide 14 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-14.png"
+              alt="PruneNet. Calibration dataset: high quality calibration data is required; repeatedly calibrating models for different compression ratios hinders efficiency and makes it difficult to adapt to varying hardware constraints. Structured vs unstructured: unstructured gives no effective benefits. Recovery finetuning: an additional step of pruning; can we avoid weight updates and finetuning and still get the same results? PruneNet: effective time is 15 minutes. Train a separate policy learner whose parameters produce importance scores and select which FFN dimensions to keep or prune. Paper: You Only Prune Once.">
+            <div class="slide-caption">slide 14 · problems PruneNet tries to remove</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Three complaints about the standard pipeline. Calibration data has to be good, and you must
+              recalibrate for every compression ratio you want. Unstructured pruning gives no real speed-up. Recovery
+              fine-tuning is an extra, costly step. PruneNet answers all three with a small policy network that
+              decides which FFN dimensions to keep, and the whole thing takes about 15 minutes.</p>
+            <h4>What "FFN dimensions" means</h4>
+            <p>An FFN block computes <em>W</em><sub>down</sub> σ(<em>W</em><sub>up</sub><em>x</em>). Each hidden
+              neuron owns one row of <em>W</em><sub>up</sub> and one column of <em>W</em><sub>down</sub>. Removing a
+              neuron removes both, and the matrices stay dense, only smaller. This is structured pruning from slide 6,
+              so the savings show up on any hardware.</p>
+            <p>The paper's title, "You Only Prune Once", refers to the policy. Once trained, it can produce slices
+              for different compression ratios without recalibrating.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s15">
+          <div class="slide-frame">
+            <div class="tag">Slide 15 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-15.png"
+              alt="Primer. W is a rectangular matrix and its Gram matrix W·Wᵀ is symmetric. Spectral properties: singular values of W equal the square roots of the eigenvalues of W·Wᵀ. Theorem 3.2 (Poincaré Separation Theorem): for symmetric A (n×n) and semi-orthogonal B (n×r, BᵀB = I_r), eigenvalues μ of BᵀAB satisfy λ_i ≤ μ_i ≤ λ_{n−r+i}; the range of eigenvalues of BᵀAB is a subset of the range of eigenvalues of A. Bᵀ(W·Wᵀ)B = W′(W′)ᵀ where W′ = BᵀW. The singular values of the reduced weight matrix are bounded by those of the original.">
+            <div class="slide-caption">slide 15 · primer on slicing and singular values</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A bit of linear algebra. The singular values of <em>W</em> are the square roots of the eigenvalues
+              of <em>WW</em><sup>T</sup>. Slicing rows out of <em>W</em> can be written as <em>W</em>′ =
+              <em>B</em><sup>T</sup><em>W</em>, and the Poincaré separation theorem says the singular values of
+              <em>W</em>′ stay inside the range of the original ones.</p>
+            <h4>Why slicing fits the theorem</h4>
+            <p>To keep rows 1 and 3 of a 4-row matrix, take <em>B</em> to be columns 1 and 3 of the 4 × 4 identity.
+              Then <em>B</em><sup>T</sup><em>W</em> is exactly those two rows, and <em>B</em><sup>T</sup><em>B</em> =
+              <em>I</em><sub>2</sub>, so <em>B</em> is semi-orthogonal as the theorem requires. Also,
+              <em>B</em><sup>T</sup>(<em>WW</em><sup>T</sup>)<em>B</em> is just the rows and columns 1 and 3 of
+              <em>WW</em><sup>T</sup>.</p>
+            <h4>A tiny check</h4>
+            <p>Let <em>A</em> = <em>WW</em><sup>T</sup> = [[4, 1], [1, 2]]. Its eigenvalues are 3 ± √2, about 1.59 and
+              4.41. Keep only the first row, and the reduced matrix is [4], with eigenvalue 4. That lies between 1.59
+              and 4.41, as the theorem promises.</p>
+            <p>So slicing can't create singular values larger than the largest original one or smaller than the
+              smallest. The next slide shows why that guarantee is not enough.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s16">
+          <div class="slide-frame">
+            <div class="tag">Slide 16 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-16.png"
+              alt="Even if the compressed values remain within the original range, they can be distributed differently within that range; the CDF can shift or become more skewed. The paper uses this to motivate preserving the spectrum's distribution, rather than relying only on the theorem's bounds. Plots of the cumulative distribution of singular values for Layer 1 and Layer 32 at compression 0%, 25%, 50% and 75%; the curves shift left as compression increases. Side note: the Poincaré theorem constrains the compressed spectrum within the original range; empirically the spectrum is bounded in that range but the distributions don't align.">
+            <div class="slide-caption">slide 16 · bounded range, shifted distribution</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Plots of the cumulative distribution (CDF) of singular values at 0%, 25%, 50% and 75% compression, for
+              the first and last layers. The values stay in range, but the curves move left as compression grows.</p>
+            <h4>Reading the plot</h4>
+            <p>A CDF at value <em>v</em> is the fraction of singular values below <em>v</em>. A curve further left
+              means more small singular values. At 75% compression in Layer 1, the purple curve starts at about 0.33,
+              so roughly a third of the singular values are near zero, while the uncompressed curve starts at 0.
+              Small singular values are directions in which the layer barely transforms its input, so a shift to the
+              left means the sliced layer has lost some of what it could express.</p>
+            <p>PruneNet's goal follows from this. Keep the whole distribution of singular values close to the
+              original, not just the range.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s17">
+          <div class="slide-frame">
+            <div class="tag">Slide 17 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-17.png"
+              alt="PruneNet architecture. The unsliced MLP layer's W_up feeds a policy learner that computes importance scores W_imp. Reparametrization with noise ε ~ U(0,1)ⁿ feeds a multinomial sampler that outputs the indices to keep, S. The sliced layer uses W_up[S,:] and W_down[:,S]. The spectrum distributions of the original and sliced W_up are compared with the KS distance, which is fed back to the policy learner as a penalty.">
+            <div class="slide-caption">slide 17 · the PruneNet training loop</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The full loop. A policy learner reads <em>W</em><sub>up</sub> and outputs an importance score per
+              neuron. A sampler picks the set <em>S</em> of neurons to keep. The layer is sliced to
+              <em>W</em><sub>up</sub>[<em>S</em>, :] and <em>W</em><sub>down</sub>[:, <em>S</em>]. The penalty is
+              the KS distance between the singular-value distributions before and after slicing.</p>
+            <h4>The pieces</h4>
+            <ul>
+              <li><strong>Sampling with noise.</strong> Picking the top-scoring neurons is not differentiable, so the
+                policy could not learn from the penalty. Adding uniform noise and sampling (the reparametrization
+                trick) lets gradients flow back to the scores.</li>
+              <li><strong>KS distance.</strong> The Kolmogorov–Smirnov distance is the largest vertical gap between two
+                CDFs. If at singular value 1.0 the original CDF is 0.10 and the sliced one is 0.35, the gap there is
+                0.25, and KS is the largest such gap over all values. On slide 16's plot, it measures how far a
+                dashed curve strays from the solid one.</li>
+            </ul>
+            <p>Nothing in this loop needs input data. The policy only looks at weights and their spectra, which is
+              why PruneNet is calibration-free.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s18">
+          <div class="slide-frame">
+            <div class="tag">Slide 18 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-18.png"
+              alt="PruneNet results table for LLaMA-2-7B and Phi-2 at 0%, 20%, 25% and 30% compression, comparing SliceGPT and PruneNet on PIQA, WinoGrande, HellaSwag, ARC-e, ARC-c and average. LLaMA-2-7B dense average 69.00; at 20% SliceGPT 58.17 (84%) vs PruneNet 61.67 (89%); at 30% SliceGPT 51.50 (75%) vs PruneNet 55.45 (80%). Phi-2 dense average 72.24; at 30% SliceGPT 51.99 (72%) vs PruneNet 61.05 (84%).">
+            <div class="slide-caption">slide 18 · PruneNet vs SliceGPT</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Zero-shot accuracy on five benchmarks for LLaMA-2-7B and Phi-2 at 20–30% compression. The percentages
+              in brackets are the fraction of the dense model's score that is kept.</p>
+            <h4>What to read off</h4>
+            <ul>
+              <li>LLaMA-2-7B at 20%: PruneNet keeps 89% of the dense average (61.67 against 69.00), and SliceGPT
+                keeps 84%.</li>
+              <li>Phi-2 at 30%: PruneNet keeps 84%, SliceGPT 72%. The gap is wider on the smaller model.</li>
+              <li>SliceGPT still wins a few cells, such as ARC-c at 20% on LLaMA-2-7B and WinoGrande at 25% and 30%.</li>
+            </ul>
+            <p>Removing 20–30% of the FFN still costs 10–20% of average accuracy, so this is not free. The point is
+              that PruneNet gets there without calibration data or fine-tuning, and does better than a method that
+              uses calibration data.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="mone">
+        <h2><span class="num">§6</span>Pruning experts: MoNE</h2>
+        <p class="section-intro">
+          In a mixture-of-experts model, most of the parameters sit in the
+          experts, so experts are the natural unit to prune. MoNE replaces a
+          pruned expert with a constant instead of deleting it.
+          <a class="xref" href="../lectures/8-feed-forward.html#why-moe">Lecture 8</a>
+          covers how MoE layers and routing work.
+        </p>
+
+        <div class="slide" id="s19">
+          <div class="slide-frame">
+            <div class="tag">Slide 19 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-19.png"
+              alt="Pruning for MoE models. Existing methods: identify experts that are less frequented and prune them off completely. MoNE: replace pruned experts with novice experts. Paper: MoNE, Replacing Redundant Experts with Lightweight Novices for Structured Pruning of MoE.">
+            <div class="slide-caption">slide 19 · drop experts, or replace them?</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Earlier methods remove the experts that the router rarely picks. MoNE instead swaps each pruned expert
+              for a "novice", a much cheaper stand-in.</p>
+            <h4>Why not just delete?</h4>
+            <p>The router was trained with every expert present. If a removed expert gets picked, its share of the
+              output simply vanishes, and the layer's output shifts. A stand-in that returns roughly what the expert
+              used to return keeps that share in place. Usage frequency alone also misses a case. An expert might be
+              picked often but produce nearly the same output every time, and such an expert is cheap to imitate.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s20">
+          <div class="slide-frame">
+            <div class="tag">Slide 20 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-20.png"
+              alt="MoNE formulas. φ_var_i: the norm of the standard deviation of expert i's outputs over calibration tokens routed to it. Ē_i: the mean output of expert i over those tokens. φ_freq_i: the sum of gate values G_i(x) over tokens routed to expert i, divided by the number of such tokens. Pruning score is the product of the variance-based redundancy score and the frequency-based score. The redundant experts are replaced by constants. MoNE(x) = sum over kept selected experts of G_i(x)·E_i(x) plus sum over pruned selected experts of G_i(x)·N_i.">
+            <div class="slide-caption">slide 20 · MoNE's score and the novice</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Each expert gets two numbers from calibration data, counting only the tokens routed to it. One is how
+              much its output varies (φ<sup>var</sup>). The other is the average gate weight the router gives it
+              (φ<sup>freq</sup>). Their product is the score, and the lowest-scoring experts are replaced by a
+              constant vector <em>N</em><sub><em>i</em></sub>.</p>
+            <h4>A small example</h4>
+            <p>Say an expert sees three tokens and outputs (1.0, 2.0), (1.1, 2.1) and (0.9, 1.9). Its mean output is
+              (1.0, 2.0). The standard deviation in each dimension is 0.1, so φ<sup>var</sup> = ‖(0.1, 0.1)‖ ≈ 0.14.
+              That is tiny compared with the outputs themselves. Replacing this expert with the constant (1.0, 2.0)
+              changes its output by about 0.1 per dimension on these tokens, and it replaces a whole MLP with one
+              stored vector.</p>
+            <h4>The forward pass</h4>
+            <p>MoNE(<em>x</em>) has two sums. Selected experts that were kept run as usual and are weighted by their
+              gate <em>G</em><sub><em>i</em></sub>(<em>x</em>). Selected experts that were pruned contribute
+              <em>G</em><sub><em>i</em></sub>(<em>x</em>) · <em>N</em><sub><em>i</em></sub>, which costs one
+              multiply-add per dimension. The router is untouched, so it still sends tokens to the same slots.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>φ<sup>freq</sup> as written averages the gate value over the tokens that picked the expert. It
+                measures how much weight the router gives the expert when it is chosen, rather than counting how
+                often it is chosen.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s21">
+          <div class="slide-frame">
+            <div class="tag">Slide 21 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-21.png"
+              alt="MoNE results at 25% pruning on OLMoE, Moonlight and Deepseek-V2-Lite, comparing Angular, FLAP, MC-SMoE, RS and MoNE on nine benchmarks. OLMoE dense average 66.63, MoNE 61.04, FLAP 58.32. Moonlight dense 71.56, MoNE 69.10, RS 67.82. Deepseek-V2-Lite dense 67.16, MoNE 66.12, RS 65.53.">
+            <div class="slide-caption">slide 21 · MoNE results at 25% expert pruning</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Results with 25% of experts pruned on three MoE models, against four other pruning methods.</p>
+            <h4>What to read off</h4>
+            <table>
+              <thead>
+                <tr><th>Model</th><th>Dense avg</th><th>MoNE avg</th><th>Best other</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>OLMoE</td><td>66.63</td><td>61.04</td><td>58.32 (FLAP)</td></tr>
+                <tr><td>Moonlight</td><td>71.56</td><td>69.10</td><td>67.82 (RS)</td></tr>
+                <tr><td>Deepseek-V2-Lite</td><td>67.16</td><td>66.12</td><td>65.53 (RS)</td></tr>
+              </tbody>
+            </table>
+            <p>MoNE has the best average on all three, though not on every benchmark. On Deepseek-V2-Lite, a quarter
+              of the experts go and the average drops by about one point. OLMoE suffers more, which suggests that
+              its experts are less redundant.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="quant">
+        <h2><span class="num">§7</span>Why quantize, and the basics</h2>
+        <p class="section-intro">
+          The talk switches from removing weights to storing them with fewer
+          bits. These four slides recap material that
+          <a class="xref" href="../lectures/13-quantization.html">Lecture 13</a>
+          covers in more depth.
+        </p>
+
+        <div class="slide" id="s22">
+          <div class="slide-frame">
+            <div class="tag">Slide 22 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-22.png"
+              alt="Quantization. Why quantization? Models are overfitted with each weight carrying some important knowledge. Pruning completely destroys that information by removing unimportant weights; quantization lowers the precision with which information is represented. Unstructured/semi-structured pruning effectively does no good (no model size reduction); structured pruning hurts performance. Quantization has a simpler pipeline; pruning has a complex pipeline (calibration, recovery finetuning).">
+            <div class="slide-caption">slide 22 · why quantization instead of pruning</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The case for quantization. Pruning deletes a weight and everything it knew, while quantization keeps
+              every weight at lower precision. Fine-grained pruning saves little memory, coarse pruning hurts
+              accuracy, and the pruning pipeline is more complicated.</p>
+            <h4>The intuition</h4>
+            <p>Pruning answers the question "which weights can be exactly zero?" Quantization answers "how precisely
+              must each weight be stored?" A weight of 0.0137 rounded to 0.0140 still carries almost all of its
+              information. Set to 0, it carries none. With billions of weights that each hold a little knowledge,
+              rounding is usually the gentler change.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>"No model size reduction" holds for unstructured sparsity (slide 6 showed that CSR can be bigger
+                than dense). 2:4 sparsity does save memory, 9 bytes instead of 16 per 8 FP16 weights, and slide 7
+                showed it halves matmul FLOPs on recent NVIDIA GPUs. The fair comparison is that 4-bit quantization
+                saves more (4× from FP16) and works on any hardware.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s23">
+          <div class="slide-frame">
+            <div class="tag">Slide 23 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-23.png"
+              alt="Quantization data types table. FP32: 32 bits, 1 sign, 8 exponent, 23 mantissa, IEEE 754 single precision. FP16: 16 bits, 1, 5, 10, IEEE half precision. BF16: 16 bits, 1, 8, 7, brain float, same exponent as FP32. FP8 E4M3: 8 bits, 1, 4, 3, common FP8 format (NVIDIA Hopper). FP8 E5M2: 8 bits, 1, 5, 2, alternative FP8 format. INT8: 8 bits, 1 sign, 7, signed two's complement. INT4: 4 bits, 1 sign, 3, signed two's complement.">
+            <div class="slide-caption">slide 23 · number formats</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The formats that come up in the rest of the talk, with how many bits go to sign, exponent and
+              mantissa.</p>
+            <h4>How to read the table</h4>
+            <p>Exponent bits set the <em>range</em> (how large or small a number can be). Mantissa bits set the
+              <em>precision</em> (how finely you can tell nearby numbers apart). BF16 keeps FP32's 8 exponent bits,
+              so it covers the same range as FP32 but with only 7 mantissa bits. That is why it is the usual format
+              for training and for released weights, and it is the format DFloat11 compresses on slides 26–33. The
+              two FP8 formats make the same trade in miniature. E4M3 has more precision, and E5M2 has more range.
+              <a class="xref" href="../lectures/13-quantization.html#fp">Lecture 13 §2</a> shows how these bits turn
+              into a value.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>INT8 and INT4 in two's complement have no separate sign bit the way floats do. The top bit carries
+                a weight of −128 (or −8), which gives ranges of −128 to 127 and −8 to 7. The "1 sign bit" column is a
+                convenient way to say they are signed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s24">
+          <div class="slide-frame">
+            <div class="tag">Slide 24 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-24.png"
+              alt="Symmetric and asymmetric quantization of the values 5.47, 3.08, −7.59, 0, −1.95, −4.57, 10.8. Symmetric maps [−10.8, 10.8] to [−127, 127], giving 64, 36, −89, 0, −23, −54, 127. Asymmetric maps [−7.59, 10.8] to the full integer range with a zero point, giving 53, 20, −127, −23, −50, −86, 127. Formulas: s = max|x_i| / (2^(b−1) − 1); x̂ = s(q − z); s = (x_max − x_min)/(q_max − q_min); z = round(q_min − x_min/s). Remember scale and zero point are stored in original precision. No zero point in the case of symmetric quantization.">
+            <div class="slide-caption">slide 24 · symmetric vs asymmetric quantization</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The same seven numbers quantized to INT8 in two ways. Symmetric quantization uses one scale and keeps
+              0 at 0. Asymmetric quantization adds a zero point so that the integer range covers exactly
+              [min, max].</p>
+            <h4>Symmetric, worked</h4>
+            <p>The largest magnitude is 10.8, so <em>s</em> = 10.8 / 127 ≈ 0.0850. Then 5.47 / 0.0850 ≈ 64.3, which
+              rounds to 64. Likewise 3.08 → 36, −7.59 → −89, −1.95 → −23, −4.57 → −54 and 10.8 → 127. These are the
+              values in the left-hand row. Notice that nothing maps below −89, so the codes from −128 to −90 are never
+              used. That waste is what asymmetric quantization fixes.</p>
+            <h4>Asymmetric, worked</h4>
+            <p>The range is 10.8 − (−7.59) = 18.39, spread over 255 steps, so <em>s</em> ≈ 0.0721. The zero point is
+              <em>z</em> = round(−128 − (−7.59 / 0.0721)) = round(−22.8) = −23. A value maps to round(<em>x</em>/<em>s</em>)
+              + <em>z</em>, so 0 → −23 (the highlighted cell), 5.47 → 53 and 10.8 → 127. Dequantizing reverses it,
+              <em>x̂</em> = <em>s</em>(<em>q</em> − <em>z</em>), so 53 comes back as 0.0721 × 76 ≈ 5.48.</p>
+            <p>The scale and zero point are stored in the original precision, one pair per group of weights. That
+              overhead adds up at 4 bits, as <a class="xref" href="../lectures/13-quantization.html#uniform">Lecture
+                13 §4</a> works out.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>By the formula, −7.59 lands on −128. The figure shows −127 because it clips to a symmetric integer
+                range. Either way the error is under one step.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s25">
+          <div class="slide-frame">
+            <div class="tag">Slide 25 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-25.png"
+              alt="Model compression via quantization. Behavioural shifts: many instances of misalignment, hallucination, crossing the safety barriers. Accuracy degradation: quantization approximates (calibration data, quantization method, bit-widths etc). Lossless compression: primarily designed for specialised hardware like FPGAs.">
+            <div class="slide-caption">slide 25 · the costs of lossy quantization</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Three problems. Quantized models can behave differently, including on safety and alignment.
+              Accuracy drops by an amount that depends on the calibration data, method and bit width. Lossless
+              alternatives exist, but they were built for specialised hardware such as FPGAs.</p>
+            <h4>Why this sets up DFloat11</h4>
+            <p>Benchmark averages can hide behaviour changes. A quantized model can score within a point on MMLU and
+              still refuse, comply or hallucinate differently on specific prompts. The only way to rule that out
+              entirely is to keep every weight bit-for-bit identical. The next section shows a way to do that and
+              still save about 30% of memory on an ordinary GPU.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="dfloat11">
+        <h2><span class="num">§8</span>Lossless compression: DFloat11</h2>
+        <p class="section-intro">
+          BF16 spends 8 bits on an exponent that, in trained LLM weights,
+          takes only a handful of values. DFloat11 Huffman-codes the exponent
+          and keeps sign and mantissa as they are. The result is about 11
+          bits per weight with exactly the same model. Most of these slides
+          are about decoding the variable-length codes fast enough on a GPU.
+        </p>
+
+        <div class="slide" id="s26">
+          <div class="slide-frame">
+            <div class="tag">Slide 26 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-26.png"
+              alt="DFloat11 is motivated by the low entropy in the BFloat16 weight representation of LLMs, which reveals significant inefficiency in the existing storage format. Figure 8: relative frequency distribution of sign, exponent and mantissa values in BF16 weights of several LLMs (Gemma 2 9B, Qwen 2.5 14B, Mistral Small 24B, Llama 3.3 70B). Sign is about 50/50; exponent values are concentrated in a narrow spike around 120; mantissa values are spread fairly evenly.">
+            <div class="slide-caption">slide 26 · BF16 weights have low-entropy exponents</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Histograms of the three parts of BF16 weights in several LLMs. The sign is 0 or 1 about half the time
+              each. The mantissa values are spread fairly evenly. The exponent piles up in a narrow spike around 120
+              out of a possible 0–255.</p>
+            <h4>Why that means wasted bits</h4>
+            <p>A field deserves its bits only if its values are unpredictable. The sign and the mantissa are close to
+              uniform, so you can't store them in fewer bits. The exponent always lands in the same small band, and
+              that band follows from how weights are distributed. Most weights are small numbers like 0.01 or 0.001,
+              and in BF16 such numbers all have exponents a little below 127. So 8 bits per exponent is far more than
+              the information it carries.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s27">
+          <div class="slide-frame">
+            <div class="tag">Slide 27 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-27.png"
+              alt="Enter a new numerical type (DFloat11). BF16 bit layout: 1 sign bit, 8 exponent bits, 7 mantissa bits. The sign and mantissa values are relatively uniform, but the exponent distribution is highly imbalanced: only about 40 of the 256 possible 8-bit values are used. The theoretical average coding rate is approximately 2.6 bits per exponent for an ideal lossless code over a long sequence.">
+            <div class="slide-caption">slide 27 · about 40 exponents, about 2.6 bits each</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Only about 40 of the 256 possible exponent values occur, and an ideal code would need about 2.6 bits
+              per exponent on average.</p>
+            <h4>The arithmetic</h4>
+            <p>Even a plain fixed-length code would help. 40 values fit in 6 bits (2<sup>6</sup> = 64), giving 1 + 6
+              + 7 = 14 bits per weight. A variable-length code does better because the 40 values are far from equally
+              common. At 2.6 bits per exponent, a weight costs 1 + 2.6 + 7 = 10.6 bits, which is 66% of 16. Slide 32
+              reports 10.8–10.9 bits in practice, so the real code comes within about a quarter of a bit of the
+              ideal.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s28">
+          <div class="slide-frame">
+            <div class="tag">Slide 28 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-28.png"
+              alt="Use Huffman trees: frequent values get shorter codes, rare values get longer codes. Codes are prefix-free. Figure: encoded exponents with dynamic bit widths averaging about 2.6 bits, e.g. 1 0 | 1 1 0 | 0 ..., decoded with a Huffman tree where code 0 is exponent 119, code 10 is exponent 121, code 110 is exponent 118. Sign and mantissa are stored with fixed widths of 1 and 7 bits, e.g. 0 0110110 and 1 0001001. Exponents are encoded and tightly bit-packed into a byte array EncodedExponent, while sign and mantissa are stored uncompressed in a separate byte array PackedSignMantissa.">
+            <div class="slide-caption">slide 28 · Huffman-coding the exponent</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>DFloat11 Huffman-codes the exponents. Common exponents get short codes and rare ones get long codes,
+              and no code is the start of another, so a bit stream can be split unambiguously. Exponents go in one
+              packed array, and sign and mantissa bytes go in another, unchanged.</p>
+            <h4>Huffman in one example</h4>
+            <p>Suppose four symbols occur 50%, 25%, 12.5% and 12.5% of the time. Huffman gives them codes 0, 10, 110
+              and 111. The average length is 0.5 × 1 + 0.25 × 2 + 0.125 × 3 + 0.125 × 3 = 1.75 bits, against 2 bits
+              for a fixed code and 8 for a raw byte.</p>
+            <h4>Decoding the figure</h4>
+            <p>The exponent stream starts 1 0 1 1 0 0. Read from the root. "1" is not a complete code, but "10" is,
+              so the first exponent is 121. Next, "110" gives 118. Then "0" gives 119. Pair these with the fixed-width
+              sign and mantissa bytes.</p>
+            <ul>
+              <li>Element 1 has sign 0, exponent 121 and mantissa 0110110 = 54. Its value is (1 + 54/128) ×
+                2<sup>121−127</sup> = 1.421875 × 2<sup>−6</sup> ≈ 0.0222.</li>
+              <li>Element 2 has sign 1, exponent 118 and mantissa 0001001 = 9. Its value is −(1 + 9/128) ×
+                2<sup>−9</sup> ≈ −0.00209.</li>
+            </ul>
+            <p>These are exactly the original BF16 values, bit for bit. Nothing was rounded.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s29">
+          <div class="slide-frame">
+            <div class="tag">Slide 29 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-29.png"
+              alt="What happens during decoding? Sequential bit-by-bit traversals (branching breaks instruction-level parallelism). Not suited for GPUs. Alternative: lookup-table-based decoding. Flatten the Huffman decoding using 2 lookup tables.">
+            <div class="slide-caption">slide 29 · tree walking is bad for GPUs</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Walking the tree one bit at a time is sequential and full of branches, which GPUs handle badly. The
+              fix is to decode with lookup tables.</p>
+            <h4>Why GPUs dislike it</h4>
+            <p>A GPU runs threads in groups that execute the same instruction together. In a tree walk, each thread's
+              next step depends on the bit it just read, so threads in a group want different branches and end up
+              waiting for each other. There is a second problem. With variable-length codes, you can't know where
+              element 1000 starts until you have decoded the 999 before it. DFloat11 handles that with extra
+              bookkeeping that the slides don't go into. These slides focus on making each decode step branch-free.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s30">
+          <div class="slide-frame">
+            <div class="tag">Slide 30 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-30.png"
+              alt="Lookup table based decoding. Huffman tree with symbols A (code 0), B (100), C (101), D (110), E (1110), F (1111). A 16-entry lookup table indexed by 4-bit codes: entries 0–7 are A, 8–9 B, 10–11 C, 12–13 D, 14 E, 15 F. A code-length table: A 1, B 3, C 3, D 3, E 4, F 4. Figure 11 caption: decoding can be done by traversing the tree or by two lookup tables, one mapping each L-bit code to its symbol and another storing each symbol's code length. Note: this is still huge since L = 30 to 40, so 2^32 values won't fit in SRAM of the GPU.">
+            <div class="slide-caption">slide 30 · two-table decoding</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Replace the tree with two tables. Read the next <em>L</em> bits, where <em>L</em> is the longest code
+              length, and use them as an index into a table of symbols. A second table gives that symbol's real
+              length, which tells you how far to advance.</p>
+            <h4>How it works on the figure</h4>
+            <p>The longest code is 4 bits, so the table has 2<sup>4</sup> = 16 entries. Every index starting with 0
+              points to A, because A's code is just "0" and the other 3 bits belong to the next symbol. Suppose the
+              next 4 bits are 1101. Entry 13 is D, and D's length is 3, so you advance 3 bits. There are no
+              branches, only two memory reads.</p>
+            <h4>Why it doesn't scale</h4>
+            <p>The table needs 2<sup><em>L</em></sup> entries. Real exponent codes can be about 32 bits long for the
+              rarest values, and 2<sup>32</sup> one-byte entries is 4 GiB. Fast on-chip GPU memory holds a tiny
+              fraction of that, so the table would sit in slow memory and every lookup would be expensive.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s31">
+          <div class="slide-frame">
+            <div class="tag">Slide 31 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-31.png"
+              alt="Hierarchical look up tables. The Huffman tree is split into regions, each covered by a compact 4-entry LUT indexed by 2 bits. LUT 0 (first two bits): 00 → A, 01 → A, 10 → LUT 1, 11 → LUT 2. LUT 1 (next two bits): 00 → B, 01 → B, 10 → C, 11 → C. LUT 2 (next two bits): 00 → D, 01 → D, 10 → E, 11 → F.">
+            <div class="slide-caption">slide 31 · hierarchical lookup tables</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Split the big table into a chain of small ones. Each table reads a few bits and either returns a
+              symbol or points to the next table.</p>
+            <h4>Decoding a stream by hand</h4>
+            <p>Encode D, A, F with the codes from slide 30. You get 110 + 0 + 1111 = 11001111. Decode it with the
+              small tables.</p>
+            <ol>
+              <li>At bit 0, read "11". LUT 0 says go to LUT 2. Read the next two bits, "00". LUT 2 gives D, and D's
+                length is 3, so move to bit 3.</li>
+              <li>At bit 3, read "01". LUT 0 gives A, with length 1, so move to bit 4.</li>
+              <li>At bit 4, read "11", which leads to LUT 2. The next bits are "11", which gives F with length 4.</li>
+            </ol>
+            <p>The output is D, A, F, which is correct. Each step costs at most a couple of small lookups.</p>
+            <p>The figure uses 2-bit chunks to stay readable. DFloat11 itself uses 8-bit chunks, so each table has 256
+              entries, and a code of up to 32 bits needs at most four lookups. Four 256-entry tables fit easily in
+              a GPU's fast on-chip memory, where the single 4 GiB table never could.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s32">
+          <div class="slide-frame">
+            <div class="tag">Slide 32 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-32.png"
+              alt="Table 1: DF11 statistics for various models. Llama 3.1 8B Instruct 16.06 GB → 10.90 GB (67.84%, 10.85 bits); Llama 3.3 70B 141.11 → 95.40 GB; Llama 3.1 405B 811.71 → 551.22 GB; Qwen 3 14B 29.54 → 20.14 GB; and others, all around 67–70% and 10.8–11.1 bits, including diffusion transformers. Table 2: Llama 3.1 8B Instruct BF16 vs DF11 give identical MMLU 68.010 ± 0.375, TruthfulQA 36.965 ± 1.690, WikiText perplexity 8.649 and C4 perplexity 21.677. Side note: for shorter batch sizes the latency is high compared to BF16, but when BF16 has to offload to CPU, DFloat11 performs 2x faster.">
+            <div class="slide-caption">slide 32 · about 68% of the size, identical outputs</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Every model shrinks to about 67–70% of its BF16 size, which is 10.8–11.1 bits per weight. Accuracy and
+              perplexity are identical to the last printed digit. The catch is that at small batch sizes DFloat11 is
+              slower than plain BF16 when BF16 fits in GPU memory.</p>
+            <h4>Checking the numbers</h4>
+            <p>Llama 3.1 8B goes from 16.06 GB to 10.90 GB. At 10.85 bits per weight, 16.06 × 10.85 / 16 ≈ 10.89 GB,
+              which matches. The benchmark scores in Table 2 are the same because the weights are the same. Every
+              matrix multiply sees exactly the original BF16 numbers, decoded just before use.</p>
+            <h4>Where the slowdown comes from</h4>
+            <p>Decoding costs time on every forward pass. When BF16 already fits in memory, that cost is pure
+              overhead, and it is most visible at small batch sizes. At larger batches, each decoded weight serves
+              more tokens and the overhead is spread thin. The real win is when BF16 doesn't fit at all, which is the
+              next slide.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s33">
+          <div class="slide-frame">
+            <div class="tag">Slide 33 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-33.png"
+              alt="Throughput and latency vs batch size for three setups: Qwen 3 14B (28 GB) on an A5000 (24 GB), Mistral Small 3 (48 GB) on an A100 (40 GB), QwQ 32B (64 GB) on an RTX 8000 (48 GB). Red bars: original BF16 model with GPU + CPU offloading. Blue bars: DF11 compressed model, GPU-only. DF11 has much higher throughput and much lower latency at every batch size; for example Qwen 3 14B latency about 0.69 vs 0.22 seconds per token, Mistral Small 3 about 11.56 vs 0.25 seconds per token at batch size 1.">
+            <div class="slide-caption">slide 33 · DF11 fits where BF16 must offload</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Each setup pairs a model with a GPU that is slightly too small for its BF16 weights. BF16 has to keep
+              part of the model in CPU memory. DF11 fits entirely on the GPU and wins by a wide margin.</p>
+            <h4>Why it fits</h4>
+            <p>At about 68% of the size, Qwen 3 14B goes from 28 GB to about 19 GB, which fits in 24 GB. Mistral
+              Small 3 goes from 48 GB to about 32 GB, under 40 GB. QwQ 32B goes from 64 GB to about 44 GB, under
+              48 GB.</p>
+            <h4>Why it is so much faster</h4>
+            <p>With offloading, the weights in CPU memory have to cross the PCIe bus for every forward pass, which is
+              far slower than reading GPU memory. At batch size 1, Qwen 3 14B takes about 0.69 s per token with
+              offloading and about 0.22 s with DF11. Mistral Small 3 drops from about 11.6 s to 0.25 s per token. The
+              slide's "2× faster" is a floor, and some setups gain far more.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="qserve">
+        <h2><span class="num">§9</span>W4A8KV4: QServe</h2>
+        <p class="section-intro">
+          QServe stores weights in 4 bits, activations in 8 bits and the KV
+          cache in 4 bits. It still runs its matrix multiplies on fast INT8
+          hardware, by turning 4-bit weights back into 8-bit integers cheaply
+          inside the kernel. It starts from SmoothQuant, which
+          <a class="xref" href="../lectures/13-quantization.html#smoothquant">Lecture 13 §7</a>
+          covers in detail.
+        </p>
+
+        <div class="slide" id="s34">
+          <div class="slide-frame">
+            <div class="tag">Slide 34 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-34.png"
+              alt="QServe. A short detour to SmoothQuant. What was SmoothQuant trying to solve? How can we get fully hardware-efficient W8A8 quantization for LLMs without destroying accuracy? Observations: 1. Weights are easier to quantize, they are uniform and flat. 2. Activations are harder to quantize, outliers exist in fixed channels (inter-channel variance high, intra-channel variance low). 3. Per-channel activation quantization would work, but hardware optimization for INT8 GEMM kernels is the problem.">
+            <div class="slide-caption">slide 34 · SmoothQuant recap</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>SmoothQuant's goal was INT8 weights and INT8 activations (W8A8). Weights quantize easily.
+              Activations have a few channels that are always huge. Giving each activation channel its own scale
+              would fix that, but INT8 matrix-multiply kernels can't use such scales.</p>
+            <h4>Why per-channel activation scales break INT8 GEMM</h4>
+            <p>In <em>Y</em> = <em>XW</em>, each output is a sum over the inner dimension, <em>Y</em><sub><em>tj</em></sub>
+              = Σ<sub><em>k</em></sub> <em>X</em><sub><em>tk</em></sub><em>W</em><sub><em>kj</em></sub>. A scale per
+              token <em>t</em> or per output column <em>j</em> is constant inside that sum, so you can do the sum in
+              integers and multiply by the scales once at the end. A scale per input channel <em>k</em> changes from
+              term to term inside the sum, so it can't be pulled out. You would have to rescale every product
+              separately, which defeats the point of integer hardware.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s35">
+          <div class="slide-frame">
+            <div class="tag">Slide 35 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-35.png"
+              alt="QServe. How to have a per-channel quantization? Use a scaling vector for all channels: Y = XW = (X diag(s)⁻¹)·(diag(s) W) = X̂ Ŵ, with s_j = max(|X_j|)^α / max(|W_j|)^(1−α). Divide each activation channel by a channel-wise factor; multiply the corresponding weight channel by the same factor; preserve the same linear map. This migrates quantization difficulty from activations to weights. Balanced activations give fewer outliers, smaller range mismatches and better use of INT8 GEMM kernels.">
+            <div class="slide-caption">slide 35 · migrate the difficulty into the weights</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Divide each activation channel by <em>s</em><sub><em>j</em></sub> and multiply the matching weight
+              row by the same <em>s</em><sub><em>j</em></sub>. The product is unchanged, the activation outliers
+              shrink and the weights absorb them.</p>
+            <h4>One channel, worked</h4>
+            <p>Say channel <em>j</em> has activations up to 40 and weights up to 0.5. With α = 0.5, <em>s</em><sub><em>j</em></sub>
+              = √40 / √0.5 = √80 ≈ 8.94. After scaling, the activation maximum is 40 / 8.94 ≈ 4.47 and the weight
+              maximum is 0.5 × 8.94 ≈ 4.47. Both now have the same range, √(40 × 0.5). α controls how the difficulty
+              is split, and 0.5 shares it equally.</p>
+            <p>The division of <em>X</em> can be folded into the previous LayerNorm's weights ahead of time, so it
+              costs nothing at inference. This is what makes W8A8 work, and QServe reuses the same move twice, for
+              W4A8 and then for the keys.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s36">
+          <div class="slide-frame">
+            <div class="tag">Slide 36 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-36.png"
+              alt="QServe: can we go further down? W4A8KV4. Progressive group quantization figure: FP16 weights W are first quantized per channel to INT8 with s(0) = |W|max / 119 = 8.10/119 = 0.07, e.g. −0.20 → −3. Then each group of INT8 values is quantized to UINT4 with integer scale s(1) and zero point z, e.g. s(1) = round((15 − (−16))/(15 − 0)) = 2, z = 8, q = round(−3/2 + 8) = 7. Dequantizing gives (7 − 8)·2 = −2, and all dequantized values stay within INT8 range for INT8 computation. Text: for W4A8 GEMM, the 4-bit weights are first dequantized into intermediate 8-bit weights and then INT8 matrix multiplication runs as if it were W8A8 per-channel quantization. Protective quantization range.">
+            <div class="slide-caption">slide 36 · progressive group quantization</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Weights are quantized in two stages. First per channel to INT8, then each small group of those INT8
+              values to 4-bit unsigned integers with an integer scale and zero point. At run time, the 4-bit values
+              are expanded back to INT8 using only integer arithmetic, and the multiply runs on INT8 hardware as in
+              W8A8.</p>
+            <h4>The figure, step by step</h4>
+            <ol>
+              <li><strong>Level 1, FP16 to INT8.</strong> The channel's largest magnitude is 8.10. Dividing by 119
+                instead of 127 gives <em>s</em><sup>(0)</sup> = 8.10 / 119 ≈ 0.068, shown as 0.07. The weight −0.20
+                becomes −0.20 / 0.07 ≈ −2.86, which rounds to −3.</li>
+              <li><strong>Level 2, INT8 to UINT4, first group.</strong> The group is (−3, −16, −10, 15). Its range is
+                31 and 4 bits give 15 steps, so <em>s</em><sup>(1)</sup> = round(31 / 15) = 2. The zero point is
+                <em>z</em> = round(16 / 2) = 8. Then −3 maps to round(−1.5 + 8) = 7, −16 to 0 and −10 to 3. The 15
+                maps to 15.5, which rounds to 16 and is clipped to 15.</li>
+              <li><strong>Dequantize.</strong> (<em>q</em> − <em>z</em>) × <em>s</em><sup>(1)</sup> gives (7 − 8) × 2 =
+                −2 for the −3, and −16, −10 and 14 for the others. These are INT8 values, close to the originals.</li>
+              <li><strong>Second group.</strong> The group is (−94, 62, 119, −106), with <em>s</em><sup>(1)</sup> = 15
+                and <em>z</em> = 7. The codes are 1, 11, 15 and 0, and they come back as −90, 60, 120 and −105.</li>
+            </ol>
+            <h4>Why 119 and not 127 (the protective range)</h4>
+            <p>Level 2 rounds its scale and zero point to integers, and that can push a dequantized value outside the
+              group's original range. If it goes beyond what INT8 can hold, the INT8 multiply overflows. Take a group
+              that uses the full range, (127, −128, 0, 5). It gets <em>s</em> = round(255 / 15) = 17 and <em>z</em> =
+              round(128 / 17) = 8. Then −128 maps to code 0 and comes back as (0 − 8) × 17 = −136, which is not a
+              valid INT8. Capping level 1 at ±119 leaves headroom for this overshoot. In the figure, 119 comes back as
+              120, which still fits.</p>
+            <div class="callout aha">
+              <div class="callout-label">✦ Key takeaway</div>
+              <p>The expensive part of low-bit inference is usually converting the weights back before the multiply.
+                QServe makes that conversion a subtract and a multiply by a small integer on 8-bit values, which is
+                cheap, and then uses the INT8 hardware unchanged.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s37">
+          <div class="slide-frame">
+            <div class="tag">Slide 37 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-37.png"
+              alt="But what about KV4? Keys suffer from outliers while values don't. Similar approach to SmoothQuant. Z = (QΛ)·(KΛ⁻¹)ᵀ, Λ = diag(λ), λ_i = max(|K_i|)^α.">
+            <div class="slide-caption">slide 37 · smoothing the keys for a 4-bit KV cache</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>To store the KV cache in 4 bits, QServe applies the SmoothQuant trick to attention. Keys have outlier
+              channels and values don't, so each key channel is divided by λ<sub><em>i</em></sub> and the matching
+              query channel is multiplied by it.</p>
+            <h4>Why the product is unchanged</h4>
+            <p>(<em>Q</em>Λ)(<em>K</em>Λ<sup>−1</sup>)<sup>T</sup> = <em>Q</em>ΛΛ<sup>−1</sup><em>K</em><sup>T</sup>
+              = <em>QK</em><sup>T</sup>, since Λ is diagonal. The attention scores are exactly the same before
+              quantization.</p>
+            <h4>Why push the outliers into the query</h4>
+            <p>The keys are cached and read again at every later step, so they are what you want small. The query is
+              used once and thrown away, and it stays in 16 bits, so it can hold large values without harm. This is
+              the same move as slide 35, with the cached tensor in the role of the hard-to-quantize one.</p>
+            <h4>What KV4 saves</h4>
+            <p>For a 7B model like LLaMA-2-7B (32 layers, 4096 hidden size), the FP16 KV cache costs 2 × 32 × 4096 × 2
+              bytes = 0.5 MiB per token. A 4096-token context then needs 2 GiB per sequence, and at 4 bits it needs
+              0.5 GiB, before counting scales. That leaves room for four times as many sequences in a batch. <a
+                class="xref" href="../lectures/5-attention.html#kvcache">Lecture 5</a> sets up this accounting.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="nomad">
+        <h2><span class="num">§10</span>Attention without multiply-adds: NoMAD</h2>
+        <p class="section-intro">
+          The last part changes the computation instead of the storage.
+          NoMAD-Attention approximates the query–key dot products with
+          product quantization, then arranges the lookup tables so that a CPU
+          can do 16 lookups in one SIMD instruction. Decoding at long context
+          gets faster, even on a laptop CPU.
+        </p>
+
+        <div class="slide" id="s38">
+          <div class="slide-frame">
+            <div class="tag">Slide 38 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-38.png"
+              alt="Rethinking LLM computation: the algorithmic way. LLMs are everywhere. GPUs aren't. Why can't we simply use CPUs? What if we change the computation, not the hardware? Paper: NoMAD-Attention, Efficient LLM Inference on CPUs through Multiply-Add-Free Attention.">
+            <div class="slide-caption">slide 38 · can CPUs run LLMs well?</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Most devices have a CPU and no capable GPU. Instead of waiting for better hardware, change the
+              computation so that it suits a CPU.</p>
+            <h4>The idea in one line</h4>
+            <p>CPUs do far fewer multiply-adds per second than GPUs, but they are good at certain table lookups. If
+              attention can be rewritten as lookups, the CPU's weakness costs much less.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s39">
+          <div class="slide-frame">
+            <div class="tag">Slide 39 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-39.png"
+              alt="Primer. Attention computation: attention score calculation is essentially a MAD (multiply-add) operation; each dot product is d MAD operations. 2 phases: prefill vs decode stage. Inference: at timestep t, time complexity is O(t) due to t MAD dot product operations. K_cache^t = [K_cache^(t−1); k^t] = [k^1; k^2; ...; k^t], and similarly for V_cache.">
+            <div class="slide-caption">slide 39 · where attention's multiply-adds go</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Each attention score is a dot product of length <em>d</em>, which is <em>d</em> multiply-adds (MADs).
+              In the decode phase, the new query is compared with all <em>t</em> cached keys, so the work per step
+              grows with the context.</p>
+            <h4>Counting</h4>
+            <p>With head dimension <em>d</em> = 128 and 16,000 tokens of context, one decoding step needs 16,000 ×
+              128 ≈ 2.05 million MADs per head just for the scores. That repeats in every head of every layer, for
+              every new token. In the prefill phase the whole prompt is processed at once, which is a big matrix
+              multiply that CPUs handle reasonably. Decode is the step that gets slow as context grows.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s40">
+          <div class="slide-frame">
+            <div class="tag">Slide 40 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-40.png"
+              alt="Problem. 1. Can we move from MAD operations to an approximation of attention score calculation? 2. If yes, can we use this to make LLMs work on CPUs?">
+            <div class="slide-caption">slide 40 · the two questions</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Can attention scores be approximated without MADs, and does that make CPU inference practical?</p>
+            <p>The next two slides answer the first question with product quantization. The rest of the section
+              answers the second.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s41">
+          <div class="slide-frame">
+            <div class="tag">Slide 41 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-41.png"
+              alt="Product quantization, hand-drawn walkthrough. 1: 50k raw vectors of size 1024. 2: chop each vector into m = 8 sub-vectors of 128, giving 8 matrices of 50k × 128. 3: k-means with 256 centroids in each sub-space. 4: 8 bits are enough to store a centroid id, so each 4,096-byte vector becomes 8 bytes. 5: to search with a query vector, split it into 8 sub-vectors, compute similarity with the 256 centroids of each sub-space, then for every stored vector sum the similarities of its 8 centroid ids, sort and select the top K.">
+            <div class="slide-caption">slide 41 · product quantization</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Product quantization (PQ), shown on 50,000 vectors of dimension 1024. Split each vector into 8 chunks
+              of 128. Cluster each chunk position into 256 centroids. Store each vector as 8 centroid ids. To compare
+              a query with every vector, compute its similarity to each centroid once, then score every vector by
+              adding up 8 table entries.</p>
+            <h4>The memory arithmetic</h4>
+            <p>A raw vector is 1024 × 4 bytes = 4,096 bytes. With 256 centroids, an id fits in one byte, so a vector
+              becomes 8 bytes, 512 times smaller.</p>
+            <h4>Why search gets cheap</h4>
+            <p>The expensive step is building the query's tables, 8 chunks × 256 centroids, each a 128-long dot
+              product. That cost doesn't depend on how many vectors you store. After that, each of the 50,000 vectors
+              costs 8 lookups and 7 additions instead of a 1024-long dot product.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s42">
+          <div class="slide-frame">
+            <div class="tag">Slide 42 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-42.png"
+              alt="Approximating attention score using PQ. PQ on the key vectors (replacement for the key cache). Codebooks of key vectors. L2 distance equals dot product, but on smaller chunks. For a new query, a LUT is constructed (dot products with centroids). Finally summed up.">
+            <div class="slide-caption">slide 42 · PQ on the key cache</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Apply PQ to the key cache. Store each key as centroid ids. For each new query, build a table of its
+              dot products with the centroids, and approximate every score as a sum of table entries.</p>
+            <h4>Why a dot product splits into chunks</h4>
+            <p><em>q</em> · <em>k</em> is a sum over dimensions, so it equals the sum of the dot products of
+              matching chunks. Replacing each key chunk with its nearest centroid turns each piece into a table
+              entry.</p>
+            <h4>A small example</h4>
+            <p>Let <em>d</em> = 4, split into two chunks of 2, with 4 centroids per chunk.</p>
+            <ul>
+              <li>Chunk 1 centroids are (1, 1), (−1, 0), (0, −1), (0.5, 0.5). Chunk 2 centroids are (−0.5, 0),
+                (0, 1), (1, 1), (−1, −1).</li>
+              <li>The key <em>k</em> = (0.9, 1.1, −0.4, 0.2) is closest to centroid 0 in both chunks, so it is
+                stored as the codes (0, 0).</li>
+              <li>The query <em>q</em> = (2, 1, 0.5, −1) gives table 1 = (2, 1) · each chunk-1 centroid = (3, −2, −1,
+                1.5), and table 2 = (0.5, −1) · each chunk-2 centroid = (−0.25, −1, −0.5, 0.5).</li>
+              <li>The approximate score is table1[0] + table2[0] = 3 − 0.25 = 2.75. The exact score is 2.5.</li>
+            </ul>
+            <p>Building the two tables took 16 MADs, and every cached key now costs 2 lookups and an add, however
+              long the context is.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s43">
+          <div class="slide-frame">
+            <div class="tag">Slide 43 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-43.png"
+              alt="Hand sketch: a d-dimensional query split into d/2 chunks of 2 dimensions, 256 centroids per chunk (256 × 2), and a LUT per chunk. Bullets: dot product in fp32 will occupy 256 × 32 = 8192 bits = 1024 bytes per chunk. L1 cache is still pretty slow compared to registers. Assuming that, context length becomes extremely short. Bar chart: attention score latency about 585 µs for Attention, 435 µs for PQ-Attention, 70 µs for NoMAD-Attention; key caching latency about 3 µs, 16 µs and 7.5 µs.">
+            <div class="slide-caption">slide 43 · plain PQ is limited by cache speed</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>With 2-dimensional chunks and 256 centroids, each chunk's table holds 256 FP32 values, which is 1 KB.
+              Those tables live in L1 cache, which is fast but still much slower than registers. The chart shows plain
+              PQ only modestly faster than ordinary attention, and NoMAD much faster.</p>
+            <h4>The size problem</h4>
+            <p>For a head dimension of 128 split into 2-dimensional chunks, there are 64 chunks, so 64 KB of tables per
+              query. That is larger than the L1 cache of most CPU cores, so many lookups go further out to slower
+              caches. Each lookup is also a separate memory access, so you swap one multiply-add for one cache read
+              and gain little.</p>
+            <h4>Reading the chart</h4>
+            <p>Score computation takes about 585 µs with ordinary attention, about 435 µs with PQ, and about 70 µs with
+              NoMAD. PQ and NoMAD pay a little more when adding a key to the cache (the green bars), because each new
+              key has to be matched to its nearest centroids. That is a one-time cost per token, while the score
+              computation repeats for every key at every step.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s44">
+          <div class="slide-frame">
+            <div class="tag">Slide 44 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-44.png"
+              alt="Problem: attention computation is faster now, but how can we make lookups faster?">
+            <div class="slide-caption">slide 44 · now the lookups are the bottleneck</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The multiplies are gone, and the lookups are now the slow part.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s45">
+          <div class="slide-frame">
+            <div class="tag">Slide 45 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-45.png"
+              alt="Solution: SIMD registers to the rescue. SIMD registers on CPUs ensure faster in-register lookups. SIMD registers have size of 128 bits. With the above fp32 calculation, there can only be 4 centroids, leading to very high quantization errors. So what can we do?">
+            <div class="slide-caption">slide 45 · put the table in a register</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Keep the lookup table inside a SIMD register, where lookups are much faster than in cache. A 128-bit
+              register holds only four FP32 values, though, which would mean only 4 centroids per chunk.</p>
+            <h4>Why 4 centroids is too few</h4>
+            <p>128 / 32 = 4. Each key chunk would be rounded to one of only four points, which is a very coarse
+              approximation, and attention scores would be badly off. You need more entries in the same 128 bits.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s46">
+          <div class="slide-frame">
+            <div class="tag">Slide 46 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-46.png"
+              alt="SIMD registers to the rescue. 1. That's where quantization helps. 2. Convert fp32 to 8 bits using symmetric quantization discussed earlier. 3. 128/8 gives 16 centroids compared to 4, so more representation capacity for the attention score. Is that all? No. Quantized dot products and constrained codebooks enable the LUT to be stored in SIMD registers, but the layout format of the key cache needs to be reorganized to take advantage of SIMD instructions.">
+            <div class="slide-caption">slide 46 · quantize the table to fit 16 entries</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Quantize the table's entries from FP32 to 8 bits with the symmetric recipe from slide 24. Now 128 / 8 =
+              16 entries fit in one register, so each chunk can have 16 centroids. The key cache layout also has to
+              change.</p>
+            <h4>What changes</h4>
+            <p>With 16 centroids, each key chunk's code is 4 bits (2<sup>4</sup> = 16). The table entries are
+              approximate dot products rounded to 8 bits. That adds a second small error on top of PQ's, which is the
+              price of fitting in a register. This is the same quantization from §7, applied to a lookup table
+              instead of a weight matrix.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s47">
+          <div class="slide-frame">
+            <div class="tag">Slide 47 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-47.png"
+              alt="Left: LLM attention K_cache as n keys × d fp32 values in row-major order. Middle: NoMAD transposed blocked K_code, blocks of 32 keys, with the 4-bit codes c for keys 1 and 17, 2 and 18, and so on packed into each byte, column by column for each chunk s. Right: NoMAD lookup-based attention-score computation, a SIMD register holding LUT_s[0..15] of 8-bit quantized distances, a SIMD shuffle and accumulate over the codes c_s^1 ... c_s^32, with a memory hierarchy pyramid: registers, L1/L2/L3 cache, RAM. Bullets: for one query chunk NoMAD has a 16-value lookup table of 8-bit values. Assume 32 cached key codes, each 0 to 15, so 4 bits. SIMD shuffle operation. Each code is 4 bits but the shuffle takes byte-sized indices, so 2 key codes fit in each byte. 32 keys processed in 2 batches with 16 lookups. Column major instead of row major allows parallel computation for each chunk.">
+            <div class="slide-caption">slide 47 · SIMD shuffle over a transposed key cache</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>How NoMAD does the lookups. The table for one query chunk is 16 bytes in one register. The key codes
+              are stored in blocks of 32 keys, chunk by chunk, with two 4-bit codes per byte. A single SIMD shuffle
+              instruction then looks up 16 keys at once, and two shuffles cover the block of 32.</p>
+            <h4>What a shuffle does</h4>
+            <p>A shuffle instruction takes two 16-byte registers. One is a table, and the other holds 16 indices from
+              0 to 15. It returns 16 bytes, where byte <em>i</em> is table[index<sub><em>i</em></sub>]. Load the
+              query's 16-entry table into the first register and 16 key codes into the second, and one instruction
+              gives you that chunk's partial score for 16 keys.</p>
+            <h4>Why the layout has to change</h4>
+            <p>The shuffle needs 16 codes for the <em>same</em> chunk sitting side by side in memory. The normal
+              cache stores each key's values together (row-major), which would scatter them. NoMAD stores the codes
+              for chunk <em>s</em> of keys 1–32 next to each other. Each byte holds two codes, the low 4 bits for one
+              key and the high 4 bits for another (keys 1 and 17, 2 and 18, and so on). So 16 bytes cover all 32 keys.
+              One shuffle uses the low halves and another the high halves. Repeating this for every chunk and adding
+              up gives the 32 approximate scores.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s48">
+          <div class="slide-frame">
+            <div class="tag">Slide 48 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-48.png"
+              alt="Results for CodeLlama-7B with 16-bit and 4-bit weights, standard attention vs NoMAD-Attention (d_sub = 1): time to first token vs prompt length, decoding time vs context length, and tokens per second vs context length; NoMAD decodes faster and its decoding time grows more slowly. Perplexity on PTB and WikiText-2 vs key cache compression factor. Text: decoding time of Llama 7B (fp16) with NoMAD is lower than Llama 7B (4 bits) at 16k context length. MAD attention: 16000·d dot product operations. NoMAD attention: 16d dot product operations.">
+            <div class="slide-caption">slide 48 · NoMAD results</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>On CodeLlama-7B running on a CPU, NoMAD's decoding time grows much more slowly with context than
+              standard attention's. At 16k context, the 16-bit model with NoMAD decodes faster than the 4-bit model
+              with ordinary attention. The lower plots show what the key-cache compression costs in perplexity.</p>
+            <h4>Reading the plots</h4>
+            <ul>
+              <li><strong>Decoding time.</strong> At about 16k tokens, standard attention takes roughly 730 ms per
+                token with 16-bit weights and roughly 510 ms with 4-bit weights. NoMAD with 16-bit weights takes
+                about 470 ms. So switching to NoMAD helped more than cutting the weights from 16 to 4 bits.</li>
+              <li><strong>Tokens per second.</strong> With 4-bit weights at 16k context, NoMAD gives about 4 tokens
+                per second against about 2 for standard attention.</li>
+              <li><strong>Time to first token.</strong> This barely changes. Prefill is a large matrix multiply
+                either way, and NoMAD targets the decode step.</li>
+              <li><strong>Perplexity.</strong> Perplexity stays close to the uncompressed model at mild compression
+                and climbs steeply as compression gets aggressive. On WikiText-2, it goes from about 5.8 to 34.4 and
+                higher.</li>
+            </ul>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>"16<em>d</em> operations" counts only the multiply-adds needed to build the tables. With 16
+                centroids, each query chunk is dotted with 16 centroids, which totals 16 × <em>d</em> MADs across all
+                chunks (2,048 for <em>d</em> = 128), and that doesn't depend on context length. Standard attention
+                needs 16,000 × 128 ≈ 2.05 million at 16k context. NoMAD still does work for every cached key, but
+                that work is shuffles and additions in registers, not multiply-adds. So it still grows with context,
+                just far more slowly.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="wrap">
+        <h2><span class="num">§11</span>Questions, and the whole talk in one paragraph</h2>
+
+        <div class="slide" id="s49">
+          <div class="slide-frame">
+            <div class="tag">Slide 49 / 49</div>
+            <img src="../assets/seminars/S-efficient-lms/slide-49.png" alt="Questions?">
+            <div class="slide-caption">slide 49 · questions</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The closing slide.</p>
+            <h4>Good questions to check yourself with</h4>
+            <ul>
+              <li>Why does unstructured 50% sparsity with CSR often use more memory than the dense matrix?</li>
+              <li>In OBS, what does the update Δ<strong>w</strong> do, and why does OBD never need one?</li>
+              <li>Why does Wanda compare weights within an output row rather than across the whole layer?</li>
+              <li>DFloat11 stores sign and mantissa unchanged. Why compress only the exponent?</li>
+              <li>What goes wrong in QServe's second level if the first level uses the full ±127 range?</li>
+              <li>Why does NoMAD need 8-bit table entries and 4-bit key codes rather than FP32 and 8-bit?</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="section-intro" style="margin-top:1.5rem">
+          Because the lottery ticket result shows that good sparse
+          networks are found by training large ones, the talk's recipe is
+          to train big and compress afterwards. Pruning has to remove
+          weights in patterns that hardware can use, which means 2:4 or
+          whole neurons rather than scattered zeros. Choosing what to
+          remove works best with second-order information (OBD, OBS,
+          SparseGPT) or with activation sizes (Wanda), and PruneNet and MoNE
+          show it can be done without calibration data or by replacing
+          experts with constants. Quantization usually costs less accuracy.
+          DFloat11 is lossless at about 11 bits because BF16 exponents
+          carry only about 2.6 bits of information, and QServe reaches 4-bit
+          weights and KV cache while still using INT8 hardware. NoMAD shows
+          that the computation itself can change too, by turning attention
+          scores into register lookups on a CPU. For an exam, be able to
+          score weights by hand with OBD, OBS and Wanda, quantize a group
+          the way QServe does, and explain why each method's data layout
+          suits its hardware.
+        </p>
+      </section>
+
+      <div class="pager">
+        <a class="prev" href="vishal-rao-data-creation.html">
+          <span class="dir">← back</span>
+          <span class="lbl">Seminar · Data Creation</span>
+        </a>
+        <a class="next" href="trisanu-bhar-ttt-learning.html">
+          <span class="dir">next →</span>
+          <span class="lbl">Seminar · Test-Time Training</span>
+        </a>
+      </div>
+
+      <footer class="foot">
+        <div>Seminar · Efficient Language Models · Shruthi Muthukumar · ANLP Monsoon '26</div>
+        <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/anlp-study-guide" target="_blank"
+            rel="noopener">github ↗</a></div>
+      </footer>
+    </main>
+
+    <aside class="rail-right">
+      <div class="kicker">progress</div>
+      <div class="heatmap-rail" aria-hidden="true"></div>
+      <div class="kicker">sections</div>
+      <div class="rail-toc">
+        <a href="#deck">at a glance</a>
+        <a href="#why">§1 the whole model?</a>
+        <a href="#sparsity">§2 sparsity</a>
+        <a href="#obd">§3 OBD &amp; OBS</a>
+        <a href="#llm-pruning">§4 Wanda &amp; SparseGPT</a>
+        <a href="#prunenet">§5 PruneNet</a>
+        <a href="#mone">§6 MoNE</a>
+        <a href="#quant">§7 quantization</a>
+        <a href="#dfloat11">§8 DFloat11</a>
+        <a href="#qserve">§9 QServe</a>
+        <a href="#nomad">§10 NoMAD</a>
+        <a href="#wrap">§11 wrap-up</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>
