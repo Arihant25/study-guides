@@ -6,9 +6,24 @@
   <title>Seminar · Test-Time Training — ANLP Study Guide</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-    content="Student seminar by Trisanu Bhar for Advanced NLP Monsoon 2026 IIIT-H: Test-Time Training. Slides will land here once the seminar is presented.">
-  <meta name="robots" content="index, follow">
+    content="Student seminar by Trisanu Bhar for Advanced NLP Monsoon 2026 IIIT-H: training at test time, from Sun et al.'s self-supervised head to TTT layers, Titans, fast weights, In-Place TTT and large-chunk TTT (LaCT).">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://arihant25.github.io/anlp-study-guide/seminars/trisanu-bhar-ttt-learning.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="Test-Time Training: let the model keep learning | ANLP Seminar">
+  <meta property="og:description"
+    content="How a model can learn from an unlabeled input before predicting on it, and how that idea became a sequence layer: TTT, Titans, fast weights, In-Place TTT and LaCT, with worked numbers.">
+  <meta property="og:url" content="https://arihant25.github.io/anlp-study-guide/seminars/trisanu-bhar-ttt-learning.html">
+  <meta property="og:image" content="https://arihant25.github.io/anlp-study-guide/assets/seminars/S-ttt/slide-01.png">
+  <meta property="og:image:alt" content="TTT, Training at Test Time seminar title slide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Test-Time Training: let the model keep learning | ANLP Seminar">
+  <meta name="twitter:description"
+    content="Self-supervised updates at inference, the hidden state as a model, Titans' surprise-driven memory, and making it fast with chunks, worked through slide by slide.">
+  <meta name="twitter:image" content="https://arihant25.github.io/anlp-study-guide/assets/seminars/S-ttt/slide-01.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP Seminar: Test-Time Training","url":"https://arihant25.github.io/anlp-study-guide/seminars/trisanu-bhar-ttt-learning.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"seminar notes","educationalLevel":"graduate"}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
@@ -26,11 +41,26 @@
       </div>
       <nav>
         <div class="grp">On this page</div>
-        <a href="#status">Status</a>
-        <a href="#topic">What the seminar covers</a>
+        <a href="#deck">The deck at a glance</a>
+        <a href="#why">§1 · When test data looks different</a>
+        <a href="#head">§2 · A self-supervised head</a>
+        <a href="#layer">§3 · TTT as a sequence layer</a>
+        <a href="#titans">§4 · Titans</a>
+        <a href="#linear">§5 · Linear attention as memory</a>
+        <a href="#surprise">§6 · Surprise, momentum, forgetting</a>
+        <a href="#variants">§7 · MAC, MAG and MAL</a>
+        <a href="#fast">§8 · Fast and slow weights</a>
+        <a href="#inplace">§9 · In-Place TTT</a>
+        <a href="#lact">§10 · LaCT: large chunks</a>
+        <a href="#wrap">§11 · Research notes &amp; wrap-up</a>
 
         <div class="grp">Elsewhere</div>
-        <a href="../index.html">← Home</a>
+        <a href="shruthi-m-efficient-deployment.html">← Seminar: Efficient Language Models</a>
+        <a href="abdul-nalawala-reasoning.html">Next Seminar: Reasoning →</a>
+        <a href="../lectures/14-rnn-advances.html#ttt">Lecture 14 · TTT layers</a>
+        <a href="../lectures/6-more-attention.html#linear">Lecture 6 · Linear attention</a>
+        <a href="../assignments/3-mamba-deltanet-gnn.html#delta">A3 · DeltaNet</a>
+        <a href="../index.html">Home</a>
       </nav>
     </aside>
 
@@ -42,64 +72,1391 @@
 
     <main>
       <section class="hero">
-        <div class="kicker">Seminar · Trisanu Bhar</div>
-        <h1>Test-Time Training.</h1>
+        <div class="kicker">Seminar · Trisanu Bhar · 48 slides</div>
+        <h1>Test-time training: <em>let the model keep learning while it reads.</em></h1>
         <p class="lead">
-          A student-led seminar on networks that keep learning at inference —
-          adapting weights, or a small piece of them, to the specific example
-          the model is looking at right now. This page will hold the
-          slide-by-slide study companion once the deck is available.
+          A trained model normally freezes its weights before it sees a
+          test input. Test-time training (TTT) lets it take a few gradient
+          steps on each input first, using a task whose labels come from the
+          input itself. The seminar starts with that idea for images, then
+          follows it into language models, where the "hidden state" of a
+          recurrent layer becomes a small network trained token by token.
+          From there it covers Titans and its surprise-driven memory, the
+          older idea of fast weights, In-Place TTT (which reuses a
+          transformer's own MLP as the memory), and LaCT, which makes the
+          whole thing fast by updating on large chunks of tokens.
         </p>
         <div class="meta">
-          <span class="pill">Seminar</span>
+          <span class="pill heat">Seminar</span>
+          <span class="pill">48 slides</span>
           <span class="pill">Trisanu Bhar</span>
-          <span class="pill">slides pending</span>
         </div>
       </section>
 
-      <section id="status">
-        <h2><span class="num">§0</span>Status</h2>
-        <div class="callout link">
-          <div class="callout-label">→ Not yet online</div>
-          <p>The seminar hasn't been presented yet, so no slides are available. Once the deck lands, this page will
-            get the same slide-by-slide walkthrough treatment as the other seminars — every slide embedded verbatim
-            with a first-principles explanation underneath.</p>
+      <section id="deck">
+        <h2><span class="num">§0</span>The deck at a glance</h2>
+        <p class="section-intro">
+          Slides 1–7 set up the problem of a test distribution that differs
+          from the training one, and give Sun et al.'s 2020 answer, a second
+          head trained on a self-supervised task that can still be computed
+          at test time. Slides 8–12 turn that into a sequence layer. The
+          recurrent state is now the weights of a small model, and each
+          token takes one gradient step on it. Slides 13–26 cover Titans,
+          building its memory update from linear attention, the delta rule,
+          momentum and forgetting, and then the three ways it wires memory
+          into attention. Slides 27–30 step back to Hebbian learning and
+          fast weights, which is where the "fast and slow weights" language
+          of TTT papers comes from. Slides 31–37 cover In-Place TTT, and
+          slides 38–43 cover LaCT. The deck closes with advice for anyone
+          doing research on TTT, and the citations.
+        </p>
+        <p>
+          One idea runs through the whole talk. A memory can be a set of
+          weights, and writing to it can be a gradient step on a
+          reconstruction loss. Lecture 14 met the same idea in
+          <a class="xref" href="../lectures/14-rnn-advances.html#ttt">its TTT section</a>, and the delta rule from
+          <a class="xref" href="../assignments/3-mamba-deltanet-gnn.html#delta">Assignment 3</a> is the simplest
+          case of it. This page reuses one small key-value example so you can see linear attention, the delta
+          rule and a TTT layer give different answers on the same inputs.
+        </p>
+      </section>
+
+      <hr class="soft">
+
+      <section id="why">
+        <h2><span class="num">§1</span>When test data looks different</h2>
+        <p class="section-intro">
+          A model trained on one distribution can fail badly on another, and nothing in its outputs warns you.
+          The opening slides state the problem and rule out the obvious
+          fixes.
+        </p>
+
+        <div class="slide" id="s1">
+          <div class="slide-frame">
+            <div class="tag">Slide 01 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-01.png"
+              alt="Title slide: TTT-Training at Test Time, Trisanu Bhar.">
+            <div class="slide-caption">slide 01 · title</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The title. TTT stands for test-time training, which means updating a model's weights while it
+              is being used, not only while it is being trained.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s2">
+          <div class="slide-frame">
+            <div class="tag">Slide 02 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-02.png"
+              alt="The problem. 1. Suppose we have train distribution as P and test distribution Q. 2. What if those distributions are different? 3. Can the model still predict for the test distribution? 4. Answer: meme of a pirate captain saying 'Well yes, but actually no'.">
+            <div class="slide-caption">slide 02 · train on P, test on Q</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Training data comes from a distribution <em>P</em> and test data from <em>Q</em>. If
+              <em>P</em> ≠ <em>Q</em>, can the model still predict well? The meme's answer is "sort of, but not
+              really".</p>
+            <h4>A toy shift</h4>
+            <p>Take a one-number input <em>u</em> drawn from a standard normal, with label 1 when <em>u</em> &gt; 0.
+              A model trained on this learns the rule "predict 1 if the input is positive". Now suppose every test
+              input arrives shifted by +2, as if every photo came from a brighter camera, so the model sees
+              <em>x</em> = <em>u</em> + 2 while the true label still depends on <em>u</em>.</p>
+            <ul>
+              <li>The model predicts 1 whenever <em>u</em> &gt; −2, which is about 97.7% of inputs.</li>
+              <li>It is right on the 50% with <em>u</em> &gt; 0 and on the 2.3% with <em>u</em> &lt; −2.</li>
+              <li>Accuracy falls from 100% to about 52%, close to a coin flip.</li>
+            </ul>
+            <p>Nothing about the model changed. Its weights were fitted to <em>P</em>, and on <em>Q</em> they draw
+              the boundary in the wrong place.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s3">
+          <div class="slide-frame">
+            <div class="tag">Slide 03 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-03.png"
+              alt="But why? 1. Model has not updated its params to learn samples that it has no idea how to work with. 2. Result: low accuracy. 3. Solution? Our options: a. Train on the test data (what even?) b. Use magic to update the parameters to make task accuracy better (huh?) c. Get more data which matches the test data, retrain, predict. d. Wait a minute. 4. TEST SAMPLES HAVE NO LABELS!!">
+            <div class="slide-caption">slide 03 · the fixes that don't work</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The model fails because its weights never adapted to the new kind of input. Each obvious fix
+              (train on the test data, collect matching data and retrain) runs into the same wall. Test inputs come
+              without labels.</p>
+            <h4>Why "collect more data" is not an answer</h4>
+            <p>Retraining needs labelled examples from <em>Q</em>, and you often do not know <em>Q</em> in advance.
+              A deployed model may see a new shift every day. What you do have is the test input itself. The rest
+              of the talk is about getting a training signal out of an input that has no label.</p>
+          </div>
         </div>
       </section>
 
-      <section id="topic">
-        <h2><span class="num">§1</span>What the seminar covers</h2>
-        <p>
-          <em>Test-Time Training</em> (TTT) breaks the usual assumption that a model's weights are frozen at
-          inference. Instead, for each test example (or short window of examples), the model runs a tiny
-          self-supervised optimisation loop on the input itself — for example, a masked-reconstruction objective —
-          nudging its parameters to fit that specific instance before producing the prediction.
+      <hr class="soft">
+
+      <section id="head">
+        <h2><span class="num">§2</span>A self-supervised head</h2>
+        <p class="section-intro">
+          Sun et al. (2020) solve the missing-label problem by adding a
+          second task whose labels the model can make for itself, such as
+          "which way was this image rotated?".
         </p>
-        <p>
-          The recent <em>TTT-layers</em> line (Sun et al., 2024) reframes this idea as a sequence model: the RNN's
-          hidden state is a small neural network whose weights are updated by gradient descent at every timestep, so
-          the "state" has essentially unlimited capacity. This connects it directly to State-Space Models and linear
-          RNNs, which are also efficient sequence models with a rich internal state.
-        </p>
-        <div class="callout link">
-          <div class="callout-label">→ Related material on this site</div>
-          <p>The bounded-state problem that TTT tries to solve is discussed in
-            <a class="xref" href="../lectures/6-more-attention.html#linear">Lecture 6 §5</a> under linear attention's
-            limitations. LoRA and adapters — parameter-efficient <em>train</em>-time analogues — are covered in the
-            <a class="xref" href="../pyqs/mid-2024.html">2024 mid-sem PYQ</a>.
-          </p>
+
+        <div class="slide" id="s4">
+          <div class="slide-frame">
+            <div class="tag">Slide 04 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-04.png"
+              alt="Well, what now? 1. Main problem: getting test sample outputs. 2. Sun et al. dealt with this by constructing a self supervised task. 3. The central idea: a model can learn from an unlabeled test example before making its prediction on that example. 4. Suppose we have a model to classify stuff. 5. What if we have 2 heads instead of 1, one task specific and the other self supervised? 6. Self supervised gives test time labels, use it to update params, hurray!">
+            <div class="slide-caption">slide 04 · two heads, one shared body</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Give the classifier two heads on top of a shared feature extractor. One head does the real task. The
+              other does a self-supervised task whose label can be computed from the input alone. At test time the
+              self-supervised head still has a loss, so you can take a gradient step before predicting.</p>
+            <h4>Why the shared body matters</h4>
+            <p>The gradient step updates the shared feature extractor, not just the self-supervised head. If the
+              brighter test images confuse the features, learning to predict rotations on those same images pushes
+              the features to make sense of them again. The main head reads the same features, so it benefits too.
+              This works when fixing the features for one task also fixes them for the other, which is why the
+              two tasks need to depend on the same visual content.</p>
+          </div>
         </div>
+
+        <div class="slide" id="s5">
+          <div class="slide-frame">
+            <div class="tag">Slide 05 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-05.png"
+              alt="The standard supervised objective is min over θ of (1/n) Σ_{i=1}^n ℓ_m(x_i, y_i; θ). x_i is the input image, y_i the ground truth task label such as object category, θ the model params, ℓ_m the main task loss such as cross entropy, n the number of examples.">
+            <div class="slide-caption">slide 05 · the ordinary training objective</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Plain supervised learning. Average the main-task loss ℓ<sub><em>m</em></sub> (for example cross-entropy)
+              over <em>n</em> labelled examples and minimise it over the parameters θ.</p>
+            <p>This is the baseline. Everything in θ is fixed once training ends, which is exactly the assumption
+              TTT drops.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s6">
+          <div class="slide-frame">
+            <div class="tag">Slide 06 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-06.png"
+              alt="The self supervised loss is ℓ_s(x, r; θ_s, θ_e) = −log p_{θs,θe}(r | T_r(x)). x is the original input, r a self-supervised target derived from the input, like the rotation. T_r(x) is a transformation of the input associated with target r. We train another head with its own params for the same images, and we rotate them. We know the rotations so we can predict them. Training objective: min over θ_e, θ_m, θ_s of (1/n) Σ [ℓ_m(x_i, y_i; θ_m, θ_e) + ℓ_s(x_i, τ_i; θ_s, θ_e)].">
+            <div class="slide-caption">slide 06 · rotation prediction as the second task</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The parameters split into three parts. θ<sub><em>e</em></sub> is the shared encoder,
+              θ<sub><em>m</em></sub> is the main head and θ<sub><em>s</em></sub> is the self-supervised head. The
+              self-supervised loss rotates the image by <em>r</em> (one of 0°, 90°, 180° or 270°) and asks the model
+              to name the rotation. Training minimises both losses together.</p>
+            <h4>Reading the loss</h4>
+            <p><em>T</em><sub><em>r</em></sub>(<em>x</em>) is the rotated image. The model outputs a probability for
+              each of the four rotations, and ℓ<sub><em>s</em></sub> is the negative log-probability of the right one.
+              The label <em>r</em> costs nothing, because you chose the rotation yourself.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>The slide describes <em>x</em> as "a sequence of tokens" but the example is images, and the final
+                objective writes the rotation label as τ<sub><em>i</em></sub> where the line above calls it
+                <em>r</em>. They are the same thing. Sun et al.'s paper uses images throughout.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s7">
+          <div class="slide-frame">
+            <div class="tag">Slide 07 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-07.png"
+              alt="Et voila. During test time, we can generate rotations of an image (the labels!) and predict that: θ*_e(x) ≈ argmin over θ_e of ℓ_s(x; θ_s, θ_e). And we use that to update the params: θ'_e = θ_e − η ∇_{θe} ℓ_s(x; θ_s, θ_e). This allows the model to adapt during test time.">
+            <div class="slide-caption">slide 07 · one gradient step per test input</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>At test time, rotate the test image, compute the rotation loss, and take a gradient step on the
+              encoder θ<sub><em>e</em></sub> only. Then predict the main label with the updated encoder.</p>
+            <h4>One step, with numbers</h4>
+            <p>Shrink the encoder to a single number <em>g</em> that scales the features. Suppose that, for this
+              test image, the self-supervised head gives the correct rotation a logit of <em>g</em> and the other
+              three rotations a logit of 0. Then</p>
+            <ul>
+              <li><em>p</em>(correct) = e<sup><em>g</em></sup> / (e<sup><em>g</em></sup> + 3), and the loss is
+                −log <em>p</em>.</li>
+              <li>The gradient of the loss with respect to <em>g</em> is −(1 − <em>p</em>).</li>
+            </ul>
+            <p>Start at <em>g</em> = 0.5. Then <em>p</em> = 1.649 / 4.649 = 0.355 and the loss is 1.037. The gradient
+              is −0.645, so a step with η = 1 moves <em>g</em> to 1.145. Now <em>p</em> = 0.512 and the loss is
+              0.670. The encoder has adapted to this one image, and the main head sees the adapted features.</p>
+            <h4>What happens to θ<sub><em>e</em></sub> afterwards</h4>
+            <p>In the simplest version the update is thrown away and the next test image starts again from the
+              trained θ<sub><em>e</em></sub>. If test data arrives as a stream from the same shifted distribution,
+              you can instead keep the updated weights and carry them forward. The second option is the one that
+              turns into a sequence model in the next section.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="layer">
+        <h2><span class="num">§3</span>TTT as a sequence layer</h2>
+        <p class="section-intro">
+          If you keep updating weights as inputs stream in, the weights
+          behave like the hidden state of an RNN. Sun et al. take that
+          literally and build a layer out of it.
+        </p>
+
+        <div class="slide" id="s8">
+          <div class="slide-frame">
+            <div class="tag">Slide 08 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-08.png"
+              alt="Ok, how do we extend this? 1. Sun et al. released another paper: Learning to (Learn at Test Time). 2. Idea is to have an inner loop and outer loop. Outer loop updates during training. Inner loop is trained with outer during training but also updates during testing. 3. During test time, we do reconstruction of the current token using a perturbed version of the same token. This acts as the self supervised task. 4. Sun et al. did experiments using 2 variants, MLP and Linear, for the inner loop and on ImageNet.">
+            <div class="slide-caption">slide 08 · inner loop and outer loop</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The follow-up paper, "Learning to (Learn at Test Time)", has two loops. The inner loop takes gradient
+              steps on a self-supervised task, rebuilding each input from a corrupted copy of it. It runs during
+              both training and testing. The outer loop is ordinary training, and it runs only during training. The
+              first experiments used ImageNet, with a linear model or an MLP as the inner learner.</p>
+            <h4>The two loops in plain words</h4>
+            <p>The inner loop is a learner. The outer loop teaches that learner how to learn. It chooses how inputs
+              are corrupted, what the reconstruction target is and where the inner model starts, so that a few
+              inner steps on a test input produce features that help the real task. The parentheses in the title
+              say this. The model is <em>learning to</em> do a good job of <em>learning at test time</em>.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s9">
+          <div class="slide-frame">
+            <div class="tag">Slide 09 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-09.png"
+              alt="I mean, how to extend this to ANLP? 1. Not to worry. Extension of their work: Learning to (Learn at Test Time): RNNs with Expressive Hidden States. 2. Basically, inner and outer loops in RNNs. Meme: 'Modern problems require modern solutions'.">
+            <div class="slide-caption">slide 09 · bringing it to language</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The language version is the 2025 paper "Learning to (Learn at Test Time): RNNs with Expressive Hidden
+              States". It puts the inner and outer loops inside an RNN.</p>
+            <p>The link is that a sequence is a stream. In text, the "test inputs" arriving one after another are
+              the tokens of a single document. Updating weights token by token is the same as updating a hidden
+              state token by token.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s10">
+          <div class="slide-frame">
+            <div class="tag">Slide 10 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-10.png"
+              alt="Learning to (Learn at Test Time): RNNs with Expressive Hidden States. Architectural change: modify the sequence modeling layers which are expressed as hidden states to be an update rule. Replace the hidden state (vectors) with a learnable model (learnable weight matrix). The learnable model could be MLP or linear model. Diagram: input tokens x_1..x_t feed hidden states W_0 → W_1 → ... → W_t with update rule W_t = W_{t−1} − η∇ℓ(W_{t−1}; x_t); output tokens z_t = f(x_t; W_t), the output rule.">
+            <div class="slide-caption">slide 10 · the hidden state is a model</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The hidden state is no longer a vector but the weights <em>W</em> of a small model <em>f</em>. The
+              update rule is one gradient step on a self-supervised loss for the current token. The output rule runs
+              the current token through <em>f</em> with the current weights. The inner model can be linear
+              (TTT-Linear) or a two-layer MLP (TTT-MLP).</p>
+            <h4>Compared with an ordinary RNN</h4>
+            <table>
+              <thead>
+                <tr><th></th><th>Classic RNN</th><th>TTT layer</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>State</td><td>vector <em>h</em><sub><em>t</em></sub></td><td>weights <em>W</em><sub><em>t</em></sub> of <em>f</em></td></tr>
+                <tr><td>Update</td><td><em>h</em><sub><em>t</em></sub> = σ(<em>A h</em><sub><em>t</em>−1</sub> + <em>B x</em><sub><em>t</em></sub>)</td><td><em>W</em><sub><em>t</em></sub> = <em>W</em><sub><em>t</em>−1</sub> − η∇ℓ</td></tr>
+                <tr><td>Output</td><td>read from <em>h</em><sub><em>t</em></sub></td><td><em>f</em>(<em>x</em><sub><em>t</em></sub>; <em>W</em><sub><em>t</em></sub>)</td></tr>
+                <tr><td>Cost per token</td><td>fixed</td><td>fixed</td></tr>
+              </tbody>
+            </table>
+            <p>The state still has a fixed size, so the cost per token does not grow with the length of the
+              document, unlike attention's KV cache from
+              <a class="xref" href="../lectures/5-attention.html#kvcache">Lecture 5</a>. What changes is how much a
+              state of that size can hold. A d × d matrix trained by gradient descent can store many key-value
+              associations, and an MLP can store a nonlinear map.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s11">
+          <div class="slide-frame">
+            <div class="tag">Slide 11 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-11.png"
+              alt="Outer loop: task next token prediction, loss CE, during test time weights are frozen. Inner loop: task predict the current token, loss reconstruction, during test time weights are updated. K becomes θ_K x_t, the training view (the corrupted input fed to the inner model f for reconstruction). V becomes θ_V x_t, the label view (the reconstruction target). Q becomes θ_Q x_t, the test view (what's fed to f to produce the output token). Diagrams: a residual block with LayerNorm, sequence modeling block, LayerNorm, MLP block; and a Transformer backbone where V, K, Q feed a TTT layer followed by LayerNorm and O. The Transformer architecture is based on Llama, with RoPE, SwiGLU MLP blocks and RMSNorm instead of LayerNorm.">
+            <div class="slide-caption">slide 11 · which weights learn when</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The two loops, made concrete. The outer loop trains the whole network for next-token prediction with
+              cross-entropy and is frozen at test time. The inner loop trains only <em>W</em>, with a reconstruction
+              loss, and keeps running at test time. The TTT layer slots in where self-attention would go in a
+              Llama-style block.</p>
+            <h4>Three projections, three jobs</h4>
+            <p>Each token <em>x</em><sub><em>t</em></sub> is projected three ways, and the names echo attention on
+              purpose.</p>
+            <ul>
+              <li><em>k</em><sub><em>t</em></sub> = θ<sub><em>K</em></sub><em>x</em><sub><em>t</em></sub> is the
+                input to the inner model during its training step (the "corrupted" view).</li>
+              <li><em>v</em><sub><em>t</em></sub> = θ<sub><em>V</em></sub><em>x</em><sub><em>t</em></sub> is what
+                the inner model should output for that input (the target).</li>
+              <li><em>q</em><sub><em>t</em></sub> = θ<sub><em>Q</em></sub><em>x</em><sub><em>t</em></sub> is what
+                you feed the updated inner model to get the layer's output.</li>
+            </ul>
+            <p>The projections θ<sub><em>K</em></sub>, θ<sub><em>V</em></sub>, θ<sub><em>Q</em></sub> belong to
+              the outer loop, so they are learned in training and fixed at test time. This is where "learning to
+              learn" happens. The outer loop decides what the inner learner should try to memorise. The backbone
+              choices (<a class="xref" href="../lectures/4-positional-encoding.html#rope">RoPE</a>,
+              <a class="xref" href="../lectures/8-feed-forward.html#glu">SwiGLU</a>, RMSNorm) are the usual Llama ones
+              and are not specific to TTT.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s12">
+          <div class="slide-frame">
+            <div class="tag">Slide 12 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-12.png"
+              alt="What happens in the TTT layer? The hidden state is a neural network f_W whose parameters W change as the sequence is processed. For each input, the network learns to reconstruct the value from the key: L(W; k_t, v_t) = ||f_W(k_t) − v_t||². Parameters updated by gradient descent: W_t = W_{t−1} − η ∇_W L(W_{t−1}; k_t, v_t). For the output: O_t = f_W(q_t). Instead of a fixed sized hidden state (like in RNNs) we have a parameterized hidden state.">
+            <div class="slide-caption">slide 12 · the update and output rules</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The inner loss asks <em>f</em> to map the key to the value. One gradient step on that loss gives the
+              new weights, and the output is <em>f</em> applied to the query with the new weights.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mtable columnalign="left">
+                  <mtr><mtd>
+                    <mi>ℒ</mi><mo>(</mo><mi>W</mi><mo>;</mo><msub><mi>k</mi><mi>t</mi></msub><mo>,</mo><msub><mi>v</mi><mi>t</mi></msub><mo>)</mo>
+                    <mo>=</mo><msup><mrow><mo>‖</mo><msub><mi>f</mi><mi>W</mi></msub><mo>(</mo><msub><mi>k</mi><mi>t</mi></msub><mo>)</mo><mo>−</mo><msub><mi>v</mi><mi>t</mi></msub><mo>‖</mo></mrow><mn>2</mn></msup>
+                  </mtd></mtr>
+                  <mtr><mtd>
+                    <msub><mi>W</mi><mi>t</mi></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub>
+                    <mo>−</mo><mi>η</mi><msub><mo>∇</mo><mi>W</mi></msub><mi>ℒ</mi><mo>(</mo><msub><mi>W</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>;</mo><msub><mi>k</mi><mi>t</mi></msub><mo>,</mo><msub><mi>v</mi><mi>t</mi></msub><mo>)</mo>
+                    <mspace width="2em"/>
+                    <msub><mi>o</mi><mi>t</mi></msub><mo>=</mo><msub><mi>f</mi><msub><mi>W</mi><mi>t</mi></msub></msub><mo>(</mo><msub><mi>q</mi><mi>t</mi></msub><mo>)</mo>
+                  </mtd></mtr>
+                </mtable>
+              </math>
+            </div>
+            <h4>TTT-Linear, two tokens by hand</h4>
+            <p>Let <em>f</em><sub><em>W</em></sub>(<em>k</em>) = <em>Wk</em> with <em>W</em> a 2 × 2 matrix. Then
+              the gradient is ∇<sub><em>W</em></sub>ℒ = 2(<em>Wk</em> − <em>v</em>)<em>k</em><sup>⊤</sup>. Start
+              from <em>W</em><sub>0</sub> = 0 and use η = 0.5.</p>
+            <table>
+              <thead>
+                <tr><th>Token</th><th><em>k</em></th><th><em>v</em></th><th><em>W</em><sub><em>t</em>−1</sub><em>k</em></th><th>error</th><th><em>W</em><sub><em>t</em></sub></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>(1, 0)</td><td>(2, 1)</td><td>(0, 0)</td><td>(−2, −1)</td><td>[[2, 0], [1, 0]]</td></tr>
+                <tr><td>2</td><td>(0.6, 0.8)</td><td>(0, 3)</td><td>(1.2, 0.6)</td><td>(1.2, −2.4)</td><td>[[1.28, −0.96], [2.44, 1.92]]</td></tr>
+              </tbody>
+            </table>
+            <p>After token 2, querying with <em>k</em><sub>2</sub> returns (0, 3), exactly <em>v</em><sub>2</sub>.
+              Querying with <em>k</em><sub>1</sub> returns (1.28, 2.44) rather than (2, 1). The second write
+              disturbed the first memory because the two keys overlap (<em>k</em><sub>1</sub> · <em>k</em><sub>2</sub>
+              = 0.6). Keep these numbers in mind, because §5 and §6 run the same keys and values through linear
+              attention and the delta rule.</p>
+            <div class="callout link">
+              <div class="callout-label">→ Same machinery, different name</div>
+              <p>For a linear <em>f</em>, this update is the delta rule. Lecture 14 shows the same reduction in
+                <a class="xref" href="../lectures/14-rnn-advances.html#ttt">its TTT section</a>. TTT-MLP swaps the
+                matrix for a two-layer MLP, which can store a nonlinear key-to-value map at a higher cost per
+                token.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="titans">
+        <h2><span class="num">§4</span>Titans: memory trained at test time</h2>
+        <p class="section-intro">
+          Titans (Behrouz, Zhong and Mirrokni, 2025) treats a TTT-style
+          network as long-term memory and pairs it with ordinary attention
+          as short-term memory.
+        </p>
+
+        <div class="slide" id="s13">
+          <div class="slide-frame">
+            <div class="tag">Slide 13 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-13.png"
+              alt="What's next? Titans: Learning to Memorize at Test Time. Google Research released this paper by Behrouz et al. This work mainly builds on the previous works and formalizes the TTT architecture, but across scenarios. Memory type: RNNs, vector valued memory. Transformers, matrix valued memory. Neural memory: stores data in parameters, takes notice of 'surprise events', decaying mechanism.">
+            <div class="slide-caption">slide 13 · Titans' neural memory</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Titans builds on TTT and frames it as memory. Its neural memory keeps information in its parameters,
+              pays more attention to surprising inputs, and slowly forgets.</p>
+            <h4>The three properties, before the math</h4>
+            <ul>
+              <li><strong>Stores data in parameters.</strong> Writing to memory is a gradient step, as in §3.</li>
+              <li><strong>Surprise.</strong> The size of the gradient measures how wrong the memory was about the
+                current token. A token the memory already predicts well barely changes it. A surprising one changes
+                it a lot.</li>
+              <li><strong>Decay.</strong> A forgetting factor shrinks old contents so the memory does not fill up
+                with stale associations.</li>
+            </ul>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>"Transformers have matrix-valued memory" is true for linear attention, whose state is a
+                d × d matrix (§5). Softmax attention has no compressed memory at all. It keeps every past key and
+                value, so its memory grows with the sequence.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s14">
+          <div class="slide-frame">
+            <div class="tag">Slide 14 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-14.png"
+              alt="TITANS: Architecture. Short term memory: mainly the normal attention used in transformers. Long term memory: mainly the Neural Memory Module introduced in the paper, based on the idea of Linear Attention and surprise based gradient, trained during testing. Persistent memory: trainable tokens to make the model understand the present task, fixed at inference.">
+            <div class="slide-caption">slide 14 · three kinds of memory</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Titans has three memories. Short-term memory is ordinary attention over a recent window. Long-term
+              memory is the neural memory module, trained at test time. Persistent memory is a set of learned tokens
+              that are fixed after training.</p>
+            <h4>How they differ</h4>
+            <table>
+              <thead>
+                <tr><th>Memory</th><th>What it is</th><th>Changes at test time?</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Short-term</td><td>attention over recent tokens</td><td>its contents do, its weights don't</td></tr>
+                <tr><td>Long-term</td><td>neural memory network</td><td>yes, its weights are updated</td></tr>
+                <tr><td>Persistent</td><td>learned tokens prepended to the input</td><td>no</td></tr>
+              </tbody>
+            </table>
+            <p>Persistent memory holds knowledge about the task that does not depend on the input, much as a
+              fixed system prompt would, except that the tokens are learned vectors rather than words.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="linear">
+        <h2><span class="num">§5</span>Linear attention as a memory</h2>
+        <p class="section-intro">
+          To derive Titans' update, the deck starts from attention, removes
+          the softmax, and finds a matrix that is written to once per token.
+        </p>
+
+        <div class="slide" id="s15">
+          <div class="slide-frame">
+            <div class="tag">Slide 15 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-15.png"
+              alt="Attention in Transformers. The equations Q = xW_Q, K = xW_K, V = xW_V and the softmax attention formula with √d_in are mostly hidden behind a meme: 'Ah yes, more attention'.">
+            <div class="slide-caption">slide 15 · softmax attention, mostly hidden by a meme</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The meme covers the formula, but the slide is ordinary causal softmax attention from
+              <a class="xref" href="../lectures/5-attention.html#core">Lecture 5</a>. With <em>Q</em> =
+              <em>xW</em><sub><em>Q</em></sub>, <em>K</em> = <em>xW</em><sub><em>K</em></sub> and <em>V</em> =
+              <em>xW</em><sub><em>V</em></sub>, the output at position <em>i</em> is</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>y</mi><mi>i</mi></msub><mo>=</mo>
+                <munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>i</mi></munderover>
+                <mfrac>
+                  <mrow><mi>exp</mi><mo>(</mo><msubsup><mi>Q</mi><mi>i</mi><mo>⊤</mo></msubsup><msub><mi>K</mi><mi>j</mi></msub><mo>/</mo><msqrt><msub><mi>d</mi><mtext>in</mtext></msub></msqrt><mo>)</mo></mrow>
+                  <mrow><msubsup><mo>∑</mo><mrow><mi>ℓ</mi><mo>=</mo><mn>1</mn></mrow><mi>i</mi></msubsup><mi>exp</mi><mo>(</mo><msubsup><mi>Q</mi><mi>i</mi><mo>⊤</mo></msubsup><msub><mi>K</mi><mi>ℓ</mi></msub><mo>/</mo><msqrt><msub><mi>d</mi><mtext>in</mtext></msub></msqrt><mo>)</mo></mrow>
+                </mfrac>
+                <msub><mi>V</mi><mi>j</mi></msub>
+              </math>
+            </div>
+            <p>The exp couples each query to each key inside the sum, so every new query has to revisit every past
+              key. That is the O(<em>t</em>) cost per token that the next three slides remove.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s16">
+          <div class="slide-frame">
+            <div class="tag">Slide 16 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-16.png"
+              alt="Linear Attention. Replace exp with a kernel function φ(x, y) = φ(x)φ(y). The attention equation becomes y_i = Σ_j φ(Q_iᵀK_j)V_j / Σ_ℓ φ(Q_iᵀK_ℓ), then y_i = Σ_j φ(Q_i)ᵀφ(K_j)V_j / Σ_ℓ φ(Q_i)ᵀφ(K_ℓ), then y_i = φ(Q_i)ᵀ Σ_j φ(K_j)V_j / φ(Q_i)ᵀ Σ_ℓ φ(K_ℓ).">
+            <div class="slide-caption">slide 16 · swap exp for a kernel and pull the query out</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Replace exp(<em>q</em><sup>⊤</sup><em>k</em>) with a similarity that factors as
+              φ(<em>q</em>)<sup>⊤</sup>φ(<em>k</em>). Then the query no longer sits inside the sum, so it can be
+              pulled out, leaving sums that do not depend on the query.</p>
+            <h4>Why the last line is the whole trick</h4>
+            <p>In the last line, Σ<sub><em>j</em></sub> φ(<em>K</em><sub><em>j</em></sub>)<em>V</em><sub><em>j</em></sub>
+              is the same for every future query. You can keep it as a running total and add one term per token,
+              instead of revisiting all past keys. That running total is a d × d matrix, and it is the "memory"
+              of the next slides. <a class="xref" href="../lectures/6-more-attention.html#linear">Lecture 6</a>
+              covers the same derivation.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>The first line of the slide writes φ(<em>x</em>, <em>y</em>) = φ(<em>x</em>)φ(<em>y</em>) and
+                φ(<em>Q</em><sup>⊤</sup><em>K</em>). What is meant is a similarity sim(<em>q</em>, <em>k</em>) =
+                φ(<em>q</em>)<sup>⊤</sup>φ(<em>k</em>), with φ applied to each vector separately. The second
+                equation on the slide has it right.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s17">
+          <div class="slide-frame">
+            <div class="tag">Slide 17 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-17.png"
+              alt="Linear Attention. Look at the numerator Σ_j φ(K_j)V_j. Replace j with t. If we choose φ as identity, φ(K_t) = K_t and φ(Q_t) = Q_t. Let M_t = Σ φ(K_t)V_t. So M_t is the sum till t and M_{t−1} is the sum till t−1. Therefore M_t = M_{t−1} + K_tᵀV_t.">
+            <div class="slide-caption">slide 17 · the running sum becomes a recurrence</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Take φ to be the identity and call the running numerator <em>M</em><sub><em>t</em></sub>. Each token
+              adds one outer product, so <em>M</em><sub><em>t</em></sub> = <em>M</em><sub><em>t</em>−1</sub> +
+              <em>K</em><sub><em>t</em></sub><sup>⊤</sup><em>V</em><sub><em>t</em></sub>.</p>
+            <h4>Shapes</h4>
+            <p>Here keys and values are row vectors of length <em>d</em>, so
+              <em>K</em><sub><em>t</em></sub><sup>⊤</sup><em>V</em><sub><em>t</em></sub> is a <em>d</em> × <em>d</em>
+              matrix. Every token adds one rank-1 matrix to <em>M</em>. The memory never gets bigger, however long
+              the sequence is.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s18">
+          <div class="slide-frame">
+            <div class="tag">Slide 18 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-18.png"
+              alt="Linear Attention. Also y_t ∝ Q_t M_t. So we get y_t = Q_t M_t. From the TITAN paper: M_t = M_{t−1} + K_tᵀV_t, labelled Read Operation; y_t = Q_t M_t, labelled Write Operation.">
+            <div class="slide-caption">slide 18 · write with an outer product, read with the query</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Drop the denominator and the output is <em>y</em><sub><em>t</em></sub> =
+              <em>Q</em><sub><em>t</em></sub><em>M</em><sub><em>t</em></sub>. Linear attention is now a memory
+              with one operation that stores and one that retrieves.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The labels on the slide are swapped. Adding <em>K</em><sub><em>t</em></sub><sup>⊤</sup><em>V</em><sub><em>t</em></sub>
+                to <em>M</em> <em>stores</em> the pair, so it is the write. Multiplying by the query
+                <em>retrieves</em>, so <em>y</em><sub><em>t</em></sub> = <em>Q</em><sub><em>t</em></sub><em>M</em><sub><em>t</em></sub>
+                is the read. The Titans paper labels them this way.</p>
+            </div>
+            <h4>The running example with linear attention</h4>
+            <p>Use the two pairs from slide 12, <em>k</em><sub>1</sub> = (1, 0) → <em>v</em><sub>1</sub> = (2, 1) and
+              <em>k</em><sub>2</sub> = (0.6, 0.8) → <em>v</em><sub>2</sub> = (0, 3). After both writes, reading with
+              <em>k</em><sub>2</sub> gives</p>
+            <p style="text-align:center"><em>k</em><sub>2</sub><em>M</em> = (<em>k</em><sub>2</sub> ·
+              <em>k</em><sub>1</sub>)<em>v</em><sub>1</sub> + (<em>k</em><sub>2</sub> · <em>k</em><sub>2</sub>)<em>v</em><sub>2</sub>
+              = 0.6 × (2, 1) + 1 × (0, 3) = (1.2, 3.6).</p>
+            <p>The answer should be (0, 3). The overlap between the keys leaks 0.6 of <em>v</em><sub>1</sub> into
+              the result, and nothing ever removes it. Each write only adds.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="surprise">
+        <h2><span class="num">§6</span>Surprise, momentum and forgetting</h2>
+        <p class="section-intro">
+          Titans changes linear attention's write in three steps. It writes
+          only the error, it carries surprise forward with momentum, and
+          it lets old memory decay.
+        </p>
+
+        <div class="slide" id="s19">
+          <div class="slide-frame">
+            <div class="tag">Slide 19 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-19.png"
+              alt="Changes in TITAN. Uses DeltaRule update: repeated addition is not good; if the sequence is very long, the values in M keep growing. Delta Rule changes this by just taking the difference of the current and previous update only. M_t = M_{t−1} + K_tᵀΔ_t where Δ_t = V_t − V̂_t and V̂_t is the 'past value'. In TITANs: M_t = M_{t−1} − θ_t ∇ℓ(M_{t−1}; x_t), with the gradient labelled Surprise.">
+            <div class="slide-caption">slide 19 · write the error, not the value</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Plain addition lets <em>M</em> grow without bound. The delta rule writes only the difference between
+              the new value and what the memory already returns. Titans writes this as a gradient step, and calls
+              the gradient the "surprise".</p>
+            <h4>What V̂<sub><em>t</em></sub> is</h4>
+            <p>V̂<sub><em>t</em></sub> = <em>K</em><sub><em>t</em></sub><em>M</em><sub><em>t</em>−1</sub>, the value
+              the memory currently returns for this key. If the memory already knows the pair, Δ<sub><em>t</em></sub>
+              = 0 and nothing is written. The slide's phrase "difference of the current and previous update" is
+              looser than this. It is the difference between the true value and the memory's current prediction.</p>
+            <h4>The running example with the delta rule</h4>
+            <p>After the first write, <em>M</em><sub>1</sub> = <em>k</em><sub>1</sub><sup>⊤</sup><em>v</em><sub>1</sub>.
+              For the second pair, V̂<sub>2</sub> = <em>k</em><sub>2</sub><em>M</em><sub>1</sub> = (1.2, 0.6), so
+              Δ<sub>2</sub> = (0, 3) − (1.2, 0.6) = (−1.2, 2.4). Writing <em>k</em><sub>2</sub><sup>⊤</sup>Δ<sub>2</sub>
+              and reading back with <em>k</em><sub>2</sub> gives exactly (0, 3). The leak from slide 18 is gone.
+              Reading with <em>k</em><sub>1</sub> gives (1.28, 2.44), the same matrix and the same numbers as the
+              TTT-Linear example on slide 12.</p>
+            <h4>Why the gradient form is the same thing</h4>
+            <p>For a linear memory with loss ℓ = ‖<em>kM</em> − <em>v</em>‖<sup>2</sup>, the gradient is
+              2<em>k</em><sup>⊤</sup>(<em>kM</em> − <em>v</em>). A step of size θ gives <em>M</em> +
+              2θ<em>k</em><sup>⊤</sup>(<em>v</em> − <em>kM</em>), which is the delta rule with step 2θ. Titans
+              keeps the gradient form because it also works when the memory is an MLP, where no simple
+              "difference" formula exists. The delta rule in
+              <a class="xref" href="../assignments/3-mamba-deltanet-gnn.html#delta-rule">Assignment 3</a> is this
+              same update.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s20">
+          <div class="slide-frame">
+            <div class="tag">Slide 20 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-20.png"
+              alt="Neural Memory Update. Total equation: M_t = M_{t−1} + S_t, S_t = η_t S_{t−1} (past surprise) − θ_t ∇ℓ(M_{t−1}; x_t) (momentary surprise). Here ℓ(M_{t−1}; x_t) = |M_{t−1}(k_t) − v_t|² with k_t = x_t W_K, v_t = x_t W_V, projections of x_t. For a forgetting mechanism, we add a 1 − α term in the read operation: M_t = (1 − α_t)M_{t−1} + S_t, S_t = η_t S_{t−1} − θ_t ∇ℓ(M_{t−1}; x_t).">
+            <div class="slide-caption">slide 20 · momentum on surprise, and a forget gate</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Two additions. The write <em>S</em><sub><em>t</em></sub> now carries a fraction
+              η<sub><em>t</em></sub> of the previous write (past surprise) as well as the new gradient (momentary
+              surprise). The old memory is multiplied by (1 − α<sub><em>t</em></sub>) before the write, so it
+              slowly fades.</p>
+            <h4>Why momentum helps a memory</h4>
+            <p>This is momentum from <a class="xref" href="../lectures/9-optimizers.html#momentum">Lecture 9</a>,
+              applied to the memory instead of to the model's weights. A surprising token is often the start of
+              something worth remembering, and the next few tokens may look unsurprising on their own. Momentum keeps
+              writing for a while after the surprise.</p>
+            <p>A scalar example, with θ = 0.1, α = 0.1 and gradients −5 (a surprise), then −0.5, −0.5, −0.5.</p>
+            <table>
+              <thead>
+                <tr><th>Token</th><th>Gradient</th><th>With η = 0.9: <em>S</em>, <em>M</em></th><th>With η = 0: <em>S</em>, <em>M</em></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>−5</td><td>0.5, 0.5</td><td>0.5, 0.5</td></tr>
+                <tr><td>2</td><td>−0.5</td><td>0.5, 0.95</td><td>0.05, 0.5</td></tr>
+                <tr><td>3</td><td>−0.5</td><td>0.5, 1.355</td><td>0.05, 0.5</td></tr>
+                <tr><td>4</td><td>−0.5</td><td>0.5, 1.72</td><td>0.05, 0.5</td></tr>
+              </tbody>
+            </table>
+            <p>Without momentum, the writes after the surprise are tiny and the forgetting cancels them, so
+              <em>M</em> sits at 0.5. With momentum, the surprise keeps contributing 0.45 per step and the memory
+              keeps building.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The slide says the forgetting term is added in the "read operation". It multiplies the old memory
+                during the update, so it is part of the write (see the note on slide 18).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s21">
+          <div class="slide-frame">
+            <div class="tag">Slide 21 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-21.png"
+              alt="Types of TITAN architecture. Combined: M_t = (1 − α_t)M_{t−1} + η_t S_{t−1} − θ_t ∇_M ℓ(M_{t−1}; x_t). Retain: (1 − α_t)M_{t−1} preserves some of the previous memory. Accumulate: η_t S_{t−1} carries forward past surprise information. Adapt: the gradient term changes the memory in response to the current input. Therefore we have 3 types of architectures: Memory as Context (MAC), Memory as Gate (MAG), Memory as Layer (MAL).">
+            <div class="slide-caption">slide 21 · the full update in one line</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The whole update in one equation, with a name for each term.</p>
+            <div class="eq boxed">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <msub><mi>M</mi><mi>t</mi></msub><mo>=</mo>
+                <munder><munder accentunder="true"><mrow><mo>(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mi>t</mi></msub><mo>)</mo><msub><mi>M</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><mo>⏟</mo></munder><mtext>retain</mtext></munder>
+                <mo>+</mo>
+                <munder><munder accentunder="true"><mrow><msub><mi>η</mi><mi>t</mi></msub><msub><mi>S</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><mo>⏟</mo></munder><mtext>accumulate</mtext></munder>
+                <mo>−</mo>
+                <munder><munder accentunder="true"><mrow><msub><mi>θ</mi><mi>t</mi></msub><msub><mo>∇</mo><mi>M</mi></msub><mi>ℓ</mi><mo>(</mo><msub><mi>M</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>;</mo><msub><mi>x</mi><mi>t</mi></msub><mo>)</mo></mrow><mo>⏟</mo></munder><mtext>adapt</mtext></munder>
+              </math>
+            </div>
+            <h4>The three knobs depend on the input</h4>
+            <p>α<sub><em>t</em></sub>, η<sub><em>t</em></sub> and θ<sub><em>t</em></sub> carry a subscript
+              <em>t</em> because the model computes them from the current token. It can decide to forget quickly at
+              a topic change, or to write strongly at a surprising token. This is the same move as making Mamba's Δ
+              depend on the input in
+              <a class="xref" href="../lectures/15-state-space-models.html#selection">Lecture 15</a>. Setting
+              α = 0, η = 0 and a linear memory recovers the plain delta rule of slide 19.</p>
+            <p>The last line of the slide is a bridge. With the memory defined, the question is how to connect it
+              to attention, and the paper gives three answers.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="variants">
+        <h2><span class="num">§7</span>MAC, MAG and MAL</h2>
+        <p class="section-intro">
+          The same memory module can sit beside attention in three places.
+          It can feed attention extra context, mix its output with
+          attention's, or run as a layer before it.
+        </p>
+
+        <div class="slide" id="s22">
+          <div class="slide-frame">
+            <div class="tag">Slide 22 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-22.png"
+              alt="Memory as Context. context_t = [h_t; p_1, p_2, ..., p_N; S^(t)]. We are updating the weight of M_{t−1} through forward pass in update eqn. Diagram with three bands: contextual memory (neural memory, retrieval, update; learning at test time), core (sequence, attention; in-context learning), persistent memory (learnable data-independent weights; fixed). Retrieved memory tokens and persistent tokens are concatenated before the current segment and fed to attention; attention output updates the memory and is combined with the memory output.">
+            <div class="slide-caption">slide 22 · memory as context (MAC)</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>In MAC, the sequence is processed in segments. For each segment <em>S</em><sup>(<em>t</em>)</sup>, the
+              model queries the long-term memory to get <em>h</em><sub><em>t</em></sub>, then attention runs over
+              the retrieved memory, the persistent tokens <em>p</em><sub>1</sub>…<em>p</em><sub><em>N</em></sub>
+              and the segment itself. Attention's output then updates the memory.</p>
+            <h4>An analogy</h4>
+            <p>Think of reading a long book one chapter at a time. Before each chapter you write a short recap of
+              what you remember (the retrieval), add fixed notes on how to read the book (persistent memory), and
+              then read the chapter with the recap in view. Attention decides how much of the recap to use. After
+              the chapter, your memory is updated with what you read.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s23">
+          <div class="slide-frame">
+            <div class="tag">Slide 23 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-23.png"
+              alt="Memory As Gate. x̃ = [p_1 p_2 ... p_Np] || x, y = SW-Attn*(x̃), o = y ⊗ M(x̃). Diagram: persistent tokens prepended to the sequence, which goes both to the neural memory and to attention; the two outputs are combined by ⊗.">
+            <div class="slide-caption">slide 23 · memory as gate (MAG)</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>In MAG, the input (with persistent tokens in front) goes down two branches in parallel. One is
+              sliding-window attention and the other is the neural memory. A gate combines the two outputs.</p>
+            <h4>Why two branches</h4>
+            <p>Sliding-window attention is exact but only sees the last few thousand tokens
+              (<a class="xref" href="../lectures/6-more-attention.html#sliding">Lecture 6</a>). The memory sees
+              everything but only as a compressed summary. The gate lets each position choose how much to trust
+              each source, so a token that needs a precise recent match leans on attention and a token that needs
+              something from long ago leans on the memory.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s24">
+          <div class="slide-frame">
+            <div class="tag">Slide 24 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-24.png"
+              alt="Memory As Layer. x̃ = [p_1 p_2 ... p_Np] || x, y = M(x̃), o = SW-Attn(y). Diagram: persistent tokens prepended, the sequence goes through the neural memory first and its output then goes to attention.">
+            <div class="slide-caption">slide 24 · memory as layer (MAL)</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>In MAL, the memory is a layer in the stack. Its output feeds sliding-window attention, which
+              produces the final output.</p>
+            <p>This is the usual hybrid design of a recurrent layer followed by an attention layer, of the kind
+              Lecture 14 discusses in <a class="xref" href="../lectures/14-rnn-advances.html#production">its
+              section on hybrids</a>. The only difference is that the recurrent layer here is a TTT-style memory.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s25">
+          <div class="slide-frame">
+            <div class="tag">Slide 25 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-25.png"
+              alt="So why are there 3 architectures? Each has its advantages and Google wanted to cover its bases. MAC: main advantage is direct access to long-term context, but its construction and architecture is more involved and complicated. MAG: flexible combination of memory and attention, but no direct attention over retrieved long-term memory. MAL: very simple design but less direct interaction between memory and attention.">
+            <div class="slide-caption">slide 25 · trade-offs of the three</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Each variant gives up something. MAC lets attention look straight at retrieved memory but is the most
+              complex to build. MAG mixes the two flexibly but attention never sees the memory directly. MAL is the
+              simplest but has the weakest coupling between memory and attention.</p>
+            <h4>One question that separates them</h4>
+            <p>Can attention look at what the memory retrieved? In MAC it can, because the retrieved tokens are part
+              of its input. In MAG it cannot, because the two branches only meet at the gate. In MAL attention only
+              sees the memory's transformed output, never the memory as separate context. Coupling rises from
+              MAL to MAG to MAC, and so does complexity.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s26">
+          <div class="slide-frame">
+            <div class="tag">Slide 26 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-26.png"
+              alt="Ok, but what's wrong? 1. No open source weights. 2. The gating mechanism needs training; the gate that blends attention output and the LMM output is a learned component. 3. The LMM input projection needs alignment; it needs its input/output projections to be dimensionally compatible. 4. The surprise-based update mechanism needs calibration; the LMM uses a surprise metric (gradient magnitude w.r.t. input) to decide what to memorize.">
+            <div class="slide-caption">slide 26 · practical problems with Titans</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Titans is hard to use in practice. No trained weights were released. The gate, the projections into
+              and out of the long-term memory module (LMM), and the surprise-driven update all have to be trained
+              or tuned before any of it works.</p>
+            <p>Points 2 to 4 share a cause. None of these parts can be bolted onto an existing pretrained model.
+              They have to be learned together with it, which means pretraining from scratch. Slide 44 comes back
+              to this.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>In Titans the surprise is the gradient of the memory's loss with respect to the memory's
+                <em>parameters</em>, ∇<sub><em>M</em></sub>ℓ, as on slides 19 to 21. It is not a gradient with
+                respect to the input.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="fast">
+        <h2><span class="num">§8</span>Fast and slow weights</h2>
+        <p class="section-intro">
+          A detour into where the vocabulary comes from. Fast weights change
+          within a sequence, slow weights change only during training.
+        </p>
+
+        <div class="slide" id="s27">
+          <div class="slide-frame">
+            <div class="tag">Slide 27 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-27.png"
+              alt="Slight Detour: Fast and Slow weights. 1. Something you should know: Hebbian learning. 'Neurons that fire together, wire together.' attributed jokingly to Sun Tzu (struck through) and then to Donald Hebb (Canadian psychologist). 2. Ok, but how do we use this in our line of work? 3. Answer: 'We' don't. It's been done. Paper: Using Fast Weights to Attend to the Recent Past, by Ba, Hinton et al.">
+            <div class="slide-caption">slide 27 · Hebbian learning</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Hebb's rule says the connection between two neurons strengthens when they are active at the same
+              time. Ba, Hinton and colleagues (2016) used it to give an RNN a second, fast-changing weight matrix.</p>
+            <h4>Hebb's rule as math</h4>
+            <p>If two units have activities <em>a</em> and <em>b</em>, Hebbian learning increases the weight between
+              them by an amount proportional to <em>ab</em>. For whole vectors that is an outer product,
+              Δ<em>W</em> ∝ <em>ab</em><sup>⊤</sup>. You have already seen this shape. Linear attention's write
+              <em>K</em><sup>⊤</sup><em>V</em> on slide 17 is a Hebbian update between keys and values.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s28">
+          <div class="slide-frame">
+            <div class="tag">Slide 28 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-28.png"
+              alt="Using Fast Weights to Attend to the Recent Past. Problem: RNNs keep forgetting; they compress history in a fixed sized vector h_t = f(W h_{t−1} + U x_t), where h_t, h_{t−1} are current and previous hidden states, W, U learned weights, x_t the input. What if we have a continuously updating weight matrix? Ba et al. proposed A_t = λA_{t−1} + η h_t h_tᵀ, where A_t is the fast-weight memory matrix, h the hidden state, η controls how much of the association is written, λ controls how much previous memory is retained. The h_t h_tᵀ outer product matrix contains information about associations in the hidden state.">
+            <div class="slide-caption">slide 28 · a fast-weight matrix with decay</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A normal RNN squeezes all history into one vector <em>h</em><sub><em>t</em></sub>. Ba et al. add a
+              matrix <em>A</em><sub><em>t</em></sub> that is updated every step by a decayed sum of outer products
+              of past hidden states. λ sets how fast old entries fade and η sets how strongly new ones are
+              written.</p>
+            <h4>Fast and slow, side by side</h4>
+            <table>
+              <thead>
+                <tr><th></th><th>Slow weights <em>W</em>, <em>U</em></th><th>Fast weights <em>A</em><sub><em>t</em></sub></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Changed by</td><td>backpropagation</td><td>the Hebbian rule above</td></tr>
+                <tr><td>Changes when</td><td>during training only</td><td>at every time step</td></tr>
+                <tr><td>Holds</td><td>general skills</td><td>what happened recently in this sequence</td></tr>
+              </tbody>
+            </table>
+            <p>Compare it with Titans' update on slide 21. λ plays the role of (1 − α) and η<em>hh</em><sup>⊤</sup>
+              plays the role of the write. The one thing missing is the error term of the delta rule. Fast weights
+              only add, like linear attention.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s29">
+          <div class="slide-frame">
+            <div class="tag">Slide 29 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-29.png"
+              alt="Using Fast Weights to Attend to the Recent Past. Authors modify RNN hidden state computation: h_{s+1}(t+1) = f(W h_t + C x_{t+1} + A_t h_s(t+1)). Here t is the ordinary sequence position, s an inner iteration to refine the hidden state for the next state. This is also a form of attention: A_t h_s = η Σ_{τ=1}^t λ^{t−τ} h_τ (h_τᵀ h_s), with h_τᵀh_s labelled similarity. You can think of h_s as the V from self attention.">
+            <div class="slide-caption">slide 29 · fast weights are attention over past states</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The next hidden state is refined in a few inner steps <em>s</em>, each adding
+              <em>A</em><sub><em>t</em></sub><em>h</em><sub><em>s</em></sub> to the usual input. Expanding
+              <em>A</em><sub><em>t</em></sub> shows that this term is a weighted sum of past hidden states, weighted
+              by how similar each one is to the current one, so it is a kind of attention.</p>
+            <h4>A small example</h4>
+            <p>Let <em>h</em><sub>1</sub> = (1, 0), <em>h</em><sub>2</sub> = (0, 1), λ = 0.5 and η = 1. Then
+              <em>A</em><sub>2</sub> = 0.5 <em>h</em><sub>1</sub><em>h</em><sub>1</sub><sup>⊤</sup> +
+              <em>h</em><sub>2</sub><em>h</em><sub>2</sub><sup>⊤</sup> = diag(0.5, 1). For a current state
+              <em>h</em><sub><em>s</em></sub> = (0.8, 0.6),</p>
+            <p style="text-align:center"><em>A</em><sub>2</sub><em>h</em><sub><em>s</em></sub> = 0.5 × 0.8 ×
+              <em>h</em><sub>1</sub> + 1 × 0.6 × <em>h</em><sub>2</sub> = (0.4, 0.6).</p>
+            <p>Each past state comes back in proportion to its similarity with <em>h</em><sub><em>s</em></sub>, and
+              the older one is discounted by λ. It works like attention with dot-product scores, no softmax and an
+              exponential decay with age.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>In attention terms, <em>h</em><sub><em>s</em></sub> is the <em>query</em>. It is what gets compared
+                with every past state. The past states <em>h</em><sub>τ</sub> are both the keys (inside the
+                similarity) and the values (the vectors being summed). The slide's suggestion to read
+                <em>h</em><sub><em>s</em></sub> as V has the roles reversed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" id="s30">
+          <div class="slide-frame">
+            <div class="tag">Slide 30 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-30.png"
+              alt="What's this got to do with TTT? If you read TTT papers, you will see 'fast and slow weights' a lot. In both Learning to (Learn at Test Time) and Learning to (Learn at Test Time): RNNs with Expressive Hidden States, slow weights are the outer-trained parameters that determine the inner learner's structure and behaviour, whereas the inner learner's parameters, updated using a self-supervised objective, are fast weights: W_{t+1} = W_t − η∇_W ℓ_t(W_t).">
+            <div class="slide-caption">slide 30 · the TTT reading of fast and slow</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>In TTT papers, the slow weights are everything the outer loop trains, and the fast weights are the
+              inner model's <em>W</em>, updated by gradient steps as the sequence is read.</p>
+            <h4>Putting the whole talk on one axis</h4>
+            <p>Every memory so far has fast weights and a rule for writing to them.</p>
+            <ul>
+              <li>Fast weights (Ba et al.) write <em>hh</em><sup>⊤</sup> with decay.</li>
+              <li>Linear attention writes <em>k</em><sup>⊤</sup><em>v</em> with no decay.</li>
+              <li>The delta rule and TTT-Linear write a gradient step on ‖<em>kW</em> − <em>v</em>‖<sup>2</sup>.</li>
+              <li>Titans writes a gradient step with momentum and decay, and can use an MLP as the memory.</li>
+            </ul>
+            <p>Moving down the list, the write rule gets closer to "train a model on the data you are reading".</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="inplace">
+        <h2><span class="num">§9</span>In-Place TTT</h2>
+        <p class="section-intro">
+          Instead of adding a memory module, In-Place TTT (Feng et al., 2026)
+          lets the down-projection of each transformer MLP act as the fast
+          weights.
+        </p>
+
+        <div class="slide" id="s31">
+          <div class="slide-frame">
+            <div class="tag">Slide 31 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-31.png"
+              alt="Back to the Future... I mean Present. Some work after this has been trying to apply TTT on transformer based architectures. One of the more popular is In-Place TTT by Feng et al. What's special? Titans and other architectures still need an external memory/module to act as the TTT module. What if we could use the architecture itself to come up with a module? All we need are some weights to act as the fast weights, and some sort of self supervised task that updates those weights at test time.">
+            <div class="slide-caption">slide 31 · the question In-Place TTT asks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Titans needs an extra module. In-Place TTT asks whether weights the transformer already has can serve
+              as fast weights. You need two things for TTT, some weights to update and a self-supervised task to
+              update them with.</p>
+            <p>The benefit is practical. If the fast weights are an existing layer, a pretrained transformer can be
+              turned into a TTT model without adding a new block that has to be trained from scratch.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s32">
+          <div class="slide-frame">
+            <div class="tag">Slide 32 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-32.png"
+              alt="In-Place TTT uses existing MLP weights as fast-weights and updates the weights in MLP layers at test time. Diagram: input embedding, attention, then an MLP with In-Place TTT. The gated linear layer's output is split into chunks; W_down^(i) is applied to chunk i (Apply), then updated (Update) using a loss L(O[i], V[i]) where V comes from Conv1D and Projection of the input embedding, giving ΔW^(i) and W_down^(i+1).">
+            <div class="slide-caption">slide 32 · the MLP's down-projection becomes the memory</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The MLP is split into two parts. The gate and up-projections stay fixed. The down-projection
+              <em>W</em><sub>down</sub> is updated chunk by chunk as the sequence is read. Each chunk is first
+              processed with the current <em>W</em><sub>down</sub> (apply), then used to update it (update).</p>
+            <p>The order matters. A chunk is processed with weights built only from earlier chunks, so no token sees
+              information from its own future. That is what makes the scheme causal.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s33">
+          <div class="slide-frame">
+            <div class="tag">Slide 33 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-33.png"
+              alt="In-Place TTT. Given a hidden representation H, the output of the MLP is O = (φ(H W_gateᵀ) ⊙ (H W_upᵀ)) W_downᵀ. O is the output, W_gate the gated projection, W_up the up projection, W_down the down projection. Meme of two surprised faces pointing.">
+            <div class="slide-caption">slide 33 · the gated MLP</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The standard gated MLP from <a class="xref" href="../lectures/8-feed-forward.html#glu">Lecture 8</a>.
+              The gate and up-projections expand <em>H</em> to width <em>d</em><sub>ff</sub>, and the
+              down-projection brings it back to <em>d</em><sub>model</sub>.</p>
+            <h4>Why the down-projection is a natural memory</h4>
+            <p>Write <em>Z</em> for the expanded activations, so <em>O</em> = <em>ZW</em><sub>down</sub><sup>⊤</sup>.
+              That is a linear map from a <em>d</em><sub>ff</sub>-dimensional "key" <em>Z</em> to a
+              <em>d</em><sub>model</sub>-dimensional output, which is exactly the shape of the linear memory in §5.
+              Lecture 8 also described FFNs as key-value stores of knowledge. In-Place TTT lets that store be
+              written to while reading.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s34">
+          <div class="slide-frame">
+            <div class="tag">Slide 34 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-34.png"
+              alt="Step 1: get intermediate representations Z = φ(H W_gateᵀ) ⊙ (H W_upᵀ) ∈ R^{n×d_ff}, and also value targets and outputs V, O ∈ R^{n×d_model}. (V is not the transformer V, it is derived using an aligned LM objective.) Step 2: chunk these so that we process in parallel. Apply operation: the current fast weights W_down^(i) process chunk Z[i], O[i] = Z[i](W_down^(i))ᵀ. Update operation: W_down^(i) is updated using Z[i] as keys and V[i] as values via one gradient descent step with loss L and learning rate η: W_down^(i+1) = W_down^(i) − η∇_W L(Z^(i)(W_down^(i))ᵀ, V^(i)).">
+            <div class="slide-caption">slide 34 · apply, then update, chunk by chunk</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The activations <em>Z</em> act as keys and a separately computed target <em>V</em> acts as values. The
+              sequence is cut into chunks. For chunk <em>i</em>, compute the output with the current weights, then
+              take one gradient step that pushes <em>Z</em><sub>[<em>i</em>]</sub><em>W</em><sub>down</sub><sup>⊤</sup>
+              toward <em>V</em><sub>[<em>i</em>]</sub>.</p>
+            <h4>Shapes, with numbers</h4>
+            <p>With <em>d</em><sub>model</sub> = 2048, <em>d</em><sub>ff</sub> = 8192 and chunks of 512 tokens,
+              <em>Z</em><sub>[<em>i</em>]</sub> is 512 × 8192, <em>W</em><sub>down</sub> is 2048 × 8192 and
+              <em>V</em><sub>[<em>i</em>]</sub> is 512 × 2048. Both apply and update are a few large matrix
+              products per chunk, which GPUs handle well. One update per token would mean thousands of tiny
+              updates instead. §10 is about exactly this cost.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s35">
+          <div class="slide-frame">
+            <div class="tag">Slide 35 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-35.png"
+              alt="LM-Aligned Objective. V = Conv1D(X_0) W_target, where X_0 is the token embeddings and W_target projects the output into value space; it is a learned weight matrix. Earlier in TTT, authors used a self supervised task like L(f_w(k_t), v_t), meaning given current token, learn to reconstruct current token. Authors of this paper argue the self supervised task should be next token prediction.">
+            <div class="slide-caption">slide 35 · a target that looks ahead</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The targets are built from the token embeddings, mixed by a short 1D convolution along the sequence
+              and then projected. Earlier TTT reconstructed the current token. In-Place TTT argues that, for a
+              language model, the inner task should be about the next token.</p>
+            <h4>Why the target should match the outer task</h4>
+            <p>The outer loop trains for next-token prediction. If the inner loop memorises "what is this token",
+              the fast weights may store things the model never needs. If it memorises "what tends to come next
+              after this kind of context", every write is directly useful to the outer task. The convolution lets
+              the target at a position include neighbouring tokens, which is how future information gets into
+              it. Because each chunk is applied before it is used for an update (slide 32), that future
+              information only reaches later chunks.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s36">
+          <div class="slide-frame">
+            <div class="tag">Slide 36 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-36.png"
+              alt="LM-Aligned Objective. For next-token prediction, we do the conv operation (a sliding window). O = Z W_down and instead of MSE, choose the Frobenius inner product L(O, V) = −⟨O, V⟩_F. L = −Tr(OᵀV) since ⟨A, B⟩_F = Tr(AᵀB), substituting O = Z W_down gives L = −Tr((Z W_down)ᵀV) = −Tr(W_downᵀ ZᵀV). Differentiating, ∂Tr(WᵀA) = A, so the derivative with respect to W_down is −ZᵀV̂. Putting this in gradient descent: W_down^(i) = W_down^(i−1) + η V̂_[i]ᵀ Z_[i].">
+            <div class="slide-caption">slide 36 · the update in closed form</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The loss is the negative Frobenius inner product between output and target, −⟨<em>O</em>,
+              <em>V</em>⟩<sub>F</sub>, rather than squared error. Its gradient is simple, so one gradient step adds
+              a matrix product of targets and activations to <em>W</em><sub>down</sub>.</p>
+            <h4>What the loss rewards</h4>
+            <p>⟨<em>O</em>, <em>V</em>⟩<sub>F</sub> sums the products of matching entries, so for each token it is
+              the dot product between the output and the target. Making it larger means making each output point
+              in the direction of its target. The update adds η<em>V</em><sup>⊤</sup><em>Z</em>, a sum of outer
+              products of targets and keys, which is the Hebbian write of slide 27 with the target as the value.</p>
+            <h4>One token, by hand</h4>
+            <p>Take <em>d</em><sub>ff</sub> = 2 and <em>d</em><sub>model</sub> = 1, with <em>Z</em> = (1, 2), target
+              <em>V</em> = 3 and <em>W</em><sub>down</sub> = (0.5, −0.5). The output is 0.5 − 1 = −0.5 and the loss
+              is −(−0.5 × 3) = 1.5. With η = 0.1 the update adds 0.1 × 3 × (1, 2) = (0.3, 0.6), so
+              <em>W</em><sub>down</sub> becomes (0.8, 0.1). The output is now 0.8 + 0.2 = 1.0 and the loss is −3.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Notation</div>
+              <p>The slide writes <em>O</em> = <em>ZW</em><sub>down</sub>, but slides 33 and 34 use <em>O</em> =
+                <em>ZW</em><sub>down</sub><sup>⊤</sup>. With the transpose (the convention used above), the
+                gradient is −<em>V</em><sup>⊤</sup><em>Z</em> and the update is +η<em>V</em><sup>⊤</sup><em>Z</em>,
+                which matches the slide's final line. Without it, the gradient would be −<em>Z</em><sup>⊤</sup><em>V</em>,
+                as in the middle line. Both are right for their own convention.</p>
+            </div>
+            <p>Unlike squared error, this loss has no minimum. Making <em>W</em><sub>down</sub> larger always makes
+              the dot products larger. The step size η therefore has to stay small, since each update simply adds
+              more of the same direction.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s37">
+          <div class="slide-frame">
+            <div class="tag">Slide 37 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-37.png"
+              alt="Figure 2: sliding window perplexity at context lengths 2k to 32k on the Pile for 500M and 1.5B models. In-Place TTT has the lowest perplexity, below LaCT, DeltaNet, GLA and SWA; SWA plateaus around 10.2 (500M) and 8.8 (1.5B). Table 3: evaluation of 4B models. Full Attn baseline: HellaSwag 55.67, ARC-E 64.52, ARC-C 33.19, MMLU 36.43, PIQA 72.63, RULER-4k 45.77, RULER-8k 38.09, RULER-16k 6.58. SWA baseline: 54.92, 64.18, 32.85, 36.06, 72.58, 14.77, 9.91, 5.07. In-Place TTT with Full Attn: 55.85, 64.98, 32.34, 37.42, 73.29, 49.98, 43.82, 19.99. In-Place TTT with SWA: 55.24, 64.60, 33.70, 36.48, 72.03, 28.33, 26.80, 7.57.">
+            <div class="slide-caption">slide 37 · results</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Results from the In-Place TTT paper. In the plots, perplexity keeps falling as context grows, and
+              In-Place TTT stays below the other efficient models. The table compares 4B models on short
+              commonsense benchmarks and on RULER, a long-context retrieval benchmark.</p>
+            <h4>Where the gains are</h4>
+            <p>On the short benchmarks the numbers barely move, by less than one point either way. The changes
+              show up on long context.</p>
+            <table>
+              <thead>
+                <tr><th>Backbone</th><th>RULER-4k</th><th>RULER-8k</th><th>RULER-16k</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Full attention</td><td>45.77 → 49.98</td><td>38.09 → 43.82</td><td>6.58 → 19.99</td></tr>
+                <tr><td>Sliding window</td><td>14.77 → 28.33</td><td>9.91 → 26.80</td><td>5.07 → 7.57</td></tr>
+              </tbody>
+            </table>
+            <p>The sliding-window rows show the idea most clearly. A window cannot see tokens that have left it,
+              so its RULER scores collapse. With In-Place TTT, information from those tokens survives in the
+              updated MLP weights, and RULER-4k roughly doubles. This is a test of whether the model can
+              <em>retrieve</em> old information, and the fast weights are where that information is kept.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="lact">
+        <h2><span class="num">§10</span>LaCT: large-chunk TTT</h2>
+        <p class="section-intro">
+          Test-Time Training Done Right (Zhang et al., 2025) keeps the TTT
+          idea but updates the fast weights once per large chunk, which
+          makes the update fast on a GPU.
+        </p>
+
+        <div class="slide" id="s38">
+          <div class="slide-frame">
+            <div class="tag">Slide 38 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-38.png"
+              alt="Another work: Test-Time Training Done Right by Zhang et al. improves on the previous work. They introduce the LaCT model. Main thing with the previous models is that the TTT update happens token wise. That's slow. We want fast. Meme of a muscular cartoon race car saying 'kachow'.">
+            <div class="slide-caption">slide 38 · per-token updates are slow</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Earlier TTT layers update the fast weights after every token, which makes them slow. LaCT
+              (large-chunk TTT) fixes that.</p>
+            <h4>Why per-token updates are slow</h4>
+            <p>A per-token update of a <em>d</em> × <em>d</em> matrix adds one outer product. The GPU has to read
+              and write all <em>d</em><sup>2</sup> numbers of <em>W</em> to do about 2<em>d</em><sup>2</sup>
+              arithmetic operations, roughly one operation per number moved. GPUs can do far more arithmetic than
+              that per byte of memory traffic, so most of the time is spent waiting on memory. The same
+              memory-bound situation came up for decoding in
+              <a class="xref" href="../lectures/13-quantization.html#s2">Lecture 13</a>.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s39">
+          <div class="slide-frame">
+            <div class="tag">Slide 39 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-39.png"
+              alt="Model details. Instead of performing gradient updates token-by-token, LaCT groups tokens into large chunks (e.g. chunk sizes of b = 16 up to thousands of tokens). It computes gradient updates on the combined chunk at once, giving matrix-matrix multiplications (GEMMs) that map efficiently to GPU tensor cores. For a chunk of size b, LaCT accumulates the loss over all key-value pairs {k_i, v_i} inside the chunk: L_chunk = Σ_{i=1}^b η_i · L(f_W(k_i), v_i), where η_i is a token-level dynamic learning rate predicted via an input projection.">
+            <div class="slide-caption">slide 39 · one update per chunk</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>LaCT sums the inner loss over a whole chunk of <em>b</em> tokens, each weighted by its own learning
+              rate η<sub><em>i</em></sub>, and takes one gradient step on the sum. Chunks range from 16 tokens to
+              many thousands.</p>
+            <h4>What one chunk update costs</h4>
+            <p>For a linear memory with the dot-product loss of slide 41, the chunk gradient is
+              −Σ<sub><em>i</em></sub> η<sub><em>i</em></sub><em>v</em><sub><em>i</em></sub><em>k</em><sub><em>i</em></sub><sup>⊤</sup>.
+              Stacked as matrices, that is a single product of a <em>d</em> × <em>b</em> matrix with a
+              <em>b</em> × <em>d</em> one. The GPU still reads and writes <em>W</em> once, but now does about
+              2<em>bd</em><sup>2</sup> operations for it, <em>b</em> times as much useful work per byte. With
+              <em>b</em> = 2048 that is enough to keep the tensor cores busy.</p>
+            <h4>The price</h4>
+            <p>Tokens inside a chunk cannot benefit from each other's updates, since the weights only change at the
+              end of the chunk. The next slide shows how LaCT handles that.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s40">
+          <div class="slide-frame">
+            <div class="tag">Slide 40 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-40.png"
+              alt="Figure 2: the basic diagram for a LaCT block. Window attention with a residual, then a Large-Chunk TTT layer: the input is split into large chunks, each projected to V, K, Q; V and K feed Update, Q feeds Apply with o_i = f_W(q_i); then a feed-forward block. The large-chunk TTT layer updates the fast weight W to store history chunk information, while window attention handles the internal structure within the chunk. Solid lines show flow over depth, dashed lines show the fast weight W passing through chunks over time.">
+            <div class="slide-caption">slide 40 · window attention inside, TTT across chunks</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>A LaCT block has window attention, then the large-chunk TTT layer, then a feed-forward layer. Window
+              attention handles relations between tokens inside a chunk. The fast weights carry information from
+              one chunk to the next.</p>
+            <p>This fills the gap from slide 39. Inside a chunk, nearby tokens can still see each other through
+              exact attention. Across chunks, everything older is compressed into <em>W</em>. It is the same
+              short-term and long-term split as Titans in §4, with the chunk size setting where one ends and the
+              other begins.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s41">
+          <div class="slide-frame">
+            <div class="tag">Slide 41 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-41.png"
+              alt="Model details. The fast weight W is updated via the computed gradient g = ∇_W L_chunk. Rather than simple linear projections, LaCT uses a bias-free SwiGLU-MLP as its fast-weight memory network f_W(x) = W_2[SiLU(W_1 x) ⊙ (W_3 x)], with a dot-product reconstruction loss L(f_W(k_i), v_i) = −f_W(k_i)ᵀv_i. They also use a Muon optimizer to stabilize the fast weight update. Results are competitive with impressive speedup, since it processes batches instead of per token (even across modalities).">
+            <div class="slide-caption">slide 41 · SwiGLU memory, dot-product loss, Muon</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The fast-weight memory is a small SwiGLU MLP, trained with the same kind of dot-product loss as
+              In-Place TTT. The update uses Muon instead of a plain gradient step.</p>
+            <h4>Why Muon here</h4>
+            <p>A chunk gradient sums many outer products, and a few large directions can dominate it. Plain
+              gradient descent would then write mostly those directions. <a class="xref"
+                href="../lectures/9-optimizers.html#muon">Muon</a> (Lecture 9) orthogonalises the update, which
+              evens out its singular values, so every direction in the chunk gets written at a similar strength.
+              The dot-product loss has no minimum (see slide 36), so keeping the update well-scaled also keeps the
+              weights from growing without control.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s42">
+          <div class="slide-frame">
+            <div class="tag">Slide 42 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-42.png"
+              alt="Limitations. Authors note the absence of rotation invariance; SwiGLU and linear fast weights (which they used) don't have this property. They didn't explore some language capabilities due to computation limitations. Not a limitation per se, but their novelty is across different modalities and doesn't explore the details of a single modality.">
+            <div class="slide-caption">slide 42 · limitations of LaCT</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The limitations the authors list. The fast-weight networks they tried lack rotation invariance.
+              Compute limits stopped them from testing some language abilities. And because the paper spans
+              several modalities, it goes less deep into any one of them.</p>
+            <p>The slide doesn't say more about rotation invariance, so treat it as a pointer to the paper. The
+              second point is the one to remember for language models. The long-context results are promising,
+              but not every language ability was tested.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s43">
+          <div class="slide-frame">
+            <div class="tag">Slide 43 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-43.png"
+              alt="Figure 5: Language model results. (a) 760M validation loss by token index up to 32k and (c) 3B validation loss: LaCT (Ours Muon, Ours Momentum) reaches lower per-position loss at large token indices than GLA SWA and DeltaNet SWA; full Transformer is lowest, Transformer SWA flattens. (b) 760M S-NIAH-1 and (d) 3B S-NIAH-2 retrieval accuracy by sequence length: Ours Muon stays high (above 90% at 32k for 760M, about 70–83% at 12–16k for 3B), Ours Momentum and GLA fall sharply. Our Muon variant consistently outperforms our Momentum variant.">
+            <div class="slide-caption">slide 43 · LaCT language-model results</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>LaCT's language results. Loss at late positions in a 32k-token sequence is lower than for GLA and
+              DeltaNet. On needle-in-a-haystack retrieval (S-NIAH), the Muon version holds up far better than the
+              momentum version.</p>
+            <h4>How to read the panels</h4>
+            <ul>
+              <li><strong>Loss by token index (a, c).</strong> A curve that keeps falling at large indices means the
+                model is using its long context. Transformer SWA flattens because its window forgets. LaCT keeps
+                falling, though it stays above full attention.</li>
+              <li><strong>Retrieval (b, d).</strong> Hide a fact early in a long text and ask for it at the end.
+                The Muon variant keeps most of the accuracy as the text grows, while the momentum variant drops
+                close to GLA. Only the update rule differs, so the choice of inner optimiser decides how much
+                the memory can hold.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <hr class="soft">
+
+      <section id="wrap">
+        <h2><span class="num">§11</span>Research notes and wrap-up</h2>
+        <p class="section-intro">
+          The talk ends with the presenter's own experience of TTT research,
+          then thanks and references.
+        </p>
+
+        <div class="slide" id="s44">
+          <div class="slide-frame">
+            <div class="tag">Slide 44 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-44.png"
+              alt="If you want to pursue this as a research topic. Mostly covered by a meme of a train labelled GPU RESOURCES hitting a school bus labelled TTT RESEARCH. Text underneath: There are levels to this pain. Level 1: start with a pretrained model, add auxiliary modules for fast weights, and a task to train the fast weight. Level 2: fast weights and slow weights are in different spaces, mostly depending on the input test distribution, so some finetuning is required to align them. Level 3: long context retrieval; TTT is closely associated with it; long context means high GPU usage (even with the deployment strategies Shruthi will present). Essentially a lot of pretraining is required, especially to align the fast weight space with the slow weight space. So beware.">
+            <div class="slide-caption">slide 44 · levels of pain</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The meme covers most of the text. The presenter tried TTT as a research project and describes three
+              levels of difficulty. First, adding fast-weight modules and a self-supervised task to a pretrained
+              model. Second, aligning the fast weights with the pretrained slow weights, which needs fine-tuning.
+              Third, long-context evaluation, which needs a lot of GPU memory.</p>
+            <h4>Why alignment is the hard part</h4>
+            <p>The slow weights of a pretrained model were trained without any fast weights in the loop. A new
+              fast-weight module starts with no idea what the surrounding layers expect, and the surrounding layers
+              have never seen its output. This is the same problem slide 26 raised about Titans. TTT works best
+              when the two kinds of weights are trained together from the start, which means pretraining. The
+              compression methods from the <a class="xref" href="shruthi-m-efficient-deployment.html">Efficient
+                Language Models seminar</a> help with deployment but not with that pretraining cost.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s45">
+          <div class="slide-frame">
+            <div class="tag">Slide 45 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-45.png"
+              alt="Closing cartoon: 'That's all Folks!'.">
+            <div class="slide-caption">slide 45 · end of the talk</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The end of the talk.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s46">
+          <div class="slide-frame">
+            <div class="tag">Slide 46 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-46.png"
+              alt="Acknowledgements. Would like to thank the TAs for enduring the 30 minutes and evaluating, and Manish sir for providing the opportunity and the encouragement. Meme: 'Me explaining the slides' and 'TAs'.">
+            <div class="slide-caption">slide 46 · acknowledgements</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>Thanks to the TAs and the instructor.</p>
+          </div>
+        </div>
+
+        <div class="slide" id="s47">
+          <div class="slide-frame">
+            <div class="tag">Slide 47 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-47.png"
+              alt="Meme of a dog looking sideways: 'Questions? Really?'.">
+            <div class="slide-caption">slide 47 · questions</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The call for questions.</p>
+            <h4>Questions to check yourself with</h4>
+            <ul>
+              <li>Why can a model train on a test input that has no label, and which parameters does Sun et al.'s
+                method update?</li>
+              <li>In a TTT layer, what are the state, the update rule and the output rule? Which weights belong to
+                the outer loop?</li>
+              <li>Run <em>k</em><sub>1</sub> = (1, 0) → (2, 1) and <em>k</em><sub>2</sub> = (0.6, 0.8) → (0, 3)
+                through linear attention and through the delta rule. Why do the two answers for <em>k</em><sub>2</sub>
+                differ?</li>
+              <li>In Titans' update, what does each of α, η and θ control, and what do you get if α = η = 0?</li>
+              <li>How does MAC differ from MAG in what attention can see?</li>
+              <li>Why does In-Place TTT apply a chunk before using it for an update?</li>
+              <li>Why is a chunk update faster on a GPU than <em>b</em> per-token updates with the same total
+                arithmetic?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" id="s48">
+          <div class="slide-frame">
+            <div class="tag">Slide 48 / 48</div>
+            <img src="../assets/seminars/S-ttt/slide-48.png"
+              alt="Citations. Ba, J., Mnih, V., and Kavukcuoglu, K. 2016. Using fast weights to attend to the recent past. NeurIPS 29. Behrouz, A., Zhong, P., and Mirrokni, V. 2025. Titans: Learning to memorize at test time. NeurIPS 38. Feng, G., Luo, S., Hua, K., Zhang, G., Huang, W., He, D., and Cai, T. 2026. In-place test-time training. ICLR. Sun, Y., Wang, X., Liu, Z., Miller, J., Efros, A., and Hardt, M. 2020. Test-time training with self-supervision for generalization under distribution shifts. ICML 37. Sun, Y., Li, X., Dalal, K., et al. 2025. Learning to (learn at test time): RNNs with expressive hidden states. ICML 42. Zhang, T., Bi, S., Hong, Y., et al. 2025. Test-time training done right. arXiv:2505.23884.">
+            <div class="slide-caption">slide 48 · citations</div>
+          </div>
+          <div class="explain">
+            <h4>On the slide</h4>
+            <p>The six papers the talk draws on.</p>
+            <div class="callout gotcha">
+              <div class="callout-label">⚠ Watch out</div>
+              <p>The fast-weights paper is by Ba, Hinton, Mnih, Leibo and Ionescu, as slide 27 says. The author list
+                on this slide (Ba, Mnih and Kavukcuoglu) belongs to a different paper. The list also leaves out the
+                first "Learning to (Learn at Test Time)" paper from slide 8.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="section-intro" style="margin-top:1.5rem">
+          Test-time training gets a learning signal from an input that has
+          no label by inventing a task whose answer is in the input itself,
+          such as the rotation of an image or the value hidden behind a key.
+          Sun et al. used that to adapt an image model to shifted test data.
+          Applied to a sequence, the same idea turns a layer's hidden state
+          into the weights of a small model that takes one gradient step per
+          token. For a linear model that step is the delta rule, which
+          fixes linear attention's habit of only ever adding to memory.
+          Titans adds momentum, so a surprising token keeps being written
+          for a while, and a forget gate, and then attaches the memory to
+          attention as context, as a gate or as a layer. Fast weights are
+          the older name for the same thing. In-Place TTT reuses the MLP
+          down-projection as the memory and trains it toward next-token
+          targets, and LaCT makes updates fast by doing them once per large
+          chunk with window attention covering the inside of each chunk.
+          For an exam, be able to run a two-token example through linear
+          attention, the delta rule and TTT-Linear by hand, and to say which
+          weights change at test time in each method.
+        </p>
       </section>
 
       <div class="pager">
-        <a class="prev" href="../index.html">
+        <a class="prev" href="shruthi-m-efficient-deployment.html">
           <span class="dir">← back</span>
-          <span class="lbl">Home</span>
+          <span class="lbl">Seminar · Efficient Language Models</span>
+        </a>
+        <a class="next" href="abdul-nalawala-reasoning.html">
+          <span class="dir">next →</span>
+          <span class="lbl">Seminar · Reasoning in LLMs</span>
         </a>
       </div>
 
       <footer class="foot">
-        <div>Seminar · Test-Time Training · ANLP Monsoon '26</div>
+        <div>Seminar · Test-Time Training · Trisanu Bhar · ANLP Monsoon '26</div>
         <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/anlp-study-guide" target="_blank"
             rel="noopener">github ↗</a></div>
       </footer>
@@ -110,8 +1467,18 @@
       <div class="heatmap-rail" aria-hidden="true"></div>
       <div class="kicker">sections</div>
       <div class="rail-toc">
-        <a href="#status">status</a>
-        <a href="#topic">topic</a>
+        <a href="#deck">at a glance</a>
+        <a href="#why">§1 shifted test data</a>
+        <a href="#head">§2 self-supervised head</a>
+        <a href="#layer">§3 TTT layer</a>
+        <a href="#titans">§4 Titans</a>
+        <a href="#linear">§5 linear attention</a>
+        <a href="#surprise">§6 surprise &amp; momentum</a>
+        <a href="#variants">§7 MAC, MAG, MAL</a>
+        <a href="#fast">§8 fast weights</a>
+        <a href="#inplace">§9 In-Place TTT</a>
+        <a href="#lact">§10 LaCT</a>
+        <a href="#wrap">§11 wrap-up</a>
       </div>
     </aside>
   </div>
