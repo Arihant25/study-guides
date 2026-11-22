@@ -1,0 +1,71 @@
+<div align="center">
+
+# Study Guides
+
+Study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time.
+
+[**Open the site →**](https://arihant25.github.io/study-guides/)
+
+[![Live site](https://img.shields.io/badge/site-arihant25.github.io%2Fstudy--guides-1d4fa8)](https://arihant25.github.io/study-guides/)
+[![Check links](https://github.com/Arihant25/study-guides/actions/workflows/links.yml/badge.svg)](https://github.com/Arihant25/study-guides/actions/workflows/links.yml)
+[![Content: CC BY-SA 4.0](https://img.shields.io/badge/content-CC%20BY--SA%204.0-lightgrey)](LICENSE-CONTENT)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-lightgrey)](LICENSE)
+
+</div>
+
+Each guide explains every symbol where it first appears and works through the past papers where they exist. They are plain HTML pages with no build step, so they load fast on a phone and print cleanly.
+
+## Guides
+
+### Monsoon 2026
+
+| Course | Code | Guide | What's in it |
+|---|---|---|---|
+| Advanced Natural Language Processing | CS7.501 | [`anlp/`](https://arihant25.github.io/study-guides/anlp/) | 16 lectures, 2 tutorials, 3 assignments, 6 seminars, the course project and two past mid-sem papers, each slide followed by an explanation |
+| Dynamical Processes of Complex Networks | SC1.440 | [`dpcn/`](https://arihant25.github.io/study-guides/dpcn/) | Three pages read in order (Quiz 1, Mid-sem, After mid-sem), plus Quiz 2, End-sem and memory sheets |
+| Introduction to Sociology | HS2.201 | [`sociology/`](https://arihant25.github.io/study-guides/sociology/) | Mid-sem (modules 1, 3 to 5) and end-sem (modules 6 to 9) notes, with flashcards and search |
+| Programming AI Accelerators | CS3.406 | [`paa/`](https://arihant25.github.io/study-guides/paa/) | GPUs and CUDA through matrix multiplication, roofline analysis, LLM inference and model compression, with interactive diagrams |
+| Signal Detection and Estimation Theory | EC5.406 | [`sdet/`](https://arihant25.github.io/study-guides/sdet/) | The detection half (lectures 1 to 11), with tutorial and homework solutions, flashcards and a formula sheet |
+
+## Repository layout
+
+```
+study-guides/
+├── index.html          home page that lists every guide
+├── 404.html
+├── sitemap.xml
+├── anlp/               one folder per course, served at /study-guides/<folder>/
+├── dpcn/
+├── paa/
+├── sdet/
+├── sociology/
+└── .impeccable/        design notes for the home page
+```
+
+Each course folder is a self-contained site with its own `index.html`, styles and assets. Guides only link within their own folder. Some folders have their own README with more detail, such as [`anlp/README.md`](anlp/README.md) and [`dpcn/README.md`](dpcn/README.md).
+
+The ANLP, DPCN, SDET and Sociology guides used to live in separate repositories. Their full commit histories were merged into this one, so `git log -- dpcn/` still shows every change.
+
+## Running it locally
+
+Clone the repo and serve the root folder with any static server.
+
+```sh
+git clone https://github.com/Arihant25/study-guides.git
+cd study-guides
+python -m http.server 8000
+```
+
+Then open <http://localhost:8000/>. Opening `index.html` straight from disk also works for most guides.
+
+The DPCN pages are generated from the `src-*` folders by `dpcn/build.mjs`. If you edit those sources, run `npm install` and `node build.mjs` inside `dpcn/`. Every other guide is edited by hand.
+
+## Contributing
+
+Corrections are very welcome. The quickest way is to [report a mistake](https://github.com/Arihant25/study-guides/issues/new?template=mistake.yml) with a link to the section. If you want to fix it yourself or add a guide for another course, read [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+The written notes, explanations and diagrams are under [CC BY-SA 4.0](LICENSE-CONTENT). The code (HTML structure, CSS, JavaScript and build scripts) is under the [MIT License](LICENSE).
+
+Lecture slides, tutorial decks and past exam papers that appear inside the guides belong to their instructors and to IIIT Hyderabad. They are reproduced for study and are not covered by either license. Past papers in the ANLP guide come from [VijayrajS/iiitprevpapers](https://github.com/VijayrajS/iiitprevpapers).

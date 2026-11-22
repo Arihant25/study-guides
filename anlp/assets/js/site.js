@@ -210,7 +210,7 @@ function __siteContext() {
     // Footer meta
     out.push('<div class="grp">Meta</div>');
     out.push('<a href="' + ctx.prefix + 'index.html#credits">Credits</a>');
-    out.push('<a href="https://github.com/Arihant25/anlp-study-guide" target="_blank" rel="noopener">GitHub ↗</a>');
+    out.push('<a href="https://github.com/Arihant25/study-guides/tree/main/anlp" target="_blank" rel="noopener">GitHub ↗</a>');
     nav.innerHTML = out.join("\n");
   });
 })();

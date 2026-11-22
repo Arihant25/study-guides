@@ -1,0 +1,16 @@
+name: Request or propose a guide
+description: Ask for a guide for another course, or offer to write one
+labels: ["new guide"]
+body:
+  - type: input
+    id: course
+    attributes:
+      label: Course name and code
+      placeholder: e.g. Computer Networks (CS3.401)
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else
+      description: Which term, what material you have (slides, past papers), and whether you'd like to write it yourself.

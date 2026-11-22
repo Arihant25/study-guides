@@ -4,7 +4,7 @@ A slide-by-slide study companion for **Advanced NLP, Monsoon 2026** at IIIT Hyde
 
 Every lecture slide, tutorial page, and previous-year exam question is embedded verbatim and followed by an explanation written from first principles — designed for a student who has never seen the material before.
 
-**Live site:** https://Arihant25.github.io/anlp-study-guide/
+**Live site:** https://arihant25.github.io/study-guides/anlp/
 
 ## What's inside
 

@@ -1,0 +1,29 @@
+name: Report a mistake
+description: A wrong formula, a broken link, a typo or an explanation that doesn't make sense
+labels: ["mistake"]
+body:
+  - type: dropdown
+    id: guide
+    attributes:
+      label: Which guide?
+      options:
+        - ANLP (Advanced NLP)
+        - DPCN (Dynamical Processes of Complex Networks)
+        - PAA (Programming AI Accelerators)
+        - SDET (Signal Detection and Estimation Theory)
+        - Sociology
+        - The home page
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link to the page or section
+      placeholder: https://arihant25.github.io/study-guides/dpcn/midsem/#...
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong, and what should it say?
+      description: Quote the text if you can. A screenshot helps for diagrams and formulas.
+    validations:
+      required: true

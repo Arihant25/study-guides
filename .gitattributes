@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary
+# The guides are prose, so let GitHub count them as HTML
+*.html linguist-detectable

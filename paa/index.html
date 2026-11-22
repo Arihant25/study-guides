@@ -1,0 +1,1013 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PAA Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky level rail on the left (chips on phones), one reading column of levels; each level = concepts → lab → checkpoint */
+:root{
+  --paper:#eef2f5; --card:#ffffff; --ink:#15212b; --muted:#566673; --line:#d3dce3; --soft:#e3e9ee;
+  --accent:#d9820b; --accent-ink:#8f5200; --cool:#0f7f8a; --hot:#c63d2a; --good:#2b8749;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e151b; --card:#152029; --ink:#e4ecf1; --muted:#93a4b1; --line:#283844; --soft:#1c2a35;
+  --accent:#f0a33b; --accent-ink:#f6c27a; --cool:#3bb8c3; --hot:#f06a55; --good:#5cc47c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e151b; --card:#152029; --ink:#e4ecf1; --muted:#93a4b1; --line:#283844; --soft:#1c2a35;
+  --accent:#f0a33b; --accent-ink:#f6c27a; --cool:#3bb8c3; --hot:#f06a55; --good:#5cc47c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.1;margin:0}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.86em}
+pre{font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--cool)}
+
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;max-width:1200px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:28px;display:flex;flex-direction:column;gap:18px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.brand small{display:block;font:500 11px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.xp{display:flex;flex-direction:column;gap:6px}
+.xp-row{display:flex;justify-content:space-between;font:600 12px var(--mono);color:var(--muted)}
+.xp-bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.xp-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+.rank{font:600 13px var(--body);color:var(--accent-ink)}
+.toc{display:flex;flex-direction:column;gap:2px;list-style:none;margin:0;padding:0}
+.toc a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);padding:6px 8px;border-radius:6px;font-size:14px}
+.toc a:hover{background:var(--soft)}
+.toc a.on{background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.toc .n{font:600 11px var(--mono);color:var(--muted);min-width:22px}
+.toc .ck{margin-left:auto;font:600 11px var(--mono);color:var(--muted)}
+.toc .ck.done{color:var(--good)}
+
+main{padding-block:28px 80px;min-width:0;display:flex;flex-direction:column;gap:72px}
+.hero{display:grid;gap:20px}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(40px,7vw,76px);font-weight:800;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{font-size:18px;max-width:62ch;color:var(--muted)}
+.hero canvas{width:100%;height:170px;display:block;border-radius:10px;background:var(--card);border:1px solid var(--line)}
+.cray{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cray div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.cray b{font-family:var(--display);font-size:22px;display:block}
+.cray span{font-size:13px;color:var(--muted)}
+.howto{font-size:14px;color:var(--muted);max-width:70ch}
+
+.level{display:flex;flex-direction:column;gap:22px;scroll-margin-top:20px}
+.lv-head{display:grid;gap:8px;border-top:2px solid var(--ink);padding-top:14px}
+.lv-num{font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
+.lv-head h2{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.02em}
+.lv-head .lede{font-size:17px;max-width:64ch}
+.src{font:500 12px var(--mono);color:var(--muted)}
+.prose{display:grid;gap:12px;max-width:68ch}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:8px;align-content:start;min-width:0}
+.card h3{font-size:18px;font-weight:600;font-family:var(--display)}
+.card p,.card li{font-size:15px}
+.card ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.k{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.big{font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+.note{font-size:14px;border-left:3px solid var(--cool);padding:4px 0 4px 12px;color:var(--muted);max-width:70ch}
+.note b{color:var(--ink)}
+.catch{font-size:14px;border:1px dashed var(--hot);border-radius:8px;padding:10px 12px;max-width:72ch}
+.catch b{color:var(--hot)}
+.formula{font-family:var(--mono);font-size:15px;background:var(--soft);border-radius:6px;padding:8px 12px;overflow-x:auto;white-space:nowrap}
+
+.lab{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;min-width:0;box-shadow:0 1px 0 var(--line)}
+.lab-tag{display:flex;gap:10px;align-items:center;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--cool)}
+.lab-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cool)}
+.lab h3{font-size:20px}
+.lab .hint{font-size:14px;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.controls label{display:flex;gap:8px;align-items:center;font-size:14px}
+.controls input[type=range]{width:150px;accent-color:var(--accent)}
+.controls input[type=number]{width:84px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+select{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.out{font-family:var(--mono);font-size:14px;background:var(--soft);border-radius:8px;padding:10px 12px;overflow-x:auto;line-height:1.7}
+.out b{color:var(--accent-ink)}
+.pill{display:inline-block;font:600 12px var(--mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.pill.good{color:var(--good)} .pill.bad{color:var(--hot)} .pill.mid{color:var(--accent-ink)}
+.scroll{overflow-x:auto;max-width:100%}
+svg text{font-family:var(--mono)}
+.ax{stroke:var(--line);stroke-width:1}
+.tx{fill:var(--muted);font-size:11px}
+.tx-ink{fill:var(--ink);font-size:12px}
+
+/* bit formats */
+.bits{display:flex;flex-wrap:wrap;gap:2px}
+.bits span{width:16px;height:26px;border-radius:3px;font:600 10px/26px var(--mono);text-align:center;color:#fff}
+.b-s{background:var(--hot)} .b-e{background:var(--cool)} .b-m{background:var(--accent)}
+/* bars */
+.hbars{display:grid;gap:8px}
+.hbar{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:13px}
+.hbar .t{height:14px;background:var(--soft);border-radius:3px;position:relative}
+.hbar .t i{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--accent)}
+.hbar .v{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+/* flynn */
+.flynn{display:grid;grid-template-columns:auto repeat(2,minmax(0,1fr));gap:6px;align-items:stretch}
+.flynn .hd{font:600 12px var(--mono);color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
+.flynn button{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 8px;cursor:pointer;font-family:var(--display);font-weight:800;font-size:20px}
+.flynn button.on{background:var(--accent);color:#1b1205;border-color:var(--accent)}
+/* thread grids */
+.blocks{display:flex;flex-direction:column;gap:8px}
+.blk{display:flex;gap:8px;align-items:center}
+.blk .lbl{font:600 11px var(--mono);color:var(--muted);width:70px;flex:none}
+.thr{display:flex;flex-wrap:wrap;gap:2px}
+.thr button{width:11px;height:11px;border:0;border-radius:2px;padding:0;cursor:pointer}
+.w0{background:color-mix(in srgb,var(--cool) 55%,var(--card))}
+.w1{background:color-mix(in srgb,var(--cool) 25%,var(--card))}
+.thr button.sel{background:var(--accent);outline:2px solid var(--ink)}
+/* lanes */
+.lanes{display:grid;gap:6px}
+.lane-row{display:flex;gap:8px;align-items:center}
+.lane-row .lbl{font:600 11px var(--mono);color:var(--muted);width:118px;flex:none}
+.lane-row .cells{display:grid;grid-template-columns:repeat(32,minmax(0,1fr));gap:1px;flex:1;min-width:0}
+.lane-row .cells i{height:14px;border-radius:1px}
+.c-then{background:var(--accent)} .c-else{background:var(--cool)}
+/* array cells */
+.arr{display:flex;flex-wrap:wrap;gap:4px}
+.arr span{min-width:38px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;font:600 14px var(--mono);background:var(--paper);transition:background .25s}
+.arr span.hot{background:color-mix(in srgb,var(--accent) 35%,var(--card));border-color:var(--accent)}
+.arr span.dim{opacity:.35}
+.arr span.act{background:color-mix(in srgb,var(--cool) 30%,var(--card));border-color:var(--cool)}
+.arr span.div{box-shadow:inset 0 -3px 0 var(--hot)}
+.ladder{display:grid;gap:6px}
+.ladder .step{display:grid;grid-template-columns:160px minmax(0,1fr);gap:10px;align-items:center}
+.ladder .step .lbl{font:500 12px var(--mono);color:var(--muted)}
+/* sat grid */
+.satg{display:grid;grid-template-columns:repeat(6,40px);gap:3px}
+.satg button{height:36px;border:1px solid var(--line);border-radius:5px;background:var(--paper);font:600 13px var(--mono);cursor:pointer}
+.satg button.in{background:color-mix(in srgb,var(--accent) 30%,var(--card))}
+.satg button.corner{outline:2px solid var(--cool)}
+/* heat */
+.heat{display:grid;gap:2px}
+.heat div{display:grid;place-items:center;font:600 11px var(--mono);height:34px;border-radius:3px;min-width:0}
+.heat .h{background:none;color:var(--muted)}
+/* prob bars */
+.pbars{display:grid;gap:6px}
+.pbar{display:grid;grid-template-columns:70px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:13px}
+.pbar .t{height:16px;background:var(--soft);border-radius:3px;overflow:hidden}
+.pbar .t i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.pbar .v{font:600 12px var(--mono);text-align:right}
+/* weights */
+.wgrid{display:grid;grid-template-columns:repeat(8,minmax(0,34px));gap:3px}
+.wgrid i{aspect-ratio:1;border-radius:3px;max-width:100%}
+.wgrid i.cut{background:repeating-linear-gradient(45deg,var(--soft) 0 3px,var(--paper) 3px 6px)!important;outline:1px solid var(--line)}
+/* quiz */
+.quiz{display:grid;gap:14px}
+.quiz>.qh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.quiz>.qh h3{font-size:20px}
+.quiz>.qh span{font:600 12px var(--mono);color:var(--muted)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px}
+.q p.qt{font-weight:600}
+.opts{display:grid;gap:6px}
+.opts button{text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:15px}
+.opts button:hover:not(:disabled){border-color:var(--accent)}
+.opts button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.opts button.wrong{border-color:var(--hot);background:color-mix(in srgb,var(--hot) 12%,var(--card))}
+.opts button:disabled{cursor:default}
+.why{font-size:14px;color:var(--muted)}
+.why b{color:var(--ink)}
+/* cycle */
+.cycle{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cycle span{padding:8px 12px;border-radius:999px;background:var(--soft);font-size:14px;font-weight:500}
+.cycle span.lit{background:var(--accent);color:#1b1205}
+.cycle em{font-style:normal;color:var(--muted)}
+table.t{border-collapse:collapse;font-size:14px;width:100%}
+table.t th,table.t td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.t th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+table.t td.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sheet .card .formula{font-size:13px;white-space:normal}
+footer{font-size:13px;color:var(--muted);max-width:70ch;border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;max-height:none;flex-direction:row;align-items:center;gap:12px;padding-block:10px;background:var(--paper);border-bottom:1px solid var(--line);overflow-x:auto}
+  .brand{white-space:nowrap;font-size:15px}
+  .brand small,.rank{display:none}
+  .xp{min-width:90px}
+  .toc{flex-direction:row}
+  .toc a{white-space:nowrap;padding:4px 8px}
+  .toc .t,.toc .ck{display:none}
+  main{padding-top:20px}
+}
+@media (max-width:640px){
+  .grid2,.grid3,.cray,.sheet{grid-template-columns:minmax(0,1fr)}
+  .hbar{grid-template-columns:100px minmax(0,1fr) 70px}
+  .ladder .step{grid-template-columns:minmax(0,1fr)}
+  .lane-row .lbl{width:70px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="shell">
+<nav class="rail" aria-label="Levels">
+  <div class="brand">PAA Field Guide<small>CS3.406 · IIIT-H</small></div>
+  <div class="xp"><div class="xp-row"><span>XP</span><span id="xpNum">0</span></div><div class="xp-bar"><i id="xpBar"></i></div><div class="rank" id="rank">Lonely Ox</div></div>
+  <ol class="toc" id="toc"></ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Programming AI Accelerators · a visual walk through every lecture</div>
+  <h1>Two oxen, 1024 chickens, or <em>a million chicks</em>?</h1>
+  <p class="lede">Seymour Cray asked which you'd rather plough a field with. GPUs answered: a million tiny, simple workers, marching in lockstep groups of 32. This guide is the whole course, L1 to Model Compression, told through things you can poke.</p>
+  <canvas id="heroCanvas" aria-label="Animated field of threads lighting up in warps of 32"></canvas>
+  <div class="cray">
+    <div><b>2 oxen</b><span>Few powerful vector processors. Cray-1, 1970s.</span></div>
+    <div><b>1024 chickens</b><span>Clusters of ordinary microprocessors. 1990s–2000s.</span></div>
+    <div><b>a million chicks</b><span>GPUs. Top500 from Nov 2010; 90%+ of compute today.</span></div>
+  </div>
+  <p class="howto">Each level has short concept cards, a lab to play with, and a checkpoint quiz. Right answers on the first try earn 10 XP. Red dashed boxes flag places where the slides are loose or have a bug, which makes good exam bait.</p>
+</header>
+
+<!-- L1 -->
+<section class="level" id="l1" data-title="Why accelerators">
+  <div class="lv-head"><span class="lv-num">Level 1</span><h2>Why we needed accelerators</h2>
+  <p class="lede">The free lunch ended, gamers paid for the hardware, and AI turned out to be mostly matrix multiplication. Moving data costs far more energy than doing the maths.</p><span class="src">From L1 · Introduction</span></div>
+  <div class="grid3">
+    <div class="card"><span class="k">1965 · Moore</span><h3>Transistors double every ~2 years</h3><p>An economic observation the industry worked hard to make true.</p></div>
+    <div class="card"><span class="k">1974 · Dennard</span><h3>Shrink 30%, power density stays flat</h3><p>Area −51%, delay −30%, frequency +40%, power −51%. Twice the transistors at the same power: a literal free lunch.</p></div>
+    <div class="card"><span class="k">~2005 · Power wall</span><h3>Leakage killed it</h3><p>Voltage couldn't keep dropping (electrons tunnel), so chips ran too hot. Answer: multicore, which is hard to program.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>How GPUs crept in</h3><ul>
+      <li>Graphics = same simple op on every pixel. Parallel by nature.</li>
+      <li>2001: programmable shaders. People "tricked" them into MatMul, FFT, sorting.</li>
+      <li>2002: "GPGPU" coined (Mark Harris). 2006: CUDA + 8800 GTX, ~500 GFLOPs for $300.</li>
+      <li>2012: AlexNet on 2 GTX 580s beats ImageNet by ~10%. Deep learning's big bang.</li></ul></div>
+    <div class="card"><h3>Why it costs so much</h3><ul>
+      <li>1 GW datacenter ≈ 1 million GPUs at ~1 kW each.</li>
+      <li>Hardware ≈ $60–65B. Power ≈ $700M/year at $0.08/unit.</li>
+      <li>Training ≫ inference per run, but inference happens billions of times.</li>
+      <li>So: optimise system software, algorithms, number formats and architecture together.</li></ul></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 1A · Energy</div>
+    <h3>Where the energy really goes</h3>
+    <p class="hint">Ranges per bit from the L1 energy table, on a log axis. A memory access can cost 100× an arithmetic op, and caches over-fetch whole lines.</p>
+    <div class="hbars" id="energyBars"></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 1B · Number formats</div>
+    <h3>Fewer bits, more FLOPs</h3>
+    <div class="controls" id="fmtBtns"></div>
+    <div class="bits" id="fmtBits"></div>
+    <div class="out" id="fmtOut"></div>
+    <p class="hint">Red = sign, teal = exponent (range), amber = mantissa (precision). Frontier models now train in FP8 and experiment with FP4, using stochastic rounding, mostly in the backward pass.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 1C · Huang's law</div>
+    <h3>Flagship GPU FP32 throughput, 2006–2025</h3>
+    <div class="hbars" id="gpuBars"></div>
+  </div>
+  <div class="quiz" data-quiz="l1"></div>
+</section>
+
+<!-- L2 -->
+<section class="level" id="l2" data-title="Parallel computing">
+  <div class="lv-head"><span class="lv-num">Level 2</span><h2>Ways to be parallel</h2>
+  <p class="lede">Classify parallel machines by instruction and data streams, by where the parallelism comes from, and by how memory is shared. Then measure algorithms by work, not just time.</p><span class="src">From L2 · Parallel Computing</span></div>
+  <div class="lab">
+    <div class="lab-tag">Lab 2A · Flynn's taxonomy (1966)</div>
+    <h3>Click a quadrant</h3>
+    <div class="flynn" id="flynn">
+      <div></div><div class="hd">Single data</div><div class="hd">Multiple data</div>
+      <div class="hd">Single<br>instruction</div><button data-f="SISD">SISD</button><button data-f="SIMD">SIMD</button>
+      <div class="hd">Multiple<br>instruction</div><button data-f="MISD">MISD</button><button data-f="MIMD">MIMD</button>
+    </div>
+    <div class="out" id="flynnOut"></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><span class="k">Data parallel</span><h3>Same F, different chunks</h3><p>Chunk 1…N each run F, then combine. This is the GPU's home turf.</p></div>
+    <div class="card"><span class="k">Task parallel</span><h3>Different code per worker</h3><p>Parse input, render image, write log, all at once.</p></div>
+    <div class="card"><span class="k">Pipeline parallel</span><h3>Stages in flight</h3><p>Item 1 at stage 3 while item 3 is at stage 1. Like the CPU's fetch–decode–execute.</p></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><span class="k">Shared memory (SMP)</span><p>One address space on a bus. Fast sharing; the bus limits scaling.</p></div>
+    <div class="card"><span class="k">Distributed (MPP)</span><p>Private memory per node. Every remote access is an explicit message.</p></div>
+    <div class="card"><span class="k">NUMA</span><p>One address space, but local memory is fast and remote memory goes over the interconnect.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>PRAM model</h3><p>n processors, one shared memory. Variants by how conflicts are allowed:</p><ul><li><b>CRCW</b> concurrent read, concurrent write</li><li><b>CREW</b> concurrent read, exclusive write</li><li><b>EREW</b> exclusive both</li></ul><p>A GPU looks roughly PRAM-like: uniform access to one big global memory.</p></div>
+    <div class="card"><h3>CPU vs GPU</h3><ul><li>CPU: few complex cores, caches, branch prediction, out-of-order. Great at irregular work.</li><li>GPU: thousands of simple cores. Memory is ~500× slower than compute.</li><li>So a GPU needs <b>high arithmetic intensity</b> and <b>thousands of threads</b> to hide latency.</li></ul></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 2B · Work efficiency</div>
+    <h3>Fast isn't the same as efficient</h3>
+    <p class="formula">W(n) = T<sub>p</sub>(n) × p   ·   efficient ⇔ W<sub>p</sub>(n) = W<sub>s</sub>(n)</p>
+    <div class="controls"><label>n = 2<sup id="weExp">10</sup><input type="range" id="weN" min="3" max="24" value="10"></label></div>
+    <div class="hbars" id="weBars"></div>
+    <p class="hint">Tree reduction and Blelloch scan do the same O(n) work as the sequential loop. Hillis–Steele scan finishes in log n steps but does O(n log n) work. Merge sort and matmul have efficient parallel versions; DFS and GCD don't.</p>
+  </div>
+  <div class="quiz" data-quiz="l2"></div>
+</section>
+
+<!-- L3 -->
+<section class="level" id="l3" data-title="Inside the GPU">
+  <div class="lv-head"><span class="lv-num">Level 3</span><h2>Inside the GPU and CUDA</h2>
+  <p class="lede">The host launches a grid of blocks. Each block lands on one SM and is chopped into warps of 32 threads that run one instruction in lockstep. Almost every performance rule follows from this.</p><span class="src">From L2–L3 · GPUs and Data Parallel Computing, Tutorial 1</span></div>
+  <div class="grid2">
+    <div class="card"><span class="k">Logical (what you write)</span><ul><li><b>Grid</b> · gridDim, blockIdx</li><li><b>Block</b> · 1–1024 threads, 1D/2D/3D, can share memory and <code>__syncthreads()</code></li><li><b>Warp</b> · 32 threads, the scheduling unit (a hardware detail, not part of the model)</li><li><b>Thread</b> · threadIdx</li></ul></div>
+    <div class="card"><span class="k">Physical (what runs it)</span><ul><li><b>Device</b> · RTX 5090: 170 SMs, 21,760 CUDA cores, 32 GB, 1.8 TB/s</li><li><b>SM</b> · 128 cores in 4 sub-cores, 4 Tensor Cores, 256 KB registers, 128 KB L1/shared</li><li><b>Limits / SM</b> · 64K regs, ≤255 per thread, 2048 threads, 32 blocks</li><li><b>L2</b> 96–128 MB · <b>Global</b> HBM/GDDR</li></ul></div>
+  </div>
+  <pre>// Tutorial 1: launch, index, copy
+kernel&lt;&lt;&lt;blocksPerGrid, threadsPerBlock&gt;&gt;&gt;(args);
+int idx = blockIdx.x * blockDim.x + threadIdx.x;      // map thread → data
+cudaMalloc(&amp;d_x, bytes);                               // GPU memory is separate
+cudaMemcpy(d_x, h_x, bytes, cudaMemcpyHostToDevice);   // explicit copies
+// grid-stride loop: one launch handles any N
+for (int i = idx; i &lt; N; i += blockDim.x * gridDim.x) y[i] = a*x[i] + b*y[i];</pre>
+  <div class="lab">
+    <div class="lab-tag">Lab 3A · Thread indexing</div>
+    <h3>Click any thread</h3>
+    <div class="controls">
+      <label>gridDim.x <input type="number" id="ixG" min="1" max="6" value="3"></label>
+      <label>blockDim.x <select id="ixB"><option>32</option><option>64</option><option>96</option><option selected>128</option></select></label>
+    </div>
+    <div class="blocks" id="ixBlocks"></div>
+    <div class="out" id="ixOut"></div>
+    <p class="hint">Shades alternate per warp. A block of 96 threads is exactly 3 warps; a block of 100 would waste 28 lanes in a 4th warp.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 3B · Memory ladder</div>
+    <h3>If a register read took 1 second…</h3>
+    <div class="hbars" id="latBars"></div>
+    <p class="hint">Cycle counts from L3. This gap is why the SM keeps many warps resident: when one stalls on memory, another runs the next cycle with zero switching cost, because registers and shared memory are already partitioned.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 3C · Occupancy</div>
+    <h3>How many threads can live on one SM?</h3>
+    <div class="controls">
+      <label>registers / thread <input type="range" id="ocR" min="16" max="255" value="32"><b id="ocRv" class="mono">32</b></label>
+      <label>shared mem / thread (B) <input type="range" id="ocM" min="0" max="2048" step="16" value="128"><b id="ocMv" class="mono">128</b></label>
+      <label>threads / block <select id="ocT"><option>64</option><option>128</option><option selected>256</option><option>512</option><option>1024</option></select></label>
+      <label>SM shared mem <select id="ocS"><option value="228">228 KB (datacenter)</option><option value="128">128 KB (5090)</option><option value="256">256 KB (slide example)</option></select></label>
+    </div>
+    <div class="controls"><button class="btn" data-oc="64,2048,256">Slide case 1 · 64 regs, 2 KB</button><button class="btn" data-oc="32,512,256">Slide case 2 · 32 regs, 512 B</button><button class="btn" data-oc="32,112,228">Full occupancy</button></div>
+    <div class="out" id="ocOut"></div>
+    <div class="catch"><b>Slide catch:</b> the L3 examples divide by 256 KB of shared memory, but the same slide says the SM has 228 KB. Use whatever the question gives you. Also, low occupancy isn't automatically bad (see Level 6, Volkov).</div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 3D · Shared-memory banks</div>
+    <h3>32 banks, one address per bank per cycle</h3>
+    <p class="formula">float foo = shared[base + s * threadIdx.x];   bank = word_index % 32</p>
+    <div class="controls"><label>stride s <input type="range" id="bkS" min="0" max="64" value="1"><b id="bkSv" class="mono">1</b></label></div>
+    <div class="controls" id="bkPre"></div>
+    <div class="scroll"><svg id="bkSvg" viewBox="0 0 660 150" width="100%" style="min-width:520px" role="img" aria-label="Threads mapped to banks"></svg></div>
+    <div class="out" id="bkOut"></div>
+    <p class="hint">Conflict degree = gcd(s, 32), so odd strides are conflict-free. Everyone reading the same word is a broadcast, also free. Structs: a 3-float struct is fine, a 2-word struct gives 2-way conflicts, hence "struct of arrays beats array of structs".</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 3E · Global-memory coalescing</div>
+    <h3>One warp loads 32 floats. How many 32-byte sectors move?</h3>
+    <div class="controls"><label>pattern <select id="coP"><option value="1">consecutive (x[i])</option><option value="2">stride 2</option><option value="8">stride 8</option><option value="32">stride 32 (column of row-major)</option><option value="r">random</option></select></label></div>
+    <div id="coGrid" class="scroll"></div>
+    <div class="out" id="coOut"></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 3F · Warp divergence</div>
+    <h3>A 128-thread block = 4 warps. Pick a branch.</h3>
+    <div class="controls"><label>condition <select id="dvC">
+      <option value="a">if (threadIdx.x &gt; 2)</option>
+      <option value="b">if (threadIdx.x / 32 &gt; 2)</option>
+      <option value="c">if (threadIdx.x % 2 == 0)</option>
+      <option value="d">if (threadIdx.x &lt; 48)</option></select></label></div>
+    <div class="lanes" id="dvLanes"></div>
+    <div class="out" id="dvOut"></div>
+    <p class="hint">Amber lanes take <code>then</code>, teal take <code>else</code>. A warp holding both colours runs both paths one after another. Make the branch granularity a multiple of 32 and divergence disappears.</p>
+  </div>
+  <div class="quiz" data-quiz="l3"></div>
+</section>
+
+<!-- L4 -->
+<section class="level" id="l4" data-title="Parallel primitives">
+  <div class="lv-head"><span class="lv-num">Level 4</span><h2>Reduce, scan, transpose</h2>
+  <p class="lede">Blelloch's building blocks. Get these fast once and you can build almost anything. Each one teaches a hardware lesson: divergence, bank conflicts, work efficiency, coalescing.</p><span class="src">From L3–L4 · Data Parallel Algorithms, Tutorial 2</span></div>
+  <div class="lab">
+    <div class="lab-tag">Lab 4A · Reduction race</div>
+    <h3>Interleaved vs sequential addressing</h3>
+    <div class="controls"><button class="btn on" data-rm="bad">Take 1 · t % (2·stride) == 0</button><button class="btn" data-rm="good">Take 2 · t &lt; stride</button></div>
+    <div class="controls"><button class="btn" id="rdPrev">◀ step</button><button class="btn" id="rdNext">step ▶</button><button class="btn" id="rdReset">reset</button></div>
+    <div class="ladder" id="rdView"></div>
+    <div class="out" id="rdOut"></div>
+    <p class="hint">Scaled down: 16 elements and pretend warps of 4 threads (real warps are 32). A red underline marks a warp where some threads add and some sit idle.</p>
+    <div class="catch"><b>Slide catch (L4, "A better implementation"):</b> <code>for (int stride = blockDim.x; stride &gt; 1; stride &gt;&gt; 1)</code> never changes <code>stride</code> (needs <code>&gt;&gt;=</code>), starts one level too high and stops before stride 1. The L3 version is the correct one: <code>for (stride = blockDim.x/2; stride &gt; 0; stride /= 2)</code>.</div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>16M-element AND reduce</h3><ul>
+      <li>1024 blocks × 256 threads = 262,144 threads</li>
+      <li>2²⁴ / 262,144 = 64 elements per thread via grid-stride loop, into a register</li>
+      <li>Shared-memory tree 256 → 128 → 64 with <code>__syncthreads()</code></li>
+      <li>Last warp finishes without barriers</li>
+      <li>One <code>atomicAnd</code> per block combines the 1024 results</li></ul></div>
+    <div class="card"><h3>Warp finish: then vs now</h3><p>Pre-Volta: <code>volatile</code> shared memory and no sync, because the 32 threads shared one program counter. From Volta on, each thread has its own PC, so that trick isn't guaranteed. Use registers and shuffles:</p>
+<pre>for (int off = 16; off &gt; 0; off &gt;&gt;= 1)
+  v += __shfl_down_sync(0xffffffff, v, off);</pre></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 4B · __shfl_down_sync</div>
+    <h3>Each lane grabs the value from lane + offset</h3>
+    <div class="controls"><label>offset <input type="range" id="shO" min="0" max="4" value="2"><b id="shOv" class="mono">2</b></label><button class="btn" id="shRun">run 32-lane sum of lane IDs</button></div>
+    <div class="ladder" id="shView"></div>
+    <div class="out" id="shOut">Lanes past the end keep their own value. Tutorial 2 check: lane 0 should end with 0+1+…+31 = 496.</div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 4C · Scan</div>
+    <h3>Prefix sum, two ways</h3>
+    <div class="controls"><button class="btn on" data-sm="hs">Hillis–Steele (naive, inclusive)</button><button class="btn" data-sm="bl">Blelloch (work-efficient, exclusive)</button></div>
+    <div class="controls"><button class="btn" id="scPrev">◀ step</button><button class="btn" id="scNext">step ▶</button><button class="btn" id="scAll">show all</button></div>
+    <div class="ladder" id="scView"></div>
+    <div class="out" id="scOut"></div>
+    <p class="hint">Hillis–Steele: at distance d, every i ≥ d adds x[i−d], double-buffered to avoid a race. Blelloch: up-sweep builds a reduction tree (n−1 adds), set the root to 0, down-sweep passes sums down (left child gets parent, right gets parent + old left).</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Transpose, three versions</h3><ul>
+      <li><b>Naive</b> <code>B[j*N+i] = A[i*N+j]</code>: reads coalesced, writes 32 floats apart.</li>
+      <li><b>Shared tile</b>: read a 32×32 tile row-wise, write it out row-wise from <code>tile[tx][ty]</code>. Both global sides coalesced, but the column read is a 32-way bank conflict.</li>
+      <li><b>Padded</b> <code>tile[32][33]</code>: each row starts one bank later. Conflict gone for 32 floats of waste. Try stride 32 vs 33 in Lab 3D.</li></ul></div>
+    <div class="card"><h3>Summed-area table</h3><p>Each cell = sum of everything above-left. Any rectangle sum then takes 4 lookups.</p><p class="formula" style="white-space:normal">SAT(A) = Tᵀ(rowScan(Tᵀ(rowScan(A))))</p><p>Column scans are hard in row-major, so transpose, scan rows, transpose back.</p></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 4D · SAT</div>
+    <h3>Click two corners of a rectangle</h3>
+    <div class="controls"><button class="btn on" data-sv="a">show A</button><button class="btn" data-sv="s">show SAT</button></div>
+    <div class="satg" id="satG"></div>
+    <div class="out" id="satOut">Pick a top-left cell, then a bottom-right cell.</div>
+    <div class="catch"><b>Slide catch:</b> the L4 formula mixes up indices. With inclusive SAT S and rectangle rows r1..r2, cols c1..c2: sum = S[r2][c2] − S[r1−1][c2] − S[r2][c1−1] + S[r1−1][c1−1] (terms with −1 indices are 0).</div>
+  </div>
+  <div class="quiz" data-quiz="l4"></div>
+</section>
+
+<!-- L5 -->
+<section class="level" id="l5" data-title="ML workloads">
+  <div class="lv-head"><span class="lv-num">Level 5</span><h2>What the GPU is actually running</h2>
+  <p class="lede">Neural networks are stacks of matrix multiplies with nonlinearities in between. Training loops forward, loss, backward, update. Convolutions become a GEMM through im2col.</p><span class="src">From L5 · ML Workloads (Girish Varma)</span></div>
+  <div class="grid2">
+    <div class="card"><span class="k">Programming</span><p>Shortest path in G → write Dijkstra.</p><span class="k">Machine learning</span><p>Which digit is this? → collect (image, digit) pairs, fit a model y = f<sub>θ</sub>(x), then run inference on new images.</p></div>
+    <div class="card"><span class="k">Layers</span><ul><li>Perceptron: y = σ(Σ wᵢxᵢ + b)</li><li>Fully connected: Y = σ(WX + b)</li><li>MLP: Y = σ(V σ(WX + b) + c)</li><li>Batch B inputs: (N×M)·(M×B) is a matrix–matrix product</li></ul></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 5A · Softmax</div>
+    <h3>Logits in, probabilities out</h3>
+    <p class="formula">softmax(z)ᵢ = exp(zᵢ − max z) / Σⱼ exp(zⱼ − max z)</p>
+    <div class="controls" id="smCtl"></div>
+    <div class="pbars" id="smBars"></div>
+    <p class="hint">Subtracting the max changes nothing mathematically but stops exp from overflowing. On a GPU, naive softmax reads the row three times (max, sum, write). Online softmax fuses max and sum into one pass; see the case study.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 5B · The training loop</div>
+    <h3>One minibatch at a time</h3>
+    <div class="cycle" id="trCycle"><span>sample minibatch</span><em>→</em><span>forward pass</span><em>→</em><span>mean loss (MSE / cross-entropy)</span><em>→</em><span>backward pass (last layer → first)</span><em>→</em><span>θ ← θ − η∇L</span><em>↺</em></div>
+    <div class="scroll"><svg viewBox="0 0 640 170" width="100%" style="min-width:420px" id="ofSvg" role="img" aria-label="Training and test accuracy diverging"></svg></div>
+    <p class="hint">Overfitting: training accuracy keeps climbing while test accuracy (data never used for gradients) stalls and drops.</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Why CNNs</h3><ul><li>Idea 1: connect each output only to a small window</li><li>Idea 2: share the same weights across positions</li><li>Gives translation invariance; pooling has no parameters</li><li>LeNet → AlexNet (8 layers, 62M) → VGG-19 (144M) → ResNet-50 (25.6M)</li></ul></div>
+    <div class="card"><h3>Efficiency metrics</h3><ul><li>#Parameters (memory, model size)</li><li>MACs (compute)</li><li>Latency: time for one input</li><li>Throughput: inputs per second (batching helps this, not latency)</li></ul></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 5C · Convolution sizing</div>
+    <h3>Window, stride, padding</h3>
+    <div class="controls">
+      <label>H=W <input type="number" id="cvH" value="56" min="1" max="1024"></label>
+      <label>D₁ in-ch <input type="number" id="cvD" value="64" min="1" max="4096"></label>
+      <label>F <input type="number" id="cvF" value="3" min="1" max="11"></label>
+      <label>stride <input type="number" id="cvS" value="1" min="1" max="4"></label>
+      <label>pad <input type="number" id="cvP" value="1" min="0" max="5"></label>
+      <label>K filters <input type="number" id="cvK" value="128" min="1" max="4096"></label>
+    </div>
+    <div class="out" id="cvOut"></div>
+    <div class="scroll"><canvas id="cvCanvas" width="520" height="210" style="width:520px;max-width:none;height:210px;display:block" aria-label="Sliding window animation"></canvas></div>
+    <p class="hint">The animation uses a small 7×7 input with your F, stride and padding. The slide calls H₂W₂F²D₁D₂ "FLOPs"; it's really MACs (×2 for FLOPs).</p>
+  </div>
+  <div class="quiz" data-quiz="l5"></div>
+</section>
+
+<!-- L6 -->
+<section class="level" id="l6" data-title="Matrix multiply">
+  <div class="lv-head"><span class="lv-num">Level 6</span><h2>Matrix multiplication, the main event</h2>
+  <p class="lede">FC layers, im2col convs and attention all reduce to GEMM. The whole game is reuse: shared memory turns O(N³) DRAM reads into O(N²), and registers multiply each shared-memory read into many FMAs.</p><span class="src">From L6 · Matrix Multiplication (after Simon Boehm's worklog)</span></div>
+  <div class="grid3">
+    <div class="card"><span class="k">Step 1 · Naive</span><h3>One thread per C[i][j]</h3><p>Reads a row of A and a column of B: 2K loads for 2K FLOPs. AI = 0.25 FLOP/B, whatever the size. Fix the thread layout first so accesses coalesce.</p></div>
+    <div class="card"><span class="k">Step 2 · Shared tiles</span><h3>Block owns a C tile</h3><p>Stage BM×BK of A and BK×BN of B in shared memory, sync, accumulate, slide along K.</p></div>
+    <div class="card"><span class="k">Step 3 · Register blocking</span><h3>Thread owns 8×8</h3><p>Per k: read 8 A + 8 B values into registers, do the 8×8 outer product. 16 shared reads → 64 FMAs.</p></div>
+  </div>
+<pre>for k in 0..BK:                       // inner loop of the 2048³ kernel
+  for i in 0..TM: regM[i] = As[k][row+i]   // As stored transposed → no bank conflicts
+  for j in 0..TN: regN[j] = Bs[k][col+j]
+  for i, j:       acc[i][j] += regM[i] * regN[j]   // 64 FMAs in registers</pre>
+  <div class="lab">
+    <div class="lab-tag">Lab 6A · Tile size vs arithmetic intensity</div>
+    <h3>Bigger tiles, more reuse</h3>
+    <p class="formula">AI = 2·BM·BN·K / (K·(BM+BN)·bytes) → square T: FP32 = T/4, FP16 = T/2</p>
+    <div class="controls"><label>tile T <select id="mmT"><option>8</option><option>16</option><option>32</option><option>64</option><option selected>128</option><option>256</option></select></label>
+      <button class="btn on" data-mp="4">FP32 CUDA cores</button><button class="btn" data-mp="2">FP16 Tensor Cores (WMMA)</button></div>
+    <div class="scroll"><svg id="mmSvg" viewBox="0 0 640 230" width="100%" style="min-width:460px" role="img" aria-label="Arithmetic intensity vs tile size"></svg></div>
+    <div class="out" id="mmOut"></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Lower occupancy, on purpose</h3><p>~100+ registers × 256 threads → only 1–2 blocks per SM, 25–50% occupancy. That's fine: each thread has 64 independent FMAs in flight, so instruction-level parallelism hides latency instead of more warps (Volkov, GTC 2010). Reaches ~90–95% of cuBLAS.</p></div>
+    <div class="card"><h3>Tensor Cores via WMMA</h3><p>Same block tiling, but the innermost op becomes a warp-wide 16×16×16 <code>mma_sync</code>: 4,096 MACs in one instruction. 16 calls replace 65,536 scalar FMAs. FP16 in, FP32 accumulate.</p><p>The catch: the FP16 ridge on A100 is ~201 FLOP/B, so even T=256 (AI 128) isn't enough alone. Real kernels add L2 reuse across blocks (swizzling).</p></div>
+  </div>
+  <div class="quiz" data-quiz="l6"></div>
+</section>
+
+<!-- L7 -->
+<section class="level" id="l7" data-title="Roofline">
+  <div class="lv-head"><span class="lv-num">Level 7</span><h2>Roofline and profiling</h2>
+  <p class="lede">Every kernel is limited by compute or by memory bandwidth. One log-log plot tells you which, and how far you are from the ceiling, before you waste days optimising the wrong thing.</p><span class="src">From L7 · Performance Analysis (Williams, Waterman & Patterson, CACM 2009)</span></div>
+  <p class="formula">P(I) = min( π , I × β )      ridge I* = π / β      I = FLOPs / bytes moved from DRAM</p>
+  <div class="lab">
+    <div class="lab-tag">Lab 7A · Interactive roofline</div>
+    <h3>Pick a machine, slide a kernel</h3>
+    <div class="controls" id="rfM"></div>
+    <div class="controls"><label>your kernel's AI <input type="range" id="rfI" min="-2" max="3" step="0.01" value="0"><b class="mono" id="rfIv">1.00</b></label></div>
+    <div class="scroll"><svg id="rfSvg" viewBox="0 0 720 400" width="100%" style="min-width:540px" role="img" aria-label="Roofline chart"></svg></div>
+    <div class="out" id="rfOut"></div>
+    <div class="scroll"><table class="t" id="rfTab"></table></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Worked: SAXPY on RTX 4090</h3><p class="mono">FLOPs 2N · bytes 12N (read x, read y, write y)</p><p>AI = 0.167 → attainable ≈ 0.167 × 1008 ≈ 168 GFLOP/s, out of 82,600. Even "trivially parallel" kernels are memory-bound.</p></div>
+    <div class="card"><h3>Worked: LLM inference</h3><p><b>Prefill</b> processes the whole prompt as a GEMM: compute-bound.</p><p><b>Decode</b> at batch 1 is a GEMV that reads every weight once per token: 2NK FLOPs over 2NK bytes in FP16, so AI ≈ 1. Memory-bound, which is why batching and disaggregated prefill/decode serving exist.</p></div>
+  </div>
+  <div class="catch"><b>Slide catch:</b> L7 quotes decode GEMV at "≈ 2 FLOP/Byte for FP16". Counting it out gives 2NK / (2·NK) = 1. Either way it's far left of every ridge point, so the conclusion holds.</div>
+  <div class="grid2">
+    <div class="card"><h3>Nsight, top-down</h3><ul><li><b>Nsight Systems</b>: whole-app timeline, find the kernel worth fixing</li><li><b>Nsight Compute</b>: one kernel, hardware counters</li><li>Top 5: Speed of Light, Occupancy, Memory Workload, Warp Stall reasons, Roofline</li><li>Counters are exact; stall reasons are sampled; theoretical occupancy and roofs are calculated ceilings</li></ul></div>
+    <div class="card"><h3>Why Tensor Cores exist</h3><p>Issuing an instruction costs ~30 pJ; an FP16 FMA costs ~1.5 pJ. Paying 20× overhead per FLOP is silly, so one instruction does a whole D = A×B + C tile. Low-precision A, B; FP32 accumulator.</p><div class="hbars" id="tcBars"></div></div>
+  </div>
+  <div class="quiz" data-quiz="l7"></div>
+</section>
+
+<!-- L8 -->
+<section class="level" id="l8" data-title="Transformers">
+  <div class="lv-head"><span class="lv-num">Level 8</span><h2>Transformers and LLM inference</h2>
+  <p class="lede">RNNs process tokens one at a time and forget. Attention lets every token look at every other in parallel, which suits GPUs, and then the KV cache becomes the memory problem.</p><span class="src">From L8 · Sequence Modeling, Transformers and KV Caching</span></div>
+  <div class="grid3">
+    <div class="card"><span class="k">RNN / LSTM</span><p>Hidden state carried step to step. Sequential, so it can't parallelise over time, and gradients vanish (LSTM gates help).</p></div>
+    <div class="card"><span class="k">Transformer block</span><p>tokenize → embed + positional encoding → multi-head self-attention → feed-forward, repeated N times.</p></div>
+    <div class="card"><span class="k">Decoder</span><p>Masked (causal) attention: token t only sees ≤ t. Generates autoregressively, one token per step.</p></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 8A · Self-attention</div>
+    <h3>softmax(QKᵀ / √d) V, on a toy sentence</h3>
+    <div class="controls"><button class="btn on" id="atMask">causal mask on</button><button class="btn on" id="atScale">÷√d on</button></div>
+    <div class="scroll"><div class="heat" id="atHeat" style="min-width:420px"></div></div>
+    <p class="hint">Rows = the token asking (query), columns = tokens it attends to (keys). Each row sums to 1. Hand-picked 4-d vectors with Q = K = 2x, not a trained model. Turn off the √d scaling and the rows get peakier.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 8B · KV cache</div>
+    <h3>Memory for compute</h3>
+    <p class="formula">KV bytes = 2 (K and V) × layers × kv_heads × head_dim × seq_len × batch × bytes/elt</p>
+    <div class="controls">
+      <label>model <select id="kvM"><option value="0">Llama-2-7B</option><option value="1">Mistral-7B</option><option value="2">Llama-2-70B</option></select></label>
+      <label>attention <select id="kvA"><option value="model">as shipped</option><option value="mha">force MHA</option><option value="mqa">force MQA</option></select></label>
+      <label>context <select id="kvL"><option>2048</option><option selected>4096</option><option>8192</option><option>32768</option><option>131072</option></select></label>
+      <label>batch <input type="number" id="kvB" value="8" min="1" max="256"></label>
+      <label>dtype <select id="kvD"><option value="2">FP16</option><option value="1">FP8</option></select></label>
+    </div>
+    <div class="hbars" id="kvBars"></div>
+    <div class="out" id="kvOut"></div>
+    <p class="hint">Without a cache each new token recomputes K and V for the whole prefix. With it, each step computes only the new token's K, V and appends. MQA shares one K/V head across all query heads; GQA shares one per group.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 8C · Depthwise separable conv (MobileNet aside)</div>
+    <h3>Split spatial filtering from channel mixing</h3>
+    <div class="controls"><label>K <input type="number" id="dwK" value="3" min="1" max="7"></label><label>C<sub>in</sub> <input type="number" id="dwI" value="128" min="1"></label><label>C<sub>out</sub> <input type="number" id="dwO" value="256" min="1"></label><label>H=W <input type="number" id="dwH" value="56" min="1"></label></div>
+    <div class="out" id="dwOut"></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>LLMs, briefly</h3><ul><li>Emergent capabilities appear with scale</li><li>Zero-shot and few-shot learners; in-context learning from prompt examples</li><li>Fine-tuning adapts a pre-trained model</li><li>RAG: retrieve documents, put them in context, then generate</li></ul></div>
+    <div class="card"><h3>Positional encoding</h3><p>Attention is order-blind, so add a position signal. The original transformer uses sin/cos at different frequencies so relative offsets are easy to learn. Different heads end up capturing different relationships.</p></div>
+  </div>
+  <div class="quiz" data-quiz="l8"></div>
+</section>
+
+<!-- L9 -->
+<section class="level" id="l9" data-title="Compression">
+  <div class="lv-head"><span class="lv-num">Level 9</span><h2>Model compression</h2>
+  <p class="lede">Edge devices need real-time output in little memory, and the cloud adds latency and privacy cost. There's no free lunch, but four tools get close: pruning, quantization, architecture search and distillation.</p><span class="src">From Model Compression · Sys4ML (after Song Han's EfficientML)</span></div>
+  <div class="lab">
+    <div class="lab-tag">Lab 9A · Pruning</div>
+    <h3>Zero out the weights that matter least</h3>
+    <div class="controls"><button class="btn on" data-pm="u">unstructured</button><button class="btn" data-pm="s">structured (rows / channels)</button><button class="btn" data-pm="n">2:4 sparsity</button>
+      <label>prune <input type="range" id="prP" min="0" max="90" step="5" value="50"><b class="mono" id="prPv">50%</b></label></div>
+    <div class="wgrid" id="prG"></div>
+    <div class="out" id="prOut"></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Pruning recipe</h3><ul><li>Criterion: usually |w| (magnitude); regularisation pushes weights toward zero first</li><li>Prune → fine-tune → prune more (iterative) recovers accuracy</li><li>Layers differ in sensitivity, so prune them by different ratios</li><li>Unstructured needs sparse hardware; structured runs on anything; Ampere+ Tensor Cores run 2:4 at 2× (Lab 7 table)</li></ul></div>
+    <div class="card"><h3>Other tools</h3><ul><li><b>Low-rank</b>: W ≈ UV with small inner dim</li><li><b>NAS</b>: search space + strategy + performance estimate; hardware-aware NAS uses a latency predictor, since MACs ≠ latency</li><li><b>Deep Compression</b>: prune + quantize + Huffman</li><li>Pruning + distillation combine well</li></ul></div>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 9B · Linear quantization</div>
+    <h3>r = S (q − Z)</h3>
+    <p class="formula">S = (r<sub>max</sub> − r<sub>min</sub>) / (q<sub>max</sub> − q<sub>min</sub>)   Z = round(q<sub>min</sub> − r<sub>min</sub>/S)   q = clamp(round(r/S) + Z)</p>
+    <div class="controls"><label>bits <input type="range" id="qzB" min="2" max="8" value="4"><b class="mono" id="qzBv">4</b></label>
+      <button class="btn on" data-qm="a">asymmetric</button><button class="btn" data-qm="s">symmetric (Z = 0)</button><button class="btn" id="qzO">add an outlier</button></div>
+    <div class="scroll"><svg id="qzSvg" viewBox="0 0 640 150" width="100%" style="min-width:460px" role="img" aria-label="Original and quantized weights"></svg></div>
+    <div class="out" id="qzOut"></div>
+    <p class="hint">Top dots: real weights. Ticks: the 2ᵇ representable levels. Bottom dots: dequantized values. One outlier stretches S and wastes most levels; that's why per-channel scales, mixed precision and non-uniform (k-means codebook) quantization exist. PTQ quantizes a trained model; QAT simulates quantization during training. Extremes: binary (±1) and ternary (−1, 0, +1).</p>
+  </div>
+  <div class="lab">
+    <div class="lab-tag">Lab 9C · Knowledge distillation</div>
+    <h3>Temperature softens the teacher</h3>
+    <div class="controls"><label>T <input type="range" id="kdT" min="1" max="10" step="0.5" value="1"><b class="mono" id="kdTv">1</b></label></div>
+    <div class="pbars" id="kdBars"></div>
+    <p class="formula">L = α · CE(y<sub>hard</sub>, p<sub>s</sub>) + (1 − α) · T² · KL( softmax(z<sub>t</sub>/T) ‖ softmax(z<sub>s</sub>/T) )</p>
+    <p class="hint">A hard label says only "cat". Soft labels also say "a bit dog-like, nothing like a cup". That extra signal is what the small student learns from.</p>
+  </div>
+  <div class="quiz" data-quiz="l9"></div>
+</section>
+
+<!-- Case study -->
+<section class="level" id="cs" data-title="Case study">
+  <div class="lv-head"><span class="lv-num">Bonus level</span><h2>Case study: the softmax energy ladder</h2>
+  <p class="lede">The Eval 1 decks in your folder apply everything above to row-wise softmax on an L40S (864 GB/s, 96 MB L2, 350 W cap). Each step changes one thing.</p><span class="src">From PAA Eval 1 · Softmax &amp; LayerNorm (16384 × 4096, DRAM-bound)</span></div>
+  <div class="lab">
+    <div class="lab-tag">Lab · Energy per call</div>
+    <div class="controls"><button class="btn on" data-ce="b">default clocks</button><button class="btn" data-ce="l">SM locked at 900 MHz</button></div>
+    <div class="hbars" id="ceBars"></div>
+    <p class="hint">Times barely move between clock settings for S2–S8 (~692 µs), because DRAM sets the pace. Lowering the clock removes wasted power.</p>
+  </div>
+  <div class="grid3">
+    <div class="card"><span class="k">Lesson 1</span><h3>S0 → S2: 4.4× less energy</h3><p>One thread per row reads uncoalesced (32 sectors per load instead of 4) and makes 3 passes. Coalescing and fusing passes hit the DRAM roof (~90% of 864 GB/s).</p></div>
+    <div class="card"><span class="k">Lesson 2</span><h3>Memory-bound → energy ≈ bytes</h3><p>All optimised FP32 kernels land near 240 mJ. FP16 I/O (S8) halves the bytes and the energy.</p></div>
+    <div class="card"><span class="k">Lesson 3</span><h3>Below the cap, fastest ≠ cheapest</h3><p>At equal time, instructions per element rank energy. S8 at 900 MHz uses 19% less energy than PyTorch FP16 for 4% more time.</p></div>
+  </div>
+  <div class="quiz" data-quiz="cs"></div>
+</section>
+
+<!-- Cheat sheet -->
+<section class="level" id="cheat" data-title="Cheat sheet">
+  <div class="lv-head"><span class="lv-num">Exam kit</span><h2>Formula cheat sheet</h2><p class="lede">Everything you'll be asked to compute, in one place.</p></div>
+  <div class="sheet">
+    <div class="card"><span class="k">Indexing</span><p class="formula">idx = blockIdx.x·blockDim.x + threadIdx.x<br>warps/block = ⌈threads/32⌉</p></div>
+    <div class="card"><span class="k">Occupancy</span><p class="formula">n<sub>t</sub> = min(64K/r, SMEM/m, 2048)<br>occupancy = n<sub>t</sub> / 2048 (also ≤ 32 blocks)</p></div>
+    <div class="card"><span class="k">Banks</span><p class="formula">bank = word % 32 · stride s → gcd(s,32)-way<br>same word = broadcast · pad tile to [32][33]</p></div>
+    <div class="card"><span class="k">Work efficiency</span><p class="formula">W = T<sub>p</sub>·p · reduce n−1 · HS scan n·log n<br>Blelloch: up n−1 adds, down n−1 adds + swaps</p></div>
+    <div class="card"><span class="k">Conv</span><p class="formula">H₂ = ⌊(H + 2P − F)/S⌋ + 1<br>params = F²·D₁·K · MACs = H₂W₂·F²·D₁·K</p></div>
+    <div class="card"><span class="k">GEMM</span><p class="formula">FLOPs = 2MNK · naive AI = 0.25<br>tiled AI = BM·BN/(2(BM+BN)) FP32 · ×2 FP16</p></div>
+    <div class="card"><span class="k">Roofline</span><p class="formula">P = min(π, I·β) · I* = π/β<br>4090 ≈ 82 · A100 FP32 12.6 · H100 BF16 296</p></div>
+    <div class="card"><span class="k">Streaming kernels</span><p class="formula">AXPY FP64: 2N/24N = 0.083<br>SAXPY FP32: 2N/12N = 0.167</p></div>
+    <div class="card"><span class="k">KV cache</span><p class="formula">2·L·H<sub>kv</sub>·d·seq·batch·bytes<br>Llama-2-7B FP16: 0.5 MB / token</p></div>
+    <div class="card"><span class="k">Depthwise separable</span><p class="formula">cost ratio = 1/C<sub>out</sub> + 1/K²<br>3×3 → roughly 8–9× cheaper</p></div>
+    <div class="card"><span class="k">Quantization</span><p class="formula">r = S(q − Z) · S = Δr/Δq<br>Z = round(q<sub>min</sub> − r<sub>min</sub>/S)</p></div>
+    <div class="card"><span class="k">Attention</span><p class="formula">softmax(QKᵀ/√d<sub>k</sub>)·V<br>prefill = GEMM (compute) · decode = GEMV (memory)</p></div>
+  </div>
+</section>
+
+<footer>Built from the files in your <span class="mono">paa</span> folder: L1–L8, Model Compression, Tutorials 1–2 and the Eval 1 decks. L5, L8 and the compression deck are mostly images, so those levels fill in the standard content behind each slide title. XP is saved only in this browser.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const fmt=(x,d=2)=>{if(!isFinite(x))return '∞';const a=Math.abs(x);if(a>=1e4)return x.toLocaleString('en-US',{maximumFractionDigits:0});if(a>=100)return x.toFixed(0);if(a>=1)return x.toFixed(d);return x.toPrecision(2)};
+const human=b=>{const u=['B','KB','MB','GB','TB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++}return (b>=100?b.toFixed(0):b.toFixed(b>=10?1:2))+' '+u[i]};
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+function seg(container,attr,cb){$$('['+attr+']',container).forEach(b=>b.addEventListener('click',()=>{$$('['+attr+']',container).forEach(x=>x.classList.toggle('on',x===b));cb(b.getAttribute(attr))}))}
+function hbars(el,rows,opts={}){ // rows: {label, lo, hi|v, txt}
+  const log=opts.log, max=opts.max||Math.max(...rows.map(r=>r.hi??r.v)), min=opts.min||1;
+  const pos=v=>log?(Math.log10(Math.max(v,min))-Math.log10(min))/(Math.log10(max)-Math.log10(min))*100:v/max*100;
+  el.innerHTML=rows.map(r=>{const lo=r.lo!=null?pos(r.lo):0, hi=pos(r.hi??r.v);
+    return `<div class="hbar"><span>${r.label}</span><span class="t"><i style="left:${lo}%;width:${Math.max(hi-lo,0.8)}%;${r.color?'background:'+r.color:''}"></i></span><span class="v">${r.txt}</span></div>`}).join('');
+}
+
+/* ---------- XP + quizzes ---------- */
+let store={}; try{store=JSON.parse(localStorage.getItem('paa-guide-xp')||'{}')||{}}catch(e){store={}}
+const save=()=>{try{localStorage.setItem('paa-guide-xp',JSON.stringify(store))}catch(e){}};
+const Q={
+l1:[
+ {q:'Why did Dennard scaling stop giving a free lunch?',o:['Transistors stopped shrinking','Leakage current meant voltage couldn’t keep dropping, so power density rose (the power wall)','GPUs replaced CPUs','Moore’s law was only an observation'],a:1,w:'Tunnelling raised leakage. Voltage could no longer scale with size, chips got too hot, and the industry switched to multicore.'},
+ {q:'From the L1 energy table, which costs the most per bit?',o:['An FP32 multiply','An INT32 add','A memory access','Moving data 1 mm on chip'],a:2,w:'Memory access is 160–2000 fJ/bit versus 10–100 for arithmetic. Data movement dominates energy.'},
+ {q:'BF16 compared with FP16:',o:['Same layout, different name','Keeps FP32’s 8 exponent bits: same range as FP32, less precision','More mantissa bits than FP16','Is an integer format'],a:1,w:'BF16 = 1 + 8 + 7. FP16 = 1 + 5 + 10. BF16 trades precision for FP32’s range, which is what training needs.'}],
+l2:[
+ {q:'A warp running one instruction across 32 lanes on different data is closest to:',o:['SISD','SIMD','MISD','MIMD'],a:1,w:'One instruction stream, many data elements. NVIDIA calls its version SIMT.'},
+ {q:'A parallel algorithm is work-efficient when:',o:['It finishes in O(log n) steps','Total operations across all processors equal the sequential algorithm’s','It uses n processors','It has no synchronisation'],a:1,w:'W_p(n) = W_s(n): no wasted or extra computation, whatever the step count.'},
+ {q:'NUMA means:',o:['No shared memory at all','One address space, but local memory is faster than remote','Every access costs the same','Only GPUs use it'],a:1,w:'Clusters share fast local memory and reach other clusters’ memory over a slower interconnect.'}],
+l3:[
+ {q:'An SM holds 3 blocks of 256 threads. How many warps is that?',o:['8','24','768','3'],a:1,w:'256 / 32 = 8 warps per block, × 3 = 24. Only one is picked per scheduler per cycle.'},
+ {q:'A thread uses 64 registers and 2 KB of shared memory. SM: 64K registers, 256 KB shared (slide numbers). Max active threads?',o:['1024','2048','128','32'],a:2,w:'Registers allow 64K/64 = 1024, shared memory allows 256K/2K = 128. Min is 128, so occupancy is 128/2048 = 0.0625.'},
+ {q:'shared[base + 2*threadIdx.x] on 32-bit floats gives:',o:['No conflict','2-way bank conflict','32-way bank conflict','A broadcast'],a:1,w:'Stride 2: gcd(2,32) = 2, so pairs of threads hit the same bank.'},
+ {q:'In a 256-thread block, if (threadIdx.x > 2) makes how many warps diverge?',o:['0','1','8','All of them'],a:1,w:'Only warp 0 has threads 0–2 on one side and 3–31 on the other. Warps 1–7 all go the same way.'}],
+l4:[
+ {q:'The Take 1 reduction (t % (2*stride) == 0) is slow mainly because of:',o:['Too many blocks','Divergence inside every warp plus strided bank conflicts','Using shared memory','Atomic operations'],a:1,w:'Active threads are spread out, so every warp diverges early, and the strided accesses conflict on banks. Take 2 (t < stride) keeps active threads packed.'},
+ {q:'Total work of the Hillis–Steele scan:',o:['O(n)','O(log n)','O(n log n)','O(n²)'],a:2,w:'log n steps of ~n adds each. Blelloch does O(n) work in two sweeps.'},
+ {q:'Why declare tile[32][33] in the shared-memory transpose?',o:['Alignment for float4','Each row starts one bank later, so reading a column hits 32 different banks','To hold a halo','To store the result'],a:1,w:'Width 32 makes column reads stride 32: a 32-way conflict. Width 33 makes the stride odd: conflict-free.'},
+ {q:'The pre-Volta warpReduce (volatile, no sync) is unsafe on Volta+ because:',o:['volatile was removed','Each thread has its own program counter, so lockstep isn’t guaranteed','Warps became 64 wide','Shared memory got slower'],a:1,w:'Independent thread scheduling. Use __shfl_down_sync, which works in registers and is synchronised by its mask.'}],
+l5:[
+ {q:'A 3×3 conv with 64 input channels and 128 filters has how many weights (no bias)?',o:['1,152','73,728','8,192','589,824'],a:1,w:'F·F·D₁·K = 3·3·64·128 = 73,728.'},
+ {q:'im2col turns a convolution into:',o:['An FFT','One large GEMM','A reduction','A scan'],a:1,w:'Each receptive field becomes a column; the filters become rows. One matmul does the whole layer.'},
+ {q:'Overfitting shows up as:',o:['Both accuracies falling','Training accuracy rising while test accuracy stalls or drops','Loss going to infinity','Gradients becoming zero'],a:1,w:'The model memorises training data. Test data, never used for gradient steps, reveals it.'}],
+l6:[
+ {q:'Arithmetic intensity of naive FP32 matmul (one thread per output, no reuse):',o:['0.25 FLOP/B','2 FLOP/B','32 FLOP/B','N/4 FLOP/B'],a:0,w:'2K FLOPs for 2K floats × 4 bytes = 8K bytes. 0.25, independent of size.'},
+ {q:'FP32 tiled GEMM with square tile T = 128:',o:['AI = 8','AI = 32','AI = 64','AI = 128'],a:1,w:'AI = T/4 = 32, past the A100 FP32 ridge of ~12.6, so compute-bound.'},
+ {q:'With an 8×8 register micro-tile, each k step costs:',o:['64 shared reads → 64 FMAs','16 shared reads → 64 FMAs','8 shared reads → 8 FMAs','1 global read → 64 FMAs'],a:1,w:'Load 8 from As and 8 from Bs, then the 8×8 outer product reuses each value 8 times.'},
+ {q:'"Better Performance at Lower Occupancy" argues that:',o:['Occupancy should always be 100%','ILP from register blocking can hide latency instead of more resident warps','Shared memory is useless','Tensor Cores need more threads'],a:1,w:'Each thread has many independent FMAs in flight, keeping pipelines full with fewer warps.'}],
+l7:[
+ {q:'On an RTX 4090 (ridge ≈ 82 FLOP/B), SAXPY (AI 0.167) is:',o:['Compute-bound at 82 TFLOP/s','Memory-bound at ≈ 168 GFLOP/s','Latency-bound','Bound by Tensor Cores'],a:1,w:'0.167 × 1008 GB/s ≈ 168 GFLOP/s, about 0.2% of peak.'},
+ {q:'Attainable performance on the roofline is:',o:['π × β','max(π, I·β)','min(π, I·β)','I / β'],a:2,w:'You’re capped by whichever is lower: peak compute, or intensity times bandwidth.'},
+ {q:'Batch-1 LLM decode is:',o:['Compute-bound GEMM','Memory-bound GEMV','Network-bound','Bound by softmax'],a:1,w:'Every weight is read once per token for ~1 FLOP per byte. Prefill is the compute-bound phase.'},
+ {q:'Every Tensor Core generation fundamentally computes:',o:['A dot product per thread','D = A×B + C on small tiles, low-precision inputs, higher-precision accumulator','FFTs','Convolutions directly'],a:1,w:'Tile shape, thread scope and data types changed from Volta to Blackwell; the MMA operation didn’t.'}],
+l8:[
+ {q:'Scaled dot-product attention:',o:['softmax(QK)V','softmax(QKᵀ/√d_k)V','QKᵀV','softmax(V)QK'],a:1,w:'Dividing by √d_k keeps dot products from growing with dimension and saturating the softmax.'},
+ {q:'The KV cache trades:',o:['Accuracy for speed','Memory for compute, by not recomputing past tokens’ K and V','Compute for memory','Bandwidth for latency'],a:1,w:'Each decode step only computes the new token’s K, V. The cost is memory growing with context × batch.'},
+ {q:'Grouped-query attention:',o:['Each query head has its own K/V','Groups of query heads share one K/V head','All heads share one K/V','Drops the V matrix'],a:1,w:'GQA sits between MHA (one K/V per head) and MQA (one K/V for all), cutting KV cache by the group factor.'},
+ {q:'Depthwise separable conv cost relative to a regular conv:',o:['1/K','1/C_out + 1/K²','K²','C_in/C_out'],a:1,w:'(K²·C_in + C_in·C_out) / (K²·C_in·C_out) = 1/C_out + 1/K².'}],
+l9:[
+ {q:'Pruning that removes individual weights, giving sparse matrices:',o:['Structured','Unstructured','Channel','Layer'],a:1,w:'Fine-grained. Highest compression, but needs sparse hardware support to run faster.'},
+ {q:'Pruning that removes whole channels or filters to suit standard hardware:',o:['Unstructured','Structured','Random','Magnitude'],a:1,w:'The remaining tensor is just smaller and dense.'},
+ {q:'Most common criterion for choosing weights to remove:',o:['Gradient sign','Weight magnitude','Layer index','Random'],a:1,w:'Small |w| contributes least. L1/L2 regularisation helps push weights there.'},
+ {q:'What usually follows pruning to recover accuracy?',o:['Quantization','Fine-tuning (retraining)','NAS','Nothing'],a:1,w:'Iterative prune → fine-tune cycles reach higher sparsity at the same accuracy.'},
+ {q:'Raising the distillation temperature T:',o:['Makes the teacher more confident','Softens the distribution, revealing how similar wrong classes are','Changes the predicted class','Removes the need for labels'],a:1,w:'softmax(z/T) flattens as T grows, exposing the "dark knowledge" in the non-top classes.'}],
+cs:[
+ {q:'Why does naive S0 cost ~4.4× the energy of S2?',o:['It uses FP64','Uncoalesced loads (32 sectors vs 4) and 3 passes: more bytes, more time at full power','It has bank conflicts only','It uses atomics'],a:1,w:'Bytes ÷ minimum = 2.0× and DRAM utilisation around 30%, so it takes ~5.7× longer at near-full power.'},
+ {q:'Below the power cap, at the same DRAM-bound speed, what ranks kernels by energy?',o:['Block size','On-chip instructions per element','Number of SMs','Register count'],a:1,w:'S2 vs S3: same 692 µs and bytes, but 57 vs 73 instructions per element gives 4% more energy at every locked clock.'}]
+};
+const RANKS=[[0,'Lonely Ox'],[60,'Chicken'],[130,'Warp Wrangler'],[200,'Tile Tamer'],[270,'Roofline Rider'],[330,'A Million Chicks']];
+const totalQ=Object.values(Q).reduce((s,a)=>s+a.length,0);
+function xp(){return Object.values(store).filter(v=>v&&v.first).length*10}
+function refreshXP(){const x=xp();$('#xpNum').textContent=x+' / '+totalQ*10;$('#xpBar').style.width=(x/(totalQ*10)*100)+'%';
+  let r=RANKS[0][1];RANKS.forEach(([t,n])=>{if(x>=t)r=n});$('#rank').textContent=r;
+  Object.keys(Q).forEach(id=>{const ck=$('#ck-'+id);if(!ck)return;const done=Q[id].filter((_,i)=>store[id+'-'+i]&&store[id+'-'+i].ok).length;ck.textContent=done+'/'+Q[id].length;ck.classList.toggle('done',done===Q[id].length)})}
+function renderQuiz(el){const id=el.dataset.quiz,qs=Q[id];
+  el.innerHTML=`<div class="qh"><h3>Checkpoint</h3><span>${qs.length} questions · 10 XP each on the first try</span></div>`+qs.map((q,i)=>`<div class="q" data-i="${i}"><p class="qt">${i+1}. ${q.q}</p><div class="opts">${q.o.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><p class="why" hidden></p></div>`).join('');
+  $$('.q',el).forEach(qe=>{const i=+qe.dataset.i,q=qs[i],key=id+'-'+i;
+    const show=(j)=>{$$('button',qe).forEach(b=>{const k=+b.dataset.j;if(k===q.a)b.classList.add('right');else if(k===j)b.classList.add('wrong')});
+      if(j===q.a){$$('button',qe).forEach(b=>b.disabled=true)}
+      const w=$('.why',qe);w.hidden=false;w.innerHTML=(j===q.a?'<b>Correct.</b> ':'<b>Not quite.</b> ')+q.w};
+    if(store[key]&&store[key].ok)show(q.a);
+    $$('button',qe).forEach(b=>b.addEventListener('click',()=>{const j=+b.dataset.j;const prev=store[key];
+      if(!prev)store[key]={first:j===q.a,ok:j===q.a};else if(j===q.a)prev.ok=true;
+      save();$$('button',qe).forEach(x=>x.classList.remove('wrong'));show(j);refreshXP()}))})}
+
+/* ---------- TOC ---------- */
+const toc=$('#toc');$$('.level').forEach((s,i)=>{const li=document.createElement('li');const lab=s.querySelector('.lv-num').textContent.replace('Level ','');
+  li.innerHTML=`<a href="#${s.id}"><span class="n">${/^\d/.test(lab)?lab.padStart(2,'0'):'★'}</span><span class="t">${s.dataset.title}</span>${Q[s.id]?`<span class="ck" id="ck-${s.id}"></span>`:''}</a>`;toc.appendChild(li)});
+try{const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('.toc a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});$$('.level').forEach(s=>io.observe(s))}catch(e){}
+$$('.quiz').forEach(renderQuiz);refreshXP();
+
+/* ---------- Hero canvas ---------- */
+(function(){const c=$('#heroCanvas'),ctx=c.getContext('2d');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let W,H,cols,rows,lit=[],t=0;
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+  function size(){const d=devicePixelRatio||1;W=c.clientWidth;H=c.clientHeight;c.width=W*d;c.height=H*d;ctx.setTransform(d,0,0,d,0,0);cols=Math.floor((W-16)/7);rows=Math.floor((H-16)/7);lit=new Float32Array(cols*rows)}
+  function draw(){const acc=css('--accent'),dim=css('--line');ctx.clearRect(0,0,W,H);
+    for(let r=0;r<rows;r++)for(let k=0;k<cols;k++){const v=lit[r*cols+k];ctx.globalAlpha=v>0.05?0.25+0.75*v:1;ctx.fillStyle=v>0.05?acc:dim;ctx.fillRect(8+k*7,8+r*7,4,4)}ctx.globalAlpha=1}
+  function step(){t++;for(let i=0;i<lit.length;i++)lit[i]*=0.93;
+    for(let s=0;s<4;s++){if(Math.random()<0.5){const start=Math.floor(Math.random()*(lit.length/32))*32;for(let i=start;i<start+32&&i<lit.length;i++)lit[i]=1}}
+    draw();if(!reduce)requestAnimationFrame(step)}
+  size();addEventListener('resize',()=>{size();draw()});
+  if(reduce){for(let i=0;i<lit.length;i+=32*5)for(let j=0;j<32&&i+j<lit.length;j++)lit[i+j]=1;draw()}else step();
+  try{new MutationObserver(draw).observe(document.documentElement,{attributes:true})}catch(e){}
+})();
+
+/* ---------- L1 ---------- */
+hbars($('#energyBars'),[
+ {label:'INT32 add/mult',lo:10,hi:80,txt:'10–80'},
+ {label:'FP32 add/mult',lo:25,hi:100,txt:'25–100'},
+ {label:'Move 1 mm on chip',lo:10,hi:100,txt:'10–100',color:'var(--cool)'},
+ {label:'Memory access',lo:160,hi:2000,txt:'160–2000',color:'var(--hot)'}],{log:true,min:5,max:3000});
+$('#energyBars').insertAdjacentHTML('beforeend','<div class="hbar"><span></span><span class="tx mono" style="font-size:11px;color:var(--muted)">log scale · femtojoules per bit</span><span></span></div>');
+const FMT={FP32:[8,23,'≈3.4×10³⁸','~7 decimal digits','Classic single precision. "Graphics grade" to old HPC folk.'],BF16:[8,7,'≈3.4×10³⁸','~2–3 digits','FP32 range, short mantissa. A training favourite.'],FP16:[5,10,'65,504','~3 digits','Half precision. Volta’s first Tensor Cores took only this.'],'FP8 E4M3':[4,3,'448','~1 digit','More precision; used for weights and activations.'],'FP8 E5M2':[5,2,'57,344','<1 digit','More range; used for gradients.'],'FP4 E2M1':[2,1,'6','16 values total','Blackwell NVFP4 / MXFP4, with per-block scale factors.']};
+const fb=$('#fmtBtns');Object.keys(FMT).forEach((k,i)=>fb.insertAdjacentHTML('beforeend',`<button class="btn${i===0?' on':''}" data-fmt="${k}">${k}</button>`));
+function showFmt(k){const [e,m,mx,pr,note]=FMT[k];$('#fmtBits').innerHTML='<span class="b-s">S</span>'+'<span class="b-e">E</span>'.repeat(e)+'<span class="b-m">M</span>'.repeat(m);
+  $('#fmtOut').innerHTML=`<b>${k}</b> · ${1+e+m} bits = 1 sign + ${e} exponent + ${m} mantissa<br>max ≈ ${mx} · precision ${pr}<br>${note}`}
+seg(fb,'data-fmt',showFmt);showFmt('FP32');
+hbars($('#gpuBars'),[[2006,'8800 GTX',0.35],[2010,'GTX 580',1.58],[2014,'GTX 980',4.61],[2018,'RTX 2080 Ti',13.45],[2022,'RTX 4090',82.58],[2025,'RTX 5090',104.8]].map(([y,n,v])=>({label:`${y} · ${n}`,v,txt:v+' TF'})),{max:110});
+
+/* ---------- L2 ---------- */
+const FL={SISD:'<b>SISD</b> · one instruction stream, one data stream. The classic von Neumann CPU core.',SIMD:'<b>SIMD</b> · one instruction on many data elements. Vector/array processors, CPU AVX, and a GPU warp (SIMT).',MISD:'<b>MISD</b> · many instruction streams on the same data. Rare in practice: redundant fault-tolerant systems, some argue systolic pipelines.',MIMD:'<b>MIMD</b> · independent instruction streams on independent data. Multicore CPUs, clusters, a GPU across its SMs.'};
+seg($('#flynn'),'data-f',f=>$('#flynnOut').innerHTML=FL[f]);$('#flynn [data-f="SIMD"]').click();
+function we(){const e=+$('#weN').value,n=2**e;$('#weExp').textContent=e;
+  hbars($('#weBars'),[{label:'Sequential sum',v:n-1,txt:fmt(n-1)},{label:'Tree reduction',v:n-1,txt:fmt(n-1)+' ✓'},{label:'Blelloch scan',v:2*(n-1),txt:fmt(2*(n-1))+' ✓'},{label:'Hillis–Steele scan',v:n*e-(n-1),txt:fmt(n*e-(n-1)),color:'var(--hot)'}])}
+$('#weN').addEventListener('input',we);we();
+
+/* ---------- L3 index ---------- */
+let ixSel=[1,37];
+function ix(){const G=Math.min(6,Math.max(1,+$('#ixG').value||1)),B=+$('#ixB').value;if(ixSel[0]>=G)ixSel[0]=G-1;if(ixSel[1]>=B)ixSel[1]=B-1;
+  $('#ixBlocks').innerHTML=Array.from({length:G},(_,b)=>`<div class="blk"><span class="lbl">block ${b}</span><div class="thr">${Array.from({length:B},(_,t)=>`<button class="w${Math.floor(t/32)%2}${b===ixSel[0]&&t===ixSel[1]?' sel':''}" data-b="${b}" data-t="${t}" aria-label="block ${b} thread ${t}"></button>`).join('')}</div></div>`).join('');
+  $$('#ixBlocks button').forEach(x=>x.addEventListener('click',()=>{ixSel=[+x.dataset.b,+x.dataset.t];ix()}));
+  const [b,t]=ixSel;$('#ixOut').innerHTML=`blockIdx.x = <b>${b}</b> · threadIdx.x = <b>${t}</b> · blockDim.x = ${B}<br>idx = ${b} × ${B} + ${t} = <b>${b*B+t}</b> of ${G*B} threads<br>warp ${Math.floor(t/32)} of this block, lane ${t%32} · ${B/32} warps/block`}
+$('#ixG').addEventListener('input',ix);$('#ixB').addEventListener('change',ix);ix();
+
+hbars($('#latBars'),[{label:'Register',v:1,txt:'1 s'},{label:'Shared memory',v:20,txt:'20 s'},{label:'L1 hit',lo:20,hi:50,txt:'20–50 s'},{label:'L2 hit',lo:100,hi:200,txt:'~2–3 min',color:'var(--cool)'},{label:'Global / HBM',v:1000,txt:'~17 min',color:'var(--hot)'}],{log:true,min:0.7,max:1200});
+
+/* occupancy */
+function oc(){const r=+$('#ocR').value,m=+$('#ocM').value,T=+$('#ocT').value,S=+$('#ocS').value*1024;$('#ocRv').textContent=r;$('#ocMv').textContent=m;
+  const lr=Math.floor(65536/r),lm=m?Math.floor(S/m):Infinity,nt=Math.min(lr,lm,2048);
+  const bR=Math.floor(65536/(r*T)),bM=m?Math.floor(S/(m*T)):Infinity,bT=Math.floor(2048/T),blocks=Math.min(bR,bM,bT,32);
+  const lim=blocks===bR?'registers':blocks===bM?'shared memory':blocks===bT?'2048-thread cap':'32-block cap';
+  const occ=nt/2048,occB=blocks*T/2048,cls=occB>=0.75?'good':occB>=0.4?'mid':'bad';
+  $('#ocOut').innerHTML=`Slide formula: l<sub>r</sub> = 64K/${r} = ${lr} · l<sub>m</sub> = ${S/1024}K/${m} = ${isFinite(lm)?lm:'∞'} → n<sub>t</sub> = <b>${nt}</b> → occupancy <b>${occ.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')}</b><br>Whole blocks of ${T}: ${blocks} block${blocks===1?'':'s'} fit (limited by ${lim}) → ${blocks*T} threads · <span class="pill ${cls}">${Math.round(occB*100)}% occupancy</span>`}
+['ocR','ocM'].forEach(i=>$('#'+i).addEventListener('input',oc));['ocT','ocS'].forEach(i=>$('#'+i).addEventListener('change',oc));
+$$('[data-oc]').forEach(b=>b.addEventListener('click',()=>{const [r,m,s]=b.dataset.oc.split(',');$('#ocR').value=r;$('#ocM').value=m;$('#ocS').value=s;oc()}));oc();
+
+/* banks */
+const bkPre=[[1,'s = 1 linear'],[2,'s = 2'],[3,'s = 3 (odd)'],[32,'tile[32][32] column'],[33,'tile[32][33] column'],[0,'s = 0 broadcast']];
+bkPre.forEach(([s,l])=>$('#bkPre').insertAdjacentHTML('beforeend',`<button class="btn" data-bk="${s}">${l}</button>`));
+$$('[data-bk]').forEach(b=>b.addEventListener('click',()=>{$('#bkS').value=b.dataset.bk;bk()}));
+function bk(){const s=+$('#bkS').value;$('#bkSv').textContent=s;const sv=$('#bkSvg');const X=i=>18+i*19.8;
+  const addr=Array.from({length:32},(_,t)=>t*s),bank=addr.map(a=>a%32);const per=Array.from({length:32},()=>new Set());addr.forEach((a,t)=>per[bank[t]].add(a));
+  const deg=Math.max(...per.map(p=>p.size));let g='';
+  for(let t=0;t<32;t++)g+=`<line x1="${X(t)}" y1="30" x2="${X(bank[t])}" y2="112" stroke="var(--${per[bank[t]].size>1?'hot':'cool'})" stroke-width="1.2" opacity=".7"/>`;
+  for(let t=0;t<32;t++)g+=`<rect x="${X(t)-7}" y="14" width="14" height="14" rx="3" fill="var(--soft)" stroke="var(--line)"/>`;
+  for(let b=0;b<32;b++){const n=per[b].size;g+=`<rect x="${X(b)-8}" y="112" width="16" height="18" rx="3" fill="${n===0?'var(--soft)':n===1?'var(--cool)':'var(--hot)'}" opacity="${n===0?1:Math.min(1,.45+n*.12)}"/>`;if(n>1)g+=`<text x="${X(b)}" y="145" text-anchor="middle" class="tx" style="fill:var(--hot)">${n}</text>`}
+  g+=`<text x="2" y="10" class="tx">threads 0–31</text><text x="2" y="108" class="tx">banks 0–31</text>`;sv.innerHTML=g;
+  $('#bkOut').innerHTML=s===0?`All 32 threads read the <b>same word</b> → broadcast, 1 transaction.`:`thread t → word ${s}·t → bank (${s}·t) mod 32 · gcd(${s}, 32) = ${gcd(s,32)}<br>${deg===1?'<span class="pill good">conflict-free</span> 1 transaction':`<span class="pill bad">${deg}-way conflict</span> ${deg} serialized transactions`}`}
+$('#bkS').addEventListener('input',bk);bk();
+
+/* coalescing */
+function co(){const p=$('#coP').value;const r=rng(7);const idx=Array.from({length:32},(_,t)=>p==='r'?Math.floor(r()*1024):t*(+p));
+  const sec=new Set(idx.map(i=>Math.floor(i*4/32)));const N=128;
+  $('#coGrid').innerHTML=`<div style="display:grid;grid-template-columns:repeat(64,minmax(6px,1fr));gap:2px;min-width:420px">${Array.from({length:N},(_,i)=>`<i style="height:12px;border-radius:2px;background:${sec.has(i)?'var(--accent)':'var(--soft)'}"></i>`).join('')}</div><div class="hint" style="font-size:12px;margin-top:4px">4 KB of global memory as 128 × 32-byte sectors · amber = fetched</div>`;
+  const n=sec.size,eff=128/(n*32);$('#coOut').innerHTML=`sectors fetched: <b>${n}</b> (ideal 4) · useful bytes 128 of ${n*32} fetched · <span class="pill ${eff>0.9?'good':eff>0.3?'mid':'bad'}">${Math.round(eff*100)}% efficiency</span>`}
+$('#coP').addEventListener('change',co);co();
+
+/* divergence */
+function dv(){const c=$('#dvC').value;const f={a:t=>t>2,b:t=>Math.floor(t/32)>2,c:t=>t%2===0,d:t=>t<48}[c];let div=0,passes=0;
+  $('#dvLanes').innerHTML=[0,1,2,3].map(w=>{const ls=Array.from({length:32},(_,l)=>f(w*32+l));const th=ls.filter(Boolean).length;const d=th>0&&th<32;if(d)div++;passes+=d?2:1;
+    return `<div class="lane-row"><span class="lbl">warp ${w} ${d?'<span style="color:var(--hot)">· 2 paths</span>':'· 1 path'}</span><div class="cells">${ls.map(x=>`<i class="${x?'c-then':'c-else'}"></i>`).join('')}</div></div>`}).join('');
+  $('#dvOut').innerHTML=`diverged warps: <b>${div}</b> of 4 · warp-paths executed: <b>${passes}</b> (best case 4)`}
+$('#dvC').addEventListener('change',dv);dv();
+
+/* ---------- L4 reduction ---------- */
+const RD0=[3,1,7,0,4,1,6,3,2,5,1,8,4,2,7,1];let rdMode='bad',rdStep=0;
+function rdSteps(mode){const a=RD0.slice(),st=[{a:a.slice(),act:[],s:null}];
+  if(mode==='bad'){for(let s=1;s<16;s*=2){const act=[];for(let t=0;t<16;t++)if(t%(2*s)===0){a[t]+=a[t+s];act.push(t)}st.push({a:a.slice(),act,s})}}
+  else{for(let s=8;s>0;s>>=1){const act=[];for(let t=0;t<16;t++)if(t<s){a[t]+=a[t+s];act.push(t)}st.push({a:a.slice(),act,s})}}return st}
+function rd(){const st=rdSteps(rdMode);rdStep=Math.max(0,Math.min(rdStep,st.length-1));let html='',divTot=0;
+  for(let k=0;k<=rdStep;k++){const S=st[k];const act=new Set(S.act);let divs=[];for(let w=0;w<4;w++){const n=[0,1,2,3].filter(i=>act.has(w*4+i)).length;if(n>0&&n<4)divs.push(w)}if(k>0)divTot+=divs.length;
+    html+=`<div class="step"><span class="lbl">${k===0?'input':'stride '+S.s+' · '+S.act.length+' active · '+divs.length+' divergent'}</span><div class="arr">${S.a.map((v,i)=>{let c='';if(k>0){if(act.has(i))c='hot';else c='dim';if(k>0&&divs.includes(Math.floor(i/4)))c+=' div'}return `<span class="${c}">${v}</span>`}).join('')}</div></div>`}
+  $('#rdView').innerHTML=html;const done=rdStep===st.length-1;
+  $('#rdOut').innerHTML=`step ${rdStep} of ${st.length-1} · divergent warp-steps so far: <b>${divTot}</b>${done?` · sum = <b>${st[st.length-1].a[0]}</b> ✓ ${rdMode==='bad'?'· Take 1 diverges in every warp early on.':'· Take 2 only diverges once a single warp is left.'}`:''}`}
+seg(document,'data-rm',m=>{rdMode=m;rdStep=4;rd()});
+$('#rdNext').onclick=()=>{rdStep++;rd()};$('#rdPrev').onclick=()=>{rdStep--;rd()};$('#rdReset').onclick=()=>{rdStep=0;rd()};rdStep=1;rd();
+
+/* shuffle */
+function sh(){const o=+$('#shO').value;$('#shOv').textContent=o;const L='ABCDEFGH'.split('');
+  $('#shView').innerHTML=`<div class="step"><span class="lbl">lane 0–7 · val</span><div class="arr">${L.map(x=>`<span>${x}</span>`).join('')}</div></div><div class="step"><span class="lbl">__shfl_down(val, ${o})</span><div class="arr">${L.map((x,i)=>i+o<8?`<span class="hot">${L[i+o]}</span>`:`<span class="dim">${x}</span>`).join('')}</div></div>`}
+$('#shO').addEventListener('input',sh);sh();
+$('#shRun').onclick=()=>{let v=Array.from({length:32},(_,i)=>i);const log=[];for(let off=16;off>0;off>>=1){const n=v.map((x,i)=>x+(i+off<32?v[i+off]:0));v=n;log.push(`offset ${off}: lane0 = ${v[0]}`)}$('#shOut').innerHTML=log.join(' → ')+` · <b>${v[0]===496?'496 ✓':v[0]}</b>`};
+
+/* scan */
+const SC0=[1,3,2,0,6,2,5,2];let scMode='hs',scStep=1;
+function scSteps(m){const st=[];let a=SC0.slice();st.push({l:'input',a:a.slice(),ch:[],ops:0});let ops=0;
+  if(m==='hs'){for(let d=1;d<8;d*=2){const b=a.map((x,i)=>i>=d?a[i-d]+x:x);const ch=[];for(let i=d;i<8;i++){ch.push(i);ops++}a=b;st.push({l:`d = ${d}`,a:a.slice(),ch,ops})}st.push({l:'inclusive result',a:a.slice(),ch:[],ops,fin:1})}
+  else{for(let d=0;(1<<(d+1))<=8;d++){const s=1<<(d+1),ch=[];for(let k=0;k<8;k+=s){a[k+s-1]+=a[k+(s>>1)-1];ch.push(k+s-1);ops++}st.push({l:`up-sweep, stride ${s}`,a:a.slice(),ch,ops})}
+    a[7]=0;st.push({l:'set root = 0',a:a.slice(),ch:[7],ops});
+    for(let d=2;d>=0;d--){const s=1<<(d+1),ch=[];for(let k=0;k<8;k+=s){const L=k+(s>>1)-1,R=k+s-1,t=a[L];a[L]=a[R];a[R]+=t;ch.push(L,R);ops++}st.push({l:`down-sweep, stride ${s}`,a:a.slice(),ch,ops})}
+    st.push({l:'exclusive result',a:a.slice(),ch:[],ops,fin:1})}return st}
+function sc(all){const st=scSteps(scMode);if(all)scStep=st.length-1;scStep=Math.max(0,Math.min(scStep,st.length-1));
+  $('#scView').innerHTML=st.slice(0,scStep+1).map(S=>`<div class="step"><span class="lbl">${S.l}</span><div class="arr">${S.a.map((v,i)=>`<span class="${S.ch.includes(i)?'hot':S.fin?'act':''}">${v}</span>`).join('')}</div></div>`).join('');
+  const S=st[scStep];$('#scOut').innerHTML=`adds so far: <b>${S.ops}</b> · ${scMode==='hs'?'n log n − (n−1) = 17 for n = 8':'up-sweep 7 adds, down-sweep 7 add-and-swaps, O(n) total'}`}
+seg(document,'data-sm',m=>{scMode=m;scStep=1;sc()});
+$('#scNext').onclick=()=>{scStep++;sc()};$('#scPrev').onclick=()=>{scStep--;sc()};$('#scAll').onclick=()=>sc(true);sc();
+
+/* SAT */
+const sr=rng(11);const A=Array.from({length:6},()=>Array.from({length:6},()=>1+Math.floor(sr()*9)));
+const SAT=A.map(r=>r.slice());for(let i=0;i<6;i++)for(let j=0;j<6;j++)SAT[i][j]=A[i][j]+(i?SAT[i-1][j]:0)+(j?SAT[i][j-1]:0)-(i&&j?SAT[i-1][j-1]:0);
+let satView='a',satC=[];const S_=(i,j)=>i<0||j<0?0:SAT[i][j];
+function sat(){const M=satView==='a'?A:SAT;let r1,c1,r2,c2;if(satC.length===2){r1=Math.min(satC[0][0],satC[1][0]);r2=Math.max(satC[0][0],satC[1][0]);c1=Math.min(satC[0][1],satC[1][1]);c2=Math.max(satC[0][1],satC[1][1])}
+  $('#satG').innerHTML=M.map((row,i)=>row.map((v,j)=>{const inR=satC.length===2&&i>=r1&&i<=r2&&j>=c1&&j<=c2;const cor=satC.some(c=>c[0]===i&&c[1]===j);return `<button class="${inR?'in':''}${cor?' corner':''}" data-i="${i}" data-j="${j}">${v}</button>`}).join('')).join('');
+  $$('#satG button').forEach(b=>b.onclick=()=>{if(satC.length===2)satC=[];satC.push([+b.dataset.i,+b.dataset.j]);sat()});
+  if(satC.length===2){let direct=0;for(let i=r1;i<=r2;i++)for(let j=c1;j<=c2;j++)direct+=A[i][j];const a=S_(r2,c2),b=S_(r1-1,c2),c=S_(r2,c1-1),d=S_(r1-1,c1-1);
+    $('#satOut').innerHTML=`rows ${r1}–${r2}, cols ${c1}–${c2}: S[${r2}][${c2}] − S[${r1-1}][${c2}] − S[${r2}][${c1-1}] + S[${r1-1}][${c1-1}] = ${a} − ${b} − ${c} + ${d} = <b>${a-b-c+d}</b> · direct sum ${direct} ${direct===a-b-c+d?'✓':''}`}
+  else $('#satOut').textContent=satC.length?'Now pick the opposite corner.':'Pick a top-left cell, then a bottom-right cell.'}
+seg(document,'data-sv',v=>{satView=v;sat()});satC=[[1,1],[3,4]];sat();
+
+/* ---------- L5 ---------- */
+const smL=['cat','dog','fox','car','cup'];let smZ=[2.5,1.2,0.4,-1,-2];
+$('#smCtl').innerHTML=smL.map((l,i)=>`<label>${l} <input type="range" min="-4" max="4" step="0.1" value="${smZ[i]}" data-z="${i}"></label>`).join('');
+function softmax(z,T=1){const m=Math.max(...z),e=z.map(x=>Math.exp((x-m)/T)),s=e.reduce((a,b)=>a+b,0);return e.map(x=>x/s)}
+function pbars(el,labels,p,extra=[]){el.innerHTML=labels.map((l,i)=>`<div class="pbar"><span>${l}</span><span class="t"><i style="width:${p[i]*100}%"></i></span><span class="v">${(p[i]*100).toFixed(1)}%</span></div>`).join('')}
+function sm(){$$('[data-z]').forEach(x=>smZ[+x.dataset.z]=+x.value);pbars($('#smBars'),smL.map((l,i)=>`${l} ${smZ[i].toFixed(1)}`),softmax(smZ))}
+$$('[data-z]').forEach(x=>x.addEventListener('input',sm));sm();
+(function(){const spans=$$('#trCycle span');let k=0;if(matchMedia('(prefers-reduced-motion: reduce)').matches){spans[1].classList.add('lit');return}setInterval(()=>{spans.forEach((s,i)=>s.classList.toggle('lit',i===k));k=(k+1)%spans.length},1100)})();
+(function(){const W=640,H=170,l=40,b=26,X=e=>l+e/40*(W-l-12),Y=a=>10+(1-a)*(H-10-b);let tr='',te='';
+  for(let e=0;e<=40;e++){const a1=0.98-0.88*Math.exp(-e/7),a2=0.74-0.62*Math.exp(-e/6)-Math.max(0,e-14)*0.0045;tr+=(e?'L':'M')+X(e)+','+Y(a1);te+=(e?'L':'M')+X(e)+','+Y(a2)}
+  $('#ofSvg').innerHTML=`<line x1="${l}" y1="${H-b}" x2="${W-12}" y2="${H-b}" class="ax"/><line x1="${l}" y1="10" x2="${l}" y2="${H-b}" class="ax"/><path d="${tr}" fill="none" stroke="var(--accent)" stroke-width="2.5"/><path d="${te}" fill="none" stroke="var(--cool)" stroke-width="2.5"/><line x1="${X(14)}" y1="10" x2="${X(14)}" y2="${H-b}" stroke="var(--hot)" stroke-dasharray="4 4"/><text x="${X(14)+6}" y="22" class="tx" style="fill:var(--hot)">stop here</text><text x="${X(30)}" y="${Y(0.99)+14}" class="tx" style="fill:var(--accent-ink)">train</text><text x="${X(30)}" y="${Y(0.62)+16}" class="tx" style="fill:var(--cool)">test</text><text x="${W-12}" y="${H-8}" text-anchor="end" class="tx">epochs →</text><text x="4" y="20" class="tx">acc</text>`})();
+/* conv */
+function cv(){const g=id=>Math.max(0,+$('#'+id).value||0);const H=Math.max(1,g('cvH')),D=Math.max(1,g('cvD')),F=Math.max(1,g('cvF')),S=Math.max(1,g('cvS')),P=g('cvP'),K=Math.max(1,g('cvK'));
+  const H2=Math.floor((H+2*P-F)/S)+1;if(H2<1){$('#cvOut').innerHTML='Filter is larger than the padded input. Add padding or shrink F.';return}
+  const params=F*F*D*K,macs=H2*H2*F*F*D*K;
+  $('#cvOut').innerHTML=`output H₂ = W₂ = ⌊(${H} + ${2*P} − ${F}) / ${S}⌋ + 1 = <b>${H2}</b> → ${H2}×${H2}×${K}<br>params F²·D₁·K = <b>${params.toLocaleString()}</b> (+${K} bias) · MACs H₂W₂·F²·D₁·K = <b>${(macs/1e6).toFixed(1)} M</b> (${(2*macs/1e9).toFixed(2)} GFLOP)<br>im2col GEMM: filters [${K} × ${F*F*D}] · patches [${F*F*D} × ${(H2*H2).toLocaleString()}]`;cvAnim.set(F,S,P)}
+const cvAnim=(function(){const c=$('#cvCanvas'),x=c.getContext('2d');let F=3,S=1,P=1,k=0,timer;const N=7,cell=20;
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+  function draw(){const n=N+2*P,o=Math.floor((n-F)/S)+1;x.clearRect(0,0,c.width,c.height);if(o<1)return;const pos=k%(o*o),oi=Math.floor(pos/o),oj=pos%o;
+    x.font='11px '+css('--mono');x.fillStyle=css('--muted');x.fillText('input '+N+'×'+N+(P?' + pad '+P:''),4,12);x.fillText('output '+o+'×'+o,300,12);
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++){const pad=i<P||j<P||i>=N+P||j>=N+P;x.fillStyle=pad?css('--paper'):css('--soft');x.fillRect(4+j*cell,20+i*cell,cell-2,cell-2);if(pad){x.strokeStyle=css('--line');x.strokeRect(4.5+j*cell,20.5+i*cell,cell-3,cell-3)}}
+    x.fillStyle=css('--accent');x.globalAlpha=.55;x.fillRect(4+oj*S*cell,20+oi*S*cell,F*cell-2,F*cell-2);x.globalAlpha=1;
+    const oc=Math.min(cell,Math.floor(180/o));for(let i=0;i<o;i++)for(let j=0;j<o;j++){const idx=i*o+j;x.fillStyle=idx<pos?css('--cool'):idx===pos?css('--accent'):css('--soft');x.fillRect(300+j*oc,20+i*oc,oc-2,oc-2)}}
+  function loop(){k++;draw()}
+  function set(f,s,p){F=Math.min(f,7);S=s;P=Math.min(p,3);k=0;draw();clearInterval(timer);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(loop,450)}
+  try{new MutationObserver(draw).observe(document.documentElement,{attributes:true})}catch(e){}
+  return {set}})();
+['cvH','cvD','cvF','cvS','cvP','cvK'].forEach(i=>$('#'+i).addEventListener('input',cv));cv();
+
+/* ---------- L6 ---------- */
+let mmP=4;
+function mm(){const T=+$('#mmT').value,AI=T/mmP,ridge=mmP===4?12.6:201;const W=640,H=230,l=50,r=14,t=12,b=34;const Ts=[8,16,32,64,128,256];
+  const X=v=>l+(Math.log2(v)-3)/5*(W-l-r),Y=v=>t+(1-(Math.log10(v)-0)/(3-0))*(H-t-b);let g='';
+  [1,10,100,1000].forEach(v=>{g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" class="ax"/><text x="${l-6}" y="${Y(v)+4}" text-anchor="end" class="tx">${v}</text>`});
+  Ts.forEach(v=>g+=`<text x="${X(v)}" y="${H-14}" text-anchor="middle" class="tx">${v}</text>`);g+=`<text x="${W-r}" y="${H-2}" text-anchor="end" class="tx">tile T</text><text x="4" y="${t+4}" class="tx">FLOP/B</text>`;
+  [[4,'var(--accent)','FP32 T/4'],[2,'var(--cool)','FP16 T/2']].forEach(([d,c,n])=>{g+=`<path d="${Ts.map((v,i)=>(i?'L':'M')+X(v)+','+Y(v/d)).join('')}" fill="none" stroke="${c}" stroke-width="${d===mmP?3:1.5}" opacity="${d===mmP?1:.5}"/>`;g+=`<text x="${X(256)-4}" y="${Y(256/d)-8}" text-anchor="end" class="tx" style="fill:${c}">${n}</text>`});
+  [[12.6,'A100 FP32 ridge 12.6'],[201,'A100 FP16 TC ridge 201']].forEach(([v,n])=>g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--hot)" stroke-dasharray="5 4"/><text x="${l+6}" y="${Y(v)-5}" class="tx" style="fill:var(--hot)">${n}</text>`);
+  g+=`<circle cx="${X(T)}" cy="${Y(AI)}" r="7" fill="${mmP===4?'var(--accent)':'var(--cool)'}" stroke="var(--ink)" stroke-width="1.5"/>`;$('#mmSvg').innerHTML=g;
+  const bytes=mmP===4?4:2,BK=mmP===4?8:64,blocks=(2048/T)**2,smem=2*T*BK*bytes;const thr=mmP===4?Math.max(1,T*T/64):'—';
+  $('#mmOut').innerHTML=`AI = ${T}/${mmP} = <b>${AI}</b> FLOP/B vs ridge ${ridge} → ${AI>=ridge?'<span class="pill good">compute-bound</span>':'<span class="pill bad">memory-bound</span>'}<br>2048³ GEMM: grid ${2048/T}×${2048/T} = ${blocks.toLocaleString()} blocks · ${mmP===4?`${thr} threads/block at 8×8 per thread`:`warps tile the block, 16×16×16 mma_sync`} · shared tile (BK = ${BK}) = ${human(smem)}`}
+$('#mmT').addEventListener('change',mm);seg(document,'data-mp',p=>{mmP=+p;mm()});mm();
+
+/* ---------- L7 roofline ---------- */
+const MACH={cpu:{n:'8-core AVX2 CPU',bw:51.2,roofs:[['FP64 peak',460.8]]},r4090:{n:'RTX 4090',bw:1008,roofs:[['FP32 CUDA cores',82600],['FP16 Tensor Cores',661000]]},a100:{n:'A100',bw:1550,roofs:[['FP32',19500],['FP16 Tensor Cores',312000]]},h100:{n:'H100 SXM',bw:3350,roofs:[['BF16 Tensor (dense)',990000]]}};
+const KER=[['AXPY (FP64)',0.083],['SAXPY (FP32)',0.167],['SpMV',0.2],['Naive 5×5 conv',0.48],['LLM decode GEMV',1],['FFT',3],['Tiled 5×5 conv',6.25],['Tiled SGEMM, T=128',32],['N-body',35],['Large GEMM, big tiles + L2 reuse',400]];
+let rfKey='r4090';Object.entries(MACH).forEach(([k,m])=>$('#rfM').insertAdjacentHTML('beforeend',`<button class="btn${k===rfKey?' on':''}" data-rf="${k}">${m.n}</button>`));
+function rf(){const M=MACH[rfKey],I=10**(+$('#rfI').value);$('#rfIv').textContent=fmt(I);const W=720,H=400,l=70,r=16,t=16,b=46;
+  const X=v=>l+(Math.log10(v)+2)/5*(W-l-r),Y=p=>t+(1-Math.log10(p)/7)*(H-t-b);let g='';
+  [-2,-1,0,1,2,3].forEach(e=>{g+=`<line x1="${X(10**e)}" x2="${X(10**e)}" y1="${t}" y2="${H-b}" class="ax"/><text x="${X(10**e)}" y="${H-b+16}" text-anchor="middle" class="tx">${10**e}</text>`});
+  const yl=['1 GF','10 GF','100 GF','1 TF','10 TF','100 TF','1 PF','10 PF'];yl.forEach((s,e)=>{g+=`<line x1="${l}" x2="${W-r}" y1="${Y(10**e)}" y2="${Y(10**e)}" class="ax"/><text x="${l-6}" y="${Y(10**e)+4}" text-anchor="end" class="tx">${s}</text>`});
+  g+=`<text x="${W-r}" y="${H-6}" text-anchor="end" class="tx">arithmetic intensity (FLOP/byte, log)</text>`;
+  const top=Math.max(...M.roofs.map(x=>x[1])),rTop=top/M.bw;g+=`<line x1="${X(0.01)}" y1="${Y(0.01*M.bw)}" x2="${X(rTop)}" y2="${Y(top)}" stroke="var(--cool)" stroke-width="2.5"/>`;
+  g+=`<text x="${X(0.02)}" y="${Y(0.02*M.bw)-10}" class="tx" style="fill:var(--cool)" transform="rotate(-${Math.atan2((Y(0.01*M.bw)-Y(0.1*M.bw)),(X(0.1)-X(0.01)))*180/Math.PI} ${X(0.02)} ${Y(0.02*M.bw)-10})">β = ${M.bw} GB/s</text>`;
+  M.roofs.forEach(([n,p],i)=>{const rp=p/M.bw;g+=`<line x1="${X(rp)}" y1="${Y(p)}" x2="${W-r}" y2="${Y(p)}" stroke="${i?'var(--muted)':'var(--accent)'}" stroke-width="${i?1.5:2.5}" ${i?'stroke-dasharray="6 4"':''}/><text x="${W-r-4}" y="${Y(p)-14}" text-anchor="end" class="tx-ink">${n} · ${fmt(p/1000,1)} TF</text>`;
+    g+=`<line x1="${X(rp)}" x2="${X(rp)}" y1="${Y(p)}" y2="${H-b}" stroke="${i?'var(--muted)':'var(--accent)'}" stroke-dasharray="2 4"/>`});
+  const main=M.roofs[0][1],ridge=main/M.bw;
+  KER.forEach(([n,ai],i)=>{const p=Math.min(main,ai*M.bw);g+=`<circle cx="${X(ai)}" cy="${Y(p)}" r="9" fill="var(--card)" stroke="${ai<ridge?'var(--cool)':'var(--accent)'}" stroke-width="2"/><text x="${X(ai)}" y="${Y(p)+4}" text-anchor="middle" class="tx-ink" style="font-size:10px">${i+1}</text>`});
+  const pI=Math.min(main,I*M.bw);g+=`<circle cx="${X(I)}" cy="${Y(pI)}" r="7" fill="var(--hot)"/><line x1="${X(I)}" x2="${X(I)}" y1="${Y(pI)+8}" y2="${H-b}" stroke="var(--hot)" stroke-dasharray="3 3"/>`;
+  $('#rfSvg').innerHTML=g;
+  $('#rfOut').innerHTML=`${M.n}: π = ${fmt(main)} GFLOP/s (${M.roofs[0][0]}), β = ${M.bw} GB/s → ridge I* = <b>${fmt(ridge,1)}</b> FLOP/B<br>your kernel at I = ${fmt(I)} → attainable min(${fmt(main)}, ${fmt(I)} × ${M.bw}) = <b>${fmt(pI)} GFLOP/s</b> (${(pI/main*100).toPrecision(2)}% of peak) · ${I<ridge?'<span class="pill bad">memory-bound</span>':'<span class="pill good">compute-bound</span>'}`;
+  $('#rfTab').innerHTML='<tr><th>#</th><th>kernel</th><th>AI</th><th>attainable</th><th>bound</th></tr>'+KER.map(([n,ai],i)=>{const p=Math.min(main,ai*M.bw);return `<tr><td class="n">${i+1}</td><td>${n}</td><td class="n">${ai}</td><td class="n">${fmt(p)} GF/s</td><td>${ai<ridge?'<span class="pill bad">memory</span>':'<span class="pill good">compute</span>'}</td></tr>`}).join('')}
+seg(document,'data-rf',k=>{rfKey=k;rf()});$('#rfI').addEventListener('input',rf);rf();
+hbars($('#tcBars'),[['Volta V100 · 2017',125],['Turing T4 · 2018',65],['Ampere A100 · 2020',312],['Hopper H100 · 2022',989],['Blackwell B200 · 2024',2250]].map(([n,v])=>({label:n,v,txt:v.toLocaleString()+' TF'})),{max:2300});
+$('#tcBars').insertAdjacentHTML('beforeend','<div class="hint" style="font-size:12px">Dense FP16 Tensor throughput. ~18× in 7 years; B200 adds FP4 at 9 PF (18 PF with 2:4 sparsity).</div>');
+
+/* ---------- L8 attention ---------- */
+const TOK=['The','cat','sat','on','the','mat'],EMB=[[.2,.1,0,.1],[1,.2,.9,0],[.8,.1,1,.2],[0,1,.1,.8],[.2,.1,0,.1],[.3,.9,.2,1]];let atM=true,atS=true;
+function at(){const d=4,s=EMB.map(q=>EMB.map(k=>4*q.reduce((a,x,i)=>a+x*k[i],0)/(atS?Math.sqrt(d):1)));
+  const w=s.map((row,i)=>{const z=row.map((v,j)=>atM&&j>i?-Infinity:v);const m=Math.max(...z),e=z.map(v=>v===-Infinity?0:Math.exp(v-m)),S=e.reduce((a,b)=>a+b,0);return e.map(v=>v/S)});
+  const el=$('#atHeat');el.style.gridTemplateColumns=`64px repeat(6,minmax(0,1fr))`;
+  el.innerHTML='<div class="h"></div>'+TOK.map(t=>`<div class="h">${t}</div>`).join('')+w.map((row,i)=>`<div class="h">${TOK[i]} →</div>`+row.map((v,j)=>`<div style="background:${atM&&j>i?'repeating-linear-gradient(45deg,var(--soft) 0 3px,var(--paper) 3px 6px)':`color-mix(in srgb,var(--accent) ${Math.round(v*100)}%,var(--card))`};color:${v>0.55?'#1b1205':'var(--ink)'}">${atM&&j>i?'':v.toFixed(2)}</div>`).join('')).join('')}
+$('#atMask').onclick=e=>{atM=!atM;e.target.classList.toggle('on',atM);e.target.textContent='causal mask '+(atM?'on':'off');at()};
+$('#atScale').onclick=e=>{atS=!atS;e.target.classList.toggle('on',atS);e.target.textContent='÷√d '+(atS?'on':'off');at()};at();
+/* KV */
+const KVM=[{n:'Llama-2-7B',L:32,H:32,KV:32,d:128,P:6.7e9,t:'MHA'},{n:'Mistral-7B',L:32,H:32,KV:8,d:128,P:7.2e9,t:'GQA-8'},{n:'Llama-2-70B',L:80,H:64,KV:8,d:128,P:69e9,t:'GQA-8'}];
+function kv(){const m=KVM[+$('#kvM').value],a=$('#kvA').value,kvh=a==='mha'?m.H:a==='mqa'?1:m.KV,L=+$('#kvL').value,B=Math.max(1,+$('#kvB').value||1),by=+$('#kvD').value;
+  const per=2*m.L*kvh*m.d*by,tot=per*L*B,wt=m.P*by;
+  hbars($('#kvBars'),[{label:'Weights',v:wt,txt:human(wt)},{label:'KV cache',v:tot,txt:human(tot),color:tot>80*2**30?'var(--hot)':'var(--cool)'},{label:'H100 memory',v:80*2**30,txt:'80 GB',color:'var(--muted)'}],{max:Math.max(wt,tot,80*2**30)});
+  $('#kvOut').innerHTML=`${m.n}, ${a==='model'?m.t:a.toUpperCase()} (${kvh} KV head${kvh>1?'s':''} for ${m.H} query heads)<br>per token: 2 × ${m.L} × ${kvh} × ${m.d} × ${by} B = <b>${human(per)}</b> · × ${L.toLocaleString()} tokens × batch ${B} = <b>${human(tot)}</b>${tot>wt?' · <span class="pill bad">bigger than the weights</span>':''}`}
+['kvM','kvA','kvL','kvD'].forEach(i=>$('#'+i).addEventListener('change',kv));$('#kvB').addEventListener('input',kv);kv();
+function dw(){const K=Math.max(1,+$('#dwK').value||1),I=Math.max(1,+$('#dwI').value||1),O=Math.max(1,+$('#dwO').value||1),H=Math.max(1,+$('#dwH').value||1);
+  const reg=H*H*K*K*I*O,dws=H*H*K*K*I,pw=H*H*I*O;$('#dwOut').innerHTML=`regular: H²·K²·C<sub>in</sub>·C<sub>out</sub> = <b>${(reg/1e6).toFixed(1)} M</b> MACs<br>depthwise H²·K²·C<sub>in</sub> = ${(dws/1e6).toFixed(2)} M + pointwise 1×1 H²·C<sub>in</sub>·C<sub>out</sub> = ${(pw/1e6).toFixed(1)} M → <b>${((dws+pw)/1e6).toFixed(1)} M</b><br>ratio = 1/${O} + 1/${K*K} = <b>${((dws+pw)/reg).toFixed(3)}</b> → <span class="pill good">${(reg/(dws+pw)).toFixed(1)}× cheaper</span>`}
+['dwK','dwI','dwO','dwH'].forEach(i=>$('#'+i).addEventListener('input',dw));dw();
+
+/* ---------- L9 pruning ---------- */
+const pr_=rng(5);const WT=Array.from({length:64},()=>gauss(pr_)*0.5);let prMode='u';
+function pr(){const p=+$('#prP').value/100;$('#prPv').textContent=prMode==='n'?'50% (fixed)':Math.round(p*100)+'%';$('#prP').disabled=prMode==='n';const cut=new Set();
+  if(prMode==='u'){const ord=WT.map((w,i)=>[Math.abs(w),i]).sort((a,b)=>a[0]-b[0]);ord.slice(0,Math.round(p*64)).forEach(([,i])=>cut.add(i))}
+  else if(prMode==='s'){const rows=Array.from({length:8},(_,r)=>[Math.hypot(...WT.slice(r*8,r*8+8)),r]).sort((a,b)=>a[0]-b[0]);rows.slice(0,Math.round(p*8)).forEach(([,r])=>{for(let j=0;j<8;j++)cut.add(r*8+j)})}
+  else{for(let g=0;g<16;g++){const idx=[0,1,2,3].map(k=>g*4+k).sort((a,b)=>Math.abs(WT[a])-Math.abs(WT[b]));cut.add(idx[0]);cut.add(idx[1])}}
+  const mx=Math.max(...WT.map(Math.abs));$('#prG').innerHTML=WT.map((w,i)=>`<i class="${cut.has(i)?'cut':''}" style="background:color-mix(in srgb,var(--${w>=0?'accent':'cool'}) ${Math.round(20+80*Math.abs(w)/mx)}%,var(--card))" title="${w.toFixed(3)}"></i>`).join('');
+  const kept=WT.reduce((s,w,i)=>s+(cut.has(i)?0:w*w),0)/WT.reduce((s,w)=>s+w*w,0);
+  const note={u:'Removes the individually smallest |w|. Keeps the most weight energy, but the zeros are scattered: needs sparse kernels or hardware to speed up.',s:'Removes whole rows (output channels) with the smallest L2 norm. Loses more, but the result is a smaller dense matrix any GPU runs faster.',n:'In every group of 4, keep the 2 largest. A fixed pattern Ampere-and-later Tensor Cores execute at 2× throughput.'}[prMode];
+  $('#prOut').innerHTML=`sparsity <b>${Math.round(cut.size/64*100)}%</b> · weight energy kept (Σw²) <b>${(kept*100).toFixed(1)}%</b><br>${note}`}
+seg(document,'data-pm',m=>{prMode=m;pr()});$('#prP').addEventListener('input',pr);pr();
+/* quantization */
+const qr=rng(21);const QW=Array.from({length:16},()=>gauss(qr)*0.6);let qMode='a',qOut=false;
+function qz(){const b=+$('#qzB').value;$('#qzBv').textContent=b;const w=qOut?QW.concat([3.2]):QW;let S,Z,qmin,qmax;
+  if(qMode==='a'){qmin=-(2**(b-1));qmax=2**(b-1)-1;const rmin=Math.min(...w,0),rmax=Math.max(...w,0);S=(rmax-rmin)/(qmax-qmin);Z=Math.round(qmin-rmin/S)}
+  else{qmax=2**(b-1)-1;qmin=-qmax;S=Math.max(...w.map(Math.abs))/qmax;Z=0}
+  const q=w.map(r=>Math.max(qmin,Math.min(qmax,Math.round(r/S)+Z))),dq=q.map(v=>S*(v-Z));const mse=w.reduce((s,r,i)=>s+(r-dq[i])**2,0)/w.length;
+  const W=640,l=20,r=20,lo=Math.min(...w,-1.6),hi=Math.max(...w,1.6),X=v=>l+(v-lo)/(hi-lo)*(W-l-r);let g=`<line x1="${l}" x2="${W-r}" y1="75" y2="75" class="ax"/>`;
+  for(let k=qmin;k<=qmax;k++){const v=S*(k-Z);if(v<lo-0.01||v>hi+0.01)continue;g+=`<line x1="${X(v)}" x2="${X(v)}" y1="65" y2="85" stroke="var(--muted)" stroke-width="1"/>`}
+  g+=`<line x1="${X(0)}" x2="${X(0)}" y1="58" y2="92" stroke="var(--ink)" stroke-width="1.5"/>`;
+  w.forEach((r,i)=>{g+=`<line x1="${X(r)}" y1="38" x2="${X(dq[i])}" y2="112" stroke="var(--line)"/><circle cx="${X(r)}" cy="34" r="4.5" fill="var(--accent)"/><circle cx="${X(dq[i])}" cy="116" r="4.5" fill="var(--cool)"/>`});
+  g+=`<text x="${l}" y="18" class="tx">real r</text><text x="${l}" y="142" class="tx">dequantized S(q − Z)</text><text x="${X(0)+4}" y="98" class="tx">0</text>`;$('#qzSvg').innerHTML=g;
+  $('#qzOut').innerHTML=`${b}-bit ${qMode==='a'?'asymmetric':'symmetric'} · q ∈ [${qmin}, ${qmax}] · S = <b>${S.toFixed(4)}</b> · Z = <b>${Z}</b><br>${2**b} levels · MSE = <b>${mse.toExponential(2)}</b> · storage ${(32/b).toFixed(1)}× smaller than FP32${qOut?' · <span class="pill bad">outlier at 3.2 stretches S</span>':''}`}
+$('#qzB').addEventListener('input',qz);seg(document,'data-qm',m=>{qMode=m;qz()});$('#qzO').onclick=e=>{qOut=!qOut;e.target.classList.toggle('on',qOut);e.target.textContent=qOut?'remove the outlier':'add an outlier';qz()};qz();
+/* KD */
+const KDL=['cat','dog','fox','car','cup'],KDZ=[6,4.5,3,-1,-2];
+function kd(){const T=+$('#kdT').value;$('#kdTv').textContent=T;pbars($('#kdBars'),KDL,softmax(KDZ,T))}
+$('#kdT').addEventListener('input',kd);kd();
+
+/* ---------- Case study ---------- */
+const CE=[['S0 naive',1070,1077],['S1 online',901,888],['S2 smem tree',242,176],['S3 warp shfl',242,184],['S4 float4',242,180],['S5 warp/row',313,237],['S6 smem cache',245,180],['S7 fast-math',234,169],['S8 fp16 I/O',121,93],['PyTorch fp32',235,170],['PyTorch fp16',115,133]];
+function ce(m){hbars($('#ceBars'),CE.map(([n,b,l])=>{const v=m==='b'?b:l;return {label:n,v,txt:v+' mJ',color:v>500?'var(--hot)':n.startsWith('PyTorch')?'var(--muted)':'var(--accent)'}}),{max:1100})}
+seg(document,'data-ce',ce);ce('b');
+})();
+</script>
+
+</body></html>

@@ -1,23 +1,23 @@
 {
-  "name": "dpcn-study-guide",
+  "name": "dpcn",
   "version": "1.0.0",
-  "description": "A single-page, worked study guide for **Dynamical Processes of Complex Networks (SC1.440)** at IIIT Hyderabad.",
+  "description": "Build scripts for the DPCN (SC1.440) study guide",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Arihant25/dpcn-study-guide.git"
+    "url": "git+https://github.com/Arihant25/study-guides.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Arihant Tripathy",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/Arihant25/dpcn-study-guide/issues"
+    "url": "https://github.com/Arihant25/study-guides/issues"
   },
-  "homepage": "https://github.com/Arihant25/dpcn-study-guide#readme",
+  "homepage": "https://github.com/Arihant25/study-guides/tree/main/dpcn#readme",
   "devDependencies": {
     "puppeteer-core": "^25.11.0",
     "temml": "^0.13.5"

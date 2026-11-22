@@ -2,15 +2,15 @@
 
 Study notes for **Dynamical Processes of Complex Networks (SC1.440)** at IIIT Hyderabad, written as three pages to read in order. Every topic starts in plain words, symbols are explained where they first appear, and section M on page 1 covers the maths the course uses.
 
-1. **Page 1, Quiz 1 guide** (classes 1 to 6, network basics): https://arihant25.github.io/dpcn-study-guide/quiz1/
-2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/dpcn-study-guide/midsem/
-3. **Page 3, After mid-sem guide** (classes 13 to 22): https://arihant25.github.io/dpcn-study-guide/after-midsem/
+1. **Page 1, Quiz 1 guide** (classes 1 to 6, network basics): https://arihant25.github.io/study-guides/dpcn/quiz1/
+2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/study-guides/dpcn/midsem/
+3. **Page 3, After mid-sem guide** (classes 13 to 22): https://arihant25.github.io/study-guides/dpcn/after-midsem/
 
-There is also a **Memory sheet** with the whole course on one page (formulas, a short proof for each result, flashcards): https://arihant25.github.io/dpcn-study-guide/remember/
+There is also a **Memory sheet** with the whole course on one page (formulas, a short proof for each result, flashcards): https://arihant25.github.io/study-guides/dpcn/remember/
 
-The **Quiz 2 sheet** has only the Quiz 2 syllabus (2-D nonlinear stability and limit cycles, maps, Lorenz, synchronisation), with the past questions on those topics and a three-day plan: https://arihant25.github.io/dpcn-study-guide/quiz2/
+The **Quiz 2 sheet** has only the Quiz 2 syllabus (2-D nonlinear stability and limit cycles, maps, Lorenz, synchronisation), with the past questions on those topics and a three-day plan: https://arihant25.github.io/study-guides/dpcn/quiz2/
 
-The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It starts with a checklist of the seven proofs to learn, with ticks your browser remembers. Each proof shows only its question and one-line idea until you open the steps. It is what the site opens on: https://arihant25.github.io/dpcn-study-guide/ (also at https://arihant25.github.io/dpcn-study-guide/endsem/)
+The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It starts with a checklist of the seven proofs to learn, with ticks your browser remembers. Each proof shows only its question and one-line idea until you open the steps. It is what the site opens on: https://arihant25.github.io/study-guides/dpcn/ (also at https://arihant25.github.io/study-guides/dpcn/endsem/)
 
 Page 1 opens with a map of which page teaches each class and a ranked list of derivations to learn (`shared/course-map.html`).
 
