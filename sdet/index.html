@@ -182,6 +182,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li class="grp">Practice</li>
     <li><a href="#tut">Tutorial 1</a></li>
     <li><a href="#hw">Homework &amp; Kay problems</a></li>
+    <li><a href="#paper">End-sem paper</a></li>
     <li><a href="#cards">Flashcards</a></li>
     <li><a href="#sheet">Cheat sheet</a></li>
   </ol>
@@ -193,7 +194,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
 
 <main>
 <nav class="chips" id="chips" aria-label="Sections">
-  <a href="#plan">Plan</a><a href="#idea">Big idea</a><a href="#lr">LR test</a><a href="#bayes">Bayes</a><a href="#np">NP</a><a href="#dc">DC level</a><a href="#roc">ROC</a><a href="#energy">Energy</a><a href="#mf">Matched filter</a><a href="#comms">Which signal</a><a href="#random">Random</a><a href="#unknown">Unknowns</a><a href="#sprt">SPRT</a><a href="#book">Kay</a><a href="#tut">Tutorial</a><a href="#hw">Homework</a><a href="#sheet">Cheat sheet</a>
+  <a href="#plan">Plan</a><a href="#idea">Big idea</a><a href="#lr">LR test</a><a href="#bayes">Bayes</a><a href="#np">NP</a><a href="#dc">DC level</a><a href="#roc">ROC</a><a href="#energy">Energy</a><a href="#mf">Matched filter</a><a href="#comms">Which signal</a><a href="#random">Random</a><a href="#unknown">Unknowns</a><a href="#sprt">SPRT</a><a href="#book">Kay</a><a href="#tut">Tutorial</a><a href="#hw">Homework</a><a href="#paper">Paper</a><a href="#sheet">Cheat sheet</a>
 </nav>
 <div class="col">
 
@@ -781,16 +782,134 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>Say yes if \(x^2>4\ln\frac{P(H_0)}{P(H_1)}+2\ln2\). Equal priors: |x| &gt; 1.18. P(H₀) = ¾: |x| &gt; 2.40. Large |x| points to the wider PDF, and a bigger prior on H₀ pushes the tails out.</p></div></details>
 </section>
 
+<!-- EXAM PAPER -->
+<section id="paper">
+  <h2><span class="n">19</span>End-sem paper</h2>
+  <p class="q">The full end-sem paper (50 marks, no calculators, answers may be left in Q). Each question is copied as set, then worked. Every question maps to a section of this guide. <span class="src">23 Nov 2026</span></p>
+  <h3>Q1: short answers (8 marks)</h3>
+  <details id="paper-1i"><summary>1(i) 1 mark: \(\mathbf x\sim\mathcal N(\mathbf m,C)\), \(\mathbf w\ne\mathbf 0\). Distribution of \(\mathbf w^T\mathbf x\)?</summary><div class="body">
+    <p>\(\mathbf w^T\mathbf x\sim\mathcal N(\mathbf w^T\mathbf m,\ \mathbf w^TC\mathbf w)\), a scalar Gaussian. A linear map of a Gaussian vector is Gaussian, with mean \(E[\mathbf w^T\mathbf x]=\mathbf w^T\mathbf m\) and variance \(E[\mathbf w^T(\mathbf x-\mathbf m)(\mathbf x-\mathbf m)^T\mathbf w]=\mathbf w^TC\mathbf w\).</p></div></details>
+  <details id="paper-1ii"><summary>1(ii) 1 mark: Two known signals \(\mathbf s_0,\mathbf s_1\), equal priors, equal energies, iid WGN. Optimal detector?</summary><div class="body">
+    <p>The minimum-distance receiver, which here is the same as picking the bigger correlation: decide \(H_1\) if \(\mathbf x^T\mathbf s_1>\mathbf x^T\mathbf s_0\), i.e. \(T=\mathbf x^T(\mathbf s_1-\mathbf s_0)\gtrless0\). The general threshold \(\sigma^2\ln\gamma+(\mathcal E_1-\mathcal E_0)/2\) is 0 because γ = 1 and the energies are equal. \(P_e=Q\big(\|\mathbf s_1-\mathbf s_0\|/2\sigma\big)\).</p></div></details>
+  <details id="paper-1iii"><summary>1(iii) 1 mark: When is part of the data irrelevant?</summary><div class="body">
+    <p>Split the data as \((\mathbf x_1,\mathbf x_2)\). \(\mathbf x_2\) is irrelevant if \(p(\mathbf x_2|\mathbf x_1;H_1)=p(\mathbf x_2|\mathbf x_1;H_0)\). Then \(L(\mathbf x_1,\mathbf x_2)=L(\mathbf x_1)\), so the LRT is the same with or without \(\mathbf x_2\). It's the conditional PDF given \(\mathbf x_1\) that has to match. \(\mathbf x_2\) having the same marginal under both hypotheses isn't enough (a correlated noise reference helps even though it has no signal in it).</p></div></details>
+  <details id="paper-1iv"><summary>1(iv) 1 mark: Statement of the Neyman–Fisher factorisation theorem.</summary><div class="body">
+    <p>If the PDF \(p(\mathbf x;\theta)\) can be factored as</p>
+    \[p(\mathbf x;\theta)=g\big(T(\mathbf x),\theta\big)\,h(\mathbf x),\]
+    <p>where g depends on the data only through \(T(\mathbf x)\) and h doesn't depend on θ, then \(T(\mathbf x)\) is a sufficient statistic for θ. Conversely, if T is sufficient then such a factorisation exists.</p></div></details>
+  <details id="paper-1v"><summary>1(v) 1.5 marks: What is ROC? Full form and definition. Slope of the ROC?</summary><div class="body">
+    <p>Receiver Operating Characteristic. It's the curve of \(P_D\) against \(P_{FA}\) that you trace out by sweeping the threshold γ of the LRT (NP detector) from ∞ down to 0. It goes from (0, 0) to (1, 1), sits above the diagonal and is concave.</p>
+    <p>Slope: \(\dfrac{dP_D}{dP_{FA}}=\gamma\), the LRT threshold that gives that point.</p></div></details>
+  <details id="paper-1vi"><summary>1(vi) 2.5 marks: Precise statement of the Neyman–Pearson lemma for two simple hypotheses.</summary><div class="body">
+    <p>Test \(H_0:\mathbf x\sim p_0\) against \(H_1:\mathbf x\sim p_1\) with a (possibly randomised) rule δ(x) = probability of deciding H₁, and let \(L(\mathbf x)=p_1(\mathbf x)/p_0(\mathbf x)\).</p>
+    <ol>
+      <li><b>Optimality.</b> Any rule of the form
+        \[\delta(\mathbf x)=\begin{cases}1&L(\mathbf x)>\gamma\\ c_0&L(\mathbf x)=\gamma\\ 0&L(\mathbf x)<\gamma\end{cases}\]
+        with \(E_0[\delta]=P_{FA}=\alpha\) has the largest \(P_D\) among all rules with \(P_{FA}\le\alpha\).</li>
+      <li><b>Existence.</b> For every α ∈ (0, 1) there are γ ≥ 0 and \(c_0\in[0,1]\) that make \(P_{FA}=\alpha\) exactly: \(c_0=\frac{\alpha-\Pr_0\{L>\gamma\}}{\Pr_0\{L=\gamma\}}\). For continuous data \(c_0\) isn't needed.</li>
+      <li><b>Uniqueness.</b> Every most powerful size-α rule has this form, except possibly on a set of zero probability under both hypotheses.</li>
+    </ol>
+    <p>In words: to maximise \(P_D\) subject to \(P_{FA}=\alpha\), say H₁ when \(L(\mathbf x)>\gamma\), with γ fixed by \(P_{FA}=\int_{L>\gamma}p_0=\alpha\).</p></div></details>
+
+  <h3>Q2: long answers (42 marks)</h3>
+  <details id="paper-2i"><summary>2(i) 6 pts: \(H_0:X\sim p_0\), \(H_1:X\sim p_1\), priors \(\pi_0,\pi_1\). Derive the detector that minimises the Bayes risk.</summary><div class="body">
+    <p><b>Short answer:</b> decide H₁ if \(\dfrac{p_1(x)}{p_0(x)}>\dfrac{\pi_0(C_{10}-C_{00})}{\pi_1(C_{01}-C_{11})}\). With 0/1 costs this is MAP, threshold \(\pi_0/\pi_1\).</p>
+    <p>\(C_{ij}\) = cost of deciding \(H_i\) when \(H_j\) is true. A deterministic rule splits the data space into \(R_1\) (decide H₁) and \(R_0\) (its complement). The Bayes risk is the average cost:</p>
+    \[\mathcal R=\sum_{i,j}C_{ij}\,\pi_j\Pr\{\text{decide }H_i|H_j\}=\sum_{i,j}C_{ij}\,\pi_j\int_{R_i}p_j(x)\,dx.\]
+    <p>Use \(\int_{R_0}p_j=1-\int_{R_1}p_j\) to write everything over \(R_1\):</p>
+    \[\mathcal R=C_{00}\pi_0+C_{01}\pi_1+\int_{R_1}\Big[\pi_0(C_{10}-C_{00})p_0(x)-\pi_1(C_{01}-C_{11})p_1(x)\Big]dx.\]
+    <p>The first two terms don't depend on the rule. The integral is smallest if \(R_1\) contains exactly the points where the integrand is negative:</p>
+    \[x\in R_1\iff\pi_1(C_{01}-C_{11})p_1(x)>\pi_0(C_{10}-C_{00})p_0(x).\]
+    <p>Assuming errors cost more than correct decisions (\(C_{10}>C_{00}\), \(C_{01}>C_{11}\)), divide through to get the LRT</p>
+    \[L(x)=\frac{p_1(x)}{p_0(x)}\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma=\frac{\pi_0(C_{10}-C_{00})}{\pi_1(C_{01}-C_{11})}.\]
+    <p>Points where the integrand is exactly 0 can go either way without changing \(\mathcal R\). With \(C_{00}=C_{11}=0\), \(C_{10}=C_{01}=1\), the risk is \(P_e\) and γ = \(\pi_0/\pi_1\): decide H₁ if \(\pi_1p_1(x)>\pi_0p_0(x)\), i.e. pick the larger posterior (MAP). Equal priors as well give ML.</p></div></details>
+
+  <details id="paper-2ii"><summary>2(ii) 7 pts: \(x[n]\) iid, \(H_0:\mathcal N(0,\sigma_0^2)\) vs \(H_1:\mathcal N(0,\sigma_1^2)\), \(\sigma_1^2>\sigma_0^2\). (a) NP detector (b) \(P_D\) in terms of \(P_{FA}\) (c) simplify for N = 2.</summary><div class="body">
+    <p><b>Short answer:</b> \(T=\sum x^2[n]>\gamma'\); \(P_D=Q_{\chi^2_N}\big(\frac{\sigma_0^2}{\sigma_1^2}Q^{-1}_{\chi^2_N}(P_{FA})\big)\); for N = 2, \(x^2[0]+x^2[1]>2\sigma_0^2\ln\frac1{P_{FA}}\) and \(P_D=P_{FA}^{\sigma_0^2/\sigma_1^2}\).</p>
+    <p><b>(a)</b> The likelihood ratio is</p>
+    \[L(\mathbf x)=\frac{(2\pi\sigma_1^2)^{-N/2}\exp\!\big(-\frac1{2\sigma_1^2}\sum x^2[n]\big)}{(2\pi\sigma_0^2)^{-N/2}\exp\!\big(-\frac1{2\sigma_0^2}\sum x^2[n]\big)},\]
+    \[\ln L=-\frac N2\ln\frac{\sigma_1^2}{\sigma_0^2}+\frac12\Big(\frac1{\sigma_0^2}-\frac1{\sigma_1^2}\Big)\sum_{n=0}^{N-1}x^2[n]>\ln\gamma.\]
+    <p>Since \(\sigma_1^2>\sigma_0^2\), the coefficient \(\frac1{\sigma_0^2}-\frac1{\sigma_1^2}\) is positive, so dividing by it keeps the direction:</p>
+    \[T(\mathbf x)=\sum_{n=0}^{N-1}x^2[n]\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma'=\frac{2\ln\gamma+N\ln(\sigma_1^2/\sigma_0^2)}{1/\sigma_0^2-1/\sigma_1^2}.\]
+    <p>This is the energy detector, with γ′ set by \(P_{FA}\) in (b).</p>
+    <p><b>(b)</b> Under \(H_i\), \(x[n]/\sigma_i\) are iid \(\mathcal N(0,1)\), so \(T/\sigma_i^2\sim\chi^2_N\). Writing \(Q_{\chi^2_N}(y)=\Pr\{\chi^2_N>y\}\),</p>
+    \[P_{FA}=\Pr\Big\{\frac T{\sigma_0^2}>\frac{\gamma'}{\sigma_0^2}\Big\}=Q_{\chi^2_N}\Big(\frac{\gamma'}{\sigma_0^2}\Big)\ \Rightarrow\ \gamma'=\sigma_0^2\,Q^{-1}_{\chi^2_N}(P_{FA}),\]
+    \[P_D=Q_{\chi^2_N}\Big(\frac{\gamma'}{\sigma_1^2}\Big)=Q_{\chi^2_N}\Big(\frac{\sigma_0^2}{\sigma_1^2}\,Q^{-1}_{\chi^2_N}(P_{FA})\Big).\]
+    <p><b>(c)</b> For N = 2, χ²₂ is exponential with mean 2, so \(Q_{\chi^2_2}(y)=e^{-y/2}\). Then</p>
+    \[P_{FA}=e^{-\gamma'/2\sigma_0^2}\ \Rightarrow\ \gamma'=2\sigma_0^2\ln\frac1{P_{FA}},\qquad P_D=e^{-\gamma'/2\sigma_1^2}=P_{FA}^{\ \sigma_0^2/\sigma_1^2}.\]
+    <p>The detector is \(x^2[0]+x^2[1]>2\sigma_0^2\ln(1/P_{FA})\): say H₁ when the point \((x[0],x[1])\) falls outside a circle of radius \(\sqrt{2\sigma_0^2\ln(1/P_{FA})}\). Since \(\sigma_0^2/\sigma_1^2<1\), \(P_D>P_{FA}\), as it should be.</p></div></details>
+
+  <details id="paper-2iii"><summary>2(iii) 8 marks: SPRT on iid \(X_i\), \(p_0\) vs \(p_1\), finite thresholds \(\tau_0,\tau_1\), stopping time N. Can N = ∞? Prove it or give a counterexample.</summary><div class="body">
+    <p><b>Short answer:</b> no, as long as \(p_0\ne p_1\). N is finite with probability 1 (and even \(E\{N\}<\infty\)). The only exception is the degenerate case \(p_0=p_1\), where the test never stops.</p>
+    <p><b>Set-up.</b> Let \(z_i=\ln\frac{p_1(X_i)}{p_0(X_i)}\) and \(S_n=\sum_{i=1}^nz_i\). The test continues while \(\tau_0<S_n<\tau_1\) (log thresholds, \(\tau_0<0<\tau_1\)), and \(N=\min\{n:S_n\ge\tau_1\text{ or }S_n\le\tau_0\}\). Under either hypothesis the \(z_i\) are iid, so \(S_n\) is a random walk. Let \(D=\tau_1-\tau_0<\infty\) be the width of the band.</p>
+    <p><b>Claim.</b> If \(p_0\ne p_1\) then \(\Pr\{z_i\ne0\}>0\), so for some ε &gt; 0 either \(\Pr\{z_i>\varepsilon\}=q>0\) or \(\Pr\{z_i<-\varepsilon\}=q>0\). Take the first case (the second is the same with the sign flipped).</p>
+    <p><b>Proof.</b> Let \(k=\lceil D/\varepsilon\rceil+1\). If k steps in a row all have \(z_i>\varepsilon\), the walk moves up by more than D, so it must leave the band during that block, wherever it started inside it. Split time into blocks of length k: \(\{1,\dots,k\},\{k+1,\dots,2k\},\dots\) Each block is "all big steps" with probability \(\delta=q^k>0\), independently of the other blocks. To still be running after m blocks, none of them can have been all big steps:</p>
+    \[\Pr\{N>mk\}\le(1-\delta)^m\ \xrightarrow{m\to\infty}\ 0.\]
+    <p>So \(\Pr\{N=\infty\}=\lim_m\Pr\{N>mk\}=0\). The tail is geometric, so \(E\{N\}=\sum_n\Pr\{N>n\}\le k\sum_m(1-\delta)^m=k/\delta<\infty\). This holds under H₀ and H₁ alike.</p>
+    <p><b>Counterexample when the condition fails.</b> If \(p_0=p_1\), every \(z_i=0\), so \(S_n=0\) for all n. Since \(\tau_0<0<\tau_1\), the walk never leaves the band and N = ∞ with probability 1.</p>
+    <p><b>Remark.</b> Even with \(p_0\ne p_1\), single sample paths that never stop can exist. For instance, with Bernoulli data and steps \(+a,-a\), the path +, −, +, −, … stays inside forever. That set of paths has probability zero, so "N &lt; ∞ almost surely" is the precise statement. The thresholds have to be finite for this: with \(\tau_1=\infty\), the test could stop under H₀, where the walk drifts down, but under H₁ it might never stop.</p></div></details>
+
+
+  <details id="paper-iv"><summary>2(iv) 7 pts: Design the optimal NP detector for \(H_0: X\sim[0.2\ \ 0.3\ \ 0.5]\), \(H_1: X\sim[0.6\ \ 0.1\ \ 0.3]\), with \(P_{FA}=0.05\).</summary><div class="body">
+    <p><b>Short answer:</b> if X = x₁, say H₁ with probability 0.25; otherwise say H₀. \(P_D=0.15\).</p>
+    <p>X takes three values x₁, x₂, x₃. Compute the likelihood ratio at each one and rank them, because NP fills the "yes" region from the largest ratio down:</p>
+    <div class="tbl"><table>
+      <tr><th>x</th><th>\(p_0\)</th><th>\(p_1\)</th><th>\(L=p_1/p_0\)</th><th>rank</th></tr>
+      <tr><td>x₁</td><td>0.2</td><td>0.6</td><td>3</td><td>1</td></tr>
+      <tr><td>x₂</td><td>0.3</td><td>0.1</td><td>1/3</td><td>3</td></tr>
+      <tr><td>x₃</td><td>0.5</td><td>0.3</td><td>0.6</td><td>2</td></tr>
+    </table></div>
+    <p>The ratio isn't monotone in the label, so the order is x₁, x₃, x₂. The possible non-random tests give \(P_{FA}\in\{0,\ 0.2,\ 0.7,\ 1\}\). Even putting only x₁ in the "yes" region gives \(P_{FA}=0.2>0.05\), so the threshold is γ = 3 (sitting on x₁) and we randomise there:</p>
+    \[\Pr\{L>3;H_0\}=0,\qquad c_0=\frac{0.05-0}{\Pr\{X=x_1;H_0\}}=\frac{0.05}{0.2}=0.25.\]
+    \[\delta(x)=\begin{cases}H_1\text{ w.p. }0.25,\ H_0\text{ w.p. }0.75 & x=x_1\ (L=\gamma=3)\ H_0 & x\in\{x_2,x_3\}\ (L<3)\end{cases}\]
+    <p>\(P_{FA}=0.25(0.2)=0.05\) and \(P_D=0.25(0.6)=0.15\). The ROC is the polygon through (0, 0), (0.2, 0.6), (0.7, 0.9), (1, 1), and this rule sits a quarter of the way along its first segment.</p></div></details>
+
+  <details id="paper-v"><summary>2(v) 8 pts: \(H_0:\mathbf x=\mathbf w\) vs \(H_1:\mathbf x=\mathbf s+\mathbf w\), \(\mathbf w\sim\mathcal N(\mathbf 0,\sigma^2I)\), \(\mathbf s\sim\mathcal N(\mathbf 0,C_s)\), \(C_s=\sigma_s^2\begin{bmatrix}1&\rho\\rho&1\end{bmatrix}\), \(|\rho|\le1\). Find \(T(\mathbf x)\), \(\hat{\mathbf s}\) and the canonical estimator-correlator.</summary><div class="body">
+    <p><b>Short answer:</b> with \(y_0=\frac{x[0]+x[1]}{\sqrt2}\), \(y_1=\frac{x[0]-x[1]}{\sqrt2}\), \(\lambda_{0,1}=\sigma_s^2(1\pm\rho)\):</p>
+    \[T(\mathbf x)=\mathbf x^T\hat{\mathbf s}=\frac{\lambda_0}{\lambda_0+\sigma^2}y_0^2+\frac{\lambda_1}{\lambda_1+\sigma^2}y_1^2\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma'.\]
+    <p>This is the Lec 9 homework in section 18 with more of the working shown.</p>
+    <p><b>1. The LRT.</b> \(\mathbf x\sim\mathcal N(\mathbf 0,\sigma^2I)\) under H₀ and \(\mathcal N(\mathbf 0,C_s+\sigma^2I)\) under H₁. Dropping constants,</p>
+    \[\ln L(\mathbf x)=\tfrac12\mathbf x^T\Big[\tfrac1{\sigma^2}I-(C_s+\sigma^2I)^{-1}\Big]\mathbf x=\frac1{2\sigma^2}\mathbf x^TC_s(C_s+\sigma^2I)^{-1}\mathbf x,\]
+    <p>using the matrix inversion lemma. Absorbing \(1/2\sigma^2\) into the threshold gives \(T=\mathbf x^T\hat{\mathbf s}\).</p>
+    <p><b>2. The signal estimate (Wiener / MMSE).</b> \(\hat{\mathbf s}=C_s(C_s+\sigma^2I)^{-1}\mathbf x\). For this 2×2 case, with \(D=\det(C_s+\sigma^2I)=(\sigma_s^2+\sigma^2)^2-\rho^2\sigma_s^4=(\lambda_0+\sigma^2)(\lambda_1+\sigma^2)\),</p>
+    \[\hat{\mathbf s}=\frac{\sigma_s^2}{D}\begin{bmatrix}\sigma_s^2(1-\rho^2)+\sigma^2&\rho\sigma^2\ \rho\sigma^2&\sigma_s^2(1-\rho^2)+\sigma^2\end{bmatrix}\mathbf x.\]
+    <p>Check: ρ = 0 gives \(\hat{\mathbf s}=\frac{\sigma_s^2}{\sigma_s^2+\sigma^2}\mathbf x\), the scalar Wiener gain.</p>
+    <p><b>3. Canonical form.</b> Diagonalise \(C_s=V\Lambda_sV^T\):</p>
+    \[V=\frac1{\sqrt2}\begin{bmatrix}1&1\1&-1\end{bmatrix},\qquad \Lambda_s=\mathrm{diag}\big(\sigma_s^2(1+\rho),\ \sigma_s^2(1-\rho)\big).\]
+    <p>V also diagonalises \(C_s+\sigma^2I\), so \(\hat{\mathbf s}=V\,\mathrm{diag}\!\big(\frac{\lambda_i}{\lambda_i+\sigma^2}\big)V^T\mathbf x\). With \(\mathbf y=V^T\mathbf x\) the statistic is the weighted sum in the short answer. The structure: rotate (sum and difference channels), square, weight each channel by its Wiener gain \(\lambda_i/(\lambda_i+\sigma^2)\), add.</p>
+    <p><b>4. Distributions.</b> \(y_0,y_1\) are independent, \(\mathcal N(0,\sigma^2)\) under H₀ and \(\mathcal N(0,\lambda_i+\sigma^2)\) under H₁. T is a weighted sum of two χ²₁ variables, so γ′ for a given \(P_{FA}\) is found numerically in general.</p>
+    <p><b>5. Special cases.</b></p>
+    <ul>
+      <li>ρ = 0: equal weights \(w=\frac{\sigma_s^2}{\sigma_s^2+\sigma^2}\), \(T\propto x^2[0]+x^2[1]\), the energy detector. \(T/(w\sigma^2)\sim\chi^2_2\) under H₀, so \(P_{FA}=e^{-\gamma'/2w\sigma^2}\).</li>
+      <li>ρ → 1: \(\lambda_1=0\), only the sum channel is kept, \(T\propto(x[0]+x[1])^2\). The signal is the same in both samples, so average them.</li>
+      <li>ρ → −1: only the difference channel, \(T\propto(x[0]-x[1])^2\).</li>
+    </ul></div></details>
+
+  <details id="paper-vi"><summary>2(vi) 6 pts: With \(h[k]=s[N-1-k]\) for \(k=0,\dots,N-1\) (0 otherwise) and \(y[n]=\sum_{k=0}^{N-1}h[k]x[n-k]\), show the output for \(x[n]=s[n]\) is maximised at \(n=N-1\) with maximum value \(\mathcal E=\sum s^2[n]\).</summary><div class="body">
+    <p><b>Short answer:</b> the output is the signal's autocorrelation, \(y[n]=r_{ss}[N-1-n]\), and an autocorrelation peaks at lag 0 with value \(\mathcal E\).</p>
+    <p>Substitute x = s and h:</p>
+    \[y[n]=\sum_{k=0}^{N-1}s[N-1-k]\,s[n-k].\]
+    <p>Let m = N − 1 − k (so k = N − 1 − m, and m also runs over 0, …, N − 1):</p>
+    \[y[n]=\sum_{m=0}^{N-1}s[m]\,s[m+n-(N-1)]=r_{ss}[\,n-(N-1)\,],\qquad r_{ss}[l]=\sum_m s[m]\,s[m+l],\]
+    <p>with s = 0 outside 0, …, N − 1. (\(r_{ss}\) is even, so this equals \(r_{ss}[N-1-n]\).)</p>
+    <p><b>Bound.</b> By Cauchy–Schwarz,</p>
+    \[|r_{ss}[l]|\le\sqrt{\sum_m s^2[m]}\sqrt{\sum_m s^2[m+l]}\le\sqrt{\mathcal E}\sqrt{\mathcal E}=\mathcal E,\]
+    <p>since a shifted copy can't have more energy than the whole signal.</p>
+    <p><b>Attained at n = N − 1.</b> There l = 0 and</p>
+    \[y[N-1]=\sum_{k=0}^{N-1}s[N-1-k]\,s[N-1-k]=\sum_{m=0}^{N-1}s^2[m]=\mathcal E.\]
+    <p>So \(y[n]\le\mathcal E=y[N-1]\) for every n. For a general input the same substitution gives \(y[N-1]=\sum_n x[n]s[n]\), which is why the two structures (correlator, and matched filter sampled at N − 1) are equivalent.</p></div></details>
+</section>
+
 <!-- FLASHCARDS -->
 <section id="cards">
-  <h2><span class="n">19</span>Flashcards</h2>
+  <h2><span class="n">20</span>Flashcards</h2>
   <p class="q">Tap a card to check yourself.</p>
   <div class="flash" id="flash"></div>
 </section>
 
 <!-- SHEET -->
 <section id="sheet">
-  <h2><span class="n">20</span>Cheat sheet</h2>
+  <h2><span class="n">21</span>Cheat sheet</h2>
   <p class="q">What to look at last.</p>
   <div class="sheet">
     <div class="row"><div class="l">Every detector</div><div>Compute T from the data; say yes if T &gt; threshold. \(L=\frac{p(\mathbf x;H_1)}{p(\mathbf x;H_0)}\).</div></div>
