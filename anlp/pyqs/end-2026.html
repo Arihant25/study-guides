@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>End Sem 2026 · PYQ — ANLP Study Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="End-Semester Exam 2026 for Advanced NLP (CS7.501), IIIT Hyderabad. The full paper and a worked answer to every question: GQA, DeltaNet, SmoothQuant, MoE, diagonal vs dense SSMs, the SLiCE paper, speculative sampling, Mamba, DeltaNet and GNNs.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://arihant25.github.io/study-guides/anlp/pyqs/end-2026.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ANLP Study Guide">
+  <meta property="og:title" content="Advanced NLP End-Sem 2026: Solved Paper | IIIT-H">
+  <meta property="og:description"
+    content="The IIIT Hyderabad Advanced NLP 2026 end-semester paper with worked answers on GQA, DeltaNet, SmoothQuant, MoE, SLiCEs, speculative sampling and GNNs.">
+  <meta property="og:url" content="https://arihant25.github.io/study-guides/anlp/pyqs/end-2026.html">
+  <meta property="og:image" content="https://arihant25.github.io/study-guides/anlp/assets/pyqs/end-2026/page-1.png">
+  <meta property="og:image:alt" content="Advanced NLP 2026 end-semester exam paper, page 1">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Advanced NLP End-Sem 2026: Solved Paper | IIIT-H">
+  <meta name="twitter:description"
+    content="Full Advanced NLP 2026 end-semester paper with worked answers on GQA, DeltaNet, SmoothQuant, MoE, SLiCEs, speculative sampling and GNNs.">
+  <meta name="twitter:image" content="https://arihant25.github.io/study-guides/anlp/assets/pyqs/end-2026/page-1.png">
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Advanced NLP End-Semester 2026 Solved Paper","url":"https://arihant25.github.io/study-guides/anlp/pyqs/end-2026.html","inLanguage":"en","isAccessibleForFree":true,"learningResourceType":"practice test","educationalLevel":"graduate"}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <aside class="rail-left">
+      <div class="brand">
+        <a href="../index.html" style="text-decoration:none;color:inherit">an attention<br><em>lab notebook</em></a>
+        <small>ANLP · Monsoon '26</small>
+      </div>
+      <nav>
+        <div class="grp">On this page</div>
+        <a href="#paper">§1 · The paper</a>
+        <a href="#q1">§2 · Q1 · GQA, DeltaNet, SmoothQuant</a>
+        <a href="#q2">§3 · Q2 · Dense FFN vs MoE</a>
+        <a href="#q3">§4 · Q3 · Outliers and SmoothQuant</a>
+        <a href="#q4">§5 · Q4 · Diagnosing bad behaviour</a>
+        <a href="#q5">§6 · Q5 · Dense vs diagonal A</a>
+        <a href="#q6">§7 · Q6 · Debugging SLiCE code</a>
+        <a href="#q7">§8 · Q7 · Speculative sampling</a>
+        <a href="#b1">§9 · B · Mamba and DeltaNet</a>
+        <a href="#b2">§10 · B · GNNs</a>
+
+        <div class="grp">Elsewhere</div>
+        <a href="mid-2024.html">← Mid Sem 2024 (PYQ)</a>
+        <a href="../index.html">Next: Home →</a>
+      </nav>
+    </aside>
+
+    <div class="topbar">
+      <div class="brand"><a href="../index.html" style="color:inherit;text-decoration:none">an attention <em>lab
+            notebook</em></a></div>
+      <button class="theme-toggle" onclick="__toggleTheme()">◑ dark</button>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="kicker">PYQ · End Semester · Monsoon 2026</div>
+        <h1>End Semester 2026 — <em>the paper, worked through</em>.</h1>
+        <p class="lead">
+          This is the 2026 end-semester paper for CS7.501. It has two sections, 14 questions and 90 marks, with 180
+          minutes to answer them. Section A (50 marks) covers the lectures and comes with a research paper to read
+          during the exam. Section B (40 marks) asks about Assignment 3. There is no official key, so each answer
+          below is checked against the lectures, the assignment and the attached paper.
+        </p>
+        <div class="meta">
+          <span class="pill heat">End Sem 2026</span>
+          <span class="pill">14 questions</span>
+          <span class="pill">90 marks · 3 hrs</span>
+          <span class="pill">attention · quantization · SSMs · decoding · GNNs</span>
+        </div>
+      </section>
+
+      <section id="paper">
+        <h2><span class="num">§1</span>The paper</h2>
+        <p class="section-intro">
+          The printed paper was 15 pages: five pages of questions and the first ten pages of Walker et al.,
+          <em>Structured Linear CDEs: Maximally Expressive and Parallel-in-Time Sequence Models</em> (NeurIPS 2025,
+          <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">arXiv:2505.17761</a>). Questions 5
+          and 6 need that paper. The pages below are a typeset copy of the printed questions, word for word.
+          A PDF with the questions and the full paper is in
+          <a href="https://github.com/VijayrajS/iiitprevpapers/tree/master/Electives/BouquetAI/ANLP-Advanced%20NLP"
+            target="_blank" rel="noopener">iiitprevpapers</a> as <code>ANLP_end_2026_M.pdf</code>.
+        </p>
+
+        <div class="slide" id="paper-img">
+          <div class="slide-frame">
+            <div class="tag">exam paper · page 1 / 5</div>
+            <img src="../assets/pyqs/end-2026/page-1.png" alt="End-sem 2026 paper page 1: instructions and Question 1">
+            <div class="slide-caption">instructions and Question 1 (multiple select)</div>
+          </div>
+          <div class="explain">
+            <h4>Before you start</h4>
+            <p>Section A is unlike the mid-sems. Only Q2 and Q3 are "explain this" questions. Q1 is multiple select,
+              where a wrong tick costs you. Q5 and Q6 ask you to read a paper you have not seen and then reason
+              about it and debug code written from it. Q7 is a full derivation worth 15 marks.</p>
+            <table class="tbl">
+              <thead><tr><th>Q</th><th>Marks</th><th>Topic</th><th>Where in this guide</th></tr></thead>
+              <tbody>
+                <tr><td>A1</td><td>3</td><td>GQA, DeltaNet update, SmoothQuant</td><td><a href="../lectures/5-attention.html">L5</a>, <a href="../lectures/14-rnn-advances.html">L14</a>, <a href="../lectures/13-quantization.html">L13</a></td></tr>
+                <tr><td>A2</td><td>5</td><td>FFN vs MoE parameters, routing</td><td><a href="../lectures/8-feed-forward.html">L8</a>, <a href="../assignments/2-moe-optimizers-decoding.html">A2</a></td></tr>
+                <tr><td>A3</td><td>4</td><td>Activation outliers, SmoothQuant</td><td><a href="../lectures/13-quantization.html">L13</a></td></tr>
+                <tr><td>A4</td><td>5</td><td>Class imbalance, reward hacking</td><td><a href="../lectures/12-evaluation.html">L12</a> (partly)</td></tr>
+                <tr><td>A5</td><td>8</td><td>Dense vs diagonal SSMs, SLiCE expressivity</td><td><a href="../lectures/15-state-space-models.html">L15</a> + the paper</td></tr>
+                <tr><td>A6</td><td>10</td><td>Bugs in BD-SLiCE, scan and DeltaNet code</td><td><a href="../lectures/14-rnn-advances.html">L14</a>, <a href="../assignments/3-mamba-deltanet-gnn.html">A3</a> + the paper</td></tr>
+                <tr><td>A7</td><td>15</td><td>Speculative sampling, proof and speed-up</td><td><a href="../lectures/11-speculative-decoding.html">L11</a></td></tr>
+                <tr><td>B</td><td>40</td><td>Mamba, DeltaNet, hybrid, UPFD, GCN/SAGE/GAT</td><td><a href="../assignments/3-mamba-deltanet-gnn.html">A3</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide">
+          <div class="slide-frame">
+            <div class="tag">exam paper · page 2 / 5</div>
+            <img src="../assets/pyqs/end-2026/page-2.png" alt="End-sem 2026 paper page 2: Questions 2 to 5">
+            <div class="slide-caption">Questions 2–5</div>
+          </div>
+        </div>
+        <div class="slide">
+          <div class="slide-frame">
+            <div class="tag">exam paper · page 3 / 5</div>
+            <img src="../assets/pyqs/end-2026/page-3.png" alt="End-sem 2026 paper page 3: Question 6 parts 1 and 2">
+            <div class="slide-caption">Question 6, snippets 1 and 2</div>
+          </div>
+        </div>
+        <div class="slide">
+          <div class="slide-frame">
+            <div class="tag">exam paper · page 4 / 5</div>
+            <img src="../assets/pyqs/end-2026/page-4.png" alt="End-sem 2026 paper page 4: Question 6 part 3 and Question 7">
+            <div class="slide-caption">Question 6 snippet 3, and Question 7</div>
+          </div>
+        </div>
+        <div class="slide">
+          <div class="slide-frame">
+            <div class="tag">exam paper · page 5 / 5</div>
+            <img src="../assets/pyqs/end-2026/page-5.png" alt="End-sem 2026 paper page 5: Section B on Assignment 3">
+            <div class="slide-caption">Section B: Assignment 3</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ Q1 ============================ -->
+      <section>
+        <h2><span class="num">§2</span>Q1 · GQA, DeltaNet, SmoothQuant</h2>
+        <div class="pyq-q" id="q1">
+          <div class="qhead">
+            <span class="qnum">Q1</span>
+            <span class="qmarks">3 marks</span>
+            <a class="qtag" href="../lectures/5-attention.html">GQA</a>
+            <a class="qtag" href="../lectures/14-rnn-advances.html">DeltaNet</a>
+            <a class="qtag" href="../lectures/13-quantization.html">SmoothQuant</a>
+          </div>
+
+          <h3>How to approach it</h3>
+          <p>Every subquestion has more than one correct option, and each option is judged on its own. Test each
+            one against the definition, not against the other options. Writing one line of algebra is the fastest
+            check for the DeltaNet part.</p>
+
+          <h3>Q1.1 · GQA with 16 query heads and 4 KV heads — answer: <strong>(b), (c)</strong></h3>
+          <table class="tbl">
+            <thead><tr><th>Option</th><th>Verdict</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>(a) heads in a group give identical attention</td><td>False</td><td>They share K and V, but each
+                  head has its own query projection, so <em>softmax(q<sub>h</sub>K<sup>⊤</sup>)</em> differs per head.</td></tr>
+              <tr><td>(b) group size 16 = MQA</td><td>True</td><td>16 query heads per KV head means one KV head for all
+                  of them, which is multi-query attention.</td></tr>
+              <tr><td>(c) group size 4 uses ¼ of MHA's cache</td><td>True</td><td>The cache stores K and V per KV head:
+                  4 heads instead of 16, everything else equal.</td></tr>
+              <tr><td>(d) doubling length leaves cache unchanged</td><td>False</td><td>The cache grows linearly with
+                  sequence length for both MHA and GQA. GQA only changes the constant.</td></tr>
+              <tr><td>(e) fewer distinct query heads</td><td>False</td><td>GQA groups the K/V heads. There are still 16
+                  query heads.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Q1.2 · The delta rule — answer: <strong>(a), (c), (d), (e)</strong></h3>
+          <p>Multiply the update by any key <em>w</em>:</p>
+          <div class="eq boxed"><em>S′w = Sw + β (v − Sk)(k<sup>⊤</sup>w)</em></div>
+          <ul>
+            <li><strong>(a) True.</strong> At <em>w = k</em>, <em>k<sup>⊤</sup>k = 1</em>, so <em>S′k = Sk + β(v − Sk)</em>.
+              With β = 1 this is exactly <em>v</em>.</li>
+            <li><strong>(b) False.</strong> At <em>w = u</em>, <em>k<sup>⊤</sup>u = 0</em>, so <em>S′u = Su</em>. The
+              readout at <em>u</em> does not move, so it is <em>v</em> only by coincidence.</li>
+            <li><strong>(c) True.</strong> If <em>Sk = v</em> the error term <em>v − Sk</em> is zero and the whole update
+              is zero.</li>
+            <li><strong>(d) True.</strong> If <em>k<sup>⊤</sup>w ≠ 0</em> and <em>v ≠ Sk</em>, the readout at <em>w</em>
+              changes by <em>β(v − Sk)(k<sup>⊤</sup>w)</em>. This is the interference between non-orthogonal keys.</li>
+            <li><strong>(e) True.</strong> With β = ½, <em>S′k = ½ Sk + ½ v</em>, the midpoint.</li>
+          </ul>
+
+          <h3>Q1.3 · SmoothQuant — answer: <strong>(c), (d), (e)</strong></h3>
+          <ul>
+            <li><strong>(a) False.</strong> Equality <em>X′W′ = XW</em> holds before quantization. Rounding
+              <em>X′</em> and <em>W′</em> adds error, so the product is only approximately <em>XW</em>.</li>
+            <li><strong>(b) False.</strong> Splitting outlier channels into a separate FP16 matmul is LLM.int8().
+              SmoothQuant keeps one INT8 matmul and moves scale between the two operands.</li>
+            <li><strong>(c) True.</strong> <em>XS<sup>−1</sup>SW = XW</em>.</li>
+            <li><strong>(d) True.</strong> The bit width is the same, but the ranges being quantized have changed, so
+              the rounding error changes. Reducing that error is the whole point.</li>
+            <li><strong>(e) True.</strong> Column <em>j</em> of <em>X</em> is divided by <em>S<sub>jj</sub> &gt; 1</em>,
+              and row <em>j</em> of <em>W</em> is multiplied by it.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================ Q2 ============================ -->
+      <section>
+        <h2><span class="num">§3</span>Q2 · Dense FFN vs Mixture-of-Experts</h2>
+        <div class="pyq-q" id="q2">
+          <div class="qhead">
+            <span class="qnum">Q2</span>
+            <span class="qmarks">5 marks</span>
+            <a class="qtag" href="../lectures/8-feed-forward.html">FFN</a>
+            <a class="qtag" href="../assignments/2-moe-optimizers-decoding.html">MoE</a>
+          </div>
+
+          <h3>Worked answer</h3>
+          <h4>1 · Parameter counts (d = 2048, no biases)</h4>
+          <p>One FFN has two matrices, <em>d × 4d</em> and <em>4d × d</em>, so <em>8d²</em> parameters.</p>
+          <table class="tbl">
+            <thead><tr><th></th><th>Total</th><th>Active per token</th></tr></thead>
+            <tbody>
+              <tr><td>Dense FFN</td><td>8d² = 8 × 2048² = <strong>33,554,432</strong> (≈ 33.6M)</td><td>all of it: <strong>33,554,432</strong></td></tr>
+              <tr><td>MoE, 8 experts, top-2</td><td>8 × 8d² = <strong>268,435,456</strong> (≈ 268.4M)</td><td>2 × 8d² = <strong>67,108,864</strong> (≈ 67.1M)</td></tr>
+            </tbody>
+          </table>
+          <p>The router adds a <em>d × 8</em> matrix, 16,384 parameters. Every token uses it, so including it gives
+            268,451,840 total and 67,125,248 active. State whichever convention you use. The MoE stores 8× the
+            parameters of the dense FFN but does only 2× its compute per token.</p>
+
+          <h4>2 · What stops every expert from running</h4>
+          <p>A learned <strong>router</strong> (gate) scores the experts for each token, and only the
+            <strong>top-k</strong> experts are evaluated. The other six are never called for that token, so their
+            parameters cost memory but no compute.</p>
+          <ol>
+            <li>Router logits <em>z = W<sub>r</sub>x</em> (one score per expert), then <em>p = softmax(z)</em>.</li>
+            <li>Keep the two largest, <em>topk(p, 2)</em>, and renormalise them so the two gates sum to 1.</li>
+            <li>Output <em>y = g<sub>1</sub>E<sub>i</sub>(x) + g<sub>2</sub>E<sub>j</sub>(x)</em>. Multiplying by the
+              gate probability is what lets the main loss send a gradient to the router.</li>
+            <li>An auxiliary <strong>load-balancing loss</strong> <em>E · Σ<sub>e</sub> f<sub>e</sub>P<sub>e</sub></em>
+              (Switch Transformer) keeps the router from collapsing onto one or two experts. The A2 code also used the
+              ST-MoE router z-loss to keep logits small.</li>
+          </ol>
+          <p><strong>PyTorch modules</strong>, as in A2:</p>
+          <ul>
+            <li><code>self.router = nn.Linear(d, E, bias=False)</code> gives one score per expert per token.</li>
+            <li><code>self.experts = nn.ModuleList([FFN(d) for _ in range(E)])</code>, where each expert is
+              <code>nn.Linear(d, 4d)</code> → <code>nn.GELU()</code> → <code>nn.Linear(4d, d)</code>.</li>
+            <li><code>softmax</code> and <code>torch.topk</code> pick the experts and their gates.</li>
+            <li>For dispatch, loop over experts, find the tokens routed to each with
+              <code>(topi == e).nonzero()</code>, run the expert on just those rows, and add the gated output back with
+              <code>out.index_add_(0, tok, y)</code>.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================ Q3 ============================ -->
+      <section>
+        <h2><span class="num">§4</span>Q3 · Outliers and SmoothQuant</h2>
+        <div class="pyq-q" id="q3">
+          <div class="qhead">
+            <span class="qnum">Q3</span>
+            <span class="qmarks">4 marks</span>
+            <a class="qtag" href="../lectures/13-quantization.html">Quantization</a>
+          </div>
+
+          <h3>Worked answer</h3>
+          <p><strong>1 · The outlier problem.</strong> INT8 quantization maps a tensor onto 256 levels using a scale
+            set by its largest absolute value. In LLMs (from about 6.7B parameters up) a few activation channels are
+            systematically up to ~100× larger than the rest. With one scale per tensor, the outliers set the step
+            size, and the ordinary values, which carry most of the signal, fall into a handful of levels or round to
+            zero. Weights are well behaved and quantize easily. Activations are the hard part, and per-channel
+            activation scales do not fit an efficient INT8 GEMM.</p>
+          <p><strong>2 · SmoothQuant.</strong> It is a training-free, offline transform that makes W8A8
+            (INT8 weights and activations) work. For each input channel <em>j</em> it picks a smoothing factor</p>
+          <div class="eq boxed"><em>s<sub>j</sub> = max|X<sub>j</sub>|<sup>α</sup> / max|W<sub>j</sub>|<sup>1−α</sup></em>, &nbsp;α ≈ 0.5</div>
+          <p>and rewrites <em>Y = XW = (X diag(s)<sup>−1</sup>)(diag(s) W)</em>. Some of the activation range moves
+            into the weights, so both sides end up with moderate ranges and both quantize well. The division can be
+            folded into the preceding LayerNorm or linear layer, so it costs nothing at inference.</p>
+          <p><strong>3 · Which way.</strong> Activations are <strong>scaled down</strong> (divided by
+            <em>s<sub>j</sub></em>) and the matching weight rows are <strong>scaled up</strong> (multiplied by
+            <em>s<sub>j</sub></em>). The output is unchanged because the diagonal scaling and its inverse cancel:
+            <em>X S<sup>−1</sup> S W = XW</em>. This is exact before quantization.</p>
+        </div>
+      </section>
+
+      <!-- ============================ Q4 ============================ -->
+      <section>
+        <h2><span class="num">§5</span>Q4 · Diagnosing bad behaviour</h2>
+        <div class="pyq-q" id="q4">
+          <div class="qhead">
+            <span class="qnum">Q4</span>
+            <span class="qmarks">5 marks</span>
+            <a class="qtag" href="../lectures/12-evaluation.html">Evaluation</a>
+          </div>
+
+          <h3>Worked answer</h3>
+          <h4>1 · 95% accuracy, but everything is "not spam"</h4>
+          <p><strong>Conclusion.</strong> The data is imbalanced: about 95% of the documents are not spam. A model
+            that always predicts the majority class gets 95% accuracy, and that is what it learned. The high
+            accuracy hides that spam recall is zero. Validation and test had the same imbalance, so they could not
+            catch it. Deployment just made it visible.</p>
+          <p><strong>Simplest change.</strong> Balance training, by oversampling spam, undersampling non-spam, or
+            using class-weighted cross-entropy. Select models on spam precision, recall, F1 or AUC instead of
+            accuracy. (If the deployment spam rate differs from the training rate, that is distribution shift too,
+            and the fix is to train and validate on data drawn like deployment data.)</p>
+
+          <h4>2 · Near-perfect reward, terrible BLEU</h4>
+          <p><strong>Conclusion.</strong> The model is reward hacking. <em>d(Ŝ, S) = |Ŝ ∩ S| / |Ŝ|</em> is a
+            bag-of-words <em>precision</em>. It never asks whether the output covers the target, and it ignores
+            word order. The policy can score 1.0 by emitting one or two safe words that are almost always in the
+            target (say "the") and then <em>⟨eos⟩</em>, or by emitting target words in any order. BLEU punishes
+            exactly this: its n-gram matches need order, and its brevity penalty punishes short outputs.</p>
+          <p><strong>Simplest change.</strong> Add recall to the reward, for example BOW F1, or divide by
+            <em>max(|Ŝ|, |S|)</em> rather than <em>|Ŝ|</em>, so short outputs stop scoring well. Better still, reward
+            n-gram overlap with a brevity penalty (BLEU itself). A KL penalty to the pretrained model also keeps
+            the policy from drifting into degenerate text.</p>
+        </div>
+      </section>
+
+      <!-- ============================ Q5 ============================ -->
+      <section>
+        <h2><span class="num">§6</span>Q5 · Dense vs diagonal state matrices</h2>
+        <div class="pyq-q" id="q5">
+          <div class="qhead">
+            <span class="qnum">Q5</span>
+            <span class="qmarks">8 marks</span>
+            <a class="qtag" href="../lectures/15-state-space-models.html">SSMs</a>
+            <a class="qtag" href="../lectures/15-state-space-models.html">Mamba</a>
+            <a class="qtag" href="https://arxiv.org/abs/2505.17761">SLiCE paper</a>
+          </div>
+
+          <h3>How to approach it</h3>
+          <p>Part 1 asks for a proof, so a counterexample is the cleanest answer. Say which numbers are allowed
+            (real or complex) before you start, because the answer depends on it. Part 2 wants three things from
+            the paper: diagonal transitions commute, Theorem 4.1, and the layer counts in Fig. 1a.</p>
+
+          <h3>Worked answer</h3>
+          <h4>1 · They are not equivalent</h4>
+          <p><strong>Assumptions.</strong> Mamba's <em>A</em> is real and diagonal (in practice negative, so
+            <em>Ā = exp(ΔA)</em> has entries in (0, 1)). Hidden size <em>d<sub>h</sub></em> is fixed. To disprove the
+            claim, it is enough to find one dense model, even with constant Δ, that no real diagonal model of the
+            same size can match.</p>
+          <p><strong>Counterexample (rotation).</strong> Take <em>d<sub>h</sub> = 2</em>,
+            <em>A = [[0, −ω], [ω, 0]]</em>, <em>B = e<sub>1</sub></em>, <em>C = e<sub>1</sub><sup>⊤</sup></em>. Then
+            <em>Ā = exp(ΔA)</em> is a rotation by θ = ωΔ, and the impulse response is
+            <em>y<sub>t</sub> = CĀ<sup>t</sup>B = cos(θt)</em>. A size-2 real diagonal model has impulse response
+            <em>c<sub>1</sub>λ<sub>1</sub><sup>t</sup> + c<sub>2</sub>λ<sub>2</sub><sup>t</sup></em> with real
+            λ<sub>i</sub>. Sequences <em>λ<sup>t</sup></em> with distinct bases are linearly independent, and
+            <em>cos(θt) = ½(e<sup>iθt</sup> + e<sup>−iθt</sup>)</em> has non-real bases <em>e<sup>±iθ</sup></em>
+            (for θ not a multiple of π). So no choice of real λ, c reproduces it. A real diagonal model cannot
+            rotate. It can only decay each coordinate (or flip its sign if λ &lt; 0).</p>
+          <p><strong>Second counterexample (not diagonalisable).</strong> <em>A = [[a, 1], [0, a]]</em> gives
+            <em>Ā<sup>t</sup></em> an entry <em>tΔ e<sup>aΔt</sup></em>. A sum of pure exponentials cannot produce
+            <em>t·λ<sup>t</sup></em>, even with complex numbers.</p>
+          <p><strong>When it does hold.</strong> If complex diagonal entries are allowed (as in S4D) and <em>A</em> is
+            diagonalisable, <em>A = VΛV<sup>−1</sup></em>, then <em>h̃ = V<sup>−1</sup>h</em> gives an equivalent
+            diagonal model with <em>B̃ = V<sup>−1</sup>B</em>, <em>C̃ = CV</em>. Because every
+            <em>exp(Δ<sub>t</sub>A)</em> is a function of the same <em>A</em>, one <em>V</em> works for all steps even
+            with input-dependent Δ<sub>t</sub>. Equivalence fails once the transition's <em>directions</em> depend on
+            the input, as in a linear CDE with a different <em>A<sup>i</sup></em> per input channel. Those matrices
+            do not commute, so no single basis diagonalises them all. That is part 2.</p>
+
+          <h4>2 · Why Mamba is less expressive than BD-SLiCE</h4>
+          <ul>
+            <li>In the paper's framework, a model's transition over a step is <em>exp(Σ<sub>i</sub>
+                Δω<sup>i</sup>A<sup>i</sup>)</em>. Mamba is the diagonal case, a D-SLiCE (Sec. 4.2). Diagonal SLiCEs
+              are <strong>not maximally expressive</strong> (Cirone et al. [22, Thm 4.3]).</li>
+            <li>The reason is that diagonal matrices commute. The product of the transitions over a sequence is the
+              same in any order, so the state cannot record the order in which transformations were applied. That
+              is exactly what state tracking needs.</li>
+            <li>BD-SLiCE uses <em>A<sup>i</sup> = BlockDiag(B<sup>i</sup><sub>1</sub>, …, B<sup>i</sup><sub>k</sub>)</em>
+              with dense, input-dependent blocks (Sec. 4.3). Blocks do not commute, so order is kept. Theorem 4.1:
+              if the largest block size grows with <em>d<sub>h</sub></em>, BD-SLiCEs have <strong>maximal
+                probabilistic expressivity</strong>, the same as dense LNCDEs. Block-diagonal matrices stay
+              block-diagonal under multiplication, so the parallel scan costs
+              <em>O(d<sub>h</sub> Σ b<sub>j</sub><sup>2</sup>)</em> per composition rather than
+              <em>O(d<sub>h</sub><sup>3</sup>)</em> (Sec. 4.6).</li>
+            <li><strong>A<sub>5</sub> (Fig. 1a).</strong> The task composes even permutations of five elements. This
+              group is non-abelian, so the answer depends on the order. Diagonal models (Mamba, mLSTM, D-SLiCE) need
+              <strong>more stacked layers as the sequence gets longer</strong> (several layers by length 20), because each
+              layer plus its non-linearity can only cover a bounded amount of non-commutative composition.
+              BD-SLiCE, like the DPLR, sparse, WH and dense SLiCEs, needs <strong>one layer at every length</strong>
+              from 3 to 20. In Fig. 1b, BD-SLiCE keeps high accuracy at 8× the training length, while Mamba does not
+              reach high accuracy even at training lengths.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================ Q6 ============================ -->
+      <section>
+        <h2><span class="num">§7</span>Q6 · Debugging SLiCE code</h2>
+        <div class="pyq-q" id="q6">
+          <div class="qhead">
+            <span class="qnum">Q6</span>
+            <span class="qmarks">10 marks</span>
+            <a class="qtag" href="../lectures/14-rnn-advances.html">parallel scan</a>
+            <a class="qtag" href="../assignments/3-mamba-deltanet-gnn.html">DeltaNet</a>
+            <a class="qtag" href="https://arxiv.org/abs/2505.17761">SLiCE paper</a>
+          </div>
+
+          <h3>How to approach it</h3>
+          <p>Trust the docstrings. They state the maths, so check each line against the docstring and the
+            section it cites. For each bug, give the line number, the reason with a paper reference, and the
+            corrected line.</p>
+
+          <h3>6.1 · <code>BlockDiagSLiCE</code></h3>
+          <p><strong>Line 19 has two bugs.</strong></p>
+          <ol>
+            <li><strong>It averages the input over time.</strong> <code>dw.mean(dim=1)</code> collapses the
+              sequence, so every step uses the same transition <em>M</em>. A SLiCE's transition at step <em>t</em> is
+              built from that step's increment, <em>exp(Σ<sub>i</sub> Δω<sub>t</sub><sup>i</sup>A<sup>i</sup>)</em>
+              (Eq. 2, Eq. 13). With one shared <em>M</em> the layer becomes time-invariant, <em>h<sub>T</sub> =
+                M<sup>T</sup>h<sub>0</sub></em>. The inputs only affect it through their average, so word order is
+              lost. The "pre-compute once" comment is the trap. You can precompute every step's matrix, but not a
+              single shared one.</li>
+            <li><strong>It drops the identity.</strong> The docstring's first-order flow is <em>I + Σ<sub>i</sub>
+                Δω<sup>i</sup>A<sup>i</sup></em> (Eq. 13). Without <em>I</em>, each step replaces <em>h</em> by
+              the increment <em>(Σ Δω<sup>i</sup>A<sup>i</sup>)h</em> instead of adding the increment to <em>h</em>,
+              so the state no longer follows the CDE.</li>
+          </ol>
+          <pre class="code"><code>19    M = torch.einsum('btc,cnij->btnij', dw, self.A) \
+          + torch.eye(self.b, device=x.device)               # (B, T, nb, b, b)
+23        h = torch.einsum('bnij,bnj->bni', M[:, t], h)          # step t's own transition</code></pre>
+
+          <h3>6.2 · <code>blockdiag_prefix_flows</code></h3>
+          <p><strong>Line 3: the composition is in the wrong order.</strong> The docstring says
+            <em>h<sub>t+1</sub> = P[t] h<sub>0</sub></em>, so <em>P[t] = M<sub>t</sub> ⋯ M<sub>1</sub>M<sub>0</sub></em>.
+            Later steps multiply on the <em>left</em>. The scan at line 14 calls
+            <code>combine(P[:-d], P[d:])</code> with the earlier prefix first, so <code>earlier @ later</code> builds
+            <em>M<sub>0</sub>M<sub>1</sub>⋯M<sub>t</sub></em>, the reverse.</p>
+          <pre class="code"><code>3     return later @ earlier</code></pre>
+          <p><strong>Line 11: it throws away the block structure.</strong> <code>torch.block_diag</code> turns each
+            step into a dense <em>d<sub>h</sub> × d<sub>h</sub></em> matrix, so every composition costs
+            <em>O(d<sub>h</sub><sup>3</sup>)</em>. Sec. 4.6 says block-diagonal matrices are closed under
+            multiplication, so the scan should compose the blocks directly at
+            <em>O(d<sub>h</sub> b<sup>2</sup>)</em>. That is the point of BD-SLiCE. <code>@</code> on
+            <em>(…, nb, b, b)</em> tensors already multiplies block by block.</p>
+          <pre class="code"><code>11    P = M.clone()                                   # (T, nb, b, b), stays block-diagonal</code></pre>
+          <p><strong>Why the test passed.</strong> If every block is diagonal, every <em>M<sub>t</sub></em> is
+            diagonal, and diagonal matrices commute, so <em>earlier @ later = later @ earlier</em>. The order bug has
+            no effect on exactly the inputs that were tested. It is the same fact that limits Mamba in Q5: a test
+            made only of commuting transitions cannot find an ordering mistake. Test with random dense blocks.</p>
+
+          <h3>6.3 · <code>DeltaNetPM1</code></h3>
+          <p>The transition <em>I − β<sub>t</sub>k<sub>t</sub>k<sub>t</sub><sup>⊤</sup></em> has eigenvalue
+            <em>1 − β<sub>t</sub>‖k<sub>t</sub>‖²</em> along <em>k<sub>t</sub></em> and 1 in every other direction.
+            For it to lie in [−1, 1] as the docstring requires, two things must hold.</p>
+          <ol>
+            <li><strong>Line 17: keys are not normalised.</strong> With raw keys, <em>‖k‖²</em> can be anything. For
+              example <em>‖k‖ = 3</em> and <em>β = 1</em> give eigenvalue −8, and the state blows up. DeltaNet
+              L2-normalises keys (and usually queries) so that <em>‖k‖ = 1</em>.
+              <pre class="code"><code>17    q, k, v = F.normalize(self.q(x), dim=-1), F.normalize(self.k(x), dim=-1), self.v(x)</code></pre></li>
+            <li><strong>Line 18: β is in [0, 1], so the eigenvalue is in [0, 1].</strong> That is plain DeltaNet.
+              The <em>[−1, 1]</em> variant in Table 2 (from Grazzi et al. [38]) allows negative eigenvalues by
+              letting β range over [0, 2], so <em>1 − β ∈ [−1, 1]</em>. Negative eigenvalues are what let it solve
+              parity and modular arithmetic (97.7 vs 57.8 on parity in Table 2).
+              <pre class="code"><code>18    beta = 2 * torch.sigmoid(self.beta(x))          # (B, T, 1), in [0, 2]</code></pre></li>
+          </ol>
+          <p>The rest is correct. Line 23 computes <em>Sk</em>. Lines 24–25 compute <em>S − β(Sk)k<sup>⊤</sup> +
+              βvk<sup>⊤</sup> = S(I − βkk<sup>⊤</sup>) + βvk<sup>⊤</sup></em>. Line 26 reads out <em>Sq</em>.</p>
+        </div>
+      </section>
+
+      <!-- ============================ Q7 ============================ -->
+      <section>
+        <h2><span class="num">§8</span>Q7 · Speculative sampling</h2>
+        <div class="pyq-q" id="q7">
+          <div class="qhead">
+            <span class="qnum">Q7</span>
+            <span class="qmarks">15 marks</span>
+            <a class="qtag" href="../lectures/11-speculative-decoding.html">Speculative decoding</a>
+          </div>
+
+          <h3>Worked answer</h3>
+          <h4>1 · One iteration</h4>
+          <ol>
+            <li><strong>Draft.</strong> Run <em>q</em> autoregressively for γ steps, sampling
+              <em>x<sub>1</sub>, …, x<sub>γ</sub></em> and keeping <em>q<sub>i</sub>(x<sub>i</sub>)</em>.</li>
+            <li><strong>Score.</strong> Run the target once on the prefix plus all γ drafts. This gives
+              <em>p<sub>1</sub>, …, p<sub>γ+1</sub></em>: one distribution per draft position and one extra after
+              the last.</li>
+            <li><strong>Verify in order</strong>, for <em>i = 1 … γ</em>: draw <em>r ~ U(0, 1)</em> and accept
+              <em>x<sub>i</sub></em> if <em>r &lt; min(1, p<sub>i</sub>(x<sub>i</sub>) / q<sub>i</sub>(x<sub>i</sub>))</em>.</li>
+            <li><strong>On the first rejection</strong> at position <em>i</em>, discard <em>x<sub>i</sub>, …,
+                x<sub>γ</sub></em>, sample a replacement from the residual
+              <em>p′(x) = max(0, p<sub>i</sub>(x) − q<sub>i</sub>(x)) / Σ<sub>y</sub> max(0, p<sub>i</sub>(y) −
+                q<sub>i</sub>(y))</em>, and end the iteration.</li>
+            <li><strong>If all γ are accepted</strong>, sample one more token from <em>p<sub>γ+1</sub></em>, which
+              the target pass already computed. Each iteration emits between 1 and γ + 1 tokens.</li>
+          </ol>
+
+          <h4>2 · The output is distributed exactly as p</h4>
+          <p>Let <em>α = Σ<sub>x</sub> min(p(x), q(x))</em> be the overall acceptance probability. A token <em>x</em>
+            comes out either by being drafted and accepted or by being sampled after a rejection:</p>
+          <div class="eq boxed"><em>P(x) = q(x)·min(1, p(x)/q(x)) + (1 − α)·max(0, p(x) − q(x)) / (1 − α)</em></div>
+          <p>The first term is <em>min(q(x), p(x))</em>. For the second, the normaliser of the residual is
+            <em>Σ max(0, p − q) = Σ (p − min(p, q)) = 1 − α</em>, the same as the rejection probability, so they
+            cancel. Then <em>P(x) = min(p(x), q(x)) + max(0, p(x) − q(x)) = p(x)</em>, for any <em>q</em>. (If
+            α = 1, then <em>p = q</em>, nothing is rejected, and <em>P = q = p</em>.)</p>
+
+          <h4>3 · Acceptance rate</h4>
+          <p><em>α = Σ<sub>x</sub> q(x) min(1, p(x)/q(x)) = Σ<sub>x</sub> min(q(x), p(x))</em>. Using
+            <em>min(a, b) = (a + b − |a − b|)/2</em> and <em>Σp = Σq = 1</em>:
+            <em>α = ½(1 + 1 − Σ|p − q|) = 1 − TV(p, q)</em>.</p>
+          <p>For <em>p = (0.5, 0.3, 0.2)</em> and <em>q = (0.6, 0.1, 0.3)</em>:
+            <em>α = min(0.5, 0.6) + min(0.3, 0.1) + min(0.2, 0.3) = 0.5 + 0.1 + 0.2 = <strong>0.8</strong></em>.
+            Check: TV = ½(0.1 + 0.2 + 0.1) = 0.2.</p>
+          <p>After a rejection: <em>max(0, p − q) = (0, 0.2, 0)</em>, which normalises to
+            <strong>(0, 1, 0)</strong>. A rejection always produces <em>b</em>, the only token the draft
+            under-proposes.</p>
+
+          <h4>4 · Expected tokens and speed-up</h4>
+          <p>Positions are accepted until the first rejection, with each accepted with probability α. The iteration
+            always produces one token at the end (the correction or the bonus), so</p>
+          <div class="eq boxed"><em>E[tokens] = 1 + α + α² + … + α<sup>γ</sup> = (1 − α<sup>γ+1</sup>) / (1 − α)</em></div>
+          <p>An iteration costs γ draft steps plus one target pass, <em>γc + 1</em> in target-pass units. Plain
+            decoding makes 1 token per target pass, so the speed-up is
+            <em>(1 − α<sup>γ+1</sup>) / ((1 − α)(γc + 1))</em>.</p>
+          <table class="tbl">
+            <thead><tr><th>γ</th><th>E[tokens]</th><th>Cost γc + 1</th><th>Speed-up</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>(1 − 0.8³)/0.2 = 2.440</td><td>1.2</td><td>2.03×</td></tr>
+              <tr><td>4</td><td>(1 − 0.8⁵)/0.2 = 3.362</td><td>1.4</td><td>2.40×</td></tr>
+              <tr><td><strong>6</strong></td><td>(1 − 0.8⁷)/0.2 = 3.951</td><td>1.6</td><td><strong>2.47×</strong></td></tr>
+              <tr><td>8</td><td>(1 − 0.8⁹)/0.2 = 4.329</td><td>1.8</td><td>2.41×</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Best: γ = 6.</strong> A larger γ eventually hurts because the gain saturates while the cost does
+            not. Draft <em>i</em> only counts if all earlier ones were accepted, which happens with probability
+            <em>α<sup>i</sup></em>. Expected tokens approach <em>1/(1 − α) = 5</em>, but each extra draft still costs
+            <em>c</em>, and long drafts are mostly thrown away.</p>
+
+          <h4>5 · Two follow-ups</h4>
+          <p><strong>Greedy decoding.</strong> Both distributions are one-hot on their argmax. The ratio
+            <em>p(x)/q(x)</em> is 1 if the draft's token is the target's argmax and 0 otherwise. So the rule becomes
+            "accept if the draft token equals the target's argmax". On a mismatch, the residual is one-hot on the
+            target's argmax. The output is <strong>exactly the target model's greedy output</strong>, just faster.</p>
+          <p><strong>Why not "accept if p(x) ≥ q(x), else sample from p".</strong> Then
+            <em>P(x) = q(x)·𝟙[p(x) ≥ q(x)] + P(reject)·p(x)</em>, which is not <em>p</em>. With the numbers above, only
+            <em>b</em> is ever accepted, <em>P(reject) = 0.6 + 0.3 = 0.9</em>, and the output is
+            <em>(0.45, 0.37, 0.18)</em> instead of <em>(0.5, 0.3, 0.2)</em>. Accepted tokens are already counted
+            once, so the fallback must sample only the <em>missing</em> mass <em>max(0, p − q)</em>. Sampling all of
+            <em>p</em> double-counts tokens where <em>q</em> already supplied some probability. Accepting with
+            probability <em>p/q</em> when <em>p &lt; q</em> is what removes the excess.</p>
+        </div>
+      </section>
+
+      <!-- ============================ Section B ============================ -->
+      <section>
+        <h2><span class="num">§9</span>Section B · Part 1: Mamba and DeltaNet</h2>
+        <div class="pyq-q" id="b1">
+          <div class="qhead">
+            <span class="qnum">B1</span>
+            <span class="qmarks">4 × 5 marks</span>
+            <a class="qtag" href="../assignments/3-mamba-deltanet-gnn.html">A3</a>
+            <a class="qtag" href="../lectures/15-state-space-models.html">Mamba</a>
+          </div>
+
+          <h3>1 · How Mamba sees order when its transitions commute</h3>
+          <p>Commuting transitions only lose the order of the <em>transitions</em> among themselves. The inputs
+            still enter at different times. Unrolling the recurrence:</p>
+          <div class="eq boxed"><em>h<sub>T</sub> = Σ<sub>t</sub> ( Π<sub>s=t+1</sub><sup>T</sup> Ā<sub>s</sub> ) B̄<sub>t</sub> x<sub>t</sub></em></div>
+          <p>Each input is scaled by the decay of every step <em>after</em> it, so its weight depends on how long ago
+            it arrived. Recency works as an implicit position signal. Selectivity strengthens this: Δ<sub>t</sub>,
+            B<sub>t</sub> and C<sub>t</sub> depend on the input, so later tokens decide how much of earlier ones
+            survives (a large Δ resets, a small Δ keeps). The short causal <code>Conv1d</code> before the SSM also
+            sees the exact order of the last few tokens. And the recurrence is causal by construction, so the model
+            never needs positions to tell past from future the way attention does.</p>
+
+          <h3>2 · Why an evolving-state cipher is hard for Mamba, and what DeltaNet adds</h3>
+          <p>The cipher's chained shift adds to each symbol a running quantity computed from all earlier symbols,
+            modulo 63. That is state tracking. Mamba's transition is <em>exp(Δ<sub>t</sub>A)</em> with real negative
+            diagonal <em>A</em>, so each coordinate can only shrink by a factor in (0, 1). It cannot rotate or flip
+            sign, so it cannot count modulo <em>n</em> (it cannot even do parity), and diagonal transitions cannot
+            compose non-commuting updates in one layer (Q5). DeltaNet's transition
+            <em>I − β<sub>t</sub>k<sub>t</sub>k<sub>t</sub><sup>⊤</sup></em> is a generalised Householder matrix
+            whose direction depends on the input. It is not diagonal, consecutive steps do not commute, and with
+            β ∈ [0, 2] it can reflect, which gives eigenvalue −1. Its delta rule also overwrites the value stored at
+            a key, so it can update a variable instead of piling up history. In our assignment the
+            <code>unchain</code> preprocessing undid the chained shift before training, which is why all four
+            models reached above 99.9%.</p>
+
+          <h3>3 · Why the hybrid looks the way it does</h3>
+          <p>Design: <code>embed → [Mamba → DeltaNet + MLP] × 3 → RMSNorm → Linear(27)</code>, about 3.75M
+            parameters, matched to the other models.</p>
+          <ul>
+            <li><strong>Mamba as a local feature extractor.</strong> Its short convolution and selective Δ summarise
+              the last few cipher symbols.</li>
+            <li><strong>DeltaNet as an associative memory.</strong> It stores key → value pairs and overwrites old
+              values, which fits a mapping from cipher patterns to plaintext characters. It works best when keys
+              are informative, so Mamba comes first and DeltaNet's keys are built from contextual features rather
+              than raw symbol embeddings.</li>
+            <li><strong>Interleaved, not stacked in halves.</strong> After each memory read, the next Mamba layer
+              mixes the result across neighbouring positions before the next lookup (as in Jamba, Samba and the
+              Gated DeltaNet hybrids).</li>
+            <li><strong>Hypotheses.</strong> H1: the hybrid is at least as good as the better pure model. H2: after
+              preprocessing every model should be near-perfect, so any gap would be small. H2 held (0.9991–0.9995
+              test accuracy). The hybrid had the lowest validation loss, but the gaps were within noise.</li>
+          </ul>
+
+          <h3>4 · How DeltaNet extends linear attention</h3>
+          <p>Linear attention drops the softmax and keeps a running sum <em>S<sub>t</sub> = S<sub>t−1</sub> +
+              v<sub>t</sub>k<sub>t</sub><sup>⊤</sup></em>, reading out <em>o<sub>t</sub> = S<sub>t</sub>q<sub>t</sub></em>.
+            The state has fixed size and decoding costs <em>O(1)</em> per token. The limitation is that the memory
+            is <strong>purely additive</strong>. It never forgets or overwrites, so once more than
+            <em>d<sub>k</sub></em> keys are stored they cannot all be orthogonal, and retrievals interfere. A key
+            written twice returns the sum of both values.</p>
+          <p>DeltaNet uses the <strong>delta rule</strong>: first read what the memory predicts for the key, then write
+            only the error.</p>
+          <div class="eq boxed"><em>S<sub>t</sub> = S<sub>t−1</sub> + β<sub>t</sub>(v<sub>t</sub> − S<sub>t−1</sub>k<sub>t</sub>)k<sub>t</sub><sup>⊤</sup> = S<sub>t−1</sub>(I − β<sub>t</sub>k<sub>t</sub>k<sub>t</sub><sup>⊤</sup>) + β<sub>t</sub>v<sub>t</sub>k<sub>t</sub><sup>⊤</sup></em></div>
+          <p>This is one step of online gradient descent on <em>½‖Sk<sub>t</sub> − v<sub>t</sub>‖²</em>, with β as
+            the learning rate. The old value at <em>k<sub>t</sub></em> is replaced instead of added to, which fixes
+            the capacity and interference problem. The transition is identity minus rank one (DPLR), which still
+            trains in parallel with the chunkwise WY algorithm.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="num">§10</span>Section B · Part 2: GNNs</h2>
+        <div class="pyq-q" id="b2">
+          <div class="qhead">
+            <span class="qnum">B2</span>
+            <span class="qmarks">5 + 5 + 10 marks</span>
+            <a class="qtag" href="../assignments/3-mamba-deltanet-gnn.html">A3 · Part B</a>
+          </div>
+
+          <h3>1 · The GCN layer</h3>
+          <div class="eq boxed"><em>H<sup>(l+1)</sup> = σ( D̃<sup>−½</sup> Ã D̃<sup>−½</sup> H<sup>(l)</sup> W<sup>(l)</sup> )</em>, &nbsp; <em>Ã = A + I</em>, &nbsp; <em>D̃<sub>ii</sub> = Σ<sub>j</sub> Ã<sub>ij</sub></em></div>
+          <ul>
+            <li><em>H<sup>(l)</sup></em> is the node features at layer <em>l</em> (<em>n × d</em>), and
+              <em>W<sup>(l)</sup></em> is a learned weight matrix shared by all nodes.</li>
+            <li><em>Ã</em> is the adjacency matrix with self-loops, and <em>D̃</em> its degree matrix. σ is a
+              non-linearity (ReLU).</li>
+            <li>Per node: <em>h<sub>i</sub>′ = σ(Σ<sub>j∈N(i)∪{i}</sub> W h<sub>j</sub> / √(d̃<sub>i</sub>d̃<sub>j</sub>))</em>.</li>
+          </ul>
+          <p><strong>Self-loops</strong> let a node keep its own features. Without them, <em>AH</em> replaces each
+            node by its neighbours alone. <strong>Normalisation</strong> is needed because <em>AH</em> sums
+            neighbours, so high-degree nodes get large vectors and repeated layers explode or vanish. The symmetric
+            <em>D̃<sup>−½</sup>ÃD̃<sup>−½</sup></em> averages instead, weights each edge by
+            <em>1/√(d̃<sub>i</sub>d̃<sub>j</sub>)</em>, and keeps the propagation matrix's eigenvalues in [−1, 1].</p>
+
+          <h3>2 · UPFD GossipCop</h3>
+          <ul>
+            <li><strong>A graph</strong> is one news article and its Twitter propagation tree. Node 0 is the article,
+              and every other node is a user who shared it.</li>
+            <li><strong>Edges</strong> follow propagation: <em>u → v</em> means the story reached <em>v</em> through
+              <em>u</em> (a retweet cascade).</li>
+            <li><strong>Features:</strong> <code>profile</code> (10, account metadata), <code>spacy</code> (300,
+              averaged word vectors of the user's tweets, or of the article for node 0), <code>bert</code> (768,
+              BERT embedding of the same text), <code>content</code> (310 = spacy 300 + profile 10).</li>
+            <li><strong>Task:</strong> binary <strong>graph classification</strong>, deciding whether the article is
+              fake or real. There are 5,464 graphs, with the dataset's fixed 20/10/70 train/val/test split.</li>
+          </ul>
+
+          <h3>3 · GCN vs GraphSAGE vs GAT</h3>
+          <h4>(a) How each node combines its neighbours</h4>
+          <table class="tbl">
+            <thead><tr><th>Model</th><th>Update for node i</th></tr></thead>
+            <tbody>
+              <tr><td>GCN</td><td><em>h<sub>i</sub>′ = σ( Σ<sub>j∈N(i)∪{i}</sub> W h<sub>j</sub> / √(d̃<sub>i</sub>d̃<sub>j</sub>) )</em></td></tr>
+              <tr><td>GraphSAGE (mean)</td><td><em>h<sub>i</sub>′ = σ( W<sub>1</sub>h<sub>i</sub> + W<sub>2</sub> · mean<sub>j∈N(i)</sub> h<sub>j</sub> )</em> (equivalently <em>W[h<sub>i</sub> ‖ mean]</em>)</td></tr>
+              <tr><td>GAT</td><td><em>e<sub>ij</sub> = LeakyReLU(a<sup>⊤</sup>[Wh<sub>i</sub> ‖ Wh<sub>j</sub>])</em>, &nbsp; <em>α<sub>ij</sub> = softmax<sub>j∈N(i)∪{i}</sub>(e<sub>ij</sub>)</em>, &nbsp; <em>h<sub>i</sub>′ = σ( Σ<sub>j</sub> α<sub>ij</sub> W h<sub>j</sub> )</em>, with K heads concatenated</td></tr>
+            </tbody>
+          </table>
+          <h4>(b) How they weight neighbours</h4>
+          <p><strong>GCN</strong> uses fixed weights that come only from the graph structure
+            (<em>1/√(d̃<sub>i</sub>d̃<sub>j</sub>)</em>), and treats self the same as a neighbour.
+            <strong>GraphSAGE</strong> weights all neighbours equally (a plain mean) but gives the node itself a
+            separate weight matrix, so it is not drowned out by many neighbours. <strong>GAT</strong> learns the
+            weights: each edge gets an attention score computed from the two nodes' features, so different
+            neighbours, and different heads, can matter differently.</p>
+          <h4>(c) From node embeddings to one graph vector</h4>
+          <p>Apply a permutation-invariant <strong>readout</strong> (global pooling) over all nodes in the graph, then
+            a classifier such as <code>Linear(d, 2)</code>. Two readouts: <strong>global mean pooling</strong> (what
+            A3 used, a scatter-sum by graph id divided by the node count) and <strong>global max pooling</strong>.
+            Sum pooling, attention pooling, or using the root (article) node's embedding also work.</p>
+        </div>
+      </section>
+
+      <div class="pager">
+        <a class="prev" href="mid-2024.html">
+          <span class="dir">← back</span>
+          <span class="lbl">Mid Sem 2024 (PYQ)</span>
+        </a>
+        <a class="next" href="../index.html">
+          <span class="dir">next →</span>
+          <span class="lbl">Home</span>
+        </a>
+      </div>
+
+      <footer class="foot">
+        <div>End Semester 2026 · PYQ · ANLP Monsoon '26</div>
+        <div><a href="../index.html">home</a> · <a href="https://github.com/Arihant25/study-guides/tree/main/anlp" target="_blank"
+            rel="noopener">github ↗</a></div>
+      </footer>
+    </main>
+
+    <aside class="rail-right">
+      <div class="kicker">progress</div>
+      <div class="heatmap-rail" aria-hidden="true"></div>
+      <div class="kicker">sections</div>
+      <div class="rail-toc">
+        <a href="#paper">§1 the paper</a>
+        <a href="#q1">§2 Q1 · GQA, DeltaNet, SmoothQuant</a>
+        <a href="#q2">§3 Q2 · FFN vs MoE</a>
+        <a href="#q3">§4 Q3 · SmoothQuant</a>
+        <a href="#q4">§5 Q4 · diagnosing behaviour</a>
+        <a href="#q5">§6 Q5 · dense vs diagonal</a>
+        <a href="#q6">§7 Q6 · SLiCE bugs</a>
+        <a href="#q7">§8 Q7 · speculative sampling</a>
+        <a href="#b1">§9 B · Mamba, DeltaNet</a>
+        <a href="#b2">§10 B · GNNs</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

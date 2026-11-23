@@ -21,7 +21,7 @@ Each guide explains every symbol where it first appears and works through the pa
 
 | Course | Code | Guide | What's in it |
 |---|---|---|---|
-| Advanced Natural Language Processing | CS7.501 | [`anlp/`](https://arihant25.github.io/study-guides/anlp/) | 16 lectures, 2 tutorials, 3 assignments, 6 seminars, the course project and two past mid-sem papers, each slide followed by an explanation |
+| Advanced Natural Language Processing | CS7.501 | [`anlp/`](https://arihant25.github.io/study-guides/anlp/) | 16 lectures, 2 tutorials, 3 assignments, 6 seminars, the course project, two past mid-sem papers and the solved 2026 end-sem paper, each slide followed by an explanation |
 | Dynamical Processes of Complex Networks | SC1.440 | [`dpcn/`](https://arihant25.github.io/study-guides/dpcn/) | Three pages read in order (Quiz 1, Mid-sem, After mid-sem), plus Quiz 2, End-sem and memory sheets |
 | Introduction to Sociology | HS2.201 | [`sociology/`](https://arihant25.github.io/study-guides/sociology/) | Mid-sem (modules 1, 3 to 5) and end-sem (modules 6 to 9) notes, with flashcards and search |
 | Programming AI Accelerators | CS3.406 | [`paa/`](https://arihant25.github.io/study-guides/paa/) | GPUs and CUDA through matrix multiplication, roofline analysis, LLM inference and model compression, with interactive diagrams |
