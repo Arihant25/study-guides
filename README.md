@@ -26,6 +26,7 @@ Each guide explains every symbol where it first appears and works through the pa
 | Introduction to Sociology | HS2.201 | [`sociology/`](https://arihant25.github.io/study-guides/sociology/) | Mid-sem (modules 1, 3 to 5) and end-sem (modules 6 to 9) notes, with flashcards and search |
 | Programming AI Accelerators | CS3.406 | [`paa/`](https://arihant25.github.io/study-guides/paa/) | GPUs and CUDA through matrix multiplication, roofline analysis, LLM inference and model compression, with interactive diagrams |
 | Signal Detection and Estimation Theory | EC5.406 | [`sdet/`](https://arihant25.github.io/study-guides/sdet/) | The detection half (lectures 1 to 11), with tutorial and homework solutions, the solved Nov 2026 end-sem paper, flashcards and a formula sheet |
+| Signal Detection and Estimation Theory (Detection Theory) | EC5.406 | [`dt-study-guide/`](https://arihant25.github.io/study-guides/dt-study-guide/) | The detection half in lecture order, with every proof done in class, every homework and classwork problem, and Assignment 4 and the 2024 and 2025 detection questions solved |
 
 ## Repository layout
 
@@ -36,6 +37,7 @@ study-guides/
 ├── sitemap.xml
 ├── anlp/               one folder per course, served at /study-guides/<folder>/
 ├── dpcn/
+├── dt-study-guide/
 ├── paa/
 ├── sdet/
 ├── sociology/
