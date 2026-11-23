@@ -110,6 +110,7 @@ tr:last-child td{border-bottom:0}
 details{border:1px solid var(--border);border-radius:var(--radius);background:var(--card);margin:10px 0;overflow:hidden}
 details > summary{cursor:pointer;list-style:none;padding:11px 16px;font-weight:600;display:flex;gap:10px;align-items:baseline}
 details > summary::-webkit-details-marker{display:none}
+details > summary .st{flex:1;min-width:0}
 details > summary::before{content:"+";color:var(--brand);font-weight:800;width:12px;flex:none}
 details[open] > summary::before{content:"−"}
 details > summary .tag{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;color:var(--muted-fg);border:1px solid var(--border);border-radius:6px;padding:1px 7px;flex:none}
@@ -268,7 +269,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   </table></div>
   <p>You can't make both errors small for free. Always saying "yes" gives zero misses, but every noise blip becomes a false alarm. You have to pick a trade-off, and Bayes and Neyman–Pearson (the next sections) are two ways of picking it.</p>
   <p>Average error: \(P_e = P(H_0)P_{FA} + P(H_1)P_M\).</p>
-  <details class="deep"><summary>In depth: decision regions <span class="tag">more</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: decision regions</span> <span class="tag">more</span></summary><div class="body">
     <p>A decision rule splits the space of all possible data into two regions: \(R_1\) (say yes) and \(R_0\) (say no). Designing a detector means choosing \(R_1\).</p>
     \[P_{FA}=\int_{R_1}p(\mathbf x;H_0)\,d\mathbf x,\qquad P_D=\int_{R_1}p(\mathbf x;H_1)\,d\mathbf x.\]
     <p>Every problem has three ingredients: a data model (the PDF under each hypothesis), a criterion of optimality, and a performance analysis (\(P_{FA}\), \(P_D\), \(P_e\), ROC).</p>
@@ -293,7 +294,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>Dividing by something whose sign you don't know (like an unknown amplitude A) flips the inequality and breaks the test. That's why two-sided problems have no UMP test.</li></ul></div>
   <h3>Sufficient statistic</h3>
   <p>This is the one number \(T(\mathbf x)\) that holds all the useful information. For a DC level it's the average; for a change in power it's the sum of squares. Once you have it you can forget the raw data, and \(P_{FA}\), \(P_D\) come from the distribution of that single number.</p>
-  <details class="deep"><summary>In depth: Neyman–Fisher factorisation <span class="tag">theory</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: Neyman–Fisher factorisation</span> <span class="tag">theory</span></summary><div class="body">
     <p>\(T\) is sufficient for θ if the data is independent of θ once you know \(T\). The test for it:</p>
     \[p(\mathbf{x};\theta)=g\big(T(\mathbf{x}),\theta\big)\,h(\mathbf{x})\quad\Longleftrightarrow\quad T\text{ sufficient}.\]
     <p>In detection, if \(p(\mathbf{x};H_i)=g_i(T(\mathbf x))h(\mathbf x)\), then \(L=g_1(T)/g_0(T)\) depends on the data only through \(T\).</p>
@@ -318,7 +319,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   <div class="big">Priors and costs <b>only move the threshold</b>. The test statistic stays the same.</div>
   <div class="eg"><div class="lbl">Intuition</div>If the signal is usually there (P(H₁) = ¾), the threshold drops and you say "yes" more easily. You accept a few more false alarms to cut misses.</div>
 
-  <details class="deep"><summary>In depth: why minimising Bayes risk gives the LRT <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: why minimising Bayes risk gives the LRT</span> <span class="tag">derive</span></summary><div class="body">
     \[\mathcal{R}=\sum_{i=0}^{1}\sum_{j=0}^{1}C_{ij}\,P(H_j)\Pr\{\text{decide }H_i\mid H_j\}.\]
     <ol class="steps">
       <li>Write \(\Pr\{\text{decide }H_0\mid H_j\} = 1-\int_{R_1}p(\mathbf{x}|H_j)d\mathbf{x}\) and collect terms:
@@ -328,17 +329,17 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     </ol>
     <p><b>Posterior-cost form</b> (works for any number of hypotheses): decide the \(H_i\) with the smallest expected cost \(C_i(\mathbf x)=\sum_j C_{ij}P(H_j|\mathbf{x})\). With 0/1 costs, pick the largest \(p(\mathbf x|H_i)P(H_i)\) (M-ary MAP); with equal priors too, the largest \(p(\mathbf x|H_i)\) (M-ary ML). A worked 3-hypothesis example is in the <a href="#hw-3ary">homework section</a>.</p>
   </div></details>
-  <details class="deep"><summary>In depth: two Gaussians with the same covariance <span class="tag">example</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: two Gaussians with the same covariance</span> <span class="tag">example</span></summary><div class="body">
     <p>\(H_0:\mathbf{x}\sim\mathcal{N}(\boldsymbol\mu_0,C)\) vs \(H_1:\mathbf{x}\sim\mathcal{N}(\boldsymbol\mu_1,C)\). The quadratic terms cancel, leaving a linear detector:</p>
     \[T(\mathbf{x})=(\boldsymbol\mu_1-\boldsymbol\mu_0)^TC^{-1}\mathbf{x}\ \gtrless\ \ln\gamma+\tfrac12\big(\boldsymbol\mu_1^TC^{-1}\boldsymbol\mu_1-\boldsymbol\mu_0^TC^{-1}\boldsymbol\mu_0\big).\]
     <p>With \(\mathbf h = C^{-1}(\boldsymbol\mu_1-\boldsymbol\mu_0)\), \(T\mid H_i\sim\mathcal{N}(\mathbf h^T\boldsymbol\mu_i,\ \mathbf h^TC\mathbf h)\), and \(d^2=(\boldsymbol\mu_1-\boldsymbol\mu_0)^TC^{-1}(\boldsymbol\mu_1-\boldsymbol\mu_0)\) (the Mahalanobis distance).</p>
   </div></details>
-  <details class="deep"><summary>In depth: DC level in Laplacian noise (classwork) <span class="tag">example</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: DC level in Laplacian noise (classwork)</span> <span class="tag">example</span></summary><div class="body">
     <p>Noise \(f(w)=\frac{1}{2b}e^{-|w|/b}\). Then</p>
     \[\ln L(\mathbf{x})=\frac1b\sum_{n}\Big(|x[n]|-|x[n]-A|\Big)\ \gtrless\ \ln\gamma.\]
     <p>Each term \(g(x)=|x|-|x-A|\) is a limiter: \(-A\) for \(x\le 0\), \(2x-A\) in between, \(+A\) for \(x\ge A\). The detector clips each sample, then sums. The sample mean is <b>not</b> sufficient here, because heavy-tailed noise makes big samples untrustworthy. For large N, use the CLT on the sum to get performance.</p>
   </div></details>
-  <details class="deep"><summary>In depth: irrelevant data <span class="tag">theory</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: irrelevant data</span> <span class="tag">theory</span></summary><div class="body">
     <p>Adding extra data \(\mathbf x_2\) gives \(L(\mathbf x_1,\mathbf x_2)=\frac{p(\mathbf x_2|\mathbf x_1;H_1)}{p(\mathbf x_2|\mathbf x_1;H_0)}L(\mathbf x_1)\). So \(\mathbf x_2\) is irrelevant iff \(p(\mathbf x_2|\mathbf x_1;H_1)=p(\mathbf x_2|\mathbf x_1;H_0)\).</p>
     <p>It is <b>not</b> enough for \(\mathbf x_2\) on its own to be independent of the hypothesis. A noise-only reference channel whose noise is correlated with the signal channel lets you cancel noise, which helps detection.</p>
   </div></details>
@@ -354,7 +355,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>γ comes from the noise-only distribution \(p(T;H_0)\) alone.</p></div>
   <div class="big">Bayes and Neyman–Pearson give <b>the same test</b>. They pick the threshold differently.</div>
 
-  <details class="deep"><summary>In depth: proof sketch <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: proof sketch</span> <span class="tag">derive</span></summary><div class="body">
     <p><b>Lagrangian:</b> maximise \(F=P_D+\lambda(P_{FA}-\alpha)=\int_{R_1}\big[p(\mathbf x;H_1)+\lambda p(\mathbf x;H_0)\big]d\mathbf x-\lambda\alpha\). Include \(\mathbf x\) in \(R_1\) wherever the integrand is positive, i.e. \(p_1>-\lambda p_0\). Set \(\gamma=-\lambda>0\) and choose it to meet \(P_{FA}=\alpha\).</p>
     <p><b>Optimality against any competitor</b> \(\tilde\delta\) with \(P_{FA}(\tilde\delta)\le\alpha\): \(\int(\delta-\tilde\delta)(p_1-\gamma p_0)\,d\mathbf x\ge0\) pointwise, so \(P_D(\delta)-P_D(\tilde\delta)\ge\gamma\big(P_{FA}(\delta)-P_{FA}(\tilde\delta)\big)\ge0\).</p>
     <p>The full theorem has three parts: <b>optimality</b> (any size-α rule of LRT form beats every rule with \(P_{FA}\le\alpha\)), <b>existence</b> (for every α ∈ (0,1) there's one with a constant randomisation \(c_0\)), and <b>uniqueness</b> (every NP rule has this form except on a set of zero probability).</p>
@@ -388,7 +389,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>We want \(P_D = 0.99\) at \(P_{FA} = 10^{-6}\) with per-sample SNR \(A^2/\sigma^2 = 0.1\). How many samples?</p>
     <p>\(\sqrt{d^2} = Q^{-1}(10^{-6}) - Q^{-1}(0.99) = 4.75 + 2.33 = 7.08\), so \(d^2 \approx 50.1\) (17 dB). Then N = 50.1 / 0.1 ≈ <b>501 samples</b>.</p></div>
 
-  <details class="deep"><summary>In depth: deriving the detector, \(P_{FA}\), \(P_D\) and \(P_e\) <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: deriving the detector, \(P_{FA}\), \(P_D\) and \(P_e\)</span> <span class="tag">derive</span></summary><div class="body">
     \[\ln L(\mathbf{x}) = -\frac{1}{2\sigma^2}\sum_n\big[(x[n]-A)^2-x[n]^2\big]=\frac{A}{\sigma^2}\sum_n x[n]-\frac{NA^2}{2\sigma^2}\ \gtrless\ \ln\gamma\]
     \[\Rightarrow\quad T(\mathbf{x})=\bar{x}\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma'=\frac{\sigma^2}{NA}\ln\gamma+\frac{A}{2}.\]
     <p>\(\bar x\sim\mathcal{N}(0,\sigma^2/N)\) under \(H_0\) and \(\mathcal{N}(A,\sigma^2/N)\) under \(H_1\), so</p>
@@ -418,7 +419,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>To design with it, take \(P_{FA}\) from the spec and the \(P_D\) you need, then read off the d² that gets you there and convert it to an SNR.</li>
   </ul>
   <div class="trap"><div class="lbl">Trap</div>Only compare detectors at the <b>same</b> false-alarm rate, or compare whole curves. Area under the curve averages over operating points you may never use (in radar only \(P_{FA}\lesssim10^{-4}\) matters).</div>
-  <details class="deep"><summary>In depth: why the slope equals γ, and why the ROC is concave <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: why the slope equals γ, and why the ROC is concave</span> <span class="tag">derive</span></summary><div class="body">
     <p>With \(T=L\): \(\frac{dP_D}{dP_{FA}}=\frac{p_L(\gamma;H_1)}{p_L(\gamma;H_0)}=\gamma\), because \(p_L(l;H_1)=l\,p_L(l;H_0)\). As \(P_{FA}\) grows, γ shrinks, so the slope decreases and the curve is concave.</p>
     <p><b>Concavity another way (Kay 3.13):</b> flip a coin to choose between two detectors on the ROC. The mixed test lands on the chord between them. The NP detector at that \(P_{FA}\) does at least as well, so the ROC lies above every chord.</p>
   </div></details>
@@ -435,13 +436,13 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>For N = 2 there's an exact answer: \(P_D = P_{FA}^{\ \sigma_0^2/\sigma_1^2}\).</li>
     <li>For large N, χ² looks like a bell curve, so you can use Q.</li>
   </ul>
-  <details class="deep"><summary>In depth: variance change, exact performance <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: variance change, exact performance</span> <span class="tag">derive</span></summary><div class="body">
     \[\ln L=-\frac N2\ln\frac{\sigma_1^2}{\sigma_0^2}+\frac12\Big(\frac1{\sigma_0^2}-\frac1{\sigma_1^2}\Big)\sum x^2[n]\ \Rightarrow\ T(\mathbf x)=\sum_{n=0}^{N-1}x^2[n]\ \gtrless\ \gamma'.\]
     <p>\(\frac1{\sigma_0^2}-\frac1{\sigma_1^2}>0\), so the direction is preserved. Under \(H_i\), \(T/\sigma_i^2\sim\chi^2_N\):</p>
     \[P_{FA}=Q_{\chi^2_N}\!\left(\frac{\gamma'}{\sigma_0^2}\right),\qquad P_D=Q_{\chi^2_N}\!\left(\frac{\sigma_0^2}{\sigma_1^2}Q^{-1}_{\chi^2_N}(P_{FA})\right).\]
     <p>N = 2: \(Q_{\chi^2_2}(y)=e^{-y/2}\), so \(P_{FA}=e^{-\gamma'/2\sigma_0^2}\), \(P_D=e^{-\gamma'/2\sigma_1^2}\) and \(P_D=P_{FA}^{\sigma_0^2/\sigma_1^2}\) (this is Kay 3.9).</p>
   </div></details>
-  <details class="deep"><summary>In depth: exponential data, exact ROC (classwork) <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: exponential data, exact ROC (classwork)</span> <span class="tag">derive</span></summary><div class="body">
     <p>\(p(x;H_i)=\lambda_ie^{-\lambda_ix}\) with \(\lambda_1<\lambda_0\) (bigger mean under \(H_1\)).</p>
     \[\ln L=N\ln\frac{\lambda_1}{\lambda_0}+(\lambda_0-\lambda_1)\sum x[n]\ \Rightarrow\ T=\sum x[n]\gtrless\gamma'.\]
     <p>N = 1: \(P_{FA}=e^{-\lambda_0\gamma'}\), \(P_D=e^{-\lambda_1\gamma'}\), so \(P_D=P_{FA}^{\lambda_1/\lambda_0}\). General N: \(2\lambda_iT\sim\chi^2_{2N}\), so \(P_D=Q_{\chi^2_{2N}}\big(\tfrac{\lambda_1}{\lambda_0}Q^{-1}_{\chi^2_{2N}}(P_{FA})\big)\).</p>
@@ -463,7 +464,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   <p>Receiver noise is Gaussian (central limit theorem). Gaussians stay Gaussian under linear operations, so a linear detector's output is Gaussian and you can use Q. Log-likelihood ratios of Gaussians are quadratic, so χ² handles the rest.</p>
   <h3>Chi-squared</h3>
   <p>Sum of N squared standard Gaussians: \(\chi^2_N\), mean N, variance 2N. With nonzero means it's non-central, \(\chi'^2_N(\lambda)\), mean N + λ, variance 2N + 4λ, where λ is the sum of squared means.</p>
-  <details class="deep"><summary>In depth: Gaussian properties, Q bounds, χ² details <span class="tag">reference</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: Gaussian properties, Q bounds, χ² details</span> <span class="tag">reference</span></summary><div class="body">
     \[p(\mathbf x)=\frac{1}{(2\pi)^{N/2}\det^{1/2}(C)}\exp\!\Big[-\tfrac12(\mathbf x-\boldsymbol\mu)^TC^{-1}(\mathbf x-\boldsymbol\mu)\Big]\]
     <ol>
       <li>Fully specified by \((\boldsymbol\mu,C)\).</li>
@@ -491,7 +492,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>It gives the highest output SNR of any linear filter.</li>
     <li>In white noise only the signal's <b>energy</b> matters. A pulse, a chirp and a sine with equal energy are equally easy to detect.</li>
   </ul>
-  <details class="deep"><summary>In depth: performance, max-SNR proof, why sample at N−1 <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: performance, max-SNR proof, why sample at N−1</span> <span class="tag">derive</span></summary><div class="body">
     <p>This is the "two Gaussians" problem with \(\boldsymbol\mu_0=\mathbf 0\), \(\boldsymbol\mu_1=\mathbf s\), \(C=\sigma^2I\). \(T\sim\mathcal N(0,\sigma^2\mathcal E)\) under \(H_0\) and \(\mathcal N(\mathcal E,\sigma^2\mathcal E)\) under \(H_1\), so \(d^2=\mathcal E/\sigma^2\). Threshold: \(\sigma^2\ln\gamma+\mathcal E/2\) for Bayes.</p>
     <p><b>Max SNR:</b> output SNR \(=\frac{(\mathbf h^T\mathbf s)^2}{\sigma^2\mathbf h^T\mathbf h}\le\frac{\mathcal E}{\sigma^2}\) by Cauchy–Schwarz, with equality iff \(\mathbf h\propto\mathbf s\).</p>
     <p><b>Why N−1:</b> the signal part of the output is \(y_s[n]=r_{ss}[N-1-n]\), an autocorrelation, which peaks at lag 0, i.e. \(n=N-1\). This assumes the signal starts at n = 0.</p>
@@ -520,7 +521,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <tr><td>\(d^2\)</td><td>\(\mathcal E/\sigma^2\)</td><td>\(\mathbf s^TC^{-1}\mathbf s\)</td></tr>
     <tr><td>Signal shape</td><td>doesn't matter</td><td>matters</td></tr>
   </table></div>
-  <details class="deep"><summary>In depth: prewhitening <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: prewhitening</span> <span class="tag">derive</span></summary><div class="body">
     <p>Factor \(C^{-1}=D^TD\) (Cholesky, or \(D=\Lambda^{-1/2}V^T\) from \(C=V\Lambda V^T\)). Let \(\mathbf x'=D\mathbf x\), \(\mathbf s'=D\mathbf s\). Then the noise covariance becomes \(DCD^T=I\) (white), and \(T=\mathbf x^TD^TD\mathbf s=\mathbf x'^T\mathbf s'\).</p>
     <p>Signal design: maximise \(\mathbf s^TC^{-1}\mathbf s\) subject to \(\mathbf s^T\mathbf s=\mathcal E\). By the Rayleigh quotient the maximum is \(\mathcal E/\lambda_{\min}(C)\), at \(\mathbf s=\sqrt{\mathcal E}\,\mathbf v_{\min}\). Worked 2×2 and AR(1) cases are in the <a href="#hw-corr">homework section</a>.</p>
   </div></details>
@@ -545,7 +546,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   <p>Run M correlators, subtract half of each signal's energy, and pick the biggest: \(\hat k=\arg\max_i\big(\mathbf x^T\mathbf s_i-\mathcal E_i/2\big)\). Exact error rates are messy, so use the <b>union bound</b>. Errors are dominated by the closest pair:</p>
   \[P_e\le(M-1)\,Q\!\left(\frac{d_{\min}}{2\sigma}\right).\]
   <p>Good constellation design means maximising the smallest distance for a given average energy.</p>
-  <details class="deep"><summary>In depth: deriving the receiver and \(P_e\), unequal priors, coloured noise <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: deriving the receiver and \(P_e\), unequal priors, coloured noise</span> <span class="tag">derive</span></summary><div class="body">
     \[T(\mathbf x)=\mathbf x^T(\mathbf s_1-\mathbf s_0)\ \gtrless\ \sigma^2\ln\gamma+\frac{\mathcal E_1-\mathcal E_0}{2}.\]
     <p>With γ = 1 this is \(\|\mathbf x-\mathbf s_1\|^2\lessgtr\|\mathbf x-\mathbf s_0\|^2\). With equal energies the threshold is 0; \(T|H_i\) is Gaussian with means \(\pm\|\mathbf h\|^2/2\) (where \(\mathbf h=\mathbf s_1-\mathbf s_0\)) and standard deviation \(\sigma\|\mathbf h\|\), giving \(P_e=Q(\|\mathbf h\|/2\sigma)\).</p>
     <p><b>Unequal priors</b> \(\pi_0,\pi_1\), \(d=\|\mathbf s_1-\mathbf s_0\|/\sigma\):</p>
@@ -567,7 +568,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>If the signal is white (\(C_s=\sigma_s^2I\)), the best guess is a scaled copy of the data, and the test becomes the energy detector again.</li>
     <li>If it has structure, rotate to the signal's natural directions (eigenvectors) and weight each one by how much signal it carries: \(T=\sum_n\frac{\lambda_n}{\lambda_n+\sigma^2}y^2[n]\). Directions that are mostly noise get ignored.</li>
   </ul>
-  <details class="deep"><summary>In depth: derivation and canonical form <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: derivation and canonical form</span> <span class="tag">derive</span></summary><div class="body">
     \[\ln L=-\tfrac12\mathbf x^T\big[(C_s+\sigma^2I)^{-1}-\tfrac1{\sigma^2}I\big]\mathbf x+\text{const}.\]
     <p>The matrix inversion lemma gives \(\tfrac1{\sigma^2}I-(C_s+\sigma^2I)^{-1}=\tfrac1{\sigma^2}C_s(C_s+\sigma^2I)^{-1}\), so \(T=\mathbf x^T\hat{\mathbf s}\). Here \(\hat{\mathbf s}=E[\mathbf s|\mathbf x]\) is the MMSE estimate from the estimation half of the course.</p>
     <p><b>Canonical form:</b> with \(C_s=V\Lambda_sV^T\) and \(\mathbf y=V^T\mathbf x\), \(T=\sum_n\frac{\lambda_n}{\lambda_n+\sigma^2}y^2[n]\). Under \(H_0\), \(y[n]\sim\mathcal N(0,\sigma^2)\); under \(H_1\), \(\mathcal N(0,\lambda_n+\sigma^2)\), independent. T is a weighted sum of χ²₁ variables, which has no closed-form CDF (compute numerically).</p>
@@ -599,16 +600,16 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
       <li>If σ² is unknown too, divide by the estimated noise power: \(T=\bar x^2/\hat\sigma^2\). The false-alarm rate then no longer depends on σ² (CFAR).</li>
     </ul></div>
   <p>Unknown variance, one-sided (\(\sigma^2>\sigma_0^2\)): the energy detector is UMP. Two-sided: no UMP.</p>
-  <details class="deep"><summary>In depth: Bayesian with \(A\sim\mathcal N(0,\sigma_A^2)\) gives \(T=\bar x^2\) <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: Bayesian with \(A\sim\mathcal N(0,\sigma_A^2)\) gives \(T=\bar x^2\)</span> <span class="tag">derive</span></summary><div class="body">
     <p>\(p(\mathbf x|H_1)=\int p(\mathbf x|A)p(A)dA\). Complete the square in A with \(\frac1{v^2}=\frac N{\sigma^2}+\frac1{\sigma_A^2}\); the Gaussian integral leaves</p>
     \[L_B(\mathbf x)=\frac{v}{\sigma_A}\exp\!\Big(\frac{N^2v^2}{2\sigma^4}\bar x^2\Big)\ \Rightarrow\ T=\bar x^2\gtrless\gamma'.\]
     <p>The prior is symmetric in A, so the detector ignores the sign of \(\bar x\).</p>
   </div></details>
-  <details class="deep"><summary>In depth: GLRT, σ² known, gives \(T=\bar x^2\) <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: GLRT, σ² known, gives \(T=\bar x^2\)</span> <span class="tag">derive</span></summary><div class="body">
     \[L_G(\mathbf x)=\frac{p(\mathbf x;\hat A,H_1)}{p(\mathbf x;H_0)},\quad\hat A=\bar x\ \Rightarrow\ \ln L_G=\frac{N\bar x^2}{2\sigma^2}.\]
     <p>Performance: \(P_{FA}=2Q\big(\sqrt{\gamma'}/\sqrt{\sigma^2/N}\big)\), \(P_D=Q\big(\frac{\sqrt{\gamma'}-A}{\sqrt{\sigma^2/N}}\big)+Q\big(\frac{\sqrt{\gamma'}+A}{\sqrt{\sigma^2/N}}\big)\). It matches the Bayesian detector because of the A → −A symmetry.</p>
   </div></details>
-  <details class="deep"><summary>In depth: GLRT, A and σ² both unknown, gives \(T=\bar x^2/\hat\sigma_1^2\) <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: GLRT, A and σ² both unknown, gives \(T=\bar x^2/\hat\sigma_1^2\)</span> <span class="tag">derive</span></summary><div class="body">
     <p>MLEs: under \(H_1\), \(\hat A=\bar x\) and \(\hat\sigma_1^2=\frac1N\sum(x[n]-\bar x)^2\); under \(H_0\), \(\hat\sigma_0^2=\frac1N\sum x^2[n]\). Plugging in:</p>
     \[L_G=\left(\frac{\hat\sigma_0^2}{\hat\sigma_1^2}\right)^{N/2}=\Big(1+\frac{\bar x^2}{\hat\sigma_1^2}\Big)^{N/2}\ \Rightarrow\ T=\frac{\bar x^2}{\hat\sigma_1^2}.\]
     <p>This is essentially a two-sided t-test, and it's CFAR.</p>
@@ -646,13 +647,13 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>\(D(p\|q)=\int p\ln\frac pq\) is the KL divergence (not symmetric). For two Gaussians with the same σ, \(D=\frac{(\mu_1-\mu_0)^2}{2\sigma^2}\).</p></div>
   <div class="eg"><div class="lbl">Example: \(\mathcal N(0,1)\) vs \(\mathcal N(1,1)\), α = β = 0.05</div>
     <p>D = 0.5, top line = ln 19 = 2.94. \(E_1\{N\}\approx\frac{0.95(2.94)-0.05(2.94)}{0.5}\approx5.3\) samples. A fixed-N NP test with the same errors needs \(\sqrt N\ge2\times1.645\), so N = 11.</p></div>
-  <details class="deep"><summary>In depth: notation, termination, random walk <span class="tag">theory</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: notation, termination, random walk</span> <span class="tag">theory</span></summary><div class="body">
     <p>Notation changes: data \(x_i\), densities \(p_0,p_1\); α = Pr₀{accept H₁}, β = Pr₁{accept H₀}. A test of strength (α, β) has four performance numbers: α, β, E₀{N}, E₁{N}.</p>
     <p>Product form: \(\Lambda_n=\prod_{i\le n}\frac{p_1(x_i)}{p_0(x_i)}\), thresholds \(0<B<1<A\); log form uses \(a=\ln A\), \(b=\ln B\). \(N=\min\{n:S_n\ge a\text{ or }S_n\le b\}\).</p>
     <p>\(S_n\) is a random walk with iid steps \(z_i\); N is its first-passage time. Drift: \(E_1\{z\}=D(p_1\|p_0)>0\), \(E_0\{z\}=-D(p_0\|p_1)<0\).</p>
     <p><b>Termination:</b> split time into blocks of length k. Each block has some fixed probability δ &gt; 0 of a jump bigger than a − b, which exits the interval. So \(\Pr\{N>mk\}\le(1-\delta)^m\to0\).</p>
   </div></details>
-  <details class="deep"><summary>In depth: Wald's inequalities and the error bound <span class="tag">derive</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: Wald's inequalities and the error bound</span> <span class="tag">derive</span></summary><div class="body">
     <p>On every path that accepts \(H_1\), \(p_{1n}\ge A\,p_{0n}\). Summing over those paths: \(1-\beta\ge A\alpha\), so \(A\le\frac{1-\beta}{\alpha}\). Similarly on paths that accept \(H_0\), \(\beta\le B(1-\alpha)\), so \(B\ge\frac{\beta}{1-\alpha}\). Equality would need no overshoot, which gives Wald's approximations.</p>
     <p><b>Bound:</b> designing with those thresholds and getting real errors (α′, β′), the inequalities give \(\alpha'(1-\beta)\le\alpha(1-\beta')\) and \(\beta'(1-\alpha)\le\beta(1-\alpha')\). Adding them: \(\alpha'+\beta'\le\alpha+\beta\). Individually \(\alpha'\le\frac{\alpha}{1-\beta}\), \(\beta'\le\frac{\beta}{1-\alpha}\).</p>
     <p>The slides' simulation got real errors of about 0.029 and 0.030 for nominal 0.05/0.05, paid for with extra samples. The SPRT is optimal (Wald–Wolfowitz): among tests with errors ≤ (α, β), it minimises both E₀{N} and E₁{N}.</p>
@@ -671,14 +672,14 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <li>In non-Gaussian noise, pass each sample through a nonlinearity and then use a matched filter. With spiky noise (Laplacian, Cauchy) the nonlinearity clips or ignores huge samples, because a big spike is probably noise.</li>
     <li>On a fading channel the error rate falls only like 1/SNR, compared with exponentially without fading.</li>
   </ul>
-  <details class="deep"><summary>In depth: the linear model (Ch 4.6, 7.7) <span class="tag">kay</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: the linear model (Ch 4.6, 7.7)</span> <span class="tag">kay</span></summary><div class="body">
     <p>\(\mathbf x=H\boldsymbol\theta+\mathbf w\), H a known N×p matrix. Covers DC levels, sinusoids with known frequency, polynomials, multipath taps.</p>
     <p><b>θ known:</b> it's a known signal \(\mathbf s=H\boldsymbol\theta_1\), so \(T=\mathbf x^TC^{-1}H\boldsymbol\theta_1\) and \(d^2=\boldsymbol\theta_1^TH^TC^{-1}H\boldsymbol\theta_1\).</p>
     <p><b>θ unknown, WGN (GLRT, Theorem 7.1):</b></p>
     \[T=\frac{\hat{\boldsymbol\theta}_1^TH^TH\hat{\boldsymbol\theta}_1}{\sigma^2},\quad\hat{\boldsymbol\theta}_1=(H^TH)^{-1}H^T\mathbf x,\quad T\sim\chi^2_p\ (H_0),\ \chi'^2_p(\lambda)\ (H_1),\ \lambda=\frac{\boldsymbol\theta_1^TH^TH\boldsymbol\theta_1}{\sigma^2}.\]
     <p>This is exact, not asymptotic. The DC level is H = 1, p = 1, which gives \(N\bar x^2/\sigma^2\sim\chi^2_1\).</p>
   </div></details>
-  <details class="deep"><summary>In depth: unknown signal parameters, with performance (Ch 7) <span class="tag">kay</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: unknown signal parameters, with performance (Ch 7)</span> <span class="tag">kay</span></summary><div class="body">
     <div class="tbl"><table>
       <tr><th>Unknown</th><th>GLRT detector</th><th>Performance</th></tr>
       <tr><td>nothing</td><td>\(\mathbf x^T\mathbf s\)</td><td>\(Q(Q^{-1}(P_{FA})-\sqrt{\mathcal E/\sigma^2})\)</td></tr>
@@ -690,14 +691,14 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     </table></div>
     <p><b>Why unknown phase gives the periodogram:</b> write the sinusoid as \(\alpha_1\cos+\alpha_2\sin\), a linear model with p = 2. For \(f_0\) away from 0 and ½, \(H^TH\approx\frac N2I\), and the GLRT becomes \(2I(f_0)/\sigma^2\sim\chi^2_2\).</p>
   </div></details>
-  <details class="deep"><summary>In depth: random-signal extras (Ch 5) <span class="tag">kay</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: random-signal extras (Ch 5)</span> <span class="tag">kay</span></summary><div class="body">
     <ul>
       <li><b>Rayleigh-fading sinusoid</b> (both quadrature amplitudes \(\sim\mathcal N(0,\sigma_s^2)\)): the detector is the periodogram, and \(P_D=P_{FA}^{1/(1+\bar\eta/2)}\) with average ENR \(\bar\eta=N\sigma_s^2/\sigma^2\).</li>
       <li><b>Incoherent FSK over Rayleigh fading:</b> \(P_e=\frac{1}{2+\bar\eta}\).</li>
       <li><b>Large-N estimator-correlator</b> for a WSS signal with PSD \(P_{ss}(f)\): \(T\approx N\int\frac{P_{ss}(f)}{P_{ss}(f)+\sigma^2}I(f)\,df\), a Wiener-weighted periodogram.</li>
     </ul>
   </div></details>
-  <details class="deep"><summary>In depth: GLRT asymptotics, Wald and Rao tests, LMP (Ch 6) <span class="tag">kay</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: GLRT asymptotics, Wald and Rao tests, LMP (Ch 6)</span> <span class="tag">kay</span></summary><div class="body">
     <p><b>GLRT asymptotics</b> for \(H_0:\boldsymbol\theta=\boldsymbol\theta_0\) vs \(H_1:\boldsymbol\theta\ne\boldsymbol\theta_0\), θ of dimension r:</p>
     \[2\ln L_G\ \stackrel{a}{\sim}\ \chi^2_r\ (H_0),\quad\chi'^2_r(\lambda)\ (H_1),\quad\lambda=(\boldsymbol\theta_1-\boldsymbol\theta_0)^T\mathbf I(\boldsymbol\theta_0)(\boldsymbol\theta_1-\boldsymbol\theta_0),\]
     <p>where \(\mathbf I\) is the Fisher information. DC check: \(I(A)=N/\sigma^2\), so \(2\ln L_G=N\bar x^2/\sigma^2\sim\chi^2_1\).</p>
@@ -707,7 +708,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>DC level: \(T_{LMP}=\sqrt N\bar x/\sigma\), the UMP test again.</p>
     <p><b>Model order selection:</b> pick the hypothesis that maximises \(\ln p(\mathbf x;\hat{\boldsymbol\theta}_i)\) minus a penalty; MDL uses \(\tfrac{n_i}{2}\ln N\) for \(n_i\) parameters.</p>
   </div></details>
-  <details class="deep"><summary>In depth: non-Gaussian noise (Ch 10) <span class="tag">kay</span></summary><div class="body">
+  <details class="deep"><summary><span class="st">In depth: non-Gaussian noise (Ch 10)</span> <span class="tag">kay</span></summary><div class="body">
     <p>Known signal in iid noise with PDF \(p_w\): \(T=\sum_n\ln\frac{p_w(x[n]-s[n])}{p_w(x[n])}\). For weak signals, \(T\approx\sum_n g(x[n])s[n]\) with \(g(x)=-p_w'(x)/p_w(x)\).</p>
     <ul><li>Gaussian: g is linear (the plain matched filter).</li><li>Laplacian: \(g=\mathrm{sgn}(x)\), a hard limiter.</li><li>Cauchy: \(g=\frac{2x}{1+x^2}\), which goes to zero for huge samples.</li></ul>
     <p>This ties together the Laplacian classwork and Tutorial Q5.</p>
@@ -718,14 +719,14 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
 <section id="tut">
   <h2><span class="n">17</span>Tutorial 1</h2>
   <p class="q">Kay problems 3.1, 3.10, 3.16, 3.8 and 10.4. Try each one first. <span class="src">15 Oct</span></p>
-  <details><summary>Q1 (Kay 3.1): One sample, mean 0 vs mean 1, variance 1. NP test, \(P_{FA}\), \(P_M\), plot \(P_M\) vs \(P_{FA}\).</summary><div class="body">
+  <details><summary><span class="st">Q1 (Kay 3.1): One sample, mean 0 vs mean 1, variance 1. NP test, \(P_{FA}\), \(P_M\), plot \(P_M\) vs \(P_{FA}\).</span></summary><div class="body">
     <p><b>Short answer:</b> say yes if x &gt; t. \(P_{FA}=Q(t)\), \(P_M=1-Q(t-1)\).</p>
     <p>\(\ln L=-\tfrac12[(x-1)^2-x^2]=x-\tfrac12\), so the test is \(x>t\). \(P_D=Q(t-1)\). Eliminating t: \(P_M=1-Q\big(Q^{-1}(P_{FA})-1\big)\). The plot is a convex decreasing curve from (0,1) to (1,0), below the line \(P_M=1-P_{FA}\) (an upside-down ROC with d² = 1). Example: \(P_{FA}=0.1\) gives t = 1.28 and \(P_M=1-Q(0.28)\approx0.61\).</p></div></details>
-  <details id="tut-q2"><summary>Q2 (Kay 3.10): Show the sample mean is sufficient for A.</summary><div class="body">
+  <details id="tut-q2"><summary><span class="st">Q2 (Kay 3.10): Show the sample mean is sufficient for A.</span></summary><div class="body">
     <p><b>Short answer:</b> the A-part of the PDF depends on the data only through \(\bar x\).</p>
     \[p(\mathbf x;A)=\underbrace{\exp\!\Big[-\frac{1}{2\sigma^2}\big(NA^2-2AN\bar x\big)\Big]}_{g(\bar x,\,A)}\cdot\underbrace{\frac{1}{(2\pi\sigma^2)^{N/2}}\exp\!\Big[-\frac1{2\sigma^2}\sum x^2[n]\Big]}_{h(\mathbf x)}\]
     <p>h doesn't involve A, so by Neyman–Fisher \(\bar x\) is sufficient.</p></div></details>
-  <details><summary>Q3 (Kay 3.16): N = 1, A = 1, σ² = 1. Bayes detector for priors ½/½ and ¼/¾.</summary><div class="body">
+  <details><summary><span class="st">Q3 (Kay 3.16): N = 1, A = 1, σ² = 1. Bayes detector for priors ½/½ and ¼/¾.</span></summary><div class="body">
     <p><b>Short answer:</b> say yes if x &gt; ½ + ln(P(H₀)/P(H₁)).</p>
     <div class="tbl"><table>
       <tr><th>Priors</th><th>Threshold</th><th>\(P_e\)</th></tr>
@@ -733,12 +734,12 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
       <tr><td>P(H₀) = ¼, P(H₁) = ¾</td><td>x &gt; ½ − ln 3 = −0.599</td><td>¼Q(−0.599) + ¾Q(1.599) = 0.223</td></tr>
     </table></div>
     <p>When the signal is more likely, the threshold drops and you say yes more often. Knowing the prior lowers the error.</p></div></details>
-  <details><summary>Q4 (Kay 3.8): One sample, Laplacian \(\tfrac12e^{-|x|}\) (H₀) vs \(\mathcal N(0,1)\) (H₁). Decision regions?</summary><div class="body">
+  <details><summary><span class="st">Q4 (Kay 3.8): One sample, Laplacian \(\tfrac12e^{-|x|}\) (H₀) vs \(\mathcal N(0,1)\) (H₁). Decision regions?</span></summary><div class="body">
     <p><b>Short answer:</b> say yes when |x| is close to 1: two bands around ±1.</p>
     \[L(x)=\sqrt{\tfrac{2}{\pi}}\,e^{-x^2/2+|x|}>\gamma\iff(|x|-1)^2<c^2\iff 1-c<|x|<1+c.\]
     <p>If c ≥ 1 the bands merge into |x| &lt; 1 + c. The Laplacian has more weight near 0 and in the far tails, so medium values point to the Gaussian.</p>
     <p>Size, using \(\Pr_0\{|x|>t\}=e^{-t}\): \(P_{FA}=e^{-(1-c)}-e^{-(1+c)}\) for c &lt; 1, and \(1-e^{-(1+c)}\) for c ≥ 1. Then \(P_D=2[Q(1-c)-Q(1+c)]\) for c &lt; 1.</p></div></details>
-  <details><summary>Q5 (Kay 10.4): Constant A in Cauchy noise. NP statistic and g(x) for A = 1.</summary><div class="body">
+  <details><summary><span class="st">Q5 (Kay 10.4): Constant A in Cauchy noise. NP statistic and g(x) for A = 1.</span></summary><div class="body">
     <p><b>Short answer:</b> add up g(x) over the samples; g ignores huge samples.</p>
     \[T=\sum_{n}g(x[n]),\qquad g(x)=\ln\frac{1+x^2}{1+(x-1)^2}.\]
     <p>g is 0 at x = ½, positive above, negative below. It peaks at x = (1+√5)/2 ≈ 1.62 (value ≈ 0.96) and goes back to 0 as |x| → ∞. Cauchy noise has wild spikes, so a huge sample says nothing about A. Compare Gaussian (g linear) and Laplacian (g a hard clipper).</p></div></details>
@@ -749,36 +750,36 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   <h2><span class="n">18</span>Homework and Kay problems</h2>
   <p class="q">Every homework/classwork item from the slides not already solved above, then the Kay problems closest to the lectures. These solutions are my own working: if one disagrees with your class notes, trust the notes.</p>
   <h3>From the slides</h3>
-  <details><summary>DC level: effect of unequal priors and costs (Lec 2)</summary><div class="body">
+  <details><summary><span class="st">DC level: effect of unequal priors and costs (Lec 2)</span></summary><div class="body">
     <p>The statistic stays \(\bar x\); only \(\gamma'=\frac{\sigma^2}{NA}\ln\gamma+\frac A2\) moves. A bigger P(H₀) or false-alarm cost moves it right (fewer false alarms, more misses). As N grows, \(\sigma^2/(NA)\to0\) and the threshold approaches A/2: with lots of data, the prior matters less.</p></div></details>
-  <details id="hw-3ary"><summary>Three hypotheses −A, 0, +A in WGN, equal priors (Lec 6)</summary><div class="body">
+  <details id="hw-3ary"><summary><span class="st">Three hypotheses −A, 0, +A in WGN, equal priors (Lec 6)</span></summary><div class="body">
     <p>\(\bar x\) is sufficient. Pick the nearest mean: \(\bar x<-A/2\) → H₀, \(|\bar x|\le A/2\) → H₁, \(\bar x>A/2\) → H₂. With \(q=Q\big(\sqrt{NA^2/4\sigma^2}\big)\), the outer hypotheses err with probability q and the middle one with 2q:</p>
     \[P_e=\tfrac13(q+2q+q)=\tfrac43\,Q\!\left(\sqrt{\frac{NA^2}{4\sigma^2}}\right).\]</div></details>
-  <details id="hw-corr"><summary>Signal design in correlated noise \(C=\begin{bmatrix}1&\rho\\\rho&1\end{bmatrix}\) (Lec 7)</summary><div class="body">
+  <details id="hw-corr"><summary><span class="st">Signal design in correlated noise \(C=\begin{bmatrix}1&\rho\\\rho&1\end{bmatrix}\) (Lec 7)</span></summary><div class="body">
     <p>Eigenvalues 1 + ρ with \([1,1]/\sqrt2\) and 1 − ρ with \([1,-1]/\sqrt2\). For ρ &gt; 0 use \(\mathbf s=\sqrt{\mathcal E/2}[1,-1]^T\): \(d^2=\frac{\mathcal E}{1-\rho}\). As ρ → 1, d² → ∞: \(x[0]-x[1]\) cancels the noise completely and keeps the signal.</p>
     <p>Detector: \(T=\mathbf x^TC^{-1}\mathbf s\) with \(C^{-1}=\frac{1}{1-\rho^2}\begin{bmatrix}1&-\rho\\-\rho&1\end{bmatrix}\).</p></div></details>
-  <details><summary>AR(1) noise: whitening filter, and a → 1 (Lec 7)</summary><div class="body">
+  <details><summary><span class="st">AR(1) noise: whitening filter, and a → 1 (Lec 7)</span></summary><div class="body">
     <p>\(w[n]=a\,w[n-1]+u[n]\), so \(u[n]=w[n]-a\,w[n-1]\) is white. The whitener is \(y[n]=x[n]-a\,x[n-1]\) (scaled by 1/σᵤ); then correlate with \(s'[n]=s[n]-a\,s[n-1]\). This matches the tridiagonal \(C^{-1}\) on the slide.</p>
     <p>As a → 1 the noise becomes a slow random walk concentrated at low frequencies, and the whitener becomes a differencer. Put signal energy at high frequency; a DC signal becomes almost undetectable.</p></div></details>
-  <details><summary>Random signal with \(C_s=\sigma_s^2\begin{bmatrix}1&\rho\\\rho&1\end{bmatrix}\) (Lec 9)</summary><div class="body">
+  <details><summary><span class="st">Random signal with \(C_s=\sigma_s^2\begin{bmatrix}1&\rho\\\rho&1\end{bmatrix}\) (Lec 9)</span></summary><div class="body">
     <p>Eigenvalues \(\sigma_s^2(1\pm\rho)\), with \(y[0]=\frac{x[0]+x[1]}{\sqrt2}\), \(y[1]=\frac{x[0]-x[1]}{\sqrt2}\):</p>
     \[T=\frac{\sigma_s^2(1+\rho)}{\sigma_s^2(1+\rho)+\sigma^2}y^2[0]+\frac{\sigma_s^2(1-\rho)}{\sigma_s^2(1-\rho)+\sigma^2}y^2[1].\]
     <p>ρ = 0 gives the energy detector. As ρ → 1 the second weight vanishes and \(T\propto(x[0]+x[1])^2\).</p></div></details>
-  <details><summary>Bayesian detectors for binomial and exponential data (Lec 5)</summary><div class="body">
+  <details><summary><span class="st">Bayesian detectors for binomial and exponential data (Lec 5)</span></summary><div class="body">
     <p><b>Binomial</b> (n = 10, 0.5 vs 0.8, equal priors): threshold \(\frac{10\ln2.5}{\ln4}=6.61\), so say yes for x ≥ 7. \(P_e=\tfrac12(0.172+0.121)\approx0.146\).</p>
     <p><b>Exponential</b> (N = 1): \(x\gtrless\gamma'=\frac{\ln\gamma+\ln(\lambda_0/\lambda_1)}{\lambda_0-\lambda_1}\), with \(P_e=P(H_0)e^{-\lambda_0\gamma'}+P(H_1)(1-e^{-\lambda_1\gamma'})\).</p></div></details>
   <h3>From Kay</h3>
-  <details><summary>Kay 3.4: \(P_{FA}=10^{-4}\), \(P_D=0.99\), SNR −30 dB. How many samples?</summary><div class="body">
+  <details><summary><span class="st">Kay 3.4: \(P_{FA}=10^{-4}\), \(P_D=0.99\), SNR −30 dB. How many samples?</span></summary><div class="body">
     <p>\(\sqrt{d^2}=3.719+2.326=6.045\), so d² = 36.5 and N = 36.5 / 10⁻³ ≈ 36,550. Weak signals need huge N because d² grows only linearly in N.</p></div></details>
-  <details><summary>Kay 3.6: DC level with A &lt; 0</summary><div class="body">
+  <details><summary><span class="st">Kay 3.6: DC level with A &lt; 0</span></summary><div class="body">
     <p>The test flips to \(\bar x<\gamma'\) with \(\gamma'=-\frac{\sigma}{\sqrt N}Q^{-1}(P_{FA})\), and \(P_D=Q\big(Q^{-1}(P_{FA})-\sqrt{NA^2/\sigma^2}\big)\), the same as for A &gt; 0. The performance is the same but the test is different, which is why there's no UMP test for A ≠ 0.</p></div></details>
-  <details><summary>Kay 3.7: Rayleigh samples, \(\sigma_0^2\) vs \(\sigma_1^2>\sigma_0^2\)</summary><div class="body">
+  <details><summary><span class="st">Kay 3.7: Rayleigh samples, \(\sigma_0^2\) vs \(\sigma_1^2>\sigma_0^2\)</span></summary><div class="body">
     <p>\(T=\sum x^2[n]\). Each \(x^2\) is exponential with mean 2σ², so \(T/\sigma^2\sim\chi^2_{2N}\) and \(P_D=Q_{\chi^2_{2N}}\big(\frac{\sigma_0^2}{\sigma_1^2}Q^{-1}_{\chi^2_{2N}}(P_{FA})\big)\).</p></div></details>
-  <details><summary>Kay 3.12: perfect detector, \(U[-c,c]\) vs \(U[1-c,1+c]\)</summary><div class="body">
+  <details><summary><span class="st">Kay 3.12: perfect detector, \(U[-c,c]\) vs \(U[1-c,1+c]\)</span></summary><div class="body">
     <p>The supports don't overlap when c ≤ ½. Say yes if x &gt; ½: \(P_{FA}=0\), \(P_D=1\).</p></div></details>
-  <details><summary>Kay 3.17: equal priors, \(\mathcal N(\mathbf 0,\sigma^2I)\) vs \(\mathcal N(\boldsymbol\mu,\sigma^2I)\) in 2-D</summary><div class="body">
+  <details><summary><span class="st">Kay 3.17: equal priors, \(\mathcal N(\mathbf 0,\sigma^2I)\) vs \(\mathcal N(\boldsymbol\mu,\sigma^2I)\) in 2-D</span></summary><div class="body">
     <p>Say yes if \(\boldsymbol\mu^T\mathbf x>\|\boldsymbol\mu\|^2/2\): the boundary is the perpendicular bisector of 0 and μ. \(P_e=Q(\|\boldsymbol\mu\|/2\sigma)\).</p></div></details>
-  <details><summary>Kay 3.18: MAP for \(\mathcal N(0,1)\) vs \(\mathcal N(0,2)\)</summary><div class="body">
+  <details><summary><span class="st">Kay 3.18: MAP for \(\mathcal N(0,1)\) vs \(\mathcal N(0,2)\)</span></summary><div class="body">
     <p>Say yes if \(x^2>4\ln\frac{P(H_0)}{P(H_1)}+2\ln2\). Equal priors: |x| &gt; 1.18. P(H₀) = ¾: |x| &gt; 2.40. Large |x| points to the wider PDF, and a bigger prior on H₀ pushes the tails out.</p></div></details>
 </section>
 
@@ -787,20 +788,20 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
   <h2><span class="n">19</span>End-sem paper</h2>
   <p class="q">The full end-sem paper (50 marks, no calculators, answers may be left in Q). Each question is copied as set, then worked. Every question maps to a section of this guide. <span class="src">23 Nov 2026</span></p>
   <h3>Q1: short answers (8 marks)</h3>
-  <details id="paper-1i"><summary>1(i) 1 mark: \(\mathbf x\sim\mathcal N(\mathbf m,C)\), \(\mathbf w\ne\mathbf 0\). Distribution of \(\mathbf w^T\mathbf x\)?</summary><div class="body">
+  <details id="paper-1i"><summary><span class="st">1(i) 1 mark: \(\mathbf x\sim\mathcal N(\mathbf m,C)\), \(\mathbf w\ne\mathbf 0\). Distribution of \(\mathbf w^T\mathbf x\)?</span></summary><div class="body">
     <p>\(\mathbf w^T\mathbf x\sim\mathcal N(\mathbf w^T\mathbf m,\ \mathbf w^TC\mathbf w)\), a scalar Gaussian. A linear map of a Gaussian vector is Gaussian, with mean \(E[\mathbf w^T\mathbf x]=\mathbf w^T\mathbf m\) and variance \(E[\mathbf w^T(\mathbf x-\mathbf m)(\mathbf x-\mathbf m)^T\mathbf w]=\mathbf w^TC\mathbf w\).</p></div></details>
-  <details id="paper-1ii"><summary>1(ii) 1 mark: Two known signals \(\mathbf s_0,\mathbf s_1\), equal priors, equal energies, iid WGN. Optimal detector?</summary><div class="body">
+  <details id="paper-1ii"><summary><span class="st">1(ii) 1 mark: Two known signals \(\mathbf s_0,\mathbf s_1\), equal priors, equal energies, iid WGN. Optimal detector?</span></summary><div class="body">
     <p>The minimum-distance receiver, which here is the same as picking the bigger correlation: decide \(H_1\) if \(\mathbf x^T\mathbf s_1>\mathbf x^T\mathbf s_0\), i.e. \(T=\mathbf x^T(\mathbf s_1-\mathbf s_0)\gtrless0\). The general threshold \(\sigma^2\ln\gamma+(\mathcal E_1-\mathcal E_0)/2\) is 0 because γ = 1 and the energies are equal. \(P_e=Q\big(\|\mathbf s_1-\mathbf s_0\|/2\sigma\big)\).</p></div></details>
-  <details id="paper-1iii"><summary>1(iii) 1 mark: When is part of the data irrelevant?</summary><div class="body">
+  <details id="paper-1iii"><summary><span class="st">1(iii) 1 mark: When is part of the data irrelevant?</span></summary><div class="body">
     <p>Split the data as \((\mathbf x_1,\mathbf x_2)\). \(\mathbf x_2\) is irrelevant if \(p(\mathbf x_2|\mathbf x_1;H_1)=p(\mathbf x_2|\mathbf x_1;H_0)\). Then \(L(\mathbf x_1,\mathbf x_2)=L(\mathbf x_1)\), so the LRT is the same with or without \(\mathbf x_2\). It's the conditional PDF given \(\mathbf x_1\) that has to match. \(\mathbf x_2\) having the same marginal under both hypotheses isn't enough (a correlated noise reference helps even though it has no signal in it).</p></div></details>
-  <details id="paper-1iv"><summary>1(iv) 1 mark: Statement of the Neyman–Fisher factorisation theorem.</summary><div class="body">
+  <details id="paper-1iv"><summary><span class="st">1(iv) 1 mark: Statement of the Neyman–Fisher factorisation theorem.</span></summary><div class="body">
     <p>If the PDF \(p(\mathbf x;\theta)\) can be factored as</p>
     \[p(\mathbf x;\theta)=g\big(T(\mathbf x),\theta\big)\,h(\mathbf x),\]
     <p>where g depends on the data only through \(T(\mathbf x)\) and h doesn't depend on θ, then \(T(\mathbf x)\) is a sufficient statistic for θ. Conversely, if T is sufficient then such a factorisation exists.</p></div></details>
-  <details id="paper-1v"><summary>1(v) 1.5 marks: What is ROC? Full form and definition. Slope of the ROC?</summary><div class="body">
+  <details id="paper-1v"><summary><span class="st">1(v) 1.5 marks: What is ROC? Full form and definition. Slope of the ROC?</span></summary><div class="body">
     <p>Receiver Operating Characteristic. It's the curve of \(P_D\) against \(P_{FA}\) that you trace out by sweeping the threshold γ of the LRT (NP detector) from ∞ down to 0. It goes from (0, 0) to (1, 1), sits above the diagonal and is concave.</p>
     <p>Slope: \(\dfrac{dP_D}{dP_{FA}}=\gamma\), the LRT threshold that gives that point.</p></div></details>
-  <details id="paper-1vi"><summary>1(vi) 2.5 marks: Precise statement of the Neyman–Pearson lemma for two simple hypotheses.</summary><div class="body">
+  <details id="paper-1vi"><summary><span class="st">1(vi) 2.5 marks: Precise statement of the Neyman–Pearson lemma for two simple hypotheses.</span></summary><div class="body">
     <p>Test \(H_0:\mathbf x\sim p_0\) against \(H_1:\mathbf x\sim p_1\) with a (possibly randomised) rule δ(x) = probability of deciding H₁, and let \(L(\mathbf x)=p_1(\mathbf x)/p_0(\mathbf x)\).</p>
     <ol>
       <li><b>Optimality.</b> Any rule of the form
@@ -812,7 +813,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p>In words: to maximise \(P_D\) subject to \(P_{FA}=\alpha\), say H₁ when \(L(\mathbf x)>\gamma\), with γ fixed by \(P_{FA}=\int_{L>\gamma}p_0=\alpha\).</p></div></details>
 
   <h3>Q2: long answers (42 marks)</h3>
-  <details id="paper-2i"><summary>2(i) 6 pts: \(H_0:X\sim p_0\), \(H_1:X\sim p_1\), priors \(\pi_0,\pi_1\). Derive the detector that minimises the Bayes risk.</summary><div class="body">
+  <details id="paper-2i"><summary><span class="st">2(i) 6 pts: \(H_0:X\sim p_0\), \(H_1:X\sim p_1\), priors \(\pi_0,\pi_1\). Derive the detector that minimises the Bayes risk.</span></summary><div class="body">
     <p><b>Short answer:</b> decide H₁ if \(\dfrac{p_1(x)}{p_0(x)}>\dfrac{\pi_0(C_{10}-C_{00})}{\pi_1(C_{01}-C_{11})}\). With 0/1 costs this is MAP, threshold \(\pi_0/\pi_1\).</p>
     <p>\(C_{ij}\) = cost of deciding \(H_i\) when \(H_j\) is true. A deterministic rule splits the data space into \(R_1\) (decide H₁) and \(R_0\) (its complement). The Bayes risk is the average cost:</p>
     \[\mathcal R=\sum_{i,j}C_{ij}\,\pi_j\Pr\{\text{decide }H_i|H_j\}=\sum_{i,j}C_{ij}\,\pi_j\int_{R_i}p_j(x)\,dx.\]
@@ -824,7 +825,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     \[L(x)=\frac{p_1(x)}{p_0(x)}\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma=\frac{\pi_0(C_{10}-C_{00})}{\pi_1(C_{01}-C_{11})}.\]
     <p>Points where the integrand is exactly 0 can go either way without changing \(\mathcal R\). With \(C_{00}=C_{11}=0\), \(C_{10}=C_{01}=1\), the risk is \(P_e\) and γ = \(\pi_0/\pi_1\): decide H₁ if \(\pi_1p_1(x)>\pi_0p_0(x)\), i.e. pick the larger posterior (MAP). Equal priors as well give ML.</p></div></details>
 
-  <details id="paper-2ii"><summary>2(ii) 7 pts: \(x[n]\) iid, \(H_0:\mathcal N(0,\sigma_0^2)\) vs \(H_1:\mathcal N(0,\sigma_1^2)\), \(\sigma_1^2>\sigma_0^2\). (a) NP detector (b) \(P_D\) in terms of \(P_{FA}\) (c) simplify for N = 2.</summary><div class="body">
+  <details id="paper-2ii"><summary><span class="st">2(ii) 7 pts: \(x[n]\) iid, \(H_0:\mathcal N(0,\sigma_0^2)\) vs \(H_1:\mathcal N(0,\sigma_1^2)\), \(\sigma_1^2>\sigma_0^2\). (a) NP detector (b) \(P_D\) in terms of \(P_{FA}\) (c) simplify for N = 2.</span></summary><div class="body">
     <p><b>Short answer:</b> \(T=\sum x^2[n]>\gamma'\); \(P_D=Q_{\chi^2_N}\big(\frac{\sigma_0^2}{\sigma_1^2}Q^{-1}_{\chi^2_N}(P_{FA})\big)\); for N = 2, \(x^2[0]+x^2[1]>2\sigma_0^2\ln\frac1{P_{FA}}\) and \(P_D=P_{FA}^{\sigma_0^2/\sigma_1^2}\).</p>
     <p><b>(a)</b> The likelihood ratio is</p>
     \[L(\mathbf x)=\frac{(2\pi\sigma_1^2)^{-N/2}\exp\!\big(-\frac1{2\sigma_1^2}\sum x^2[n]\big)}{(2\pi\sigma_0^2)^{-N/2}\exp\!\big(-\frac1{2\sigma_0^2}\sum x^2[n]\big)},\]
@@ -839,7 +840,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     \[P_{FA}=e^{-\gamma'/2\sigma_0^2}\ \Rightarrow\ \gamma'=2\sigma_0^2\ln\frac1{P_{FA}},\qquad P_D=e^{-\gamma'/2\sigma_1^2}=P_{FA}^{\ \sigma_0^2/\sigma_1^2}.\]
     <p>The detector is \(x^2[0]+x^2[1]>2\sigma_0^2\ln(1/P_{FA})\): say H₁ when the point \((x[0],x[1])\) falls outside a circle of radius \(\sqrt{2\sigma_0^2\ln(1/P_{FA})}\). Since \(\sigma_0^2/\sigma_1^2<1\), \(P_D>P_{FA}\), as it should be.</p></div></details>
 
-  <details id="paper-2iii"><summary>2(iii) 8 marks: SPRT on iid \(X_i\), \(p_0\) vs \(p_1\), finite thresholds \(\tau_0,\tau_1\), stopping time N. Can N = ∞? Prove it or give a counterexample.</summary><div class="body">
+  <details id="paper-2iii"><summary><span class="st">2(iii) 8 marks: SPRT on iid \(X_i\), \(p_0\) vs \(p_1\), finite thresholds \(\tau_0,\tau_1\), stopping time N. Can N = ∞? Prove it or give a counterexample.</span></summary><div class="body">
     <p><b>Short answer:</b> no, as long as \(p_0\ne p_1\). N is finite with probability 1 (and even \(E\{N\}<\infty\)). The only exception is the degenerate case \(p_0=p_1\), where the test never stops.</p>
     <p><b>Set-up.</b> Let \(z_i=\ln\frac{p_1(X_i)}{p_0(X_i)}\) and \(S_n=\sum_{i=1}^nz_i\). The test continues while \(\tau_0<S_n<\tau_1\) (log thresholds, \(\tau_0<0<\tau_1\)), and \(N=\min\{n:S_n\ge\tau_1\text{ or }S_n\le\tau_0\}\). Under either hypothesis the \(z_i\) are iid, so \(S_n\) is a random walk. Let \(D=\tau_1-\tau_0<\infty\) be the width of the band.</p>
     <p><b>Claim.</b> If \(p_0\ne p_1\) then \(\Pr\{z_i\ne0\}>0\), so for some ε &gt; 0 either \(\Pr\{z_i>\varepsilon\}=q>0\) or \(\Pr\{z_i<-\varepsilon\}=q>0\). Take the first case (the second is the same with the sign flipped).</p>
@@ -850,7 +851,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     <p><b>Remark.</b> Even with \(p_0\ne p_1\), single sample paths that never stop can exist. For instance, with Bernoulli data and steps \(+a,-a\), the path +, −, +, −, … stays inside forever. That set of paths has probability zero, so "N &lt; ∞ almost surely" is the precise statement. The thresholds have to be finite for this: with \(\tau_1=\infty\), the test could stop under H₀, where the walk drifts down, but under H₁ it might never stop.</p></div></details>
 
 
-  <details id="paper-iv"><summary>2(iv) 7 pts: Design the optimal NP detector for \(H_0: X\sim[0.2\ \ 0.3\ \ 0.5]\), \(H_1: X\sim[0.6\ \ 0.1\ \ 0.3]\), with \(P_{FA}=0.05\).</summary><div class="body">
+  <details id="paper-iv"><summary><span class="st">2(iv) 7 pts: Design the optimal NP detector for \(H_0: X\sim[0.2\ \ 0.3\ \ 0.5]\), \(H_1: X\sim[0.6\ \ 0.1\ \ 0.3]\), with \(P_{FA}=0.05\).</span></summary><div class="body">
     <p><b>Short answer:</b> if X = x₁, say H₁ with probability 0.25; otherwise say H₀. \(P_D=0.15\).</p>
     <p>X takes three values x₁, x₂, x₃. Compute the likelihood ratio at each one and rank them, because NP fills the "yes" region from the largest ratio down:</p>
     <div class="tbl"><table>
@@ -864,7 +865,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
     \[\delta(x)=\begin{cases}H_1\text{ w.p. }0.25,\ H_0\text{ w.p. }0.75 & x=x_1\ (L=\gamma=3)\ H_0 & x\in\{x_2,x_3\}\ (L<3)\end{cases}\]
     <p>\(P_{FA}=0.25(0.2)=0.05\) and \(P_D=0.25(0.6)=0.15\). The ROC is the polygon through (0, 0), (0.2, 0.6), (0.7, 0.9), (1, 1), and this rule sits a quarter of the way along its first segment.</p></div></details>
 
-  <details id="paper-v"><summary>2(v) 8 pts: \(H_0:\mathbf x=\mathbf w\) vs \(H_1:\mathbf x=\mathbf s+\mathbf w\), \(\mathbf w\sim\mathcal N(\mathbf 0,\sigma^2I)\), \(\mathbf s\sim\mathcal N(\mathbf 0,C_s)\), \(C_s=\sigma_s^2\begin{bmatrix}1&\rho\\rho&1\end{bmatrix}\), \(|\rho|\le1\). Find \(T(\mathbf x)\), \(\hat{\mathbf s}\) and the canonical estimator-correlator.</summary><div class="body">
+  <details id="paper-v"><summary><span class="st">2(v) 8 pts: \(H_0:\mathbf x=\mathbf w\) vs \(H_1:\mathbf x=\mathbf s+\mathbf w\), \(\mathbf w\sim\mathcal N(\mathbf 0,\sigma^2I)\), \(\mathbf s\sim\mathcal N(\mathbf 0,C_s)\), \(C_s=\sigma_s^2\begin{bmatrix}1&\rho\\\rho&1\end{bmatrix}\), \(|\rho|\le1\). Find \(T(\mathbf x)\), \(\hat{\mathbf s}\) and the canonical estimator-correlator.</span></summary><div class="body">
     <p><b>Short answer:</b> with \(y_0=\frac{x[0]+x[1]}{\sqrt2}\), \(y_1=\frac{x[0]-x[1]}{\sqrt2}\), \(\lambda_{0,1}=\sigma_s^2(1\pm\rho)\):</p>
     \[T(\mathbf x)=\mathbf x^T\hat{\mathbf s}=\frac{\lambda_0}{\lambda_0+\sigma^2}y_0^2+\frac{\lambda_1}{\lambda_1+\sigma^2}y_1^2\ \underset{H_0}{\overset{H_1}{\gtrless}}\ \gamma'.\]
     <p>This is the Lec 9 homework in section 18 with more of the working shown.</p>
@@ -885,7 +886,7 @@ footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--border);color
       <li>ρ → −1: only the difference channel, \(T\propto(x[0]-x[1])^2\).</li>
     </ul></div></details>
 
-  <details id="paper-vi"><summary>2(vi) 6 pts: With \(h[k]=s[N-1-k]\) for \(k=0,\dots,N-1\) (0 otherwise) and \(y[n]=\sum_{k=0}^{N-1}h[k]x[n-k]\), show the output for \(x[n]=s[n]\) is maximised at \(n=N-1\) with maximum value \(\mathcal E=\sum s^2[n]\).</summary><div class="body">
+  <details id="paper-vi"><summary><span class="st">2(vi) 6 pts: With \(h[k]=s[N-1-k]\) for \(k=0,\dots,N-1\) (0 otherwise) and \(y[n]=\sum_{k=0}^{N-1}h[k]x[n-k]\), show the output for \(x[n]=s[n]\) is maximised at \(n=N-1\) with maximum value \(\mathcal E=\sum s^2[n]\).</span></summary><div class="body">
     <p><b>Short answer:</b> the output is the signal's autocorrelation, \(y[n]=r_{ss}[N-1-n]\), and an autocorrelation peaks at lag 0 with value \(\mathcal E\).</p>
     <p>Substitute x = s and h:</p>
     \[y[n]=\sum_{k=0}^{N-1}s[N-1-k]\,s[n-k].\]
