@@ -27,6 +27,12 @@ Each guide explains every symbol where it first appears and works through the pa
 | Programming AI Accelerators | CS3.406 | [`paa/`](https://arihant25.github.io/study-guides/paa/) | GPUs and CUDA through matrix multiplication, roofline analysis, LLM inference and model compression, with interactive diagrams |
 | Signal Detection and Estimation Theory (Detection Theory) | EC5.406 | [`dt-study-guide/`](https://arihant25.github.io/study-guides/dt-study-guide/) | The detection half in lecture order, with every proof done in class, every homework and classwork problem, and Assignment 4 and the 2024 and 2025 detection questions solved |
 
+### Monsoon 2024
+
+| Course | Code | Guide | What's in it |
+|---|---|---|---|
+| Signal Processing | EC5.201 | [`sp-study-guide/`](https://arihant25.github.io/study-guides/sp-study-guide/) | Signals and systems to the FFT in 14 chapters: convolution, Fourier series and transform, Laplace, sampling, DTFT, z-transform, pole-zero filters and the DFT, with a quick reference and self-test |
+
 ## Repository layout
 
 ```
@@ -39,6 +45,7 @@ study-guides/
 ├── dt-study-guide/
 ├── paa/
 ├── sociology/
+├── sp-study-guide/
 └── .impeccable/        design notes for the home page
 ```
 

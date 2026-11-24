@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Study Guides · IIIT Hyderabad course notes</title>
-<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, sociology and AI accelerators.">
+<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, signal processing, sociology and AI accelerators.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
@@ -29,6 +29,7 @@
   --paa: #9b2c5c;
   --sdet: #2a55a8;
   --sociology: #7a5200;
+  --sp: #6b3fa0;
   --ui: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --read: "Source Serif 4", Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -45,6 +46,7 @@
     --paa: #ff8fbf;
     --sdet: #8fb0ff;
     --sociology: #e9b860;
+    --sp: #c7a8ff;
   }
 }
 
@@ -115,6 +117,7 @@ h3 a:hover { color: var(--c); text-decoration: underline; text-decoration-thickn
 .paa { --c: var(--paa); }
 .sdet { --c: var(--sdet); }
 .sociology { --c: var(--sociology); }
+.sp { --c: var(--sp); }
 
 @media (min-width: 720px) {
   .course { grid-template-columns: 9.5rem 1fr; }
@@ -217,6 +220,25 @@ footer a:hover { color: var(--ink); }
             <li><a href="dt-study-guide/">Open the guide</a><span>15 chapters</span></li>
             <li><a href="dt-study-guide/#ch13">Solved problems</a></li>
             <li><a href="dt-study-guide/#ch14">Formula sheet</a></li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="term" aria-labelledby="monsoon-2024">
+      <div class="term-head">
+        <h2 id="monsoon-2024">Monsoon 2024</h2>
+        <span>1 course</span>
+      </div>
+
+      <article class="course sp">
+        <div class="code">EC5.201<small>sp-study-guide</small></div>
+        <div>
+          <h3><a href="sp-study-guide/">Signal Processing</a></h3>
+          <p>Signals and systems, then digital signal processing, from the definition of a signal to the FFT. In between it covers convolution, Fourier series and the Fourier transform, the Laplace transform, sampling, the DTFT, the z-transform, filters through poles and zeros, and the DFT. Each chapter uses the ones before it. The last chapter is a quick reference with a self-test.</p>
+          <ul class="parts">
+            <li><a href="sp-study-guide/">Open the guide</a><span>14 chapters</span></li>
+            <li><a href="sp-study-guide/#ch13">Quick reference</a></li>
           </ul>
         </div>
       </article>
