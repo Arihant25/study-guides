@@ -25,13 +25,13 @@ Each guide explains every symbol where it first appears and works through the pa
 | Dynamical Processes of Complex Networks | SC1.440 | [`dpcn/`](https://arihant25.github.io/study-guides/dpcn/) | Three pages read in order (Quiz 1, Mid-sem, After mid-sem), plus Quiz 2, End-sem and memory sheets |
 | Introduction to Sociology | HS2.201 | [`sociology/`](https://arihant25.github.io/study-guides/sociology/) | Mid-sem (modules 1, 3 to 5) and end-sem (modules 6 to 9) notes, with flashcards and search |
 | Programming AI Accelerators | CS3.406 | [`paa/`](https://arihant25.github.io/study-guides/paa/) | GPUs and CUDA through matrix multiplication, roofline analysis, LLM inference and model compression, with interactive diagrams |
-| Signal Detection and Estimation Theory (Detection Theory) | EC5.406 | [`sdet/`](https://arihant25.github.io/study-guides/sdet/) | The detection half in lecture order, with every proof done in class, every homework and classwork problem, and Assignment 4, the Nov 2026 end-sem paper and the 2024 and 2025 detection questions solved |
+| Signal Detection and Estimation Theory (Detection Theory) | EC5.406 | [vroon33.github.io/dt-study-guide](https://vroon33.github.io/dt-study-guide/) | The detection half in lecture order, with every proof done in class, every homework and classwork problem, and Assignment 4, the Nov 2026 end-sem paper and the 2024 and 2025 detection questions solved |
 
 ### Monsoon 2024
 
 | Course | Code | Guide | What's in it |
 |---|---|---|---|
-| Signal Processing | EC5.201 | [`sp/`](https://arihant25.github.io/study-guides/sp/) | Signals and systems to the FFT in 14 chapters: convolution, Fourier series and transform, Laplace, sampling, DTFT, z-transform, pole-zero filters and the DFT, with a quick reference and self-test |
+| Signal Processing | EC5.201 | [vroon33.github.io/sp-study-guide](https://vroon33.github.io/sp-study-guide/) | Signals and systems to the FFT in 14 chapters: convolution, Fourier series and transform, Laplace, sampling, DTFT, z-transform, pole-zero filters and the DFT, with a quick reference and self-test |
 
 ## Repository layout
 
