@@ -108,52 +108,57 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Write the master equation for the BA model and solve it for \(P(k)\).</h4>
 <ol class="steps lines">
-<li>A degree-\(k\) node receives a new link with probability \(m\cdot\frac{k}{2mt} \)<wbr>\({}= \frac k{2t}\). With \(N(k, t) = t\,P(k, t)\), the expected number of degree-\(k\) nodes that receive a link in one step is \(\frac k2P(k, t)\).
-<details class="linewhy"><summary>Why line 1 works <span>(4 steps)</span></summary>
+<li>Each of the \(m\) new links attaches to a particular degree-\(k\) node with probability \(\frac{k}{2mt}\). So that node receives a link with probability \(m\cdot\frac{k}{2mt} \)<wbr>\({}= \frac k{2t}\).
+<details class="linewhy"><summary>Why line 1 works <span>(2 steps)</span></summary>
 <ol class="steps">
 <li>In one step there are \(m\) new links.</li>
 <li>Each one attaches to a particular degree-\(k\) node with probability \(\frac{k}{2mt}\) (1A, lines 1 and 3).</li>
+</ol>
+</details></li>
+<li>There are \(N(k, t) = t\,P(k, t)\) degree-\(k\) nodes. So on average \(\frac k{2t}\times t\,P(k, t) = \frac k2P(k, t)\) of them receive a link in one step.
+<details class="linewhy"><summary>Why line 2 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>There are \(N(k, t)\) degree-\(k\) nodes. So the expected (average) number of degree-\(k\) nodes that receive a link in one step is \(m\times N(k, t)\times\frac k{2mt}\).</li>
 <li>Cancel \(m\). This is \(\frac{k\,N(k, t)}{2t}\). Since \(N(k, t) = t\,P(k, t)\), it equals \(\frac k2P(k, t)\).</li>
 </ol>
 </details></li>
 <li>For \(k>m\),<span class="eqw">\[N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span><span class="eqn">\[N(k, t+1) - N(k, t)\]\[{}= \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span>
-<details class="linewhy"><summary>Why line 2 works <span>(2 steps)</span></summary>
+<details class="linewhy"><summary>Why line 3 works <span>(2 steps)</span></summary>
 <ol class="steps">
 <li>For \(k>m\), the number of degree-\(k\) nodes goes up by one for each degree-\((k-1)\) node that receives a link.</li>
-<li>It goes down by one for each degree-\(k\) node that receives a link. Using line 1 for both, <span class="eqw">\[N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span><span class="eqn">\[N(k, t+1) - N(k, t)\]\[{}= \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span></li>
+<li>It goes down by one for each degree-\(k\) node that receives a link. Using line 2 for both, <span class="eqw">\[N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span><span class="eqn">\[N(k, t+1) - N(k, t)\]\[{}= \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span></li>
 </ol>
 </details></li>
 <li>For \(k = m\),\[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]
-<details class="linewhy"><summary>Why line 3 works <span>(1 step)</span></summary>
+<details class="linewhy"><summary>Why line 4 works <span>(1 step)</span></summary>
 <ol class="steps">
 <li>For \(k = m\), no node can move up into degree \(m\), because every node starts with \(m\) links. The new node adds one node of degree \(m\). \[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]</li>
 </ol>
 </details></li>
 <li>In the steady state \(P(k, t) = P(k)\), so \(N(k, t+1) - N(k, t) = P(k)\).
-<details class="linewhy"><summary>Why line 4 works <span>(2 steps)</span></summary>
+<details class="linewhy"><summary>Why line 5 works <span>(2 steps)</span></summary>
 <ol class="steps">
 <li>Look for a steady state, where \(P(k, t) = P(k)\) does not depend on \(t\). Then \(N(k, t) = t\,P(k)\) and \(N(k, t+1) = (t+1)P(k)\).</li>
 <li>Subtract. \(N(k, t+1) - N(k, t) \)<wbr>\({}= (t+1)P(k) - tP(k) \)<wbr>\({}= P(k)\).</li>
 </ol>
 </details></li>
 <li>At \(k = m\), \(P(m) = 1 - \frac m2P(m)\), so \(P(m) = \frac2{m+2}\).
-<details class="linewhy"><summary>Why line 5 works <span>(2 steps)</span></summary>
+<details class="linewhy"><summary>Why line 6 works <span>(2 steps)</span></summary>
 <ol class="steps">
-<li>Case \(k = m\). Subtract \(N(m, t)\) from both sides of line 3 and use line 4. \(P(m) = 1 - \frac m2P(m)\).</li>
+<li>Case \(k = m\). Subtract \(N(m, t)\) from both sides of line 4 and use line 5. \(P(m) = 1 - \frac m2P(m)\).</li>
 <li>Add \(\frac m2P(m)\) to both sides. \(\frac{m+2}2P(m) = 1\), so \(P(m) = \frac2{m+2}\).</li>
 </ol>
 </details></li>
 <li>For \(k>m\), \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\).
-<details class="linewhy"><summary>Why line 6 works <span>(3 steps)</span></summary>
+<details class="linewhy"><summary>Why line 7 works <span>(3 steps)</span></summary>
 <ol class="steps">
-<li>Case \(k>m\). Do the same with line 2. \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\).</li>
+<li>Case \(k>m\). Do the same with line 3. \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\).</li>
 <li>Add \(\frac k2P(k)\) to both sides. \(\frac{k+2}2P(k) \)<wbr>\({}= \frac{k-1}2P(k-1)\).</li>
 <li>Multiply by 2 and divide by \(k + 2\). \[P(k) = \frac{k-1}{k+2}\,P(k-1).\]</li>
 </ol>
 </details></li>
 <li>Apply this repeatedly from \(P(m)\) and cancel. \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}.\]
-<details class="linewhy"><summary>Why line 7 works <span>(5 steps)</span></summary>
+<details class="linewhy"><summary>Why line 8 works <span>(5 steps)</span></summary>
 <ol class="steps">
 <li>Apply this again and again, starting from \(P(m)\). \(P(m+1) = \frac m{m+3}P(m)\), then \(P(m+2) \)<wbr>\({}= \frac{m+1}{m+4}P(m+1)\), and so on up to \(P(k) = \frac{k-1}{k+2}P(k-1)\).</li>
 <li>Multiply all of these together. \[\frac{P(k)}{P(m)} = \frac{m(m+1)(m+2)\cdots(k-1)}{(m+3)(m+4)\cdots(k+2)}.\]</li>
@@ -163,7 +168,7 @@ This formula is explained below.</li>
 </ol>
 </details></li>
 <li>For large \(k\), \(P(k)\approx\frac{2m(m+1)}{k^3}\propto k^{-3}\).
-<details class="linewhy"><summary>Why line 8 works <span>(1 step)</span></summary>
+<details class="linewhy"><summary>Why line 9 works <span>(1 step)</span></summary>
 <ol class="steps">
 <li>For large \(k\), \(k(k+1)(k+2)\) is about \(k^3\). So \(P(k)\approx\frac{2m(m+1)}{k^3}\propto k^{-3}\), the same power law (\(\gamma = 3\)) as in 1B.</li>
 </ol>
@@ -227,7 +232,7 @@ This formula is explained below.</li>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>For \(m = 1\), find \(P(1)\), \(P(2)\) and \(P(3)\) using the master-equation result. Check \(P(2)\) with the recursion.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\), and the recursion \(P(k) = \frac{k-1}{k+2}P(k-1)\) with \(P(m) = \frac2{m+2}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1C, lines 5 to 7.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1C, lines 6 to 8.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Put \(m = 1\) into \(2m(m+1)\). \(2\times1\times2 = 4\). So \(P(k) = \frac{4}{k(k+1)(k+2)}\).</li>
 <li>\(P(1)\): the bottom is \(1\times2\times3 = 6\), so \(P(1) = \frac46 = \frac23\).</li>
@@ -675,7 +680,7 @@ This formula is explained below.</li>
 <details class="linewhy"><summary>Why line 1 works <span>(3 steps)</span></summary>
 <ol class="steps">
 <li>Let \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega \)<wbr>\({}= \omega_2 - \omega_1\).</li>
-<li>Subtract the first equation from the second. \(\dot\phi = \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
+<li>Subtract the first equation from the second. \(\dot\phi \)<wbr>\({}= \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
 <li>Now \(\sin(\theta_2 - \theta_1) \)<wbr>\({}= \sin\phi\) and \(\sin(\theta_1 - \theta_2) \)<wbr>\({}= \sin(-\phi) \)<wbr>\({}= -\sin\phi\). So \[\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi.\]</li>
 </ol>
 </details></li>
@@ -727,7 +732,7 @@ This formula is explained below.</li>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The derivation above, lines 1 to 5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Write the model. \(\dot\theta_1 \)<wbr>\({}= \omega_1 + k_1\sin(\theta_2 - \theta_1)\) and \(\dot\theta_2 \)<wbr>\({}= \omega_2 + k_2\sin(\theta_1 - \theta_2)\).</li>
-<li>Let \(\phi = \theta_2 - \theta_1\). Subtract the first equation from the second. \(\dot\phi = \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
+<li>Let \(\phi = \theta_2 - \theta_1\). Subtract the first equation from the second. \(\dot\phi \)<wbr>\({}= \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
 <li>\(\sin(\theta_1 - \theta_2) \)<wbr>\({}= \sin(-\phi) \)<wbr>\({}= -\sin\phi\), and \(\sin(\theta_2 - \theta_1) \)<wbr>\({}= \sin\phi\). So \(\dot\phi \)<wbr>\({}= (\omega_2 - \omega_1) - k_2\sin\phi - k_1\sin\phi \)<wbr>\({}= \Delta\omega - (k_1 + k_2)\sin\phi\).</li>
 <li>Put in the numbers. \(\Delta\omega = 10 - 2 = 8\), so \(\dot\phi \)<wbr>\({}= 8 - (k_1 + k_2)\sin\phi\).</li>
 <li>Locked means \(\phi\) is constant, so \(\dot\phi = 0\). Then \(\sin\phi^* \)<wbr>\({}= \frac{8}{k_1 + k_2}\).</li>
