@@ -63,30 +63,58 @@ where the sum in the bottom is over all existing nodes. A node with twice the de
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{dk_i}{dt} = m\,\Pi(k_i)\), with \(\Pi(k_i) = \frac{k_i}{\sum_jk_j}\) and \(\sum_jk_j = 2mt\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, steps 1 to 3.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>The ingredients are growth (one new node with \(m\) links per step) and preferential attachment (a link attaches to node \(i\) with probability \(\frac{k_i}{\sum_jk_j}\)).</p>
-<p>Node \(i\) gains \(m\,\Pi(k_i)\) links per step on average, so \(\frac{dk_i}{dt} = \frac{m\,k_i}{\sum_jk_j}\). After \(t\) steps there are \(mt\) links, so \(\sum_jk_j = 2mt\). Then \(\frac{dk_i}{dt} = \frac{m\,k_i}{2mt} = \frac{k_i}{2t}\), which is proportional to \(\frac{k_i}{t}\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Ingredient 1, growth. At each time step one new node is added with \(m\) links.</li>
+<li>Ingredient 2, preferential attachment. Each new link attaches to an existing node \(i\) with probability \(\Pi(k_i) = \frac{k_i}{\sum_jk_j}\).</li>
+<li>Each step adds \(m\) links, and each one lands on node \(i\) with probability \(\Pi(k_i)\). So node \(i\) gains \(m\,\Pi(k_i)\) links per step on average. Treating \(t\) as continuous, \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
+<li>Find the total degree. After \(t\) steps there are \(mt\) links (ignoring the few starting links). Each link adds 1 to the degree of each of its two ends, so \(\sum_jk_j = 2mt\).</li>
+<li>Substitute. \(\frac{dk_i}{dt} = \frac{m\,k_i}{2mt}\). Cancel \(m\) on the top and bottom. \[\frac{dk_i}{dt} = \frac{k_i}{2t} = \frac12\cdot\frac{k_i}{t}.\]</li>
+<li>This is a constant \(\left(\frac12\right)\) times \(\frac{k_i}{t}\), so \(\frac{dk_i}{dt}\) is proportional to \(\frac{k_i}t\).</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>In a BA network with \(m = 3\), node \(i\) is added at \(t_i = 100\). What is its degree at \(t = 10\,000\)? At what time does it reach degree 60?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(k_i(t) = m\sqrt{t/t_i}\)</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, step 6. It is the solution of \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) with \(k_i(t_i) = m\).</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Put in \(m = 3\), \(t_i = 100\), \(t = 10\,000\). Then \(k_i = 3\sqrt{100} = 30\).</p>
-<p>For degree 60, solve \(60 = 3\sqrt{t/100}\). So \(\sqrt{t/100} = 20\), \(t/100 = 400\) and \(t = 40\,000\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Write the formula. \(k_i = m\sqrt{t/t_i}\), with \(m = 3\) and \(t_i = 100\).</li>
+<li>At \(t = 10\,000\): \(\frac t{t_i} = \frac{10\,000}{100} = 100\), and \(\sqrt{100} = 10\).</li>
+<li>\(k_i = 3\times10 = 30\).</li>
+<li>For degree 60, set \(k_i = 60\). \(60 = 3\sqrt{t/100}\).</li>
+<li>Divide both sides by 3. \(20 = \sqrt{t/100}\).</li>
+<li>Square both sides. \(400 = \frac t{100}\).</li>
+<li>Multiply both sides by 100. \(t = 40\,000\).</li>
+<li>Check. \(3\sqrt{40\,000/100} = 3\sqrt{400} = 3\times20 = 60\).</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 + 1 marks</span><span>(a) Two nodes were added at \(t = 10\) and \(t = 1000\). What is the ratio of their degrees at any later time? (b) What fraction of nodes have degree at least \(4m\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">(a) \(k_i = m\sqrt{t/t_i}\). (b) Fraction with degree below \(k\) is \(1 - \frac{m^2}{k^2}\), so the fraction with degree at least \(k\) is \(\frac{m^2}{k^2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) 1A, step 6. (b) 1B, step 4.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>(a) \(\frac{k_{10}}{k_{1000}} = \frac{m\sqrt{t/10}}{m\sqrt{t/1000}} = \sqrt{\frac{1000}{10}} = \sqrt{100} = 10\). The \(t\) cancels, so the ratio stays 10 at every later time.</p>
-<p>(b) Put \(k = 4m\). The fraction is \(\frac{m^2}{16m^2} = \frac1{16}\), about 6%.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) Node added at \(t_i = 10\): \(k_{10} = m\sqrt{t/10}\). Node added at \(t_i = 1000\): \(k_{1000} = m\sqrt{t/1000}\).</li>
+<li>Divide. \(\frac{k_{10}}{k_{1000}} = \frac{m\sqrt{t/10}}{m\sqrt{t/1000}}\). Cancel \(m\).</li>
+<li>Use \(\frac{\sqrt a}{\sqrt b} = \sqrt{\frac ab}\). The ratio is \(\sqrt{\frac{t/10}{t/1000}}\).</li>
+<li>Simplify inside the root. \(\frac{t/10}{t/1000} = \frac t{10}\times\frac{1000}t = \frac{1000}{10} = 100\). The \(t\) cancels.</li>
+<li>\(\sqrt{100} = 10\). The older node has 10 times the degree, at every later time.</li>
+<li>(b) The fraction with degree below \(k\) is \(F(k) = 1 - \frac{m^2}{k^2}\). So the fraction with degree at least \(k\) is \(1 - F(k) = \frac{m^2}{k^2}\).</li>
+<li>Put \(k = 4m\), so \(k^2 = 16m^2\). The fraction is \(\frac{m^2}{16m^2} = \frac1{16}\).</li>
+<li>\(\frac1{16} = 0.0625\), about 6% of the nodes.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>For \(m = 1\), find \(P(1)\), \(P(2)\) and \(P(3)\) using the master-equation result. Check \(P(2)\) with the recursion.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\), and the recursion \(P(k) = \frac{k-1}{k+2}P(k-1)\) with \(P(m) = \frac2{m+2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">1C, steps 5 to 7.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>With \(m = 1\) the formula is \(P(k) = \frac{4}{k(k+1)(k+2)}\).</p>
-<p>\(P(1) = \frac4{1\cdot2\cdot3} = \frac23\). \(P(2) = \frac4{2\cdot3\cdot4} = \frac16\). \(P(3) = \frac4{3\cdot4\cdot5} = \frac1{15}\).</p>
-<p>Check with the recursion. \(P(1) = \frac2{1+2} = \frac23\), and then \(P(2) = \frac{2-1}{2+2}\cdot\frac23 = \frac14\cdot\frac23 = \frac16\), which matches.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Put \(m = 1\) into \(2m(m+1)\). \(2\times1\times2 = 4\). So \(P(k) = \frac{4}{k(k+1)(k+2)}\).</li>
+<li>\(P(1)\): the bottom is \(1\times2\times3 = 6\), so \(P(1) = \frac46 = \frac23\).</li>
+<li>\(P(2)\): the bottom is \(2\times3\times4 = 24\), so \(P(2) = \frac4{24} = \frac16\).</li>
+<li>\(P(3)\): the bottom is \(3\times4\times5 = 60\), so \(P(3) = \frac4{60} = \frac1{15}\).</li>
+<li>Check with the recursion. Start from \(P(m) = \frac2{m+2}\). With \(m = 1\), \(P(1) = \frac2{3}\), which matches step 2.</li>
+<li>Recursion with \(k = 2\). \(P(2) = \frac{2-1}{2+2}P(1) = \frac14\times\frac23 = \frac2{12} = \frac16\), which matches step 3.</li>
+<li>Recursion with \(k = 3\). \(P(3) = \frac{3-1}{3+2}P(2) = \frac25\times\frac16 = \frac2{30} = \frac1{15}\), which matches step 4.</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -154,22 +182,50 @@ where the sum in the bottom is over all existing nodes. A node with twice the de
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{dk_i}{dt} = m\,\Pi\) with \(\Pi = \frac1t\). Then \(F(k) = 1 - e^{1-k/m}\) and \(P(k) = \frac{dF}{dk}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">2A, all steps. This is Model A.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>(a) \(\frac{dk_i}{dt} = \frac mt\). Integrating from \(k_i(t_i) = m\) gives \(k_i = m + m\ln\frac t{t_i}\).</p>
-<p>(b) \(k_i<k\) when \(t_i>te^{1-k/m}\). The fraction of such nodes is \(1 - e^{1-k/m}\). Differentiating gives \(P(k) = \frac em e^{-k/m}\). This is exponential, so the network is not scale-free.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) There are about \(t\) existing nodes, and each is equally likely. So \(\Pi = \frac1t\) for every node.</li>
+<li>Node \(i\) gains \(m\,\Pi\) links per step. \(\frac{dk_i}{dt} = \frac mt\). This does not depend on \(k_i\).</li>
+<li>Separate the variables. \(dk_i = m\,\frac{dt}{t}\).</li>
+<li>Integrate from the joining time, where \(k_i(t_i) = m\). \(k_i - m = m(\ln t - \ln t_i) = m\ln\frac t{t_i}\).</li>
+<li>So \(k_i(t) = m + m\ln\frac t{t_i}\).</li>
+<li>(b) Node \(i\) has degree below \(k\) when \(m + m\ln\frac t{t_i}<k\). Subtract \(m\) and divide by \(m\). \(\ln\frac t{t_i}<\frac km - 1\).</li>
+<li>Take \(e\) to the power of both sides. \(\frac t{t_i}<e^{k/m - 1}\). Rearrange. \(t_i>\frac{t}{e^{k/m-1}} = t\,e^{1 - k/m}\).</li>
+<li>One node joins per step, so joining times are spread evenly over \(1\dots t\). The fraction that joined after time \(T\) is \(1 - \frac Tt\). Put \(T = t\,e^{1-k/m}\). \[F(k) = 1 - e^{1 - k/m}.\]</li>
+<li>Differentiate. The derivative of \(e^{1-k/m}\) with respect to \(k\) is \(-\frac1m e^{1-k/m}\). So \[P(k) = \frac{dF}{dk} = \frac1m e^{1-k/m} = \frac em e^{-k/m}.\]</li>
+<li>This is an exponential. It falls by a factor of \(e\) every time \(k\) increases by \(m\), much faster than a power law. Large degrees almost never occur, so there are no hubs and the network is not scale-free.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 + 2 marks</span><span>Model A with \(m = 2\). (a) A node is added at \(t_i = 10\). What is its degree at \(t = 1000\)? What would it be in the BA model? (b) What fraction of nodes have degree above \(10m\) in each model?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Model A: \(k_i = m + m\ln\frac t{t_i}\) and fraction above \(k\) is \(e^{1-k/m}\). BA: \(k_i = m\sqrt{t/t_i}\) and fraction above \(k\) is \(\frac{m^2}{k^2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">2A, steps 3 and 5. 1A, step 6, and 1B, step 4.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>(a) Model A: \(k_i = 2 + 2\ln\frac{1000}{10} = 2 + 2\ln100 = 2 + 2(4.61) = 11.2\). BA: \(k_i = 2\sqrt{100} = 20\).</p>
-<p>(b) Put \(k = 10m\). Model A: \(e^{1-10} = e^{-9}\approx0.0001\). BA: \(\frac{m^2}{100m^2} = 0.01\), which is 100 times larger. This is why only the BA model has hubs.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) Model A: \(k_i = m + m\ln\frac t{t_i}\). Here \(\frac t{t_i} = \frac{1000}{10} = 100\).</li>
+<li>\(\ln100 = 2\ln10 = 2\times2.303 = 4.61\).</li>
+<li>\(k_i = 2 + 2\times4.61 = 2 + 9.21 = 11.2\).</li>
+<li>BA: \(k_i = m\sqrt{t/t_i} = 2\sqrt{100} = 2\times10 = 20\).</li>
+<li>(b) Model A: the fraction above \(k\) is \(1 - F(k) = e^{1-k/m}\). Put \(k = 10m\), so \(\frac km = 10\). The fraction is \(e^{1-10} = e^{-9} = 0.000123\).</li>
+<li>BA: the fraction above \(k\) is \(\frac{m^2}{k^2}\). Put \(k = 10m\). \(\frac{m^2}{100m^2} = \frac1{100} = 0.01\).</li>
+<li>Compare. \(\frac{0.01}{0.000123}\approx81\). The BA model has about 80 times as many nodes with degree above \(10m\). This is why only the BA model has hubs.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 + 2 marks</span><span>What happens to the BA model if (a) the number of nodes is fixed at \(N = 100\) (find the average degree after 2000 steps), (b) the attachment probability is \(\Pi\propto k^\alpha\) with \(\alpha = 2\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">(a) \(\sum_jk_j = 2t\), \(\langle k\rangle = \frac{2t}N\), and \(k_i\approx\frac{2t}N\). (b) For \(\alpha>1\), \(k_{\max}\sim t\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) 2B, steps 1 to 5. (b) 2C, steps 4 and 5.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>(a) After 2000 steps the total degree is \(2\times2000 = 4000\), so \(\langle k\rangle = \frac{4000}{100} = 40\). Since \(k_i = \frac{2t}N + C_i\sqrt t\) and the first part is the larger one, every node has degree close to 40. There is no power law. After about \(\frac{100\cdot99}2 = 4950\) steps the network is complete.</p>
-<p>(b) \(\alpha = 2>1\). If one node has degree \(ct\), its \(k^2 = c^2t^2\) is much larger than the sum over the other nodes (about \(t\)), so it receives almost every new link. One node ends up with a finite fraction of all the links, and all the others keep small degrees.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) With a fixed number of nodes (Model B), each step adds one link and no new node. After \(t\) steps there are \(t\) links.</li>
+<li>Each link adds 2 to the total degree. \(\sum_jk_j = 2t = 2\times2000 = 4000\).</li>
+<li>\(\langle k\rangle = \frac{\sum_jk_j}{N} = \frac{4000}{100} = 40\).</li>
+<li>From 2B, \(k_i(t) = \frac{2t}N + C_i\sqrt t\). The first part is the same for every node and grows like \(t\). The second part grows only like \(\sqrt t\). As \(t\) increases the first part takes over, so every degree is close to \(\frac{2t}N\), which is 40 here. The distribution is a narrow peak around 40, not a power law.</li>
+<li>There are only \(\frac{N(N-1)}2 = \frac{100\times99}{2} = 4950\) possible links. After about 4950 steps every pair is linked and the network is complete.</li>
+<li>(b) With \(\alpha = 2\), \(\Pi(k_i) = \frac{k_i^2}{\sum_jk_j^2}\).</li>
+<li>Suppose one node has degree \(k_1 = ct\). Its term in the sum is \(k_1^2 = c^2t^2\).</li>
+<li>The other nodes (about \(t\) of them) have small degrees, so their terms add up to something proportional to \(t\). Call it \(bt\).</li>
+<li>\(\Pi(k_1) = \frac{c^2t^2}{c^2t^2 + bt} = \frac{1}{1 + \frac{b}{c^2t}}\). As \(t\) grows, \(\frac b{c^2t}\to0\), so \(\Pi(k_1)\to1\).</li>
+<li>So node 1 receives almost every new link and gains about \(m\) links per step. That keeps \(k_1\) proportional to \(t\), which agrees with the starting assumption.</li>
+<li>Result. One node ends up linked to a finite fraction of everything, and all other nodes keep degrees close to \(m\). There is no power law.</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -244,31 +300,53 @@ where the sum in the bottom is over all existing nodes. A node with twice the de
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(C(0) = \frac{3(k-1)}{2(2k-1)}\), \(\bar\ell(0) = \frac n{4k}\), \(C(1) = \frac{2k}n\), \(\bar\ell(1) = \frac{\ln n}{\ln2k}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">3A, 3B and 3C (the table above).</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(p = 0\): \(C = \frac{3\cdot2}{2\cdot5} = 0.6\) and \(\bar\ell = \frac{600}{4\cdot3} = 50\).</p>
-<p>\(p = 1\): \(C = \frac{6}{600} = 0.01\) and \(\bar\ell = \frac{\ln600}{\ln6} = \frac{6.40}{1.79} = 3.6\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Here \(n = 600\) and \(k = 3\) (neighbours on each side).</li>
+<li>\(C\) at \(p = 0\). \(C(0) = \frac{3(k-1)}{2(2k-1)}\). \(k - 1 = 2\) and \(2k - 1 = 5\). \(C(0) = \frac{3\times2}{2\times5} = \frac6{10} = 0.6\).</li>
+<li>\(\bar\ell\) at \(p = 0\). \(\bar\ell(0) = \frac n{4k} = \frac{600}{4\times3} = \frac{600}{12} = 50\).</li>
+<li>\(C\) at \(p = 1\). \(C(1) = \frac{2k}n = \frac{6}{600} = 0.01\).</li>
+<li>\(\bar\ell\) at \(p = 1\). \(\bar\ell(1) = \frac{\ln n}{\ln2k} = \frac{\ln600}{\ln6} = \frac{6.40}{1.79} = 3.6\).</li>
+<li>Compare. Going from \(p = 0\) to \(p = 1\), \(C\) falls from 0.6 to 0.01 and \(\bar\ell\) falls from 50 to 3.6.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>For a ring with \(k = 2\), count directly how many pairs of neighbours of one node are linked, and find \(C(0)\). Check it against the formula.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(C_i = \frac{\text{linked pairs of neighbours}}{k_i(k_i-1)/2}\), and two ring nodes are linked when they are at most \(k\) positions apart.</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The definition in Part 0a, and 3A, step 2.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Call the node 0. Its neighbours are at positions −2, −1, 1 and 2, so \(k_i = 4\) and there are \(\frac{4\cdot3}2 = 6\) pairs.</p>
-<p>Linked (at most 2 apart): (−2, −1), (−1, 1) and (1, 2). Not linked: (−2, 1) and (−1, 2) are 3 apart, and (−2, 2) is 4 apart.</p>
-<p>So \(C(0) = \frac36 = \frac12\). The formula gives \(\frac{3(2-1)}{2(4-1)} = \frac36 = \frac12\), which matches.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Call the node 0. With \(k = 2\) its neighbours are at positions −2, −1, 1 and 2, so \(k_i = 4\).</li>
+<li>Number of pairs \(= \frac{k_i(k_i-1)}2 = \frac{4\times3}2 = 6\).</li>
+<li>List the 6 pairs and how far apart they are. (−2, −1) is 1 apart. (−2, 1) is 3 apart. (−2, 2) is 4 apart. (−1, 1) is 2 apart. (−1, 2) is 3 apart. (1, 2) is 1 apart.</li>
+<li>Two ring nodes are linked when they are at most \(k = 2\) apart. So the linked pairs are (−2, −1), (−1, 1) and (1, 2). That is 3 pairs.</li>
+<li>\(C(0) = \frac36 = \frac12\).</li>
+<li>Formula check. \(\frac{3(k-1)}{2(2k-1)} = \frac{3\times1}{2\times3} = \frac36 = \frac12\), which matches.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>At what rewiring probability \(p\) has the clustering fallen to half of \(C(0)\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(C(p) = C(0)(1-p)^3\)</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">3D, step 4.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Set \(C(0)(1-p)^3 = \frac12C(0)\). Then \((1-p)^3 = \frac12\), so \(1 - p = 2^{-1/3} = 0.794\) and \(p = 0.21\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Write the formula. \(C(p) = C(0)(1-p)^3\). We want \(C(p) = \frac12C(0)\).</li>
+<li>Set them equal. \(C(0)(1-p)^3 = \frac12C(0)\).</li>
+<li>Divide both sides by \(C(0)\). \((1-p)^3 = \frac12 = 0.5\).</li>
+<li>Take the cube root of both sides. \(1 - p = 0.5^{1/3} = 0.794\). (Check: \(0.794\times0.794 = 0.630\), and \(0.630\times0.794 = 0.500\).)</li>
+<li>\(p = 1 - 0.794 = 0.206\approx0.21\).</li>
+<li>The answer does not depend on \(k\) or \(n\), because \(C(0)\) cancelled in step 3.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 + 2 + 1 marks</span><span>A graph has degree \(K = 10\). (a) Find \(C(0)\). (b) With \(n = 1000\), find \(\bar\ell\) at \(p = 0\) and \(p = 1\). (c) Find \(C\) at \(p = 0.1\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Use \(k = K/2\). Then \(C(0) = \frac{3(k-1)}{2(2k-1)}\), \(\bar\ell(0) = \frac n{4k}\), \(\bar\ell(1) = \frac{\ln n}{\ln2k}\) and \(C(p) = C(0)(1-p)^3\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">3A, 3B, 3C and 3D.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(k = 5\).</p>
-<p>(a) \(C(0) = \frac{3\cdot4}{2\cdot9} = \frac{12}{18} = 0.667\).</p>
-<p>(b) \(\bar\ell(0) = \frac{1000}{20} = 50\). \(\bar\ell(1) = \frac{\ln1000}{\ln10} = \frac{6.91}{2.30} = 3\).</p>
-<p>(c) \(C(0.1) = 0.667\times0.9^3 = 0.667\times0.729 = 0.486\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(K\) is the total degree, which is \(2k\) (\(k\) neighbours on each side). So \(k = \frac K2 = \frac{10}2 = 5\).</li>
+<li>(a) \(C(0) = \frac{3(k-1)}{2(2k-1)} = \frac{3\times4}{2\times9} = \frac{12}{18} = \frac23 = 0.667\).</li>
+<li>(b) \(\bar\ell(0) = \frac n{4k} = \frac{1000}{4\times5} = \frac{1000}{20} = 50\).</li>
+<li>\(\bar\ell(1) = \frac{\ln n}{\ln2k} = \frac{\ln1000}{\ln10} = \frac{6.91}{2.30} = 3\).</li>
+<li>(c) \(C(p) = C(0)(1-p)^3\) with \(p = 0.1\). \(1 - p = 0.9\), and \(0.9^3 = 0.9\times0.9\times0.9 = 0.81\times0.9 = 0.729\).</li>
+<li>\(C(0.1) = 0.667\times0.729 = 0.486\).</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -300,32 +378,63 @@ where the sum in the bottom is over all existing nodes. A node with twice the de
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Lock if and only if \(|\Delta\omega|\le k_1 + k_2\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The derivation above, steps 1 to 5.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Write out steps 1 to 3 first, since the marks are for the derivation. \(\dot\phi = 8 - (k_1 + k_2)\sin\phi\), and locking needs \(8\le k_1 + k_2\).</p>
-<p>With equal couplings, \(2k\ge8\), so the critical coupling is \(k_c = 4\). The common frequency is \(\Omega = \frac{k\cdot2 + k\cdot10}{2k} = 6\).</p>
-<p>With \(k_1 = k_2 = 2\), \(k_1 + k_2 = 4<8\). Then \(\dot\phi = 8 - 4\sin\phi\ge4>0\), so \(\phi\) keeps increasing and they do not lock.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Write the model. \(\dot\theta_1 = \omega_1 + k_1\sin(\theta_2 - \theta_1)\) and \(\dot\theta_2 = \omega_2 + k_2\sin(\theta_1 - \theta_2)\).</li>
+<li>Let \(\phi = \theta_2 - \theta_1\). Subtract the first equation from the second. \(\dot\phi = \dot\theta_2 - \dot\theta_1 = (\omega_2 - \omega_1) + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1)\).</li>
+<li>\(\sin(\theta_1 - \theta_2) = \sin(-\phi) = -\sin\phi\), and \(\sin(\theta_2 - \theta_1) = \sin\phi\). So \(\dot\phi = (\omega_2 - \omega_1) - k_2\sin\phi - k_1\sin\phi = \Delta\omega - (k_1 + k_2)\sin\phi\).</li>
+<li>Put in the numbers. \(\Delta\omega = 10 - 2 = 8\), so \(\dot\phi = 8 - (k_1 + k_2)\sin\phi\).</li>
+<li>Locked means \(\phi\) is constant, so \(\dot\phi = 0\). Then \(\sin\phi^* = \frac{8}{k_1 + k_2}\).</li>
+<li>A sine is never more than 1, so a solution exists only if \(\frac8{k_1 + k_2}\le1\), that is, \(k_1 + k_2\ge8\).</li>
+<li>With equal couplings \(k_1 = k_2 = k\), this is \(2k\ge8\), so \(k\ge4\). The critical coupling is \(k_c = 4\).</li>
+<li>Common frequency. When locked, both phases increase at the same rate \(\Omega\). So \(\Omega = \omega_1 + k_1\sin\phi^*\) and \(\Omega = \omega_2 - k_2\sin\phi^*\).</li>
+<li>Multiply the first by \(k_2\) and the second by \(k_1\), then add. The \(\sin\phi^*\) terms cancel. \((k_1 + k_2)\Omega = k_2\omega_1 + k_1\omega_2\), so \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</li>
+<li>With \(k_1 = k_2 = k\): \(\Omega = \frac{k\times2 + k\times10}{2k} = \frac{12k}{2k} = 6\).</li>
+<li>Check at \(k = 4\). \(\sin\phi^* = \frac88 = 1\). \(\omega_1 + k_1\sin\phi^* = 2 + 4 = 6\) and \(\omega_2 - k_2\sin\phi^* = 10 - 4 = 6\).</li>
+<li>With \(k_1 = k_2 = 2\): \(k_1 + k_2 = 4<8\), so the condition fails. \(\dot\phi = 8 - 4\sin\phi\). Since \(\sin\phi\le1\), \(4\sin\phi\le4\), so \(\dot\phi\ge8 - 4 = 4>0\).</li>
+<li>\(\dot\phi\) is never zero, so \(\phi\) keeps increasing. The oscillators do not lock.</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 3 marks</span><span>\(\omega_1 = 3\), \(\omega_2 = 7\), \(k_1 = k_2 = 4\). Do they lock? Find the stable phase difference and \(\Omega\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\sin\phi^* = \frac{\Delta\omega}{k_1 + k_2}\) with \(\cos\phi^*>0\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Steps 2, 4 and 5 above.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(\Delta\omega = 4\le k_1 + k_2 = 8\), so they lock.</p>
-<p>\(\sin\phi^* = \frac48 = \frac12\). The solutions are \(\frac\pi6\) and \(\frac{5\pi}6\). The stable one has \(\cos\phi^*>0\), so \(\phi^* = \frac\pi6\).</p>
-<p>\(\Omega = \frac{4\cdot3 + 4\cdot7}{8} = \frac{40}8 = 5\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\Delta\omega = \omega_2 - \omega_1 = 7 - 3 = 4\). \(k_1 + k_2 = 4 + 4 = 8\).</li>
+<li>Condition. \(|\Delta\omega|\le k_1 + k_2\) is \(4\le8\), which is true. So they lock.</li>
+<li>\(\sin\phi^* = \frac{\Delta\omega}{k_1 + k_2} = \frac48 = \frac12\).</li>
+<li>Two angles between 0 and \(2\pi\) have sine \(\frac12\). They are \(\frac\pi6\) (30°, 0.52 rad) and \(\pi - \frac\pi6 = \frac{5\pi}6\) (150°).</li>
+<li>The stable one has \(\cos\phi^*>0\). \(\cos\frac\pi6 = 0.866>0\), so it is stable. \(\cos\frac{5\pi}6 = -0.866<0\), so it is unstable. So \(\phi^* = \frac\pi6\).</li>
+<li>\(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{4\times3 + 4\times7}{8} = \frac{12 + 28}8 = \frac{40}8 = 5\).</li>
+<li>Check. \(\omega_1 + k_1\sin\phi^* = 3 + 4\times\frac12 = 5\), and \(\omega_2 - k_2\sin\phi^* = 7 - 4\times\frac12 = 5\).</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 3 marks</span><span>\(\omega_1 = 0\), \(\omega_2 = 6\), \(k_1 = 2\), \(k_2 = 6\). Do they lock? Find \(\phi^*\) and \(\Omega\), and check \(\Omega\) with both equations.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Same formulas as the previous question, and \(\Omega = \omega_1 + k_1\sin\phi^* = \omega_2 - k_2\sin\phi^*\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Steps 2 to 5 above.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(\Delta\omega = 6\le k_1 + k_2 = 8\), so they lock. \(\sin\phi^* = \frac68 = 0.75\), so \(\phi^* = 0.85\) rad (the root with \(\cos\phi^*>0\)).</p>
-<p>\(\Omega = \frac{6\cdot0 + 2\cdot6}{8} = \frac{12}8 = 1.5\).</p>
-<p>Check: \(\omega_1 + k_1\sin\phi^* = 0 + 2(0.75) = 1.5\), and \(\omega_2 - k_2\sin\phi^* = 6 - 6(0.75) = 1.5\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\Delta\omega = 6 - 0 = 6\). \(k_1 + k_2 = 2 + 6 = 8\).</li>
+<li>Condition. \(6\le8\) is true, so they lock.</li>
+<li>\(\sin\phi^* = \frac{\Delta\omega}{k_1 + k_2} = \frac68 = 0.75\).</li>
+<li>The two angles are \(\arcsin0.75 = 0.85\) rad (48.6°) and \(\pi - 0.85 = 2.29\) rad.</li>
+<li>\(\cos(0.85) = 0.66>0\), so it is stable. \(\cos(2.29) = -0.66<0\), so it is unstable. So \(\phi^* = 0.85\) rad.</li>
+<li>\(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{6\times0 + 2\times6}{8} = \frac{12}8 = 1.5\).</li>
+<li>Check with equation 1. \(\omega_1 + k_1\sin\phi^* = 0 + 2\times0.75 = 1.5\).</li>
+<li>Check with equation 2. \(\omega_2 - k_2\sin\phi^* = 6 - 6\times0.75 = 6 - 4.5 = 1.5\).</li>
+<li>\(\Omega = 1.5\) is closer to \(\omega_1 = 0\), the natural frequency of the oscillator with the smaller coupling strength (\(k_1 = 2\)).</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>Only oscillator 1 is coupled, so \(k_2 = 0\). Find the locking condition and \(\Omega\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Lock if and only if \(|\Delta\omega|\le k_1 + k_2\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Steps 3 and 5 above.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>With \(k_2 = 0\) the condition is \(|\Delta\omega|\le k_1\).</p>
-<p>\(\Omega = \frac{0\cdot\omega_1 + k_1\omega_2}{k_1} = \omega_2\). Oscillator 2 keeps its natural frequency, and oscillator 1 locks to it.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>With \(k_2 = 0\), the second equation is \(\dot\theta_2 = \omega_2\). Oscillator 2 always runs at its natural frequency.</li>
+<li>\(\dot\phi = \Delta\omega - (k_1 + 0)\sin\phi = \Delta\omega - k_1\sin\phi\).</li>
+<li>Locked means \(\dot\phi = 0\), so \(\sin\phi^* = \frac{\Delta\omega}{k_1}\). This needs \(\left|\frac{\Delta\omega}{k_1}\right|\le1\), so the condition is \(|\Delta\omega|\le k_1\).</li>
+<li>\(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{0\times\omega_1 + k_1\omega_2}{k_1 + 0} = \frac{k_1\omega_2}{k_1} = \omega_2\).</li>
+<li>Check. Oscillator 2 always has rate \(\omega_2\), and when locked both have the same rate, so \(\Omega = \omega_2\). Oscillator 1 locks to the frequency of oscillator 2.</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -357,22 +466,50 @@ where the sum in the bottom is over all existing nodes. A node with twice the de
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Fixed points have \(\dot x = \dot y = \dot z = 0\). \(J\) has entry \(\frac{\partial(\text{rate } i)}{\partial(\text{variable } j)}\) in row \(i\), column \(j\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The derivation above, steps 1 to 8.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Write out all eight steps above. The answer is the origin with \(J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}\), and, for \(\rho>1\), the two points \(P_\pm\) with the Jacobian in step 8.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>At a fixed point all three rates are zero. (i) \(\sigma(y - x) = 0\). (ii) \(\rho x - y - xz = 0\). (iii) \(xy - \beta z = 0\).</li>
+<li>From (i), since \(\sigma>0\), \(y - x = 0\), so \(y = x\).</li>
+<li>Put \(y = x\) into (iii). \(x^2 - \beta z = 0\), so \(z = \frac{x^2}\beta\).</li>
+<li>Put \(y = x\) into (ii). \(\rho x - x - xz = 0\). Take out the common factor \(x\). \(x(\rho - 1 - z) = 0\). So \(x = 0\) or \(z = \rho - 1\).</li>
+<li>Case \(x = 0\). Then \(y = 0\) and \(z = 0\). This is the origin \(P_0 = (0, 0, 0)\).</li>
+<li>Case \(z = \rho - 1\). From step 3, \(x^2 = \beta z = \beta(\rho - 1)\), so \(x = \pm\sqrt{\beta(\rho - 1)}\) and \(y = x\). The square root is real only if \(\rho>1\). Write \(c = \sqrt{\beta(\rho - 1)}\). The points are \(P_\pm = (\pm c, \pm c, \rho - 1)\).</li>
+<li>Jacobian, row 1. \(f_1 = \sigma y - \sigma x\). \(\frac{\partial f_1}{\partial x} = -\sigma\), \(\frac{\partial f_1}{\partial y} = \sigma\), \(\frac{\partial f_1}{\partial z} = 0\).</li>
+<li>Row 2. \(f_2 = \rho x - y - xz\). \(\frac{\partial f_2}{\partial x} = \rho - z\), \(\frac{\partial f_2}{\partial y} = -1\), \(\frac{\partial f_2}{\partial z} = -x\).</li>
+<li>Row 3. \(f_3 = xy - \beta z\). \(\frac{\partial f_3}{\partial x} = y\), \(\frac{\partial f_3}{\partial y} = x\), \(\frac{\partial f_3}{\partial z} = -\beta\). So \[J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}.\]</li>
+<li>At \(P_0\), put \(x = y = z = 0\). \[J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}.\]</li>
+<li>At \(P_\pm\), put \(x = y = \pm c\) and \(z = \rho - 1\). Then \(\rho - z = 1\) and \(-x = \mp c\). \[J(P_\pm) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & \mp c\\ \pm c & \pm c & -\beta\end{pmatrix}.\]</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>Find all the fixed points for \(\sigma = 10\), \(\beta = \frac83\), \(\rho = 28\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\((0,0,0)\), and \(x = y = \pm\sqrt{\beta(\rho - 1)}\), \(z = \rho - 1\) when \(\rho>1\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Steps 1 to 4 above.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>The origin \((0, 0, 0)\). Since \(\rho = 28>1\) there are two more. \(z = 27\) and \(x = y = \pm\sqrt{\frac83\cdot27} = \pm\sqrt{72} = \pm8.49\).</p>
-<p>So the fixed points are \((0,0,0)\), \((8.49, 8.49, 27)\) and \((-8.49, -8.49, 27)\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The origin \((0, 0, 0)\) is always a fixed point.</li>
+<li>\(\rho = 28>1\), so the two other fixed points \(P_\pm\) exist.</li>
+<li>\(z = \rho - 1 = 28 - 1 = 27\).</li>
+<li>\(x^2 = \beta(\rho - 1) = \frac83\times27 = 8\times9 = 72\).</li>
+<li>\(x = \pm\sqrt{72} = \pm8.49\), and \(y = x\).</li>
+<li>The fixed points are \((0, 0, 0)\), \((8.49, 8.49, 27)\) and \((-8.49, -8.49, 27)\). The value of \(\sigma\) is not needed, because it only gives \(y = x\).</li>
+</ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice · 3 marks</span><span>With \(\sigma = 10\) and \(\beta = \frac83\), find the eigenvalues at the origin for \(\rho = 0.5\) and for \(\rho = 28\). Is the origin stable in each case?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">One eigenvalue is \(-\beta\). The other two are \(\lambda = \frac{T\pm\sqrt{T^2 - 4D}}2\) with \(T = -(\sigma + 1)\) and \(D = \sigma(1 - \rho)\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Steps 6 and 7 above, and the 2×2 shortcut in Part 0b.</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>One eigenvalue is \(-\frac83\) in both cases. \(T = -11\).</p>
-<p>\(\rho = 0.5\): \(D = 10(0.5) = 5\). \(\lambda = \frac{-11\pm\sqrt{121 - 20}}2 = \frac{-11\pm10.05}2\), which is \(-0.47\) or \(-10.5\). All three are negative, so the origin is stable.</p>
-<p>\(\rho = 28\): \(D = 10(-27) = -270\). \(\lambda = \frac{-11\pm\sqrt{121 + 1080}}2 = \frac{-11\pm34.7}2\), which is \(11.8\) or \(-22.8\). One is positive, so the origin is unstable (a saddle).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Put \(\sigma = 10\) and \(\beta = \frac83\) into \(J(P_0)\). \(J = \begin{pmatrix}-10 & 10 & 0\\ \rho & -1 & 0\\ 0 & 0 & -\frac83\end{pmatrix}\).</li>
+<li>The third row and third column are zero except the corner entry, so one eigenvalue is \(-\frac83 = -2.67\).</li>
+<li>The other two are the eigenvalues of \(\begin{pmatrix}-10 & 10\\ \rho & -1\end{pmatrix}\). \(T = -10 + (-1) = -11\). \(D = (-10)(-1) - (10)(\rho) = 10 - 10\rho\).</li>
+<li>\(\rho = 0.5\). \(D = 10 - 5 = 5\).</li>
+<li>\(T^2 - 4D = 121 - 20 = 101\), and \(\sqrt{101} = 10.05\).</li>
+<li>\(\lambda = \frac{-11\pm10.05}2\). With \(+\): \(\frac{-0.95}{2} = -0.47\). With \(-\): \(\frac{-21.05}2 = -10.5\).</li>
+<li>All three eigenvalues (\(-0.47\), \(-10.5\), \(-2.67\)) are negative, so the origin is stable.</li>
+<li>\(\rho = 28\). \(D = 10 - 280 = -270\).</li>
+<li>\(T^2 - 4D = 121 + 1080 = 1201\), and \(\sqrt{1201} = 34.7\).</li>
+<li>\(\lambda = \frac{-11\pm34.7}2\). With \(+\): \(\frac{23.7}2 = 11.8\). With \(-\): \(\frac{-45.7}2 = -22.8\).</li>
+<li>One eigenvalue (11.8) is positive, so the origin is unstable. It is a saddle. Both results agree with the rule that the origin is stable only when \(\rho<1\).</li>
+</ol></div></div>
 </div></details>
 </section>
 

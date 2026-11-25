@@ -93,14 +93,25 @@
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\langle k\rangle = \frac{2L}N\)</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Every link has two ends, so the degrees add up to \(2L\) (Part 0a, "Degree").</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(\langle k\rangle = \frac{2\cdot12}{8} = \frac{24}8 = 3\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Every link has two ends, and each end adds 1 to the degree of the node it touches. So each link adds 2 to the sum of all degrees.</li>
+<li>Sum of all degrees \(= 2L = 2\times12 = 24\).</li>
+<li>The average is the sum divided by the number of nodes. \(\langle k\rangle = \frac{24}{8} = 3\).</li>
+</ol></div></div>
 </div></details>
 
 <details class="q"><summary><span class="qt pyq">2024 class quiz 2 · 1 mark</span><span>In a social network, node A has neighbours B, C and D. If B and C are not connected to each other, what is the minimum possible local clustering coefficient of A? (0, 1, 2/3, 1/2, 1/3)</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(C_i = \frac{\text{linked pairs of neighbours}}{k_i(k_i-1)/2}\)</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The definition of the clustering coefficient (Part 0a).</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(k_A = 3\), so there are \(\frac{3\cdot2}2 = 3\) pairs. B–C is not linked. The smallest value comes when B–D and C–D are not linked either, so 0 pairs are linked and \(C_A = \frac03 = 0\). The answer is 0.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The neighbours of A are B, C and D, so \(k_A = 3\).</li>
+<li>Number of pairs of neighbours \(= \frac{k_A(k_A-1)}2 = \frac{3\times2}2 = 3\). The pairs are B–C, B–D and C–D.</li>
+<li>B–C is not linked (given). The question says nothing about B–D and C–D, so each of them may or may not be linked.</li>
+<li>To make \(C_A\) as small as possible, take B–D and C–D as not linked. Then 0 of the 3 pairs are linked.</li>
+<li>\(C_A = \frac{0}{3} = 0\). The answer is 0.</li>
+<li>Check the other options. With one of B–D or C–D linked, \(C_A = \frac13\). With both linked, \(C_A = \frac23\). So 1 and \(\frac12\) cannot happen here.</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -129,14 +140,27 @@
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Fixed points solve \(f(x^*) = 0\). Stable if \(f'(x^*)<0\), unstable if \(f'(x^*)>0\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0b, "Fixed point" and "Stability".</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(f(x) = x(1 - x) = 0\) gives \(x^* = 0\) and \(x^* = 1\).</p><p>\(f'(x) = 1 - 2x\). \(f'(0) = 1>0\), so 0 is unstable. \(f'(1) = -1<0\), so 1 is stable.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Here \(f(x) = x(1 - x)\). Fixed points solve \(f(x^*) = 0\).</li>
+<li>\(x(1 - x) = 0\). A product is zero when one of its factors is zero, so \(x = 0\) or \(1 - x = 0\). The fixed points are \(x^* = 0\) and \(x^* = 1\).</li>
+<li>Expand \(f(x) = x - x^2\) and differentiate. \(f'(x) = 1 - 2x\).</li>
+<li>At \(x^* = 0\): \(f'(0) = 1 - 0 = 1\). This is positive, so \(x^* = 0\) is unstable.</li>
+<li>At \(x^* = 1\): \(f'(1) = 1 - 2 = -1\). This is negative, so \(x^* = 1\) is stable.</li>
+</ol></div></div>
 </div></details>
 
 <details class="q"><summary><span class="qt">Try it</span><span>A fixed point has \(J = \begin{pmatrix}-3 & 1\\ 2 & -2\end{pmatrix}\). Find the eigenvalues. Is it stable?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda = \frac{T\pm\sqrt{T^2 - 4D}}2\), with \(T = a + d\) and \(D = ad - bc\). Stable if and only if \(T<0\) and \(D>0\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0b, "The 2×2 shortcut".</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(T = -3 + (-2) = -5\). \(D = (-3)(-2) - (1)(2) = 4\).</p><p>\(\lambda = \frac{-5\pm\sqrt{25 - 16}}2 = \frac{-5\pm3}2\), which is \(-1\) or \(-4\). Both are negative, so the fixed point is stable.</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Read off the entries of \(J = \begin{pmatrix}a & b\\ c & d\end{pmatrix}\). Here \(a = -3\), \(b = 1\), \(c = 2\), \(d = -2\).</li>
+<li>Trace. \(T = a + d = -3 + (-2) = -5\).</li>
+<li>Determinant. \(D = ad - bc = (-3)(-2) - (1)(2) = 6 - 2 = 4\).</li>
+<li>Inside the square root. \(T^2 - 4D = (-5)^2 - 4\times4 = 25 - 16 = 9\), and \(\sqrt9 = 3\).</li>
+<li>\(\lambda = \frac{T\pm3}{2} = \frac{-5\pm3}2\). With \(+\): \(\frac{-2}2 = -1\). With \(-\): \(\frac{-8}2 = -4\).</li>
+<li>Both eigenvalues are negative, so the fixed point is stable. The shortcut gives the same answer, since \(T = -5<0\) and \(D = 4>0\).</li>
+</ol></div></div>
 </div></details>
 </section>
 
@@ -159,6 +183,15 @@
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Separate variables, \(\frac{dk}{k} = \frac{dt}{2t}\), and use \(\int\frac{dx}x = \ln x\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0c, "Separating variables".</div></div>
-<div class="sol"><div class="sl">Working</div><div class="sb"><p>Integrate from \(k = 2\) at \(t = 5\). \(\ln\frac k2 = \frac12\ln\frac t5\), so \(k = 2\sqrt{t/5}\).</p><p>At \(t = 20\), \(k = 2\sqrt{4} = 4\).</p></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Separate the variables. Put everything with \(k\) on the left and everything with \(t\) on the right. Divide both sides by \(k\) and multiply both sides by \(dt\). \[\frac{dk}{k} = \frac{dt}{2t} = \frac12\cdot\frac{dt}{t}.\]</li>
+<li>Integrate both sides, starting from the known values (\(k = 2\) at \(t = 5\)). \[\int_2^k\frac{dk'}{k'} = \frac12\int_5^t\frac{dt'}{t'}.\]</li>
+<li>Use \(\int\frac{dx}x = \ln x\). The left side is \(\ln k - \ln 2\). The right side is \(\frac12(\ln t - \ln 5)\).</li>
+<li>Use \(\ln a - \ln b = \ln\frac ab\). \[\ln\frac k2 = \frac12\ln\frac t5.\]</li>
+<li>Use \(\frac12\ln y = \ln\sqrt y\). \[\ln\frac k2 = \ln\sqrt{t/5}.\]</li>
+<li>If \(\ln A = \ln B\) then \(A = B\). So \(\frac k2 = \sqrt{t/5}\), which gives \[k = 2\sqrt{t/5}.\]</li>
+<li>Put in \(t = 20\). \(\frac{20}5 = 4\), \(\sqrt4 = 2\), so \(k = 2\times2 = 4\).</li>
+<li>Check the starting value. At \(t = 5\), \(k = 2\sqrt{1} = 2\), which is correct.</li>
+</ol></div></div>
 </div></details>
 </section>
