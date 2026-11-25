@@ -106,7 +106,7 @@
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The definition of the clustering coefficient (Part 0a).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The neighbours of A are B, C and D, so \(k_A = 3\).</li>
-<li>Number of pairs of neighbours \(= \frac{k_A(k_A-1)}2 = \frac{3\times2}2 = 3\). The pairs are B–C, B–D and C–D.</li>
+<li>Number of pairs of neighbours \(= \frac{k_A(k_A-1)}2 \)<wbr>\({}= \frac{3\times2}2 \)<wbr>\({}= 3\). The pairs are B–C, B–D and C–D.</li>
 <li>B–C is not linked (given). The question says nothing about B–D and C–D, so each of them may or may not be linked.</li>
 <li>To make \(C_A\) as small as possible, take B–D and C–D as not linked. Then 0 of the 3 pairs are linked.</li>
 <li>\(C_A = \frac{0}{3} = 0\). The answer is 0.</li>
@@ -156,9 +156,9 @@
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Read off the entries of \(J = \begin{pmatrix}a & b\\ c & d\end{pmatrix}\). Here \(a = -3\), \(b = 1\), \(c = 2\), \(d = -2\).</li>
 <li>Trace. \(T = a + d = -3 + (-2) = -5\).</li>
-<li>Determinant. \(D = ad - bc = (-3)(-2) - (1)(2) = 6 - 2 = 4\).</li>
-<li>Inside the square root. \(T^2 - 4D = (-5)^2 - 4\times4 = 25 - 16 = 9\), and \(\sqrt9 = 3\).</li>
-<li>\(\lambda = \frac{T\pm3}{2} = \frac{-5\pm3}2\). With \(+\): \(\frac{-2}2 = -1\). With \(-\): \(\frac{-8}2 = -4\).</li>
+<li>Determinant. \(D \)<wbr>\({}= ad - bc \)<wbr>\({}= (-3)(-2) - (1)(2) \)<wbr>\({}= 6 - 2 \)<wbr>\({}= 4\).</li>
+<li>Inside the square root. \(T^2 - 4D \)<wbr>\({}= (-5)^2 - 4\times4 \)<wbr>\({}= 25 - 16 \)<wbr>\({}= 9\), and \(\sqrt9 = 3\).</li>
+<li>\(\lambda \)<wbr>\({}= \frac{T\pm3}{2} \)<wbr>\({}= \frac{-5\pm3}2\). With \(+\): \(\frac{-2}2 = -1\). With \(-\): \(\frac{-8}2 = -4\).</li>
 <li>Both eigenvalues are negative, so the fixed point is stable. The shortcut gives the same answer, since \(T = -5<0\) and \(D = 4>0\).</li>
 </ol></div></div>
 </div></details>
