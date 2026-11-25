@@ -15,7 +15,7 @@ This formula is explained below.</li>
 <p>So the probability is node \(i\)'s share of the total degree. Dividing by the total makes the probabilities of all the nodes add up to 1, as they must, because the link has to attach to exactly one node.</p>
 <p><strong>Example.</strong> A network has 4 nodes with degrees 1, 2, 3 and 4. The total is \(\sum_jk_j = 1 + 2 + 3 + 4 = 10\). The probabilities are \(\frac1{10}\), \(\frac2{10}\), \(\frac3{10}\) and \(\frac4{10}\), which add up to \(\frac{10}{10} = 1\). The node of degree 4 is 4 times as likely to receive the link as the node of degree 1.</p>
 <p>In general, a node with twice the degree is twice as likely to receive the link. This is why it is called <em>preferential</em> attachment. A node that already has many links is more likely to receive the next one.</p>
-<p>In the BA model the total degree is easy to find. Every link adds 1 to the degree of each of its two ends, so each link adds 2 to the total. After \(t\) steps there are \(mt\) links, so \(\sum_jk_j = 2mt\) and \(\Pi(k_i) = \frac{k_i}{2mt}\). Step 6 of 1A uses this.</p>
+<p>In the BA model the total degree is easy to find. Every link adds 1 to the degree of each of its two ends, so each link adds 2 to the total. After \(t\) steps there are \(mt\) links, so \(\sum_jk_j = 2mt\) and \(\Pi(k_i) = \frac{k_i}{2mt}\). Step 9 of 1A uses this.</p>
 </div>
 <p>After \(t\) steps there are about \(t\) nodes and \(mt\) links. Nodes that were added early have had more steps in which to receive links, and every link they receive makes the next one more likely. The result is a power-law degree distribution, \(P(k)\propto k^{-3}\), so the network is scale-free with \(\gamma = 3\).</p>
 <p>The board asks for three things. They are the rate \(\frac{dk_i}{dt}\), the distribution \(P(k)\), and the master equation, which is a second way to get \(P(k)\).</p>
@@ -28,10 +28,13 @@ This formula is explained below.</li>
 <li>Each step adds \(m\) new links.</li>
 <li>Each of these links attaches to node \(i\) with probability \(\Pi(k_i) \)<wbr>\({}= \frac{k_i}{\sum_jk_j}\).</li>
 <li>So on average node \(i\) receives \(m\,\Pi(k_i)\) new links per step.</li>
-<li>Treat \(k_i\) as a smooth function of \(t\). Its rate of change is this average. \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
+<li>One time step is \(\Delta t = 1\). In one step, \(k_i\) changes by some amount \(\Delta k_i\). From step 3, the average of \(\Delta k_i\) is \(m\,\Pi(k_i)\).</li>
+<li>So on average, the rate of change is \(\frac{\Delta k_i}{\Delta t} \)<wbr>\({}= \frac{m\,\Pi(k_i)}{1} \)<wbr>\({}= m\,\Pi(k_i)\).</li>
+<li>In reality \(k_i\) goes up in whole-number jumps. But once the network is large, each jump is tiny compared with \(k_i\), and over many steps the jumps average out.</li>
+<li>So \(k_i\) can be treated as a smooth curve, and \(\frac{\Delta k_i}{\Delta t}\) becomes the derivative \(\frac{dk_i}{dt}\). This is called the <strong>continuum approximation</strong>. \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
 <li>Find the total degree. After \(t\) steps there are \(mt\) links (ignoring the few starting links).</li>
 <li>Each link adds 1 to the degree of each of its two ends, so it adds 2 to the total. So \(\sum_jk_j = 2mt\).</li>
-<li>Substitute this into step 4. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt}\).</li>
+<li>Substitute this into step 7. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt}\).</li>
 <li>Cancel \(m\). \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{k_i}{2t}\). This proves that the rate is proportional to \(\frac{k_i}t\).</li>
 <li>Separate the variables. Divide both sides by \(k_i\) and multiply both sides by \(dt\). \(\frac{dk_i}{k_i} \)<wbr>\({}= \frac12\,\frac{dt}{t}\).</li>
 <li>Node \(i\) was added at time \(t_i\) with \(m\) links, so \(k_i(t_i) = m\). Integrate both sides from there. \[\int_m^{k_i}\frac{dk}{k} = \frac12\int_{t_i}^t\frac{dt'}{t'}.\]</li>
@@ -67,7 +70,7 @@ This formula is explained below.</li>
 <h4>Write the master equation for the BA model and solve it for \(P(k)\).</h4>
 <ol class="steps">
 <li>In one step there are \(m\) new links.</li>
-<li>Each one attaches to a particular degree-\(k\) node with probability \(\frac{k}{2mt}\) (1A, steps 2 and 6).</li>
+<li>Each one attaches to a particular degree-\(k\) node with probability \(\frac{k}{2mt}\) (1A, steps 2 and 9).</li>
 <li>There are \(N(k, t)\) degree-\(k\) nodes. So the expected (average) number of degree-\(k\) nodes that receive a link in one step is \(m\times N(k, t)\times\frac k{2mt}\).</li>
 <li>Cancel \(m\). This is \(\frac{k\,N(k, t)}{2t}\). Since \(N(k, t) = t\,P(k, t)\), it equals \(\frac k2P(k, t)\).</li>
 <li>For \(k>m\), the number of degree-\(k\) nodes goes up by one for each degree-\((k-1)\) node that receives a link.</li>
@@ -97,11 +100,16 @@ This formula is explained below.</li>
 <details class="q"><summary><span class="qt pyq">2024 Quiz 2 · 2 + 2 marks</span><span>What are the ingredients of a Barabási–Albert graph? Prove that \(\frac{dk_i}{dt}\) is proportional to \(\frac{k_i}{t}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{dk_i}{dt} = m\,\Pi(k_i)\), with \(\Pi(k_i) = \frac{k_i}{\sum_jk_j}\) and \(\sum_jk_j = 2mt\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, steps 1 to 8.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, steps 1 to 11.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Ingredient 1, growth. At each time step one new node is added with \(m\) links.</li>
 <li>Ingredient 2, preferential attachment. Each new link attaches to an existing node \(i\) with probability \(\Pi(k_i) \)<wbr>\({}= \frac{k_i}{\sum_jk_j}\).</li>
-<li>Each step adds \(m\) links, and each one lands on node \(i\) with probability \(\Pi(k_i)\). So node \(i\) gains \(m\,\Pi(k_i)\) links per step on average. Treating \(t\) as continuous, \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
+<li>Each step adds \(m\) new links.</li>
+<li>Each one attaches to node \(i\) with probability \(\Pi(k_i)\). So on average node \(i\) receives \(m\,\Pi(k_i)\) new links per step.</li>
+<li>One time step is \(\Delta t = 1\). In one step, \(k_i\) changes by some amount \(\Delta k_i\). From step 4, the average of \(\Delta k_i\) is \(m\,\Pi(k_i)\).</li>
+<li>So on average, the rate of change is \(\frac{\Delta k_i}{\Delta t} \)<wbr>\({}= \frac{m\,\Pi(k_i)}{1} \)<wbr>\({}= m\,\Pi(k_i)\).</li>
+<li>In reality \(k_i\) goes up in whole-number jumps. But once the network is large, each jump is tiny compared with \(k_i\), and over many steps the jumps average out.</li>
+<li>So \(k_i\) can be treated as a smooth curve, and \(\frac{\Delta k_i}{\Delta t}\) becomes the derivative \(\frac{dk_i}{dt}\). This is called the <strong>continuum approximation</strong>. \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
 <li>Find the total degree. After \(t\) steps there are \(mt\) links (ignoring the few starting links). Each link adds 1 to the degree of each of its two ends, so \(\sum_jk_j = 2mt\).</li>
 <li>Substitute. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt}\). Cancel \(m\) on the top and bottom. \[\frac{dk_i}{dt} = \frac{k_i}{2t} = \frac12\cdot\frac{k_i}{t}.\]</li>
 <li>This is a constant \(\left(\frac12\right)\) times \(\frac{k_i}{t}\), so \(\frac{dk_i}{dt}\) is proportional to \(\frac{k_i}t\).</li>
@@ -110,7 +118,7 @@ This formula is explained below.</li>
 <details class="q"><summary><span class="qt">Practice · 2 marks</span><span>In a BA network with \(m = 3\), node \(i\) is added at \(t_i = 100\). What is its degree at \(t = 10\,000\)? At what time does it reach degree 60?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(k_i(t) = m\sqrt{t/t_i}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, step 15. It is the solution of \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) with \(k_i(t_i) = m\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, step 18. It is the solution of \(\frac{dk_i}{dt} = \frac{k_i}{2t}\) with \(k_i(t_i) = m\).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Write the formula. \(k_i = m\sqrt{t/t_i}\), with \(m = 3\) and \(t_i = 100\).</li>
 <li>At \(t = 10\,000\): \(\frac t{t_i} \)<wbr>\({}= \frac{10\,000}{100} \)<wbr>\({}= 100\), and \(\sqrt{100} = 10\).</li>
@@ -125,7 +133,7 @@ This formula is explained below.</li>
 <details class="q"><summary><span class="qt">Practice · 2 + 1 marks</span><span>(a) Two nodes were added at \(t = 10\) and \(t = 1000\). What is the ratio of their degrees at any later time? (b) What fraction of nodes have degree at least \(4m\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">(a) \(k_i = m\sqrt{t/t_i}\). (b) Fraction with degree below \(k\) is \(1 - \frac{m^2}{k^2}\), so the fraction with degree at least \(k\) is \(\frac{m^2}{k^2}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) 1A, step 15. (b) 1B, step 7.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) 1A, step 18. (b) 1B, step 7.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) Node added at \(t_i = 10\): \(k_{10} = m\sqrt{t/10}\). Node added at \(t_i = 1000\): \(k_{1000} = m\sqrt{t/1000}\).</li>
 <li>Divide. \(\frac{k_{10}}{k_{1000}} \)<wbr>\({}= \frac{m\sqrt{t/10}}{m\sqrt{t/1000}}\). Cancel \(m\).</li>
@@ -165,7 +173,7 @@ This formula is explained below.</li>
 <ol class="steps">
 <li>There are \(m_0\) starting nodes plus one per step, so there are about \(t\) existing nodes.</li>
 <li>Each is equally likely, so \(\Pi(k_i) = \frac1t\).</li>
-<li>\(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\). This does not depend on \(k_i\).</li>
+<li>As in 1A, steps 4 to 7, the rate is the average number of new links per step. \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\). This does not depend on \(k_i\).</li>
 <li>Separate the variables. \(dk_i = m\,\frac{dt}t\).</li>
 <li>Integrate from \(k_i(t_i) = m\). \(k_i - m \)<wbr>\({}= m(\ln t - \ln t_i) \)<wbr>\({}= m\ln\frac t{t_i}\).</li>
 <li>Add \(m\) to both sides. \(k_i(t) \)<wbr>\({}= m + m\ln\frac{t}{t_i}\).</li>
@@ -189,7 +197,7 @@ This formula is explained below.</li>
 <li>Each link adds 2 to the total degree, so \(\sum_jk_j = 2t\).</li>
 <li>Node \(i\) is the randomly chosen end of the new link with probability \(\frac1N\).</li>
 <li>It is the preferentially chosen end with probability \(\frac{k_i}{\sum_jk_j} \)<wbr>\({}= \frac{k_i}{2t}\).</li>
-<li>Add these. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).</li>
+<li>The average number of new links per step is the sum of these, and as in 1A, steps 4 to 7, that is the rate. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).</li>
 <li>Look for a solution that grows in proportion to \(t\). Put \(k_i = at\), so \(\frac{dk_i}{dt} = a\).</li>
 <li>The equation becomes \(a \)<wbr>\({}= \frac1N + \frac{at}{2t} \)<wbr>\({}= \frac1N + \frac a2\).</li>
 <li>Subtract \(\frac a2\). \(\frac a2 = \frac1N\), so \(a = \frac2N\). So \(k_i = \frac{2t}N\) is one solution.</li>
@@ -257,7 +265,7 @@ This formula is explained below.</li>
 <details class="q"><summary><span class="qt">Practice · 2 + 2 marks</span><span>Model A with \(m = 2\). (a) A node is added at \(t_i = 10\). What is its degree at \(t = 1000\)? What would it be in the BA model? (b) What fraction of nodes have degree above \(10m\) in each model?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Model A: \(k_i = m + m\ln\frac t{t_i}\) and fraction above \(k\) is \(e^{1-k/m}\). BA: \(k_i = m\sqrt{t/t_i}\) and fraction above \(k\) is \(\frac{m^2}{k^2}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2A, steps 6 and 11. 1A, step 15, and 1B, step 7.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2A, steps 6 and 11. 1A, step 18, and 1B, step 7.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) Model A: \(k_i = m + m\ln\frac t{t_i}\). Here \(\frac t{t_i} \)<wbr>\({}= \frac{1000}{10} \)<wbr>\({}= 100\).</li>
 <li>\(\ln100 \)<wbr>\({}= 2\ln10 \)<wbr>\({}= 2\times2.303 \)<wbr>\({}= 4.61\).</li>
