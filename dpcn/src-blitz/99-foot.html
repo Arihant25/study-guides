@@ -151,5 +151,26 @@
 })();
 </script>
 <!--include:shared/nav-script.html-->
+<script>
+(function(){
+  document.querySelectorAll('.card.exam').forEach(function(card){
+    var whys = card.querySelectorAll('details.linewhy');
+    if(!whys.length) return;
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'closeall'; btn.textContent = 'Close all explanations';
+    card.appendChild(btn);
+    function update(){
+      var any = Array.prototype.some.call(whys, function(d){ return d.open; });
+      btn.classList.toggle('show', any);
+    }
+    whys.forEach(function(d){ d.addEventListener('toggle', update); });
+    btn.addEventListener('click', function(){
+      whys.forEach(function(d){ d.open = false; });
+      update();
+      card.scrollIntoView({block:'nearest'});
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -26,15 +26,9 @@ This formula is explained below.</li>
 <h4>Show that \(\frac{dk_i}{dt} = \frac{k_i}{2t}\), and solve it.</h4>
 <ol class="steps lines">
 <li>Each step adds \(m\) links. Each attaches to node \(i\) with probability \(\Pi(k_i) \)<wbr>\({}= \frac{k_i}{\sum_jk_j}\).</li>
-<li>Node \(i\) gains \(m\,\Pi(k_i)\) links per step on average. Treating \(k_i\) as continuous (the continuum approximation), \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi(k_i) \)<wbr>\({}= \frac{m\,k_i}{\sum_jk_j}\).</li>
-<li>Each link adds 2 to the total degree, so \(\sum_jk_j = 2mt\).</li>
-<li>So \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt} \)<wbr>\({}= \frac{k_i}{2t}\), which is proportional to \(\frac{k_i}t\).</li>
-<li>Separate the variables and integrate from \(k_i(t_i) = m\). \(\int_m^{k_i}\frac{dk}k \)<wbr>\({}= \frac12\int_{t_i}^t\frac{dt'}{t'}\), so \(\ln\frac{k_i}m \)<wbr>\({}= \frac12\ln\frac t{t_i}\).</li>
-<li>So \[k_i(t) = m\sqrt{t/t_i}.\]</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(18 small steps)</span></summary>
-<p class="whyhead">For lines 1 and 2</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Node \(i\) gains \(m\,\Pi(k_i)\) links per step on average. Treating \(k_i\) as continuous (the continuum approximation), \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi(k_i) \)<wbr>\({}= \frac{m\,k_i}{\sum_jk_j}\).
+<details class="linewhy"><summary>Why lines 1 and 2 work <span>(7 steps)</span></summary>
+<ol class="steps">
 <li>Each step adds \(m\) new links.</li>
 <li>Each of these links attaches to node \(i\) with probability \(\Pi(k_i) \)<wbr>\({}= \frac{k_i}{\sum_jk_j}\).</li>
 <li>So on average node \(i\) receives \(m\,\Pi(k_i)\) new links per step.</li>
@@ -43,15 +37,21 @@ This formula is explained below.</li>
 <li>In reality \(k_i\) goes up in whole-number jumps. But once the network is large, each jump is tiny compared with \(k_i\), and over many steps the jumps average out.</li>
 <li>So \(k_i\) can be treated as a smooth curve, and \(\frac{\Delta k_i}{\Delta t}\) becomes the derivative \(\frac{dk_i}{dt}\). This is called the <strong>continuum approximation</strong>. \[\frac{dk_i}{dt} = m\,\Pi(k_i) = \frac{m\,k_i}{\sum_jk_j}.\]</li>
 </ol>
-<p class="whyhead">For lines 3 and 4</p>
-<ol class="steps" style="counter-reset:s 7">
+</details></li>
+<li>Each link adds 2 to the total degree, so \(\sum_jk_j = 2mt\).</li>
+<li>So \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt} \)<wbr>\({}= \frac{k_i}{2t}\), which is proportional to \(\frac{k_i}t\).
+<details class="linewhy"><summary>Why lines 3 and 4 work <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>Find the total degree. After \(t\) steps there are \(mt\) links (ignoring the few starting links).</li>
 <li>Each link adds 1 to the degree of each of its two ends, so it adds 2 to the total. So \(\sum_jk_j = 2mt\).</li>
-<li>Substitute this into step 7. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt}\).</li>
+<li>Substitute this into line 2. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i}{2mt}\).</li>
 <li>Cancel \(m\). \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{k_i}{2t}\). This proves that the rate is proportional to \(\frac{k_i}t\).</li>
 </ol>
-<p class="whyhead">For lines 5 and 6</p>
-<ol class="steps" style="counter-reset:s 11">
+</details></li>
+<li>Separate the variables and integrate from \(k_i(t_i) = m\). \(\int_m^{k_i}\frac{dk}k \)<wbr>\({}= \frac12\int_{t_i}^t\frac{dt'}{t'}\), so \(\ln\frac{k_i}m \)<wbr>\({}= \frac12\ln\frac t{t_i}\).</li>
+<li>So \[k_i(t) = m\sqrt{t/t_i}.\]
+<details class="linewhy"><summary>Why lines 5 and 6 work <span>(7 steps)</span></summary>
+<ol class="steps">
 <li>Separate the variables. Divide both sides by \(k_i\) and multiply both sides by \(dt\). \(\frac{dk_i}{k_i} \)<wbr>\({}= \frac12\,\frac{dt}{t}\).</li>
 <li>Node \(i\) was added at time \(t_i\) with \(m\) links, so \(k_i(t_i) = m\). Integrate both sides from there. \[\int_m^{k_i}\frac{dk}{k} = \frac12\int_{t_i}^t\frac{dt'}{t'}.\]</li>
 <li>Use \(\int\frac{dx}x = \ln x\). \(\ln k_i - \ln m \)<wbr>\({}= \frac12(\ln t - \ln t_i)\).</li>
@@ -60,7 +60,8 @@ This formula is explained below.</li>
 <li>If \(\ln A = \ln B\) then \(A = B\). So \(\frac{k_i}m = \sqrt{t/t_i}\).</li>
 <li>Multiply both sides by \(m\). \[k_i(t) = m\sqrt{t/t_i}.\] A node added earlier (smaller \(t_i\)) has a larger degree.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>1B · The degree distribution \(P(k)\) (continuum theory)</h3>
@@ -68,97 +69,106 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Show that \(P(k) = 2m^2k^{-3}\).</h4>
 <ol class="steps lines">
-<li>From 1A, \(k_i = m\sqrt{t/t_i}\), so \(t_i = \frac{m^2t}{k_i^2}\).</li>
-<li>A node has degree below \(k\) exactly when it joined after \(T = \frac{m^2t}{k^2}\).</li>
-<li>Joining times are spread evenly, so the fraction that joined after \(T\) is \(1 - \frac Tt\). So \(F(k) = 1 - \frac{m^2}{k^2}\).</li>
-<li>\(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= \frac{2m^2}{k^3}\), a power law with \(\gamma = 3\).</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(10 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>From 1A, \(k_i = m\sqrt{t/t_i}\), so \(t_i = \frac{m^2t}{k_i^2}\).
+<details class="linewhy"><summary>Why line 1 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>From 1A, \(k_i = m\sqrt{t/t_i}\). Solve this for the joining time \(t_i\).</li>
 <li>Divide by \(m\). \(\frac{k_i}m = \sqrt{t/t_i}\).</li>
 <li>Square both sides. \(\frac{k_i^2}{m^2} \)<wbr>\({}= \frac t{t_i}\).</li>
 <li>Rearrange. \(t_i = \frac{m^2t}{k_i^2}\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>A node has degree below \(k\) exactly when it joined after \(T = \frac{m^2t}{k^2}\).
+<details class="linewhy"><summary>Why line 2 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>A node that joined later has a smaller degree. So a node has degree below \(k\) exactly when it joined after the time \(T = \frac{m^2t}{k^2}\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 5">
+</details></li>
+<li>Joining times are spread evenly, so the fraction that joined after \(T\) is \(1 - \frac Tt\). So \(F(k) = 1 - \frac{m^2}{k^2}\).
+<details class="linewhy"><summary>Why line 3 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Joining times are spread evenly over \(1\dots t\) (Part 0c). So the fraction that joined after \(T\) is \(1 - \frac Tt\).</li>
 <li>Put in \(T\). \(\frac Tt = \frac{m^2}{k^2}\), so the fraction with degree below \(k\) is \(F(k) = 1 - \frac{m^2}{k^2}\). The \(t\) has cancelled, so this does not change as the network grows.</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 7">
+</details></li>
+<li>\(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= \frac{2m^2}{k^3}\), a power law with \(\gamma = 3\).
+<details class="linewhy"><summary>Why line 4 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Write \(F(k) = 1 - m^2k^{-2}\) and differentiate. The derivative of \(k^{-2}\) is \(-2k^{-3}\).</li>
 <li>So \(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= -m^2\times(-2k^{-3}) \)<wbr>\({}= \frac{2m^2}{k^3}\).</li>
 <li>This is a power law with \(\gamma = 3\), whatever the value of \(m\).</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>1C · The master equation</h3>
+<p><strong>Why "master equation".</strong> It is one equation that accounts for every way the number of degree-\(k\) nodes can change in one step. Some are gained from degree \(k - 1\) and some are lost to degree \(k + 1\). Solving it gives the whole distribution \(P(k)\) at once. In physics, any equation of this gain-and-loss form for a probability distribution is called a master equation, and the name was carried over to networks.</p>
 <p>This method gives \(P(k)\) by counting. Let \(N(k, t)\) be the number of nodes with degree \(k\) at time \(t\). There are \(t\) nodes at time \(t\), so the fraction is \(P(k, t) = \frac{N(k, t)}t\). In one step, a node of degree \(k - 1\) that receives a link moves up to degree \(k\). A node of degree \(k\) that receives a link moves up to degree \(k + 1\). The new node adds one node of degree \(m\).</p>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Write the master equation for the BA model and solve it for \(P(k)\).</h4>
 <ol class="steps lines">
-<li>A degree-\(k\) node receives a new link with probability \(m\cdot\frac{k}{2mt} \)<wbr>\({}= \frac k{2t}\). With \(N(k, t) = t\,P(k, t)\), the expected number of degree-\(k\) nodes that receive a link in one step is \(\frac k2P(k, t)\).</li>
-<li>For \(k>m\),\[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]</li>
-<li>For \(k = m\),\[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]</li>
-<li>In the steady state \(P(k, t) = P(k)\), so \(N(k, t+1) - N(k, t) = P(k)\).</li>
-<li>At \(k = m\),\(P(m) = 1 - \frac m2P(m)\), so \(P(m) = \frac2{m+2}\).</li>
-<li>For \(k>m\),\(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\).</li>
-<li>Apply this repeatedly from \(P(m)\) and cancel. \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}.\]</li>
-<li>For large \(k\), \(P(k)\approx\frac{2m(m+1)}{k^3}\propto k^{-3}\).</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(20 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>A degree-\(k\) node receives a new link with probability \(m\cdot\frac{k}{2mt} \)<wbr>\({}= \frac k{2t}\). With \(N(k, t) = t\,P(k, t)\), the expected number of degree-\(k\) nodes that receive a link in one step is \(\frac k2P(k, t)\).
+<details class="linewhy"><summary>Why line 1 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>In one step there are \(m\) new links.</li>
 <li>Each one attaches to a particular degree-\(k\) node with probability \(\frac{k}{2mt}\) (1A, lines 1 and 3).</li>
 <li>There are \(N(k, t)\) degree-\(k\) nodes. So the expected (average) number of degree-\(k\) nodes that receive a link in one step is \(m\times N(k, t)\times\frac k{2mt}\).</li>
 <li>Cancel \(m\). This is \(\frac{k\,N(k, t)}{2t}\). Since \(N(k, t) = t\,P(k, t)\), it equals \(\frac k2P(k, t)\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>For \(k>m\),\[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]
+<details class="linewhy"><summary>Why line 2 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>For \(k>m\), the number of degree-\(k\) nodes goes up by one for each degree-\((k-1)\) node that receives a link.</li>
-<li>It goes down by one for each degree-\(k\) node that receives a link. Using step 4 for both, \[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]</li>
+<li>It goes down by one for each degree-\(k\) node that receives a link. Using line 1 for both, \[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 6">
+</details></li>
+<li>For \(k = m\),\[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]
+<details class="linewhy"><summary>Why line 3 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>For \(k = m\), no node can move up into degree \(m\), because every node starts with \(m\) links. The new node adds one node of degree \(m\). \[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 7">
+</details></li>
+<li>In the steady state \(P(k, t) = P(k)\), so \(N(k, t+1) - N(k, t) = P(k)\).
+<details class="linewhy"><summary>Why line 4 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Look for a steady state, where \(P(k, t) = P(k)\) does not depend on \(t\). Then \(N(k, t) = t\,P(k)\) and \(N(k, t+1) = (t+1)P(k)\).</li>
 <li>Subtract. \(N(k, t+1) - N(k, t) \)<wbr>\({}= (t+1)P(k) - tP(k) \)<wbr>\({}= P(k)\).</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 9">
-<li>Case \(k = m\). Subtract \(N(m, t)\) from both sides of step 7 and use step 9. \(P(m) = 1 - \frac m2P(m)\).</li>
+</details></li>
+<li>At \(k = m\),\(P(m) = 1 - \frac m2P(m)\), so \(P(m) = \frac2{m+2}\).
+<details class="linewhy"><summary>Why line 5 works <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Case \(k = m\). Subtract \(N(m, t)\) from both sides of line 3 and use line 4. \(P(m) = 1 - \frac m2P(m)\).</li>
 <li>Add \(\frac m2P(m)\) to both sides. \(\frac{m+2}2P(m) = 1\), so \(P(m) = \frac2{m+2}\).</li>
 </ol>
-<p class="whyhead">For line 6</p>
-<ol class="steps" style="counter-reset:s 11">
-<li>Case \(k>m\). Do the same with step 6. \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\).</li>
+</details></li>
+<li>For \(k>m\),\(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\).
+<details class="linewhy"><summary>Why line 6 works <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Case \(k>m\). Do the same with line 2. \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\).</li>
 <li>Add \(\frac k2P(k)\) to both sides. \(\frac{k+2}2P(k) \)<wbr>\({}= \frac{k-1}2P(k-1)\).</li>
 <li>Multiply by 2 and divide by \(k + 2\). \[P(k) = \frac{k-1}{k+2}\,P(k-1).\]</li>
 </ol>
-<p class="whyhead">For line 7</p>
-<ol class="steps" style="counter-reset:s 14">
+</details></li>
+<li>Apply this repeatedly from \(P(m)\) and cancel. \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}.\]
+<details class="linewhy"><summary>Why line 7 works <span>(5 steps)</span></summary>
+<ol class="steps">
 <li>Apply this again and again, starting from \(P(m)\). \(P(m+1) = \frac m{m+3}P(m)\), then \(P(m+2) \)<wbr>\({}= \frac{m+1}{m+4}P(m+1)\), and so on up to \(P(k) = \frac{k-1}{k+2}P(k-1)\).</li>
 <li>Multiply all of these together. \[\begin{aligned}P(k) &= P(m)\\ &\quad\times\frac{m(m+1)(m+2)\cdots(k-1)}{(m+3)(m+4)\cdots(k+2)}.\end{aligned}\]</li>
 <li>The top is every whole number from \(m\) to \(k - 1\). The bottom is every whole number from \(m + 3\) to \(k + 2\). The numbers from \(m + 3\) to \(k - 1\) are in both, so they cancel.</li>
 <li>Left on the top are \(m(m+1)(m+2)\). Left on the bottom are \(k(k+1)(k+2)\). With \(P(m) = \frac2{m+2}\), \[P(k) = \frac2{m+2}\times\frac{m(m+1)(m+2)}{k(k+1)(k+2)}.\]</li>
 <li>Cancel \(m + 2\). \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}.\]</li>
 </ol>
-<p class="whyhead">For line 8</p>
-<ol class="steps" style="counter-reset:s 19">
+</details></li>
+<li>For large \(k\), \(P(k)\approx\frac{2m(m+1)}{k^3}\propto k^{-3}\).
+<details class="linewhy"><summary>Why line 8 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>For large \(k\), \(k(k+1)(k+2)\) is about \(k^3\). So \(P(k)\approx\frac{2m(m+1)}{k^3}\propto k^{-3}\), the same power law (\(\gamma = 3\)) as in 1B.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 <div class="card remember"><span class="tag">Remember</span>
 <p>Ingredients are growth and preferential attachment, \(\Pi(k_i) = \frac{k_i}{\sum_jk_j}\). The total degree is \(\sum_jk_j = 2mt\).</p>
@@ -240,43 +250,46 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Find \(k_i(t)\) and \(P(k)\) for Model A. Is it scale-free?</h4>
 <ol class="steps lines">
-<li>There are about \(t\) existing nodes, each equally likely, so \(\Pi = \frac1t\).</li>
-<li>As in 1A, \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\).</li>
-<li>Integrate from \(k_i(t_i) = m\). \(k_i(t) = m + m\ln\frac t{t_i}\).</li>
-<li>\(k_i<k\) exactly when \(t_i>t\,e^{1-k/m}\). Joining times are spread evenly, so \(F(k) = 1 - e^{1-k/m}\).</li>
-<li>\(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= \frac em\,e^{-k/m}\). This is exponential, so there are no hubs and the network is not scale-free.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(14 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>There are about \(t\) existing nodes, each equally likely, so \(\Pi = \frac1t\).
+<details class="linewhy"><summary>Why line 1 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>There are \(m_0\) starting nodes plus one per step, so there are about \(t\) existing nodes.</li>
 <li>Each is equally likely, so \(\Pi(k_i) = \frac1t\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 2">
-<li>As in 1A, steps 4 to 7, the rate is the average number of new links per step. \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\). This does not depend on \(k_i\).</li>
+</details></li>
+<li>As in 1A, \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\).
+<details class="linewhy"><summary>Why line 2 works <span>(1 step)</span></summary>
+<ol class="steps">
+<li>As in 1A, line 2, the rate is the average number of new links per step. \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi \)<wbr>\({}= \frac mt\). This does not depend on \(k_i\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 3">
+</details></li>
+<li>Integrate from \(k_i(t_i) = m\). \(k_i(t) = m + m\ln\frac t{t_i}\).
+<details class="linewhy"><summary>Why line 3 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Separate the variables. \(dk_i = m\,\frac{dt}t\).</li>
 <li>Integrate from \(k_i(t_i) = m\). \(k_i - m \)<wbr>\({}= m(\ln t - \ln t_i) \)<wbr>\({}= m\ln\frac t{t_i}\).</li>
 <li>Add \(m\) to both sides. \(k_i(t) \)<wbr>\({}= m + m\ln\frac{t}{t_i}\).</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 6">
+</details></li>
+<li>\(k_i<k\) exactly when \(t_i>t\,e^{1-k/m}\). Joining times are spread evenly, so \(F(k) = 1 - e^{1-k/m}\).
+<details class="linewhy"><summary>Why line 4 works <span>(5 steps)</span></summary>
+<ol class="steps">
 <li>Node \(i\) has degree below \(k\) when \(m + m\ln\frac t{t_i}<k\).</li>
 <li>Subtract \(m\) and divide by \(m\). \(\ln\frac t{t_i}<\frac km - 1\).</li>
 <li>Take \(e\) to the power of both sides. \(\frac t{t_i}<e^{k/m - 1}\).</li>
 <li>Rearrange. \(t_i>\frac t{e^{k/m-1}} \)<wbr>\({}= t\,e^{1 - k/m}\).</li>
 <li>Joining times are spread evenly, so the fraction that joined after \(T = t\,e^{1-k/m}\) is \(1 - \frac Tt\). So \(F(k) = 1 - e^{1 - k/m}\).</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 11">
+</details></li>
+<li>\(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= \frac em\,e^{-k/m}\). This is exponential, so there are no hubs and the network is not scale-free.
+<details class="linewhy"><summary>Why line 5 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Differentiate. By the chain rule, the derivative of \(e^{1-k/m}\) is \(e^{1-k/m}\times\left(-\frac1m\right)\).</li>
 <li>So \(P(k) \)<wbr>\({}= \frac{dF}{dk} \)<wbr>\({}= \frac1m e^{1-k/m} \)<wbr>\({}= \frac em\,e^{-k/m}\) for \(k\ge m\).</li>
 <li>This is exponential, not a power law. Large degrees are extremely rare, so there are no hubs and the network is not scale-free.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>2B · Preferential attachment without growth (Model B)</h3>
@@ -284,26 +297,24 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Find \(k_i(t)\) for Model B and describe the degree distribution.</h4>
 <ol class="steps lines">
-<li>Each step adds one link and no node, so \(\sum_jk_j = 2t\).</li>
-<li>Node \(i\) is the random end with probability \(\frac1N\) or the preferential end with probability \(\frac{k_i}{2t}\). So \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).</li>
-<li>The solution is \(k_i(t) \)<wbr>\({}= \frac{2t}N + C_i\sqrt t\). (Substitute it to check.)</li>
-<li>For large \(t\) the \(\frac{2t}N\) part is much larger, so every degree is close to \(\frac{2t}N\). \(P(k)\) is a narrow peak, not a power law.</li>
-<li>After about \(\frac{N^2}2\) steps every pair is linked, so the network becomes complete.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(14 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Each step adds one link and no node, so \(\sum_jk_j = 2t\).
+<details class="linewhy"><summary>Why line 1 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Each step adds one link and no node. After \(t\) steps there are \(t\) links.</li>
 <li>Each link adds 2 to the total degree, so \(\sum_jk_j = 2t\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 2">
+</details></li>
+<li>Node \(i\) is the random end with probability \(\frac1N\) or the preferential end with probability \(\frac{k_i}{2t}\). So \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).
+<details class="linewhy"><summary>Why line 2 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Node \(i\) is the randomly chosen end of the new link with probability \(\frac1N\).</li>
 <li>It is the preferentially chosen end with probability \(\frac{k_i}{\sum_jk_j} \)<wbr>\({}= \frac{k_i}{2t}\).</li>
-<li>The average number of new links per step is the sum of these, and as in 1A, steps 4 to 7, that is the rate. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).</li>
+<li>The average number of new links per step is the sum of these, and as in 1A, line 2, that is the rate. \(\frac{dk_i}{dt} \)<wbr>\({}= \frac1N + \frac{k_i}{2t}\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 5">
+</details></li>
+<li>The solution is \(k_i(t) \)<wbr>\({}= \frac{2t}N + C_i\sqrt t\). (Substitute it to check.)
+<details class="linewhy"><summary>Why line 3 works <span>(6 steps)</span></summary>
+<ol class="steps">
 <li>Look for a solution that grows in proportion to \(t\). Put \(k_i = at\), so \(\frac{dk_i}{dt} = a\).</li>
 <li>The equation becomes \(a \)<wbr>\({}= \frac1N + \frac{at}{2t} \)<wbr>\({}= \frac1N + \frac a2\).</li>
 <li>Subtract \(\frac a2\). \(\frac a2 = \frac1N\), so \(a = \frac2N\). So \(k_i = \frac{2t}N\) is one solution.</li>
@@ -311,16 +322,21 @@ This formula is explained below.</li>
 <li>The right side is \(\frac1N + \frac1{2t}\left(\frac{2t}N + C_i\sqrt t\right) \)<wbr>\({}= \frac1N + \frac1N + \frac{C_i}{2\sqrt t}\).</li>
 <li>The two sides are equal, so this solves the equation for any \(C_i\). The value of \(C_i\) depends on the node’s starting degree.</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 11">
+</details></li>
+<li>For large \(t\) the \(\frac{2t}N\) part is much larger, so every degree is close to \(\frac{2t}N\). \(P(k)\) is a narrow peak, not a power law.
+<details class="linewhy"><summary>Why line 4 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>The \(\frac{2t}N\) part is the same for every node and grows like \(t\). The \(C_i\sqrt t\) part grows only like \(\sqrt t\).</li>
 <li>So for large \(t\) every degree is close to \(\frac{2t}N\). The distribution is a narrow peak around the average, not a power law.</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 13">
+</details></li>
+<li>After about \(\frac{N^2}2\) steps every pair is linked, so the network becomes complete.
+<details class="linewhy"><summary>Why line 5 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>There are only \(\frac{N(N-1)}2\) possible links. After about \(\frac{N^2}2\) steps every pair of nodes is linked, so the network is complete and never settles to a steady state.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>2C · Nonlinear preferential attachment</h3>
@@ -337,43 +353,46 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Explain what happens for \(\alpha<1\) and for \(\alpha>1\).</h4>
 <ol class="steps lines">
-<li>For \(\alpha<1\), \(\sum_jk_j^\alpha\approx\nu t\), so \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i^\alpha}{\nu t}\).</li>
-<li>Integrating gives \(k_i^{1-\alpha} \)<wbr>\({}= m^{1-\alpha} + \frac{(1-\alpha)m}\nu\ln\frac t{t_i}\).</li>
-<li>So \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\), which grows more slowly than any power of \(t\). There are no hubs and no power law.</li>
-<li>For \(\alpha>1\), if one node has \(k_1 = ct\), then \(\Pi(k_1) \)<wbr>\({}= \frac{c^\alpha t^\alpha}{c^\alpha t^\alpha + bt}\to1\).</li>
-<li>So that node receives almost every new link, and ends up with a finite fraction of all the links.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(14 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
-<li>For \(\alpha<1\), degrees stay small (step 8 checks this). So the values \(k_j^\alpha\) have some fixed average, called \(\nu\) (the Greek letter nu).</li>
+<li>For \(\alpha<1\), \(\sum_jk_j^\alpha\approx\nu t\), so \(\frac{dk_i}{dt} \)<wbr>\({}= \frac{m\,k_i^\alpha}{\nu t}\).
+<details class="linewhy"><summary>Why line 1 works <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>For \(\alpha<1\), degrees stay small (line 3 checks this). So the values \(k_j^\alpha\) have some fixed average, called \(\nu\) (the Greek letter nu).</li>
 <li>With about \(t\) nodes, \(\sum_jk_j^\alpha\approx\nu t\). So \(\frac{dk_i}{dt} \)<wbr>\({}= m\,\Pi(k_i) \)<wbr>\({}= \frac{m\,k_i^\alpha}{\nu t}\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 2">
+</details></li>
+<li>Integrating gives \(k_i^{1-\alpha} \)<wbr>\({}= m^{1-\alpha} + \frac{(1-\alpha)m}\nu\ln\frac t{t_i}\).
+<details class="linewhy"><summary>Why line 2 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Separate the variables. \(k_i^{-\alpha}\,dk_i \)<wbr>\({}= \frac m\nu\,\frac{dt}t\).</li>
 <li>Integrate from \(k_i(t_i) = m\), using \(\int k^{-\alpha}dk \)<wbr>\({}= \frac{k^{1-\alpha}}{1-\alpha}\). \[\frac{k_i^{1-\alpha} - m^{1-\alpha}}{1-\alpha} = \frac m\nu\ln\frac t{t_i}.\]</li>
 <li>Multiply by \(1 - \alpha\) and add \(m^{1-\alpha}\). \[k_i^{1-\alpha} = m^{1-\alpha} + \frac{(1-\alpha)m}{\nu}\ln\frac{t}{t_i}.\]</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 5">
+</details></li>
+<li>So \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\), which grows more slowly than any power of \(t\). There are no hubs and no power law.
+<details class="linewhy"><summary>Why line 3 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>The largest degree belongs to the oldest node, \(t_i = 1\). For large \(t\) the \(\ln t\) term is much bigger than \(m^{1-\alpha}\), so \(k_{\max}^{1-\alpha}\approx\frac{(1-\alpha)m}\nu\ln t\).</li>
 <li>Raise both sides to the power \(\frac1{1-\alpha}\). \(k_{\max}\sim(\ln t)^{1/(1-\alpha)}\).</li>
 <li>This grows more slowly than any power of \(t\). So degrees do stay small, and there are no hubs and no power law.</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 8">
+</details></li>
+<li>For \(\alpha>1\), if one node has \(k_1 = ct\), then \(\Pi(k_1) \)<wbr>\({}= \frac{c^\alpha t^\alpha}{c^\alpha t^\alpha + bt}\to1\).
+<details class="linewhy"><summary>Why line 4 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>For \(\alpha>1\), suppose one node has degree \(k_1 = ct\) for some constant \(c\). Its term in the sum is \(k_1^\alpha \)<wbr>\({}= c^\alpha t^\alpha\).</li>
 <li>The other nodes (about \(t\) of them) have small degrees, so their terms add up to about \(bt\) for some constant \(b\).</li>
 <li>\(\Pi(k_1) \)<wbr>\({}= \frac{c^\alpha t^\alpha}{c^\alpha t^\alpha + bt}\). Divide the top and bottom by \(c^\alpha t^\alpha\). \(\Pi(k_1) \)<wbr>\({}= \frac1{1 + \frac b{c^\alpha t^{\alpha-1}}}\).</li>
 <li>Since \(\alpha>1\), \(t^{\alpha-1}\) grows without limit. So \(\frac b{c^\alpha t^{\alpha-1}}\) goes to 0, and \(\Pi(k_1)\) goes to 1.</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 12">
+</details></li>
+<li>So that node receives almost every new link, and ends up with a finite fraction of all the links.
+<details class="linewhy"><summary>Why line 5 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>So almost every new link attaches to node 1. It gains about \(m\) links per step, so \(k_1\approx mt\), which agrees with the starting assumption.</li>
 <li>One node ends up with a finite fraction of all the links, and every other node keeps a small degree.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 <div class="card remember"><span class="tag">Remember</span>
 <p>Both ingredients are needed for a power law. Growth alone (Model A) gives \(k_i = m + m\ln\frac t{t_i}\) and an exponential \(P(k) = \frac em e^{-k/m}\). Preferential attachment alone (Model B) gives \(k_i\approx\frac{2t}N\) for every node, and eventually a complete graph.</p>
@@ -451,128 +470,134 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Show that \(C(0) = \frac{3(k-1)}{2(2k-1)}\).</h4>
 <ol class="steps lines">
-<li>A node has \(2k\) neighbours, so there are \(k(2k-1)\) pairs of neighbours.</li>
-<li>Two neighbours are linked when they are at most \(k\) apart. Pairs on the same side are all linked, which gives \(2\times\frac{k(k-1)}2 \)<wbr>\({}= k(k-1)\).</li>
-<li>Pairs on opposite sides, at \(-a\) and \(+b\), are linked when \(a + b\le k\). There are \((k-1) + (k-2) + \dots + 1 \)<wbr>\({}= \frac{k(k-1)}2\) of them.</li>
-<li>So there are \(\frac32k(k-1)\) linked pairs, and \(C(0) \)<wbr>\({}= \frac{\frac32k(k-1)}{k(2k-1)} \)<wbr>\({}= \frac{3(k-1)}{2(2k-1)}\to\frac34\).</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(11 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>A node has \(2k\) neighbours, so there are \(k(2k-1)\) pairs of neighbours.
+<details class="linewhy"><summary>Why line 1 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>Each node has \(2k\) neighbours. The number of pairs of neighbours is \(\frac{2k(2k-1)}2 = k(2k-1)\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 1">
+</details></li>
+<li>Two neighbours are linked when they are at most \(k\) apart. Pairs on the same side are all linked, which gives \(2\times\frac{k(k-1)}2 \)<wbr>\({}= k(k-1)\).
+<details class="linewhy"><summary>Why line 2 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Two neighbours are linked when they are at most \(k\) positions apart on the ring.</li>
 <li>Pairs on the same side. The right-hand neighbours are at positions \(1, 2, \dots, k\). Any two of them are at most \(k - 1\) apart, so every such pair is linked.</li>
 <li>That side has \(\frac{k(k-1)}2\) pairs, and the left side has the same number. Together this gives \(k(k-1)\) linked pairs.</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>Pairs on opposite sides, at \(-a\) and \(+b\), are linked when \(a + b\le k\). There are \((k-1) + (k-2) + \dots + 1 \)<wbr>\({}= \frac{k(k-1)}2\) of them.
+<details class="linewhy"><summary>Why line 3 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Pairs on opposite sides. Take positions \(-a\) and \(+b\), with \(a\) and \(b\) between 1 and \(k\). They are \(a + b\) apart, so they are linked when \(a + b\le k\).</li>
 <li>Count these. For \(a = 1\), \(b\) can be \(1\dots k-1\), which is \(k - 1\) choices. For \(a = 2\) there are \(k - 2\), and so on down to 0 for \(a = k\).</li>
 <li>The total is \(1 + 2 + \dots + (k-1) \)<wbr>\({}= \frac{k(k-1)}2\).</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 7">
+</details></li>
+<li>So there are \(\frac32k(k-1)\) linked pairs, and \(C(0) \)<wbr>\({}= \frac{\frac32k(k-1)}{k(2k-1)} \)<wbr>\({}= \frac{3(k-1)}{2(2k-1)}\to\frac34\).
+<details class="linewhy"><summary>Why line 4 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>Linked pairs in total. \(k(k-1) + \frac{k(k-1)}2 \)<wbr>\({}= \frac32k(k-1)\).</li>
 <li>Divide by the number of pairs. \(C(0) \)<wbr>\({}= \frac{\frac32k(k-1)}{k(2k-1)}\).</li>
 <li>Cancel \(k\). \(C(0) = \frac{3(k-1)}{2(2k-1)}\).</li>
 <li>For large \(k\), \(k - 1\approx k\) and \(2k - 1\approx2k\), so \(C(0)\approx\frac{3k}{4k} \)<wbr>\({}= \frac34\). It does not depend on \(n\).</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>3B · Path length of the ring lattice, \(\bar\ell(0)\)</h3>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Show that \(\bar\ell(0)\approx\frac{n}{4k}\).</h4>
 <ol class="steps lines">
-<li>There are \(2k\) nodes at each distance \(\ell = 1, 2, \dots, D\), with \(D = \frac n{2k}\).</li>
-<li>The sum of distances from one node is \(\sum_{\ell=1}^D2k\,\ell\approx kD^2 \)<wbr>\({}= \frac{n^2}{4k}\).</li>
-<li>Divide by the \(n\) other nodes. \(\bar\ell(0)\approx\frac n{4k}\), which grows in proportion to \(n\).</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(8 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>There are \(2k\) nodes at each distance \(\ell = 1, 2, \dots, D\), with \(D = \frac n{2k}\).
+<details class="linewhy"><summary>Why line 1 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>From any node, the nodes 1 to \(k\) positions away on either side are linked to it, so they are at distance 1.</li>
 <li>The nodes \(k + 1\) to \(2k\) positions away are at distance 2, and so on. So there are \(2k\) nodes at each distance \(\ell = 1, 2, \dots\)</li>
 <li>The farthest node is halfway round the ring, \(\frac n2\) positions away. Each step covers up to \(k\) positions, so the largest distance is \(D = \frac{n}{2k}\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 3">
+</details></li>
+<li>The sum of distances from one node is \(\sum_{\ell=1}^D2k\,\ell\approx kD^2 \)<wbr>\({}= \frac{n^2}{4k}\).
+<details class="linewhy"><summary>Why line 2 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Add up the distances from one node to all the others. \(\sum_{\ell=1}^{D}2k\,\ell \)<wbr>\({}= 2k(1 + 2 + \dots + D)\).</li>
 <li>Use \(1 + 2 + \dots + D \)<wbr>\({}= \frac{D(D+1)}2\approx\frac{D^2}2\) for large \(D\). The sum is about \(2k\cdot\frac{D^2}2 = kD^2\).</li>
 <li>Put in \(D = \frac n{2k}\). \(kD^2 \)<wbr>\({}= k\cdot\frac{n^2}{4k^2} \)<wbr>\({}= \frac{n^2}{4k}\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 6">
+</details></li>
+<li>Divide by the \(n\) other nodes. \(\bar\ell(0)\approx\frac n{4k}\), which grows in proportion to \(n\).
+<details class="linewhy"><summary>Why line 3 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Divide by the number of other nodes, \(n - 1\approx n\), to get the average. \(\bar\ell(0)\approx\frac{n^2}{4k}\cdot\frac1n \)<wbr>\({}= \frac{n}{4k}\).</li>
 <li>Every node gives the same value, so this is the average over all pairs. It grows in proportion to \(n\), so a large ring lattice has long paths.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>3C · The random graph at \(p = 1\)</h3>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Find \(C\) and \(\bar\ell\) at \(p = 1\).</h4>
 <ol class="steps lines">
-<li>Each pair is linked independently with probability \(q\approx\frac{2k}n\), so \(C = q\approx\frac{2k}n\to0\).</li>
-<li>About \((2k)^\ell\) nodes are at distance \(\ell\). Setting \((2k)^\ell = n\) gives \(\bar\ell\approx\frac{\ln n}{\ln2k}\), which is short.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(8 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Each pair is linked independently with probability \(q\approx\frac{2k}n\), so \(C = q\approx\frac{2k}n\to0\).
+<details class="linewhy"><summary>Why line 1 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>Each node has \(2k\) links, and each goes to one of the other \(n - 1\) nodes.</li>
 <li>So the probability that a particular pair of nodes is linked is \(q \)<wbr>\({}= \frac{2k}{n-1}\approx\frac{2k}n\).</li>
 <li>In a random graph the links are placed independently. So two neighbours of a node are linked with the same probability \(q\) as any other pair.</li>
 <li>So \(C = q\approx\frac{2k}n\), which goes to 0 for large \(n\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>About \((2k)^\ell\) nodes are at distance \(\ell\). Setting \((2k)^\ell = n\) gives \(\bar\ell\approx\frac{\ln n}{\ln2k}\), which is short.
+<details class="linewhy"><summary>Why line 2 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>From a node there are about \(2k\) nodes at distance 1. Each of those has about \(2k\) neighbours, so there are about \((2k)^2\) nodes at distance 2.</li>
 <li>Continuing in the same way, there are about \((2k)^\ell\) nodes at distance \(\ell\).</li>
 <li>All \(n\) nodes are reached when \((2k)^{\ell}\approx n\). Take \(\ln\) of both sides. \(\ell\ln(2k) = \ln n\), so \(\bar\ell\approx\frac{\ln n}{\ln 2k}\).</li>
 <li>This grows only like \(\ln n\), so paths are short. For example, with \(n = 1\,000\,000\) and \(2k = 10\), \(\bar\ell\approx\frac{13.8}{2.30} \)<wbr>\({}= 6\), while the ring lattice has \(\frac{n}{4k} = 50\,000\).</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <h3>3D · Clustering for \(0<p<1\)</h3>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Show that \(C(p) = C(0)(1-p)^3\).</h4>
 <ol class="steps lines">
-<li>Each linked pair of neighbours forms a triangle with the node, so clustering counts triangles.</li>
-<li>A triangle survives only if none of its three links is rewired, which has probability \((1-p)^3\).</li>
-<li>New triangles from rewired links are rare (probability about \(\frac{2k}n\)), so they are neglected.</li>
-<li>So \(C(p) = C(0)(1-p)^3\).</li>
-<li>About \(nkp\) links become shortcuts. Even for small \(p\) they make \(\bar\ell\) short while \(C\) stays close to \(C(0)\). That range of \(p\) is the small world.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(9 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Each linked pair of neighbours forms a triangle with the node, so clustering counts triangles.
+<details class="linewhy"><summary>Why line 1 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>In the ring lattice, each linked pair of neighbours of node \(i\) forms a triangle with \(i\). So clustering counts triangles.</li>
 <li>A triangle is made of three links.</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 2">
+</details></li>
+<li>A triangle survives only if none of its three links is rewired, which has probability \((1-p)^3\).
+<details class="linewhy"><summary>Why line 2 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Each link is left alone with probability \(1 - p\), independently of the others.</li>
 <li>A triangle remains only if all three of its links are left alone. That has probability \((1-p)\times(1-p)\times(1-p) \)<wbr>\({}= (1-p)^3\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>New triangles from rewired links are rare (probability about \(\frac{2k}n\)), so they are neglected.
+<details class="linewhy"><summary>Why line 3 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>A rewired link goes to a random node, so it makes a new triangle only by chance, with probability about \(\frac{2k}n\) (as in 3C). For large \(n\) this is neglected.</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 5">
+</details></li>
+<li>So \(C(p) = C(0)(1-p)^3\).
+<details class="linewhy"><summary>Why line 4 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>So the number of triangles, and therefore the clustering, is multiplied by \((1-p)^3\). \[\begin{aligned}C(p) &= C(0)(1-p)^3\\ &= \frac{3(k-1)}{2(2k-1)}(1-p)^3.\end{aligned}\]</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 6">
+</details></li>
+<li>About \(nkp\) links become shortcuts. Even for small \(p\) they make \(\bar\ell\) short while \(C\) stays close to \(C(0)\). That range of \(p\) is the small world.
+<details class="linewhy"><summary>Why line 5 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>There are \(nk\) links, and each is rewired with probability \(p\). So about \(nkp\) links become shortcuts.</li>
 <li>Even for small \(p\) these shortcuts make \(\bar\ell\) close to the random value. For example, with \(n = 1000\), \(k = 5\) and \(p = 0.01\) there are about 50 shortcuts.</li>
 <li>At the same \(p\), \(C \)<wbr>\({}= C(0)\times0.99^3 \)<wbr>\({}= 0.97\,C(0)\), so the clustering is still high. That range of \(p\) is the small world.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 
 <table class="tbl">
@@ -646,46 +671,50 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Find the condition for the two oscillators to lock, and the common frequency \(\Omega\).</h4>
 <ol class="steps lines">
-<li>Let \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega \)<wbr>\({}= \omega_2 - \omega_1\). Subtracting the equations and using \(\sin(-\phi) = -\sin\phi\) gives \[\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi.\]</li>
-<li>Locked means \(\dot\phi = 0\), so \(\sin\phi^* \)<wbr>\({}= \frac{\Delta\omega}{k_1 + k_2}\).</li>
-<li>Since \(|\sin\phi^*|\le1\), they lock if and only if \(|\Delta\omega|\le k_1 + k_2\). With \(k_1 = k_2 = k\), \(k_c = \frac{|\Delta\omega|}2\).</li>
-<li>The stable solution has \(\cos\phi^*>0\), because the slope \(-(k_1 + k_2)\cos\phi^*\) must be negative.</li>
-<li>When locked, \(\Omega \)<wbr>\({}= \omega_1 + k_1\sin\phi^* \)<wbr>\({}= \omega_2 - k_2\sin\phi^*\). Eliminating \(\sin\phi^*\) gives \[\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}.\]</li>
-<li>If \(|\Delta\omega|>k_1 + k_2\), \(\dot\phi\) is never zero, so they do not lock.</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(13 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Let \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega \)<wbr>\({}= \omega_2 - \omega_1\). Subtracting the equations and using \(\sin(-\phi) = -\sin\phi\) gives \[\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi.\]
+<details class="linewhy"><summary>Why line 1 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Let \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega \)<wbr>\({}= \omega_2 - \omega_1\).</li>
 <li>Subtract the first equation from the second. \[\begin{aligned}\dot\phi &= \dot\theta_2 - \dot\theta_1\\ &= (\omega_2 - \omega_1) + k_2\sin(\theta_1 - \theta_2)\\ &\quad - k_1\sin(\theta_2 - \theta_1).\end{aligned}\]</li>
 <li>Now \(\sin(\theta_2 - \theta_1) \)<wbr>\({}= \sin\phi\) and \(\sin(\theta_1 - \theta_2) \)<wbr>\({}= \sin(-\phi) \)<wbr>\({}= -\sin\phi\). So \[\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi.\]</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 3">
+</details></li>
+<li>Locked means \(\dot\phi = 0\), so \(\sin\phi^* \)<wbr>\({}= \frac{\Delta\omega}{k_1 + k_2}\).
+<details class="linewhy"><summary>Why line 2 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>Locked means \(\phi\) is constant, so \(\dot\phi = 0\). Then \((k_1 + k_2)\sin\phi^* \)<wbr>\({}= \Delta\omega\), so \(\sin\phi^* \)<wbr>\({}= \frac{\Delta\omega}{k_1 + k_2}\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 4">
+</details></li>
+<li>Since \(|\sin\phi^*|\le1\), they lock if and only if \(|\Delta\omega|\le k_1 + k_2\). With \(k_1 = k_2 = k\), \(k_c = \frac{|\Delta\omega|}2\).
+<details class="linewhy"><summary>Why line 3 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>A sine is never more than 1 in size. So a solution exists only if \(\left|\frac{\Delta\omega}{k_1 + k_2}\right|\le1\), that is, \[|\Delta\omega|\le k_1 + k_2.\] This is the critical condition.</li>
 <li>With equal couplings \(k_1 = k_2 = k\), the condition reads \(|\Delta\omega|\le2k\). So the critical coupling is \(k_c \)<wbr>\({}= \frac{|\Delta\omega|}{2}\).</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 6">
+</details></li>
+<li>The stable solution has \(\cos\phi^*>0\), because the slope \(-(k_1 + k_2)\cos\phi^*\) must be negative.
+<details class="linewhy"><summary>Why line 4 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>There are two solutions, \(\arcsin\frac{\Delta\omega}{k_1+k_2}\) and \(\pi\) minus that (Part 0c).</li>
 <li>To see which is stable, treat \(\dot\phi = g(\phi)\) like \(\dot x = f(x)\) in Part 0b. The slope is \(g'(\phi) \)<wbr>\({}= -(k_1 + k_2)\cos\phi\).</li>
 <li>Stable needs \(g'(\phi^*)<0\), which means \(\cos\phi^*>0\). So the stable one is \(\phi^* \)<wbr>\({}= \arcsin\frac{\Delta\omega}{k_1+k_2}\), the one below \(\frac\pi2\).</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 9">
+</details></li>
+<li>When locked, \(\Omega \)<wbr>\({}= \omega_1 + k_1\sin\phi^* \)<wbr>\({}= \omega_2 - k_2\sin\phi^*\). Eliminating \(\sin\phi^*\) gives \[\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}.\]
+<details class="linewhy"><summary>Why line 5 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>In the locked state both phases increase at the same rate \(\Omega\). Put \(\theta_2 - \theta_1 = \phi^*\) into each equation. \(\Omega \)<wbr>\({}= \omega_1 + k_1\sin\phi^*\) and \(\Omega \)<wbr>\({}= \omega_2 - k_2\sin\phi^*\).</li>
 <li>Multiply the first by \(k_2\) and the second by \(k_1\). \(k_2\Omega \)<wbr>\({}= k_2\omega_1 + k_1k_2\sin\phi^*\) and \(k_1\Omega \)<wbr>\({}= k_1\omega_2 - k_1k_2\sin\phi^*\).</li>
 <li>Add them. The \(\sin\phi^*\) terms cancel. \((k_1 + k_2)\Omega \)<wbr>\({}= k_2\omega_1 + k_1\omega_2\), so \[\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2}.\]</li>
 </ol>
-<p class="whyhead">For line 6</p>
-<ol class="steps" style="counter-reset:s 12">
+</details></li>
+<li>If \(|\Delta\omega|>k_1 + k_2\), \(\dot\phi\) is never zero, so they do not lock.
+<details class="linewhy"><summary>Why line 6 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>If the condition fails, \(\dot\phi\) is never zero. The phase difference keeps changing, so the oscillators do not lock.</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 <div class="card remember"><span class="tag">Remember</span>
 <p>\(\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi\). Lock if and only if \(|\Delta\omega|\le k_1 + k_2\). Equal couplings give \(k_c = \frac{|\Delta\omega|}2\).</p>
@@ -765,56 +794,61 @@ This formula is explained below.</li>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Find the fixed points of the Lorenz system, the Jacobian at each, and show that the origin is stable if and only if \(\rho<1\).</h4>
 <ol class="steps lines">
-<li>Fixed points have \(\sigma(y - x) = 0\), \(\rho x - y - xz = 0\) and \(xy - \beta z = 0\).</li>
-<li>The first gives \(y = x\). The third then gives \(z = \frac{x^2}\beta\). The second gives \(x(\rho - 1 - z) = 0\).</li>
-<li>So \(P_0 = (0, 0, 0)\), and for \(\rho>1\), \(P_\pm \)<wbr>\({}= (\pm c, \pm c, \rho - 1)\) with \(c = \sqrt{\beta(\rho - 1)}\).</li>
-<li>\[J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}.\]</li>
-<li>\(J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}\). One eigenvalue is \(-\beta\). The other two come from the 2×2 block, with \(T = -(\sigma + 1)<0\) and \(D = \sigma(1 - \rho)\).</li>
-<li>So the origin is stable if and only if \(D>0\), that is, \(\rho<1\). For \(\rho>1\) it is a saddle.</li>
-<li>\[J(P_\pm) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & \mp c\\ \pm c & \pm c & -\beta\end{pmatrix}.\]</li>
-</ol>
-<details class="why"><summary>Why each line works <span>(19 small steps)</span></summary>
-<p class="whyhead">For line 1</p>
-<ol class="steps" style="counter-reset:s 0">
+<li>Fixed points have \(\sigma(y - x) = 0\), \(\rho x - y - xz = 0\) and \(xy - \beta z = 0\).
+<details class="linewhy"><summary>Why line 1 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>At a fixed point all three rates are zero. (i) \(\sigma(y - x) = 0\). (ii) \(\rho x - y - xz = 0\). (iii) \(xy - \beta z = 0\).</li>
 </ol>
-<p class="whyhead">For line 2</p>
-<ol class="steps" style="counter-reset:s 1">
+</details></li>
+<li>The first gives \(y = x\). The third then gives \(z = \frac{x^2}\beta\). The second gives \(x(\rho - 1 - z) = 0\).
+<details class="linewhy"><summary>Why line 2 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>From (i), since \(\sigma>0\), \(y - x = 0\), so \(y = x\).</li>
 <li>Put \(y = x\) into (iii). \(x^2 - \beta z = 0\), so \(z = \frac{x^2}\beta\).</li>
 <li>Put \(y = x\) into (ii). \(\rho x - x - xz = 0\).</li>
 <li>Take out the common factor \(x\). \(x(\rho - 1 - z) = 0\). So either \(x = 0\) or \(z = \rho - 1\).</li>
 </ol>
-<p class="whyhead">For line 3</p>
-<ol class="steps" style="counter-reset:s 5">
+</details></li>
+<li>So \(P_0 = (0, 0, 0)\), and for \(\rho>1\), \(P_\pm \)<wbr>\({}= (\pm c, \pm c, \rho - 1)\) with \(c = \sqrt{\beta(\rho - 1)}\).
+<details class="linewhy"><summary>Why line 3 works <span>(3 steps)</span></summary>
+<ol class="steps">
 <li>Case \(x = 0\). Then \(y = 0\) and \(z = \frac{0^2}\beta = 0\). This is the origin \(P_0 = (0, 0, 0)\).</li>
-<li>Case \(z = \rho - 1\). From step 3, \(x^2 \)<wbr>\({}= \beta z \)<wbr>\({}= \beta(\rho - 1)\), so \(x = \pm\sqrt{\beta(\rho - 1)}\) and \(y = x\).</li>
+<li>Case \(z = \rho - 1\). From line 2, \(x^2 \)<wbr>\({}= \beta z \)<wbr>\({}= \beta(\rho - 1)\), so \(x = \pm\sqrt{\beta(\rho - 1)}\) and \(y = x\).</li>
 <li>The square root is real only when \(\rho - 1>0\), that is, \(\rho>1\). Write \(c = \sqrt{\beta(\rho - 1)}\). \[P_\pm = (\pm c,\ \pm c,\ \rho - 1).\]</li>
 </ol>
-<p class="whyhead">For line 4</p>
-<ol class="steps" style="counter-reset:s 8">
+</details></li>
+<li>\[J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}.\]
+<details class="linewhy"><summary>Why line 4 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>The Jacobian has one row per equation and one column per variable (\(x\), \(y\), \(z\)). Each entry is a partial derivative.</li>
 <li>Row 1, from \(\sigma y - \sigma x\), is \(-\sigma,\ \sigma,\ 0\).</li>
 <li>Row 2, from \(\rho x - y - xz\), is \(\rho - z,\ -1,\ -x\).</li>
 <li>Row 3, from \(xy - \beta z\), is \(y,\ x,\ -\beta\). So \[J = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho - z & -1 & -x\\ y & x & -\beta\end{pmatrix}.\]</li>
 </ol>
-<p class="whyhead">For line 5</p>
-<ol class="steps" style="counter-reset:s 12">
+</details></li>
+<li>\(J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}\). One eigenvalue is \(-\beta\). The other two come from the 2×2 block, with \(T = -(\sigma + 1)<0\) and \(D = \sigma(1 - \rho)\).
+<details class="linewhy"><summary>Why line 5 works <span>(4 steps)</span></summary>
+<ol class="steps">
 <li>At \(P_0\), put \(x = y = z = 0\). \[J(P_0) = \begin{pmatrix}-\sigma & \sigma & 0\\ \rho & -1 & 0\\ 0 & 0 & -\beta\end{pmatrix}.\]</li>
 <li>The third row and column of \(J(P_0)\) are zero except the corner, so one eigenvalue is \(-\beta\), which is negative (Part 0b).</li>
 <li>The other two come from the block \(\begin{pmatrix}-\sigma & \sigma\\ \rho & -1\end{pmatrix}\). Its trace is \(T \)<wbr>\({}= -\sigma + (-1) \)<wbr>\({}= -(\sigma + 1)\).</li>
 <li>Its determinant is \(D \)<wbr>\({}= (-\sigma)(-1) - (\sigma)(\rho) \)<wbr>\({}= \sigma - \sigma\rho \)<wbr>\({}= \sigma(1 - \rho)\).</li>
 </ol>
-<p class="whyhead">For line 6</p>
-<ol class="steps" style="counter-reset:s 16">
+</details></li>
+<li>So the origin is stable if and only if \(D>0\), that is, \(\rho<1\). For \(\rho>1\) it is a saddle.
+<details class="linewhy"><summary>Why line 6 works <span>(2 steps)</span></summary>
+<ol class="steps">
 <li>Stable needs \(T<0\) and \(D>0\). \(T\) is always negative because \(\sigma>0\).</li>
 <li>\(D = \sigma(1 - \rho)>0\) exactly when \(\rho<1\). So the origin is stable if and only if \(\rho<1\). For \(\rho>1\), \(D<0\) and the origin is a saddle.</li>
 </ol>
-<p class="whyhead">For line 7</p>
-<ol class="steps" style="counter-reset:s 18">
+</details></li>
+<li>\[J(P_\pm) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & \mp c\\ \pm c & \pm c & -\beta\end{pmatrix}.\]
+<details class="linewhy"><summary>Why line 7 works <span>(1 step)</span></summary>
+<ol class="steps">
 <li>At \(P_\pm\), put \(x = y = \pm c\) and \(z = \rho - 1\). Then \(\rho - z = 1\) and \(-x = \mp c\). \[J(P_\pm) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & \mp c\\ \pm c & \pm c & -\beta\end{pmatrix}.\]</li>
 </ol>
-</details>
+</details></li>
+</ol>
 </div>
 <div class="card remember"><span class="tag">Remember</span>
 <p>Fixed points: \((0,0,0)\), and for \(\rho>1\), \(\left(\pm\sqrt{\beta(\rho-1)}, \pm\sqrt{\beta(\rho-1)}, \rho - 1\right)\).</p>

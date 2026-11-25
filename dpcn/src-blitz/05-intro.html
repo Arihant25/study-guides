@@ -60,7 +60,7 @@
 <p>That comes to about seven hours, so take a short break after each part. Parts 1 and 2 are the largest share of the syllabus. If you run out of time, make sure you have done them.</p>
 
 <div class="card watch"><span class="tag">How the exam is marked</span>
-<p>Most questions say "find" or "show" and expect a derivation. In the 2026 mid-sem, a correct final formula with no steps got 0 marks. Each part below has a box headed "Write this in the exam". Each box gives the short list of lines to write on the paper. Learn those lines in order and write all of them, even when you remember the final answer. If a line is unclear, open "Why each line works" under it, which goes through the same derivation in small steps.</p>
+<p>Most questions say "find" or "show" and expect a derivation. In the 2026 mid-sem, a correct final formula with no steps got 0 marks. Each part below has a box headed "Write this in the exam". Each box gives the short list of lines to write on the paper. Learn those lines in order and write all of them, even when you remember the final answer. If a line is unclear, press the "Why" button under it to see that line worked out in small steps.</p>
 </div>
 
 <div class="card"><span class="tag">What this page is based on</span>
@@ -82,6 +82,7 @@
 <p><strong>Degree distribution.</strong> \(P(k)\) is the fraction of nodes that have degree \(k\). In the picture, \(P(2) = \frac35\) because three of the five nodes have degree 2. The fractions add up to 1.</p>
 
 <p><strong>Power law and scale-free.</strong> A degree distribution of the form \(P(k) = Ck^{-\gamma}\) is called a <strong>power law</strong>. Here \(\gamma\) (the Greek letter gamma) is a fixed number called the <strong>exponent</strong>, and \(C\) is a constant chosen so that all the fractions add up to 1. A network whose \(P(k)\) is a power law is called <strong>scale-free</strong>.</p>
+<p><strong>Why "scale-free".</strong> A power law looks the same at every scale of \(k\). Doubling the degree always divides \(P(k)\) by the same number, \(2^\gamma\), whether you go from 2 to 4 or from 200 to 400, because \(\frac{P(2k)}{P(k)} = \frac{C(2k)^{-\gamma}}{Ck^{-\gamma}} = 2^{-\gamma}\). So there is no degree that counts as typical, and no "scale" for the degrees. An exponential such as \(e^{-k/m}\) does have a scale. Most nodes have degree within a few \(m\) of the smallest, and \(\frac{P(2k)}{P(k)} = e^{-k/m}\) gets smaller as \(k\) grows.</p>
 <p>The symbol \(\propto\) means "is proportional to", that is, equal apart from a constant factor. So \(P(k)\propto k^{-3}\) means \(P(k) = Ck^{-3}\) for some constant \(C\).</p>
 <p>In a power law, large degrees are rare but not extremely rare. With \(\gamma = 3\), going from \(k = m\) to \(k = 20m\) divides \(P(k)\) by \(20^3 = 8000\). A large network then has a few nodes with very many links, and these are called <strong>hubs</strong>. Compare an exponential distribution such as \(P(k)\propto e^{-k/m}\), where \(e = 2.718\dots\) Every time \(k\) increases by \(m\), \(P(k)\) is divided by \(e\) once more. Going from \(k = m\) to \(k = 20m\) divides it by \(e^{19}\), about 180 million. The fraction falls so fast that there are no hubs.</p>
 
