@@ -107,13 +107,13 @@ math .tml-box, math menclose{border:1px solid var(--border-2); padding:3px}
 .card>*:first-child{margin-top:0} .card>*:last-child{margin-bottom:0}
 .card.ex{background:var(--muted-2)}
 .card.watch{border-color:color-mix(in srgb,var(--destructive) 40%,var(--border)); background:var(--destructive-soft)}
-.card.goal{border-left:4px solid var(--brand)}
+.card.goal{border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
 .card.exam{border:1.5px solid var(--fg)}
 .card.remember{background:var(--brand-soft); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
 .remember .tag{background:var(--brand); color:var(--brand-fg); border-color:var(--brand)}
 .about{font-size:1.08rem; line-height:1.6; max-width:66ch; margin:.6em 0 1em}
 .idea{background:var(--brand-soft); border:1px solid color-mix(in srgb,var(--brand) 30%,var(--border)); border-radius:8px; padding:10px 14px; max-width:none}
-.sym{font-size:.93rem; color:var(--muted-fg); border-left:3px solid var(--border-2); padding:2px 0 2px 12px; margin:10px 0}
+.sym{font-size:.93rem; color:var(--muted-fg); margin:10px 0}
 .tag{display:inline-flex; font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; padding:3px 9px; border-radius:6px;
   border:1px solid var(--border); background:var(--muted); color:var(--muted-fg); margin-bottom:10px}
 .goal .tag{background:var(--brand-soft); color:var(--brand); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
@@ -253,7 +253,8 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .sol:first-child{border-top:0; padding-top:2px}
 .sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
 .sol .sb{min-width:0; overflow-wrap:break-word} .sol .sb math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
-@media(max-width:600px){.sol .sb .steps>li{padding-left:30px}}
+@media(max-width:600px){.sol .sb .steps>li{padding-left:30px} .steps math[display="block"]{font-size:.88em}}
+.steps math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
 .sol .sb>*:first-child{margin-top:0} .sol .sb>*:last-child{margin-bottom:0}
 @media(max-width:600px){.sol{grid-template-columns:1fr}}
 .card.exam h4{margin:.5em 0 .2em}

@@ -77,15 +77,17 @@
 
 <p><strong>Degree.</strong> The degree \(k_i\) of node \(i\) is the number of links at that node. In the picture, \(k_A = 3\), \(k_B = k_C = k_D = 2\) and \(k_E = 1\). Every link has two ends, so the degrees add up to twice the number of links. This gives the average degree.</p>
 <div class="eq">\[\sum_ik_i = 2L,\qquad\langle k\rangle = \frac{2L}{N}.\]</div>
-<p>The angle brackets \(\langle\ \rangle\) mean "the average of". In the picture, \(\langle k\rangle = \frac{10}{5} = 2\).</p>
+<p>The symbol \(\sum_i\) (a capital Greek sigma) means "add up over every node \(i\)". So \(\sum_ik_i = k_1 + k_2 + \dots + k_N\), the sum of all the degrees. In the picture it is \(3 + 2 + 2 + 2 + 1 = 10\), which equals \(2L = 2\times5\). The angle brackets \(\langle\ \rangle\) mean "the average of". The average degree is the sum of the degrees divided by the number of nodes, so in the picture \(\langle k\rangle = \frac{10}{5} = 2\).</p>
 
 <p><strong>Degree distribution.</strong> \(P(k)\) is the fraction of nodes that have degree \(k\). In the picture, \(P(2) = \frac35\) because three of the five nodes have degree 2. The fractions add up to 1.</p>
 
-<p><strong>Power law and scale-free.</strong> A degree distribution of the form \(P(k) = Ck^{-\gamma}\) is called a power law, and a network with such a \(P(k)\) is called <strong>scale-free</strong>. In a power law, large degrees are rare but not extremely rare. A large network then has a few nodes with very many links, and these are called <strong>hubs</strong>. Compare an exponential distribution like \(P(k)\propto e^{-k/m}\). There the fraction of nodes falls so fast as \(k\) increases that there are no hubs.</p>
+<p><strong>Power law and scale-free.</strong> A degree distribution of the form \(P(k) = Ck^{-\gamma}\) is called a <strong>power law</strong>. Here \(\gamma\) (the Greek letter gamma) is a fixed number called the <strong>exponent</strong>, and \(C\) is a constant chosen so that all the fractions add up to 1. A network whose \(P(k)\) is a power law is called <strong>scale-free</strong>.</p>
+<p>The symbol \(\propto\) means "is proportional to", that is, equal apart from a constant factor. So \(P(k)\propto k^{-3}\) means \(P(k) = Ck^{-3}\) for some constant \(C\).</p>
+<p>In a power law, large degrees are rare but not extremely rare. With \(\gamma = 3\), going from \(k = m\) to \(k = 20m\) divides \(P(k)\) by \(20^3 = 8000\). A large network then has a few nodes with very many links, and these are called <strong>hubs</strong>. Compare an exponential distribution such as \(P(k)\propto e^{-k/m}\), where \(e = 2.718\dots\) Every time \(k\) increases by \(m\), \(P(k)\) is divided by \(e\) once more. Going from \(k = m\) to \(k = 20m\) divides it by \(e^{19}\), about 180 million. The fraction falls so fast that there are no hubs.</p>
 
 <p><strong>Path length.</strong> The distance between two nodes is the smallest number of links you have to cross to get from one to the other. In the picture the distance from B to E is 3 (B to A, A to D, D to E). The <strong>average path length</strong> \(\bar\ell\) is the average distance over all pairs of nodes.</p>
 
-<p><strong>Clustering coefficient.</strong> This measures how many of a node's neighbours are linked to each other. A node with \(k_i\) neighbours has \(\binom{k_i}2 = \frac{k_i(k_i-1)}2\) pairs of neighbours. Then</p>
+<p><strong>Clustering coefficient.</strong> This measures how many of a node's neighbours are linked to each other. A node with \(k_i\) neighbours has \(\frac{k_i(k_i-1)}2\) pairs of neighbours. (Each of the \(k_i\) neighbours can be paired with the \(k_i - 1\) others. That counts every pair twice, so divide by 2.) This number is also written \(\binom{k_i}2\), read "\(k_i\) choose 2". Then</p>
 <div class="eq boxed">\[C_i = \frac{\text{number of linked pairs of neighbours of } i}{k_i(k_i-1)/2}.\]</div>
 <p>Node A has neighbours B, C and D, so 3 pairs. Only B and C are linked, so \(C_A = \frac13\). The <strong>average clustering coefficient</strong> \(C\) is the average of \(C_i\) over all nodes. Each linked pair of neighbours forms a triangle with node \(i\), so high clustering means many triangles.</p>
 
@@ -96,7 +98,7 @@
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Every link has two ends, and each end adds 1 to the degree of the node it touches. So each link adds 2 to the sum of all degrees.</li>
 <li>Sum of all degrees \(= 2L = 2\times12 = 24\).</li>
-<li>The average is the sum divided by the number of nodes. \(\langle k\rangle = \frac{24}{8} = 3\).</li>
+<li>The average is the sum divided by the number of nodes. \(\langle k\rangle \)<wbr>\({}= \frac{24}{8} \)<wbr>\({}= 3\).</li>
 </ol></div></div>
 </div></details>
 
@@ -123,18 +125,27 @@
 
 <p><strong>Stability.</strong> A fixed point is <strong>stable</strong> if a small change away from it shrinks back to zero over time, and <strong>unstable</strong> if a small change grows. For one variable the test is the slope of \(f\).</p>
 <div class="eq">\[\dot x = f(x):\qquad x^*\text{ is stable if } f'(x^*)<0\text{ and unstable if } f'(x^*)>0.\]</div>
+<p>Here is the reason. Suppose \(f'(x^*)<0\), so \(f\) is decreasing through zero at \(x^*\). Just above \(x^*\), \(f\) is negative, so \(\dot x<0\) and \(x\) decreases back towards \(x^*\). Just below \(x^*\), \(f\) is positive, so \(x\) increases back towards \(x^*\). Either way \(x\) returns, so \(x^*\) is stable. If \(f'(x^*)>0\), the signs are the other way round and \(x\) moves away.</p>
 
 <p><strong>The Jacobian.</strong> With several variables, say \(\dot x = f(x, y)\) and \(\dot y = g(x, y)\), the test uses the <strong>Jacobian matrix</strong>. Row 1 holds the partial derivatives of \(f\), and row 2 holds those of \(g\).</p>
 <div class="eq">\[J = \begin{pmatrix}\frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}\\[4pt] \frac{\partial g}{\partial x} & \frac{\partial g}{\partial y}\end{pmatrix}\]</div>
 <p>A partial derivative \(\frac{\partial f}{\partial x}\) is the derivative of \(f\) with respect to \(x\), treating every other variable as a constant. You work out \(J\) with the variables left in, then put in the values at the fixed point.</p>
+<p><strong>Example.</strong> Take \(f = 3x + xy\) and \(g = y^2 - x\). Treating \(y\) as a constant, \(\frac{\partial f}{\partial x} = 3 + y\). Treating \(x\) as a constant, \(\frac{\partial f}{\partial y} = x\). In the same way, \(\frac{\partial g}{\partial x} = -1\) and \(\frac{\partial g}{\partial y} = 2y\). So \(J = \begin{pmatrix}3 + y & x\\ -1 & 2y\end{pmatrix}\). At the fixed point \((x, y) = (0, 0)\), \(J = \begin{pmatrix}3 & 0\\ -1 & 0\end{pmatrix}\).</p>
 
-<p><strong>Eigenvalues.</strong> The eigenvalues \(\lambda\) of \(J\) are the solutions of \(\det(J - \lambda I) = 0\). Near the fixed point, small changes grow or shrink like \(e^{\lambda t}\). So the fixed point is stable if every eigenvalue has a negative real part. It is unstable if any eigenvalue has a positive real part.</p>
+<p><strong>Eigenvalues.</strong> \(I\) is the identity matrix, which has 1 on the diagonal and 0 everywhere else. So \(J - \lambda I\) is \(J\) with \(\lambda\) (the Greek letter lambda) subtracted from each diagonal entry. "det" means the determinant. For a 2×2 matrix \(\begin{pmatrix}a & b\\ c & d\end{pmatrix}\) the determinant is \(ad - bc\). The eigenvalues of \(J\) are the numbers \(\lambda\) that make \(\det(J - \lambda I) = 0\).</p>
+<p>Near the fixed point, small changes grow or shrink like \(e^{\lambda t}\). If \(\lambda<0\), \(e^{\lambda t}\) shrinks to 0 as \(t\) increases, and if \(\lambda>0\) it grows. So the fixed point is stable if every eigenvalue is negative, and unstable if any eigenvalue is positive. (An eigenvalue can be a complex number \(u + iv\). Then only its real part \(u\) counts in this test.)</p>
 
-<p><strong>The 2×2 shortcut.</strong> For \(J = \begin{pmatrix}a & b\\ c & d\end{pmatrix}\), let \(T = a + d\) (the trace) and \(D = ad - bc\) (the determinant).</p>
+<p><strong>The 2×2 shortcut.</strong> For \(J = \begin{pmatrix}a & b\\ c & d\end{pmatrix}\), let \(T = a + d\) (the <strong>trace</strong>) and \(D = ad - bc\) (the <strong>determinant</strong>). The shortcut comes from these steps.</p>
+<ol class="steps">
+<li>\(J - \lambda I = \begin{pmatrix}a - \lambda & b\\ c & d - \lambda\end{pmatrix}\).</li>
+<li>Its determinant is \((a - \lambda)(d - \lambda) - bc\).</li>
+<li>Multiply out the brackets. \(ad - a\lambda - d\lambda + \lambda^2 - bc \)<wbr>\({}\)<wbr>\({}= \lambda^2 - (a + d)\lambda + (ad - bc) \)<wbr>\({}= \lambda^2 - T\lambda + D\).</li>
+<li>Set this to zero, \(\lambda^2 - T\lambda + D = 0\), and solve it with the quadratic formula.</li>
+</ol>
 <div class="eq boxed">\[\lambda = \frac{T\pm\sqrt{T^2 - 4D}}{2},\qquad\text{stable}\iff T<0\text{ and }D>0.\]</div>
-<p>If \(D<0\), one eigenvalue is positive and one is negative. That fixed point is called a <strong>saddle</strong>, and it is unstable.</p>
+<p>The symbol \(\iff\) means "if and only if". The two eigenvalues add up to \(T\) and multiply to \(D\). Two numbers are both negative exactly when their sum is negative and their product is positive, which gives the test. If \(D<0\), the product is negative, so one eigenvalue is positive and the other is negative. That fixed point is called a <strong>saddle</strong>, and it is unstable.</p>
 
-<p><strong>A 3×3 matrix that splits.</strong> If the third row and the third column are zero except for the corner entry, that corner entry is one eigenvalue. The other two come from the top-left 2×2 block. Part 5 uses this.</p>
+<p><strong>A 3×3 matrix that splits.</strong> If the third row and the third column are zero except for the corner entry, that corner entry is one eigenvalue. The other two come from the top-left 2×2 block. This works because \(\det(J - \lambda I)\) is then (corner entry \(- \lambda\)) times the determinant of (the 2×2 block \(- \lambda I\)), and a product is zero when either factor is zero. Part 5 uses this.</p>
 
 <details class="q"><summary><span class="qt">Try it</span><span>Find the fixed points of \(\dot x = x(1 - x)\) and say whether each is stable.</span><span class="chev">›</span></summary>
 <div class="ans">
@@ -170,14 +181,14 @@
 
 <p><strong>Separating variables.</strong> To solve \(\frac{dk}{dt} = \frac{k}{2t}\), put everything with \(k\) on one side and everything with \(t\) on the other, then integrate both sides.</p>
 <div class="eq">\[\frac{dk}{k} = \frac{dt}{2t}\;\Rightarrow\;\ln k = \tfrac12\ln t + c.\]</div>
-<p>A known starting value fixes the constant \(c\). You will need \(\int\frac{dx}x = \ln x\), \(\ln a - \ln b = \ln\frac ab\), and \(b\ln a = \ln a^b\).</p>
+<p>Here \(c\) is a constant that appears when you integrate. A known starting value fixes it. Instead of using \(c\), you can integrate from the starting value, as in the question below. You will need \(\int\frac{dx}x = \ln x\), \(\ln a - \ln b = \ln\frac ab\), and \(b\ln a = \ln a^b\).</p>
 
-<p><strong>Joining times are spread evenly.</strong> In a network where one node is added at each step \(1, 2, \dots, t\), every joining time occurs exactly once. So the fraction of nodes that joined after some time \(T\) is</p>
+<p><strong>Joining times are spread evenly.</strong> In a network where one node is added at each step \(1, 2, \dots, t\), every joining time occurs exactly once. Write \(t_i\) for the time at which node \(i\) joined. The nodes that joined after time \(T\) are the ones from times \(T + 1\) to \(t\), and there are \(t - T\) of them out of \(t\). So the fraction of nodes that joined after time \(T\) is</p>
 <div class="eq boxed">\[\text{fraction with } t_i>T = \frac{t - T}{t} = 1 - \frac Tt.\]</div>
 
-<p><strong>From "fraction below \(k\)" to \(P(k)\).</strong> If \(F(k)\) is the fraction of nodes with degree below \(k\), then the degree distribution is its derivative, \(P(k) = \frac{dF}{dk}\).</p>
+<p><strong>From "fraction below \(k\)" to \(P(k)\).</strong> If \(F(k)\) is the fraction of nodes with degree below \(k\), then the degree distribution is its derivative, \(P(k) = \frac{dF}{dk}\). The reason is that the fraction of nodes with degree between \(k\) and \(k + \Delta k\) is \(F(k + \Delta k) - F(k)\), which is about \(F'(k)\,\Delta k\). So \(F'(k)\) is the fraction of nodes per unit of degree, which is what \(P(k)\) means when degrees are treated as smooth numbers.</p>
 
-<p><strong>Sine.</strong> \(\sin\phi\) is always between \(-1\) and \(1\). So \(\sin\phi = a\) has a solution only if \(|a|\le1\). When it does, there are two solutions between 0 and \(\pi\), namely \(\phi\) and \(\pi - \phi\). The one below \(\frac\pi2\) has \(\cos\phi>0\). Part 4 uses this.</p>
+<p><strong>Sine.</strong> Angles here are in radians, where \(\pi\) radians is 180°. \(\sin\phi\) is always between \(-1\) and \(1\), so \(\sin\phi = a\) has a solution only if \(|a|\le1\). (\(|a|\) is the size of \(a\) without its sign.) For \(0\le a\le1\), \(\arcsin a\) is the angle between 0 and \(\frac\pi2\) whose sine is \(a\), and your calculator gives it. There are two solutions between 0 and \(\pi\), namely \(\arcsin a\) and \(\pi - \arcsin a\). The first is below \(\frac\pi2\), so it has \(\cos\phi>0\). The second is above \(\frac\pi2\), so it has \(\cos\phi<0\). Part 4 uses this.</p>
 
 <details class="q"><summary><span class="qt">Try it</span><span>Solve \(\frac{dk}{dt} = \frac{k}{2t}\) with \(k = 2\) at \(t = 5\). What is \(k\) at \(t = 20\)?</span><span class="chev">›</span></summary>
 <div class="ans">
