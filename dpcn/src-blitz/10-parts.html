@@ -117,11 +117,11 @@ This formula is explained below.</li>
 <li>Cancel \(m\). This is \(\frac{k\,N(k, t)}{2t}\). Since \(N(k, t) = t\,P(k, t)\), it equals \(\frac k2P(k, t)\).</li>
 </ol>
 </details></li>
-<li>For \(k>m\),\[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]
+<li>For \(k>m\),<span class="eqw">\[N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span><span class="eqn">\[N(k, t+1) - N(k, t)\]\[{}= \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span>
 <details class="linewhy"><summary>Why line 2 works <span>(2 steps)</span></summary>
 <ol class="steps">
 <li>For \(k>m\), the number of degree-\(k\) nodes goes up by one for each degree-\((k-1)\) node that receives a link.</li>
-<li>It goes down by one for each degree-\(k\) node that receives a link. Using line 1 for both, \[\begin{aligned}N(k, t+1) &= N(k, t)\\ &\quad + \frac{k-1}2P(k-1, t)\\ &\quad - \frac k2P(k, t).\end{aligned}\]</li>
+<li>It goes down by one for each degree-\(k\) node that receives a link. Using line 1 for both, <span class="eqw">\[N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span><span class="eqn">\[N(k, t+1) - N(k, t)\]\[{}= \frac{k-1}2P(k-1, t) - \frac k2P(k, t).\]</span></li>
 </ol>
 </details></li>
 <li>For \(k = m\),\[N(m, t+1) = N(m, t) + 1 - \frac m2P(m, t).\]
@@ -137,14 +137,14 @@ This formula is explained below.</li>
 <li>Subtract. \(N(k, t+1) - N(k, t) \)<wbr>\({}= (t+1)P(k) - tP(k) \)<wbr>\({}= P(k)\).</li>
 </ol>
 </details></li>
-<li>At \(k = m\),\(P(m) = 1 - \frac m2P(m)\), so \(P(m) = \frac2{m+2}\).
+<li>At \(k = m\), \(P(m) = 1 - \frac m2P(m)\), so \(P(m) = \frac2{m+2}\).
 <details class="linewhy"><summary>Why line 5 works <span>(2 steps)</span></summary>
 <ol class="steps">
 <li>Case \(k = m\). Subtract \(N(m, t)\) from both sides of line 3 and use line 4. \(P(m) = 1 - \frac m2P(m)\).</li>
 <li>Add \(\frac m2P(m)\) to both sides. \(\frac{m+2}2P(m) = 1\), so \(P(m) = \frac2{m+2}\).</li>
 </ol>
 </details></li>
-<li>For \(k>m\),\(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\).
+<li>For \(k>m\), \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\), so \(P(k) = \frac{k-1}{k+2}P(k-1)\).
 <details class="linewhy"><summary>Why line 6 works <span>(3 steps)</span></summary>
 <ol class="steps">
 <li>Case \(k>m\). Do the same with line 2. \(P(k) \)<wbr>\({}= \frac{k-1}2P(k-1) - \frac k2P(k)\).</li>
@@ -156,7 +156,7 @@ This formula is explained below.</li>
 <details class="linewhy"><summary>Why line 7 works <span>(5 steps)</span></summary>
 <ol class="steps">
 <li>Apply this again and again, starting from \(P(m)\). \(P(m+1) = \frac m{m+3}P(m)\), then \(P(m+2) \)<wbr>\({}= \frac{m+1}{m+4}P(m+1)\), and so on up to \(P(k) = \frac{k-1}{k+2}P(k-1)\).</li>
-<li>Multiply all of these together. \[\begin{aligned}P(k) &= P(m)\\ &\quad\times\frac{m(m+1)(m+2)\cdots(k-1)}{(m+3)(m+4)\cdots(k+2)}.\end{aligned}\]</li>
+<li>Multiply all of these together. \[\frac{P(k)}{P(m)} = \frac{m(m+1)(m+2)\cdots(k-1)}{(m+3)(m+4)\cdots(k+2)}.\]</li>
 <li>The top is every whole number from \(m\) to \(k - 1\). The bottom is every whole number from \(m + 3\) to \(k + 2\). The numbers from \(m + 3\) to \(k - 1\) are in both, so they cancel.</li>
 <li>Left on the top are \(m(m+1)(m+2)\). Left on the bottom are \(k(k+1)(k+2)\). With \(P(m) = \frac2{m+2}\), \[P(k) = \frac2{m+2}\times\frac{m(m+1)(m+2)}{k(k+1)(k+2)}.\]</li>
 <li>Cancel \(m + 2\). \[P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}.\]</li>
@@ -586,7 +586,7 @@ This formula is explained below.</li>
 <li>So \(C(p) = C(0)(1-p)^3\).
 <details class="linewhy"><summary>Why line 4 works <span>(1 step)</span></summary>
 <ol class="steps">
-<li>So the number of triangles, and therefore the clustering, is multiplied by \((1-p)^3\). \[\begin{aligned}C(p) &= C(0)(1-p)^3\\ &= \frac{3(k-1)}{2(2k-1)}(1-p)^3.\end{aligned}\]</li>
+<li>So the number of triangles, and therefore the clustering, is multiplied by \((1-p)^3\). \(C(p) = C(0)(1-p)^3\), which is \[C(p) = \frac{3(k-1)}{2(2k-1)}(1-p)^3.\]</li>
 </ol>
 </details></li>
 <li>About \(nkp\) links become shortcuts. Even for small \(p\) they make \(\bar\ell\) short while \(C\) stays close to \(C(0)\). That range of \(p\) is the small world.
@@ -675,7 +675,7 @@ This formula is explained below.</li>
 <details class="linewhy"><summary>Why line 1 works <span>(3 steps)</span></summary>
 <ol class="steps">
 <li>Let \(\phi = \theta_2 - \theta_1\) and \(\Delta\omega \)<wbr>\({}= \omega_2 - \omega_1\).</li>
-<li>Subtract the first equation from the second. \[\begin{aligned}\dot\phi &= \dot\theta_2 - \dot\theta_1\\ &= (\omega_2 - \omega_1) + k_2\sin(\theta_1 - \theta_2)\\ &\quad - k_1\sin(\theta_2 - \theta_1).\end{aligned}\]</li>
+<li>Subtract the first equation from the second. \(\dot\phi = \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
 <li>Now \(\sin(\theta_2 - \theta_1) \)<wbr>\({}= \sin\phi\) and \(\sin(\theta_1 - \theta_2) \)<wbr>\({}= \sin(-\phi) \)<wbr>\({}= -\sin\phi\). So \[\dot\phi = \Delta\omega - (k_1 + k_2)\sin\phi.\]</li>
 </ol>
 </details></li>
@@ -727,7 +727,7 @@ This formula is explained below.</li>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">The derivation above, lines 1 to 5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Write the model. \(\dot\theta_1 \)<wbr>\({}= \omega_1 + k_1\sin(\theta_2 - \theta_1)\) and \(\dot\theta_2 \)<wbr>\({}= \omega_2 + k_2\sin(\theta_1 - \theta_2)\).</li>
-<li>Let \(\phi = \theta_2 - \theta_1\). Subtract the first equation from the second. \[\begin{aligned}\dot\phi &= \dot\theta_2 - \dot\theta_1\\ &= (\omega_2 - \omega_1) + k_2\sin(\theta_1 - \theta_2)\\ &\quad - k_1\sin(\theta_2 - \theta_1).\end{aligned}\]</li>
+<li>Let \(\phi = \theta_2 - \theta_1\). Subtract the first equation from the second. \(\dot\phi = \dot\theta_2 - \dot\theta_1\). Put in the two equations. <span class="eqw">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2) - k_1\sin(\theta_2 - \theta_1).\]</span><span class="eqn">\[\dot\phi = \Delta\omega + k_2\sin(\theta_1 - \theta_2)\]\[{} - k_1\sin(\theta_2 - \theta_1).\]</span></li>
 <li>\(\sin(\theta_1 - \theta_2) \)<wbr>\({}= \sin(-\phi) \)<wbr>\({}= -\sin\phi\), and \(\sin(\theta_2 - \theta_1) \)<wbr>\({}= \sin\phi\). So \(\dot\phi \)<wbr>\({}= (\omega_2 - \omega_1) - k_2\sin\phi - k_1\sin\phi \)<wbr>\({}= \Delta\omega - (k_1 + k_2)\sin\phi\).</li>
 <li>Put in the numbers. \(\Delta\omega = 10 - 2 = 8\), so \(\dot\phi \)<wbr>\({}= 8 - (k_1 + k_2)\sin\phi\).</li>
 <li>Locked means \(\phi\) is constant, so \(\dot\phi = 0\). Then \(\sin\phi^* \)<wbr>\({}= \frac{8}{k_1 + k_2}\).</li>

@@ -252,19 +252,21 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .sol{display:grid; grid-template-columns:150px 1fr; gap:4px 16px; padding:10px 0; border-top:1px solid var(--border)}
 .sol:first-child{border-top:0; padding-top:2px}
 .sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
-details.linewhy{margin:8px 0 2px}
-details.linewhy>summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 12px; border:1px solid var(--border); border-radius:8px; font-size:.86rem; font-weight:600; color:var(--muted-fg); background:var(--muted-2)}
+details.linewhy{margin:0}
+.eqn{display:none} @media(max-width:600px){.eqw{display:none} .eqn{display:block}}
+details.linewhy>summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px 0 0; border:0; background:none; font-size:.86rem; font-weight:600; color:var(--muted-fg)}
+details.linewhy>summary:hover{color:var(--fg)}
 details.linewhy>summary::-webkit-details-marker{display:none}
 details.linewhy>summary::before{content:"+"; font-weight:700; width:.9em; text-align:center}
 details.linewhy[open]>summary::before{content:"\2212"}
 details.linewhy>summary span{font-weight:400}
 details.linewhy[open]>summary{color:var(--fg)}
-details.linewhy>.steps{margin:.5em 0 .8em; padding:2px 0 2px 14px; border-left:0; background:none}
+details.linewhy>.steps{margin:0 0 .8em; padding:12px 14px 4px; border-radius:10px; background:var(--muted-2)}
 details.linewhy .steps>li::before{background:transparent; color:var(--muted-fg); border:1px solid var(--border-2)}
 .closeall{display:none; margin:6px 0 0; min-height:44px; padding:0 14px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--fg); font:inherit; font-size:.86rem; cursor:pointer}
 .closeall.show{display:inline-flex; align-items:center}
 @media print{details.linewhy>.steps{display:block}}
-@media(max-width:600px){details.linewhy>.steps{padding-left:0} details.linewhy .steps>li{padding-left:30px} details.linewhy .steps math[display="block"]{font-size:.84em}}
+@media(max-width:600px){details.linewhy>.steps{padding-left:6px; padding-right:6px} details.linewhy .steps>li{padding-left:30px} details.linewhy .steps math[display="block"]{font-size:.84em}}
 .sol .sb{min-width:0; overflow-wrap:break-word} .sol .sb math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
 @media(max-width:600px){.sol .sb .steps>li{padding-left:30px} .steps math[display="block"]{font-size:.88em}}
 .steps math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
