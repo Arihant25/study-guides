@@ -44,6 +44,12 @@
 <section>
 <h2 id="e-sync">1 · Phase synchronisation</h2>
 <p class="about">Two oscillators each turn at their own speed. Coupling pulls each towards the other. If the pull is strong enough compared with the difference in speeds, they lock and turn together. The board's \(f_1(\omega_1, \theta_1, \theta_2, k_1)\) is \(\omega_1 + k_1\sin(\theta_2 - \theta_1)\).</p>
+<div class="card goal"><span class="tag">In plain words</span>
+<p>Picture two runners on a circular track. One is naturally faster, and their natural speeds are \(\omega_1\) and \(\omega_2\). Each runner watches the other and speeds up or slows down a little to close the gap. How hard runner 1 adjusts is \(k_1\), and how hard runner 2 adjusts is \(k_2\).</p>
+<p>If the adjusting can make up for the difference in speed, they end up running at one shared speed \(\Omega\) with a fixed gap \(\phi\) between them. That is locking. Since the gap stops changing, you set \(\dot\phi = 0\). The pull is \(\sin\phi\) times the coupling, and a sine is never bigger than 1. So the most the two can make up together is \(k_1 + k_2\), and they lock only when \(|\omega_2 - \omega_1|\le k_1 + k_2\).</p>
+<p>The shared speed lies between the two natural speeds. It is closer to the runner who adjusts less, because that runner mostly keeps their own pace.</p>
+<p><strong>Recipe.</strong> Subtract the two equations to get \(\dot\phi\). Set \(\dot\phi = 0\) and use \(|\sin\phi|\le1\). Then put \(\sin\phi^*\) back into either equation to get \(\Omega\).</p>
+</div>
 <!--pick:src-remember/20-proofs.html#pf-twoosc-->
 <div class="card ex"><span class="tag">Numbers</span>
 <p>Take \(\omega_1 = 2\) and \(\omega_2 = 10\). With \(k_1 = k_2 = 2\) the coupling adds up to only 4, which is less than the gap of 8, so they never lock. They lock once \(k_1 + k_2\ge8\), so with equal couplings the critical value is \(k_c = 4\). At \(k_1 = k_2 = 5\) the locked state has \(\sin\phi^* = \frac8{10}\), so \(\phi^* = 0.93\) rad (the stable root, since \(\cos\phi^*>0\)), and the common frequency is \(\Omega = \frac{5\cdot2 + 5\cdot10}{10} = 6\).</p>
@@ -54,6 +60,10 @@
 <section>
 <h2 id="e-lorenz">2 · The Lorenz system</h2>
 <p class="about">There are three equations in three unknowns. Solve for the fixed points from the easy equations first, then write one general Jacobian and put each point into it.</p>
+<div class="card goal"><span class="tag">In plain words</span>
+<p>Three numbers \(x\), \(y\) and \(z\) change together. A fixed point is where all three rates are zero at once, so nothing moves. Solve the easy equations first. The first one, \(\sigma(y - x) = 0\), forces \(y = x\). Put that into the third to get \(z = x^2/\beta\). The second then becomes \(x(\rho - 1 - z) = 0\). Either \(x = 0\), which is the origin, or \(z = \rho - 1\), which gives \(x^2 = \beta(\rho - 1)\). That only has a solution when \(\rho>1\), so the two extra points appear when \(\rho\) passes 1.</p>
+<p>The Jacobian is the table of slopes, with one row per equation and one column per variable. Write it once with \(x\), \(y\) and \(z\) left in, then put each fixed point into it. At the origin it splits into the number \(-\beta\), which is always stable, and a 2×2 block. That block has a negative trace, so it is stable exactly when its determinant \(\sigma(1 - \rho)\) is positive, which means \(\rho<1\).</p>
+</div>
 <!--pick:src-remember/20-proofs.html#pf-lorenz-->
 <p class="small">The <a href="{{ROOT}}after-midsem/#lorenz">After mid-sem guide, §14</a>, has a longer version with a plot of the attractor.</p>
 </section>
@@ -61,9 +71,21 @@
 <section>
 <h2 id="e-ba">3 · Scale-free networks and the Barabási–Albert model</h2>
 <p class="about">Real networks grow, and new nodes prefer well-connected nodes. Those two ingredients give a power law with exponent 3. The board asks for the rate \(\frac{dk_i}{dt}\) and the distribution \(P(k)\), with the master equation as a second way to get \(P(k)\). It then asks what happens when you remove an ingredient or change one.</p>
+<div class="card goal"><span class="tag">In plain words</span>
+<p>The network grows one node at a time. Each new node brings \(m\) links and attaches them to nodes already there. It prefers popular nodes. The chance that a link lands on node \(i\) is \(k_i\) divided by the total degree, so the rich get richer.</p>
+<p><strong>How fast one node grows.</strong> Each step adds \(m\) links, and each link adds 2 to the total degree, so after \(t\) steps the total is \(2mt\). Node \(i\) gets each new link with chance \(\frac{k_i}{2mt}\), and \(m\) links arrive per step, so \(\frac{dk_i}{dt} = \frac{k_i}{2t}\). Node \(i\) had degree \(m\) when it joined at time \(t_i\). Separating and integrating gives \(k_i = m\sqrt{t/t_i}\), so older nodes are bigger.</p>
+<p><strong>The degree distribution.</strong> A node has degree below \(k\) exactly when it joined late, after \(t_i = m^2t/k^2\). Nodes join at evenly spread times, so the fraction with degree below \(k\) is \(1 - \frac{m^2}{k^2}\). Differentiating with respect to \(k\) gives \(P(k) = \frac{2m^2}{k^3}\).</p>
+<p><strong>The master equation</strong> gets the same answer by counting. Instead of following one node, count how many nodes have degree \(k\). In one step, some degree-\((k-1)\) nodes get a link and become degree \(k\). Some degree-\(k\) nodes get a link and move up to \(k+1\). The new node adds one node of degree \(m\). When the fractions stop changing, what flows in equals what flows out. That gives \(\frac{P(k)}{P(k-1)} = \frac{k-1}{k+2}\), and multiplying these ratios together gives \(P(k)\sim k^{-3}\).</p>
+</div>
 <!--pick:src-remember/20-proofs.html#pf-ba-rate,pf-ba-pk,pf-ba-master-->
 <p class="small">The <a href="{{ROOT}}after-midsem/#ba">After mid-sem guide, §19–21</a>, has longer versions.</p>
 
+<div class="card goal"><span class="tag">In plain words</span>
+<p>Each variant takes the BA model and changes one rule. The method stays the same. Write \(\frac{dk_i}{dt} = m\,\Pi\) with the new \(\Pi\), integrate from \(k_i(t_i) = m\), and see what kind of growth you get.</p>
+<p><strong>No preference (3a).</strong> Every old node is equally likely, so \(\Pi = \frac1t\). Big nodes no longer grow faster, the degree grows only like a logarithm, and \(P(k)\) falls off exponentially. There are no hubs.</p>
+<p><strong>No growth (3b).</strong> The number of nodes is fixed and links keep being added. Every node's degree rises like \(\frac{2t}N\), the same for all, so everyone ends up alike and the network fills in until every pair is linked.</p>
+<p><strong>Nonlinear (3c).</strong> With \(\Pi\propto k^\alpha\), the power \(\alpha\) sets how strongly popularity helps. Below 1 it helps too little, and there are no real hubs. At 1 you get BA. Above 1 it helps so much that one node grabs almost every link.</p>
+</div>
 <h3 id="nopa">3a · Growth without preferential attachment (Model A)</h3>
 <p>Keep growth, but let each new link pick an existing node uniformly at random, whatever its degree. There are \(m_0 + t - 1\approx t\) nodes to choose from, so</p>
 <div class="eq">\[\Pi(k_i) = \frac{1}{m_0 + t - 1}\approx\frac1t,\qquad\frac{dk_i}{dt} = m\,\Pi = \frac mt.\]</div>
@@ -106,6 +128,11 @@
 <section>
 <h2 id="e-sw">4 · Small-world graphs</h2>
 <p class="about">Start from a ring lattice (\(p = 0\)), which has high clustering and long paths. Rewire each link with probability \(p\). At \(p = 1\) the graph is random, with short paths and almost no clustering. In between, a few rewired links make the paths short while the clustering stays high. The board asks for the average clustering coefficient and the path length at both ends.</p>
+<div class="card goal"><span class="tag">In plain words</span>
+<p>Put \(n\) people in a circle, each friends with the \(k\) nearest people on each side. Your friends are mostly friends with each other, so the clustering is high, about \(\frac34\). To reach someone on the far side, though, you have to hop around the circle, so paths are long, about \(\frac n{4k}\). That is \(p = 0\).</p>
+<p>Now take each link and, with probability \(p\), move one of its ends to a random person. At \(p = 1\) the graph is random. Paths are short, about \(\frac{\ln n}{\ln2k}\), because the number of people you can reach multiplies by about \(2k\) with each step. Your friends rarely know each other, so \(C\approx\frac{2k}n\).</p>
+<p>The surprise is in between. A few random links act as shortcuts across the circle, so paths become short almost at once. They hardly change the clustering, because a triangle only breaks when one of its own three links is moved. All three links stay with probability \((1-p)^3\), so \(C(p) = C(0)(1-p)^3\).</p>
+</div>
 <div class="card watch"><span class="tag">Convention</span>
 <p>Here \(k\) is the number of neighbours <strong>on each side</strong>, so the degree is \(2k\). If a question writes \(K\) for the degree, put \(k = K/2\). Then \(C(0) = \frac{3(K-2)}{4(K-1)}\) and \(\bar\ell(0)\approx\frac{n}{2K}\).</p>
 </div>
@@ -176,6 +203,168 @@
 <div class="ans">
 <p>\(|\Delta\omega| = 3\) and \(k_1 + k_2 = 3\), which is exactly the critical condition, so they just lock. \(\sin\phi^* = \frac33 = 1\), \(\phi^* = \frac\pi2\). \(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{2 + 4}{3} = 2\). As a check, \(\omega_1 + k_1\sin\phi^* = 1 + 1 = 2\) and \(\omega_2 - k_2\sin\phi^* = 4 - 2 = 2\).</p>
 </div></details>
+</section>
+
+<section>
+<h2 id="e-drill">Three more for each proof</h2>
+<p class="about">There are three questions for each item on the <a href="#check">checklist</a>, in the same order. The first one is usually numbers you can plug in, and the others ask you to explain or derive. Write your answer before you open the one here.</p>
+
+<h3 id="d-ba">1 · BA rate and \(P(k)\)</h3>
+<p class="small">Proof: <a href="#pf-ba-rate">rate</a>, <a href="#pf-ba-pk">\(P(k)\)</a></p>
+<details class="q"><summary><span class="qt">Numbers · 2 marks</span><span>In a BA network with \(m = 3\), node \(i\) joins at \(t_i = 100\). What is its degree at \(t = 10\,000\)? When does it reach degree 60?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>\(k_i(t) = m\sqrt{t/t_i}\). At \(t = 10\,000\), \(k_i = 3\sqrt{100} = 30\).</p>
+<p>For degree 60 you need \(\sqrt{t/100} = 20\), so \(t/100 = 400\) and \(t = 40\,000\). Doubling the degree takes four times as long, because \(k\) grows like \(\sqrt t\).</p>
+</div></details>
+<details class="q"><summary><span class="qt">Derive · 3 marks</span><span>Starting from \(P(k) = 2m^2k^{-3}\) for \(k\ge m\), show that it adds up to 1, that \(\langle k\rangle = 2m\), and that \(\langle k^2\rangle\) is infinite.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(\int_m^\infty2m^2k^{-3}\,dk = 2m^2\cdot\frac1{2m^2} = 1\).</li>
+<li>\(\langle k\rangle = \int_m^\infty k\cdot2m^2k^{-3}\,dk = 2m^2\int_m^\infty k^{-2}\,dk = 2m^2\cdot\frac1m = 2m\). This must be true, since each new node brings \(m\) links and each link has two ends.</li>
+<li>\(\langle k^2\rangle = \int_m^\infty2m^2k^{-1}\,dk = 2m^2\big[\ln k\big]_m^\infty\), which diverges. In a finite network it grows like \(\ln k_{\max}\), so the spread of degrees keeps growing as the network grows.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 2 + 1 marks</span><span>(a) Two nodes joined at \(t = 10\) and \(t = 1000\). What is the ratio of their degrees at any later time? (b) What fraction of nodes have degree at least \(4m\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) \(\frac{k_{10}}{k_{1000}} = \frac{m\sqrt{t/10}}{m\sqrt{t/1000}} = \sqrt{100} = 10\). The ratio never changes, so the older node stays ten times bigger forever. That is "first come, first served".</p>
+<p>(b) From the proof, the fraction with degree below \(k\) is \(1 - \frac{m^2}{k^2}\), so the fraction with degree at least \(k\) is \(\frac{m^2}{k^2}\). At \(k = 4m\) that is \(\frac1{16}\), about 6%.</p>
+</div></details>
+
+<h3 id="d-master">2 · The master equation</h3>
+<p class="small">Proof: <a href="#pf-ba-master">master equation</a></p>
+<details class="q"><summary><span class="qt">Numbers · 2 marks</span><span>For \(m = 1\), find \(P(1)\), \(P(2)\) and \(P(3)\) from \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\), and check them against the recursion \(P(k) = \frac{k-1}{k+2}P(k-1)\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>With \(m = 1\), \(P(k) = \frac4{k(k+1)(k+2)}\).</p>
+<ul>
+<li>\(P(1) = \frac46 = \frac23\). This matches the starting value \(P(m) = \frac2{m+2} = \frac23\).</li>
+<li>\(P(2) = \frac4{24} = \frac16\). The recursion gives \(\frac14\cdot\frac23 = \frac16\).</li>
+<li>\(P(3) = \frac4{60} = \frac1{15}\). The recursion gives \(\frac25\cdot\frac16 = \frac1{15}\).</li>
+</ul>
+<p>So two thirds of the nodes in a BA tree have only one link.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 3 marks</span><span>In \(N(k, t+1) - N(k, t) = \frac{k-1}2P(k-1, t) - \frac k2P(k, t) + \delta_{k,m}\), say where each term comes from. Why is it \(\frac k2P(k)\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>\(N(k, t)\) is the number of nodes with degree \(k\) at step \(t\), and \(P(k, t) = N(k, t)/t\) is the fraction.</p>
+<ol class="steps">
+<li><strong>Out term.</strong> Each of the \(m\) new links lands on a given degree-\(k\) node with probability \(\frac k{2mt}\). Summed over the \(N(k)\) such nodes and the \(m\) links, the expected number of hits is \(m\cdot N(k)\cdot\frac k{2mt} = \frac k2\cdot\frac{N(k)}t = \frac k2P(k)\). Each hit moves a node from degree \(k\) to \(k+1\), so it is a loss.</li>
+<li><strong>In term.</strong> The same count with \(k-1\) instead of \(k\) gives \(\frac{k-1}2P(k-1)\). Those nodes move up into degree \(k\).</li>
+<li><strong>\(\delta_{k,m}\).</strong> The new node itself arrives with degree \(m\), so the count at \(k = m\) goes up by one. For \(k\ne m\) this term is 0.</li>
+</ol>
+<p>It assumes no node gets two of the new links in one step, which is very unlikely when \(t\) is large.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Derive · 3 marks</span><span>Show that \(P(k) = \frac{2m(m+1)}{k(k+1)(k+2)}\) adds up to 1 over \(k = m, m+1, \dots\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Split the fraction. \(\frac1{k(k+1)(k+2)} = \frac12\left[\frac1{k(k+1)} - \frac1{(k+1)(k+2)}\right]\). You can check this by putting the right side over a common denominator.</li>
+<li>Summing from \(k = m\), each negative term cancels the positive term of the next \(k\). Only the first positive term is left, so \(\sum_{k\ge m}\frac1{k(k+1)(k+2)} = \frac12\cdot\frac1{m(m+1)}\).</li>
+<li>Multiply by \(2m(m+1)\) to get exactly 1.</li>
+</ol>
+</div></details>
+
+<h3 id="d-var">3 · No preference, no growth, nonlinear \(\Pi\)</h3>
+<p class="small">Proof: <a href="#pf-model-a">Model A</a>, <a href="#pf-model-b">Model B</a>, <a href="#pf-nlpa">nonlinear</a></p>
+<details class="q"><summary><span class="qt">Numbers · 2 + 2 marks</span><span>Model A (growth, uniform attachment) with \(m = 2\). (a) A node joins at \(t_i = 10\). What is its degree at \(t = 1000\), and what would it be in the BA model? (b) What fraction of nodes have degree above \(10m\) in each model?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) Model A gives \(k_i = m + m\ln(t/t_i) = 2 + 2\ln100 = 2 + 9.2 = 11.2\). BA gives \(k_i = 2\sqrt{100} = 20\). Preference makes old nodes grow much faster.</p>
+<p>(b) In Model A the fraction above \(k\) is \(e^{1 - k/m}\), so at \(k = 10m\) it is \(e^{-9}\approx0.0001\). In BA it is \(\frac{m^2}{k^2} = \frac1{100} = 0.01\), a hundred times more. That is the difference between an exponential tail and a power-law tail. Only BA has hubs.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 3 marks</span><span>Model B has \(N = 100\) nodes and no growth. Each step adds one link, with one end at a random node and the other chosen by preferential attachment. (a) What is the average degree after 2000 steps? (b) Why do all degrees become about equal? (c) Roughly when does the network become complete?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) Each step adds one link and so 2 to the total degree. After 2000 steps the total is 4000, and \(\langle k\rangle = \frac{4000}{100} = 40\).</p>
+<p>(b) \(\frac{dk_i}{dt} = \frac1N + \frac{k_i}{2t}\) is solved by \(k_i = \frac{2t}N + C_i\sqrt t\). The first part is the same for every node and grows like \(t\). The part that differs between nodes grows only like \(\sqrt t\), so it becomes small in comparison and the degrees bunch up around \(\frac{2t}N\).</p>
+<p>(c) A complete graph on 100 nodes has \(\frac{100\cdot99}2 = 4950\) links, so after about 5000 steps every pair is linked. Nothing settles down before that, so there is no stationary distribution.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 3 marks</span><span>With \(\Pi(k_i) = \frac{k_i^\alpha}{\sum_jk_j^\alpha}\), how does the largest degree grow with \(t\) for \(\alpha = 0.5\), \(\alpha = 1\) and \(\alpha = 2\)? Which ones give a power law?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ul>
+<li>\(\alpha = 0.5\) is sublinear. The largest hub grows like \((\ln t)^{1/(1-\alpha)} = (\ln t)^2\), which is slower than any power of \(t\). The distribution is a stretched exponential, so there is no power law.</li>
+<li>\(\alpha = 1\) is BA. The largest hub grows like \(t^{1/2}\) and \(P(k)\sim k^{-3}\). This is the only power law of the three.</li>
+<li>\(\alpha = 2\) is superlinear. One node's \(k^2\) outgrows the sum over everyone else, so it takes almost every new link and grows like \(t\). The rest stay small. This is winner takes all.</li>
+</ul>
+</div></details>
+
+<h3 id="d-sw">4 · Small world at \(p = 0\) and \(p = 1\)</h3>
+<p class="small">Proof: <a href="#pf-ring-c">\(C(0)\)</a>, <a href="#pf-ring-l">\(\bar\ell(0)\)</a>, <a href="#pf-rand-sw">\(p = 1\)</a></p>
+<details class="q"><summary><span class="qt">Numbers · 3 marks</span><span>A ring of \(n = 600\) nodes, each linked to \(k = 3\) neighbours on each side. Find \(C\) and \(\bar\ell\) at \(p = 0\) and at \(p = 1\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>\(p = 0\): \(C = \frac{3(k-1)}{2(2k-1)} = \frac{3\cdot2}{2\cdot5} = 0.6\) and \(\bar\ell\approx\frac n{4k} = \frac{600}{12} = 50\).</p>
+<p>\(p = 1\): \(C\approx\frac{2k}n = \frac6{600} = 0.01\) and \(\bar\ell\approx\frac{\ln n}{\ln2k} = \frac{\ln600}{\ln6} = \frac{6.40}{1.79}\approx3.6\).</p>
+<p>Rewiring everything cuts the path length from 50 to under 4 and the clustering from 0.6 to 0.01.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Derive · 2 marks</span><span>For a ring with \(k = 2\) (degree 4), count the links between the neighbours of one node directly and find \(C(0)\). Check it against the formula.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>Call the node 0. Its neighbours are −2, −1, 1 and 2, which make \(\binom42 = 6\) pairs. Two of them are linked when they are at most 2 apart on the ring.</p>
+<ul>
+<li>Linked: (−2, −1), (−1, 1) and (1, 2).</li>
+<li>Not linked: (−2, 1) and (−1, 2) are 3 apart, and (−2, 2) is 4 apart.</li>
+</ul>
+<p>So \(C(0) = \frac36 = \frac12\). The formula gives \(\frac{3(2-1)}{2(4-1)} = \frac12\), which matches.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 2 + 1 marks</span><span>(a) A question gives the degree as \(K = 10\). Find \(C(0)\). (b) Show that \(C(0)\to\frac34\) for large \(k\), and say why \(\bar\ell(0)\) grows with \(n\) but \(\bar\ell(1)\) barely does.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) \(k = K/2 = 5\), so \(C(0) = \frac{3\cdot4}{2\cdot9} = \frac23\). The degree formula gives the same, \(\frac{3(K-2)}{4(K-1)} = \frac{24}{36} = \frac23\).</p>
+<p>(b) For large \(k\), \(\frac{3(k-1)}{2(2k-1)}\approx\frac{3k}{4k} = \frac34\). On the ring each step moves you at most \(k\) places, so crossing the ring takes about \(\frac n{2k}\) steps, which grows in proportion to \(n\). In the random graph the number of nodes you can reach multiplies by about \(2k\) each step, so you reach all \(n\) after about \(\frac{\ln n}{\ln2k}\) steps. That grows only like \(\ln n\).</p>
+</div></details>
+
+<h3 id="d-ws">5 · \(C(p) = C(0)(1-p)^3\)</h3>
+<p class="small">Proof: <a href="#pf-ws">\(C(p)\)</a></p>
+<details class="q"><summary><span class="qt">Numbers · 2 marks</span><span>At what rewiring probability \(p\) has the clustering fallen to half of \(C(0)\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>Solve \((1-p)^3 = \frac12\). Then \(1 - p = 2^{-1/3} = 0.794\), so \(p\approx0.21\). About a fifth of the links have to be moved before the clustering halves. The path length has already fallen a long way by \(p = 0.01\).</p>
+</div></details>
+<details class="q"><summary><span class="qt">Explain · 2 marks</span><span>Why is the power in \(C(p) = C(0)(1-p)^3\) equal to 3 and not 1?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>The clustering counts triangles, that is, pairs of your neighbours who are linked to each other. A triangle is made of three links. It survives only if none of the three is rewired, and each one stays with probability \(1-p\), independently. So a triangle survives with probability \((1-p)^3\).</p>
+<p>The formula ignores the few new triangles that random links happen to make. That is fine because there are only about \(\frac{2k}n\) of them, the same as the clustering of a random graph.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Numbers · 2 + 1 marks</span><span>\(n = 1000\), \(k = 5\), \(p = 0.01\). (a) How many links are rewired, and what is \(C\)? (b) Why is this called a small world?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) The ring has \(nk = 5000\) links, so about \(5000\times0.01 = 50\) are rewired. \(C(0) = \frac{3\cdot4}{2\cdot9} = 0.667\), so \(C = 0.667\times0.99^3 = 0.667\times0.970 = 0.647\). The clustering has barely changed.</p>
+<p>(b) Those 50 shortcuts join far-apart parts of the ring, so most paths can use one, and the average path length drops to close to the random value. A graph with clustering as high as a lattice but paths as short as a random graph is a small world.</p>
+</div></details>
+
+<h3 id="d-sync">6 · Two coupled oscillators</h3>
+<p class="small">Proof: <a href="#pf-twoosc">two oscillators</a></p>
+<details class="q"><summary><span class="qt">Numbers · 3 marks</span><span>\(\omega_1 = 3\), \(\omega_2 = 7\) and \(k_1 = k_2 = k\). (a) Find the critical \(k\). (b) At \(k = 4\), find the locked phase difference and \(\Omega\), and say which root is stable.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) Lock iff \(|\Delta\omega|\le k_1 + k_2\), that is \(4\le2k\). So \(k_c = 2\).</p>
+<p>(b) \(\sin\phi^* = \frac{\Delta\omega}{k_1 + k_2} = \frac48 = \frac12\), which has two roots, \(\phi^* = \frac\pi6\) and \(\frac{5\pi}6\). The slope of \(\dot\phi\) is \(-(k_1 + k_2)\cos\phi\). It is negative at \(\frac\pi6\), where the cosine is positive, so that root is stable and \(\frac{5\pi}6\) is unstable.</p>
+<p>\(\Omega = \frac{k_2\omega_1 + k_1\omega_2}{k_1 + k_2} = \frac{4\cdot3 + 4\cdot7}8 = 5\), the plain average, because the couplings are equal.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Numbers · 3 marks</span><span>\(\omega_1 = 0\), \(\omega_2 = 6\), \(k_1 = 2\), \(k_2 = 6\). Do they lock? If so, find \(\phi^*\) and \(\Omega\), and check \(\Omega\) using both equations.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>\(|\Delta\omega| = 6\le k_1 + k_2 = 8\), so they lock. \(\sin\phi^* = \frac68 = \frac34\), so \(\phi^* = 0.85\) rad (the root with \(\cos\phi^*>0\)).</p>
+<p>\(\Omega = \frac{6\cdot0 + 2\cdot6}8 = 1.5\). Check with oscillator 1: \(\omega_1 + k_1\sin\phi^* = 0 + 2\cdot\frac34 = 1.5\). Check with oscillator 2: \(\omega_2 - k_2\sin\phi^* = 6 - 6\cdot\frac34 = 1.5\).</p>
+<p>\(\Omega\) is much closer to \(\omega_1\), because oscillator 1 adjusts only weakly (\(k_1 = 2\)) while oscillator 2 does most of the adjusting.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Derive · 2 marks</span><span>Only oscillator 1 feels the other, so \(k_2 = 0\). Find the condition for locking and the common frequency.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>\(\dot\phi = \Delta\omega - k_1\sin\phi\), so locking needs \(|\Delta\omega|\le k_1\). Then \(\Omega = \frac{0\cdot\omega_1 + k_1\omega_2}{k_1} = \omega_2\).</p>
+<p>Oscillator 2 ignores oscillator 1 and keeps its own speed, and oscillator 1 has to follow it. This is how a pacemaker drives a heart, or the sun's cycle drives a body clock.</p>
+</div></details>
+
+<h3 id="d-lorenz">7 · Lorenz</h3>
+<p class="small">Proof: <a href="#pf-lorenz">Lorenz</a></p>
+<details class="q"><summary><span class="qt">Numbers · 2 marks</span><span>Find all the fixed points for \(\sigma = 10\), \(\beta = \frac83\), \(\rho = 28\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>The origin \((0, 0, 0)\) is always one. Since \(\rho>1\) there are two more, with \(z^* = \rho - 1 = 27\) and \(x^* = y^* = \pm\sqrt{\beta(\rho-1)} = \pm\sqrt{\frac83\cdot27} = \pm\sqrt{72} = \pm8.49\).</p>
+<p>So \(C_\pm = (\pm8.49,\ \pm8.49,\ 27)\), with the signs taken together.</p>
+</div></details>
+<details class="q"><summary><span class="qt">Numbers · 3 marks</span><span>With \(\sigma = 10\) and \(\beta = \frac83\), find the eigenvalues of the Jacobian at the origin for \(\rho = 0.5\) and for \(\rho = 28\). Is the origin stable?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>At the origin \(J\) splits into \(-\beta = -\frac83\) and the block \(\begin{pmatrix}-10 & 10\\ \rho & -1\end{pmatrix}\), which has trace \(-11\) and determinant \(10(1 - \rho)\). Its eigenvalues are \(\lambda = \frac{-11\pm\sqrt{121 - 40(1-\rho)}}2\).</p>
+<ul>
+<li>\(\rho = 0.5\): the determinant is 5, so \(\lambda = \frac{-11\pm\sqrt{101}}2 = -0.47\) and \(-10.5\). All three eigenvalues are negative, so the origin is stable.</li>
+<li>\(\rho = 28\): the determinant is \(-270\), so \(\lambda = \frac{-11\pm\sqrt{1201}}2 = 11.8\) and \(-22.8\). One eigenvalue is positive, so the origin is an unstable saddle.</li>
+</ul>
+</div></details>
+<details class="q"><summary><span class="qt">Derive · 2 + 1 marks</span><span>(a) Write the Jacobian at \(C_+\) in terms of \(\sigma\), \(\beta\) and \(x^*\). (b) Why do \(C_\pm\) exist only for \(\rho>1\), and what happens at \(\rho = 1\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(a) Put \(y^* = x^*\) and \(z^* = \rho - 1\) into the general Jacobian. Then \(\rho - z^* = 1\), so</p>
+<div class="eq">\[J(C_+) = \begin{pmatrix}-\sigma & \sigma & 0\\ 1 & -1 & -x^*\\ x^* & x^* & -\beta\end{pmatrix},\qquad x^* = \sqrt{\beta(\rho - 1)}.\]</div>
+<p>(b) They need \(x^{*2} = \beta(\rho - 1)\), and a square can't be negative, so \(\rho\ge1\). At \(\rho = 1\) they sit at the origin. As \(\rho\) passes 1 they split off from it and the origin turns unstable. That is a pitchfork bifurcation.</p>
+</div></details>
+
 </section>
 
 <section>
