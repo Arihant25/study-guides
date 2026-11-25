@@ -253,6 +253,11 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .sol:first-child{border-top:0; padding-top:2px}
 .sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
 details.linewhy{margin:0}
+:root{interpolate-size:allow-keywords}
+details.linewhy::details-content{height:0; overflow:clip; opacity:0; transition:height .28s ease, opacity .2s ease, content-visibility .28s allow-discrete}
+details.linewhy[open]::details-content{height:auto; opacity:1}
+details.linewhy>summary::before{transition:transform .2s ease}
+@media (prefers-reduced-motion: reduce){details.linewhy::details-content{transition:none}}
 .eqn{display:none} @media(max-width:600px){.eqw{display:none} .eqn{display:block}}
 details.linewhy>summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px 0 0; border:0; background:none; font-size:.86rem; font-weight:600; color:var(--muted-fg)}
 details.linewhy>summary:hover{color:var(--fg)}
