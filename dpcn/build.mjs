@@ -9,7 +9,8 @@ import temml from 'temml';
 // {{ROOT}} in any part is replaced by the path from that page back to the site root, and
 // <!--include:shared/x.html--> pulls in a shared part (used for the whole-course map).
 const PAGES = [
-  { src: 'src-endsem', out: 'index.html', root: '', legacy: true },   // site root opens the End-sem sheet
+  { src: 'src-blitz', out: 'index.html', root: '', legacy: true },    // site root opens the End-sem blitz
+  { src: 'src-blitz', out: 'blitz/index.html', root: '../' },        // End-sem blitz
   { src: 'src', out: 'midsem/index.html', root: '../' },             // Mid-sem guide
   { src: 'src-after', out: 'after-midsem/index.html', root: '../' }, // After mid-sem guide
   { src: 'src-quiz1', out: 'quiz1/index.html', root: '../' },        // Quiz 1 guide

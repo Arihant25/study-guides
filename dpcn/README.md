@@ -2,6 +2,8 @@
 
 Study notes for **Dynamical Processes of Complex Networks (SC1.440)** at IIIT Hyderabad, written as three pages to read in order. Every topic starts in plain words, symbols are explained where they first appear, and section M on page 1 covers the maths the course uses.
 
+**Start here if the end-sem is close and you haven't followed the course:** the **End-sem blitz** covers the whole end-sem syllabus on one page from zero. It explains the basics first, then for each topic gives the derivation to write in the exam and practice questions. Every worked answer states the formula, says where it comes from and then applies it. The site opens on it: https://arihant25.github.io/study-guides/dpcn/ (also at https://arihant25.github.io/study-guides/dpcn/blitz/)
+
 1. **Page 1, Quiz 1 guide** (classes 1 to 6, network basics): https://arihant25.github.io/study-guides/dpcn/quiz1/
 2. **Page 2, Mid-sem guide** (mid-sem syllabus, with the 2026 paper and marking scheme): https://arihant25.github.io/study-guides/dpcn/midsem/
 3. **Page 3, After mid-sem guide** (classes 13 to 22): https://arihant25.github.io/study-guides/dpcn/after-midsem/
@@ -10,7 +12,7 @@ There is also a **Memory sheet** with the whole course on one page (formulas, a 
 
 The **Quiz 2 sheet** has only the Quiz 2 syllabus (2-D nonlinear stability and limit cycles, maps, Lorenz, synchronisation), with the past questions on those topics and a three-day plan: https://arihant25.github.io/study-guides/dpcn/quiz2/
 
-The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It starts with a checklist of the seven proofs to learn, with ticks your browser remembers. Each proof shows only its question and one-line idea until you open the steps. Every topic opens with a plain-words explanation, there is a plan for the last day, and each checklist item has three practice questions with worked answers. It is what the site opens on: https://arihant25.github.io/study-guides/dpcn/ (also at https://arihant25.github.io/study-guides/dpcn/endsem/)
+The **End-sem sheet** has only the end-sem syllabus as written on the board (phase synchronisation of two oscillators, Lorenz, the Barabási–Albert model with its master equation, no growth, no preferential attachment and nonlinear preferential attachment, and small-world graphs at p = 0 and p = 1), with the past questions, some practice questions in the same style, and flashcards. It starts with a checklist of the seven proofs to learn, with ticks your browser remembers. Each proof shows only its question and one-line idea until you open the steps. Every topic opens with a plain-words explanation, there is a plan for the last day, and each checklist item has three practice questions with worked answers. It is at https://arihant25.github.io/study-guides/dpcn/endsem/
 
 Page 1 opens with a map of which page teaches each class and a ranked list of derivations to learn (`shared/course-map.html`).
 
@@ -40,7 +42,7 @@ Page 1 opens with a map of which page teaches each class and a ranked list of de
 
 ## Editing
 
-The pages are generated. Edit the parts in `src/` (Mid-sem guide, built to `midsem/`), `src-after/` (After mid-sem guide), `src-quiz1/` (Quiz 1 guide), `src-remember/` (Memory sheet), `src-quiz2/` (Quiz 2 sheet) or `src-endsem/` (End-sem sheet), in file-name order, then run:
+The pages are generated. Edit the parts in `src/` (Mid-sem guide, built to `midsem/`), `src-after/` (After mid-sem guide), `src-quiz1/` (Quiz 1 guide), `src-remember/` (Memory sheet), `src-quiz2/` (Quiz 2 sheet) `src-endsem/` (End-sem sheet) or `src-blitz/` (End-sem blitz), in file-name order, then run:
 
 ```
 npm install

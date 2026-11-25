@@ -1,0 +1,164 @@
+<aside class="toc" aria-label="Contents">
+  <div class="brand">DPCN study guide<small>End-sem blitz</small></div>
+  <!--include:shared/pages.html-->
+  <nav id="tocnav">
+    <a href="#b-start">Read this first</a>
+    <div class="grp">Basics</div>
+    <a href="#b-net">0a · Networks</a>
+    <a href="#b-dyn">0b · Equations that change in time</a>
+    <a href="#b-tools">0c · Maths tools</a>
+    <div class="grp">The syllabus</div>
+    <a href="#b-ba">1 · The BA model</a>
+    <a href="#b-var">2 · Changing the BA model</a>
+    <a href="#b-sw">3 · Small-world graphs</a>
+    <a href="#b-sync">4 · Two coupled oscillators</a>
+    <a href="#b-lorenz">5 · The Lorenz system</a>
+    <div class="grp">The end</div>
+    <a href="#b-sheet">Formula sheet</a>
+    <a href="#b-hall">In the exam hall</a>
+  </nav>
+</aside>
+<main>
+<header class="hero">
+  <div class="kicker">Dynamical Processes in Complex Networks · SC1.440 · End-sem</div>
+  <h1>DPCN Study Guide · End-sem Blitz</h1>
+  <p class="lead">This page is for someone who has not been to the classes and has one day left. It starts from the basics and then covers every item on the end-sem syllabus. Read it from top to bottom. When you reach a question, write your answer on paper before you open the worked answer.</p>
+</header>
+<div class="tocwrap-mobile">
+  <details class="mtoc" id="mtoc"><summary><span class="here">End-sem blitz</span><span class="mbtn">Pages · Sections</span></summary>
+  <div class="mpanel">
+    <div class="mgrp">Pages</div>
+    <!--include:shared/pages.html-->
+    <div class="mgrp">Sections on this page</div>
+    <a href="#b-start">Read this first</a>
+    <a href="#b-net">0a · Networks</a>
+    <a href="#b-dyn">0b · Equations that change in time</a>
+    <a href="#b-tools">0c · Maths tools</a>
+    <a href="#b-ba">1 · The BA model</a>
+    <a href="#b-var">2 · Changing the BA model</a>
+    <a href="#b-sw">3 · Small-world graphs</a>
+    <a href="#b-sync">4 · Two coupled oscillators</a>
+    <a href="#b-lorenz">5 · The Lorenz system</a>
+    <a href="#b-sheet">Formula sheet</a>
+    <a href="#b-hall">In the exam hall</a>
+  </div>
+  </details>
+</div>
+
+<section>
+<h2 id="b-start">Read this first</h2>
+<p>The end-sem syllabus has five topics. The teacher wrote them on the board, and this page covers them in this order.</p>
+<table class="tbl">
+<tr><th>Part</th><th>Topic</th><th>Time to spend</th></tr>
+<tr><td>0</td><td>The basics that the rest of the page uses</td><td>40 minutes</td></tr>
+<tr><td>1</td><td>The Barabási–Albert (BA) model of a growing network, including its master equation</td><td>2 hours</td></tr>
+<tr><td>2</td><td>The BA model with no growth, with no preferential attachment, and with nonlinear preferential attachment</td><td>1 hour</td></tr>
+<tr><td>3</td><td>Small-world graphs, with clustering and path length at rewiring probability \(p = 0\) and \(p = 1\)</td><td>90 minutes</td></tr>
+<tr><td>4</td><td>Two coupled phase oscillators and the condition for them to lock</td><td>45 minutes</td></tr>
+<tr><td>5</td><td>Fixed points of the Lorenz system and their Jacobians</td><td>45 minutes</td></tr>
+</table>
+<p>That comes to about seven hours, so take a short break after each part. Parts 1 and 2 are the largest share of the syllabus. If you run out of time, make sure you have done them.</p>
+
+<div class="card watch"><span class="tag">How the exam is marked</span>
+<p>Most questions say "find" or "show" and expect a derivation. In the 2026 mid-sem, a correct final formula with no steps got 0 marks. Each part below has a box headed "Write this in the exam". Learn those steps in order and write all of them, even when you remember the final answer.</p>
+</div>
+
+<div class="card"><span class="tag">What this page is based on</span>
+<p>The syllabus comes from a photo of the board. The derivations follow the course slides, and the past questions are from the 2024 papers. Two things are less certain. The photo does not make it fully clear whether the Lorenz system is on this paper, so it is included, and it is short. Also, no past paper has asked about Parts 2 and 3, so the questions on those parts were written for this guide in the style of the 2024 papers.</p>
+</div>
+</section>
+
+<section>
+<h2 id="b-net">0a · Networks</h2>
+<p>A <strong>network</strong> (or graph) is a set of <strong>nodes</strong> joined by <strong>links</strong>. In a network of friendships, each node is a person and each link joins two people who know each other. \(N\) is the number of nodes and \(L\) is the number of links.</p>
+
+<figure class="fig"><svg class="gr" viewBox="0 0 320 170" role="img" aria-label="Five nodes. A is linked to B, C and D. B is linked to C. D is linked to E." data-spec='{"r":15,"hi":["A"],"nodes":{"A":[150,85],"B":[60,35],"C":[60,135],"D":[240,85],"E":[300,30]},"edges":[["A","B"],["A","C"],["A","D"],["B","C"],["D","E"]]}'></svg>
+<figcaption>A small network with \(N = 5\) nodes and \(L = 5\) links. Node A has degree 3.</figcaption></figure>
+
+<p><strong>Degree.</strong> The degree \(k_i\) of node \(i\) is the number of links at that node. In the picture, \(k_A = 3\), \(k_B = k_C = k_D = 2\) and \(k_E = 1\). Every link has two ends, so the degrees add up to twice the number of links. This gives the average degree.</p>
+<div class="eq">\[\sum_ik_i = 2L,\qquad\langle k\rangle = \frac{2L}{N}.\]</div>
+<p>The angle brackets \(\langle\ \rangle\) mean "the average of". In the picture, \(\langle k\rangle = \frac{10}{5} = 2\).</p>
+
+<p><strong>Degree distribution.</strong> \(P(k)\) is the fraction of nodes that have degree \(k\). In the picture, \(P(2) = \frac35\) because three of the five nodes have degree 2. The fractions add up to 1.</p>
+
+<p><strong>Power law and scale-free.</strong> A degree distribution of the form \(P(k) = Ck^{-\gamma}\) is called a power law, and a network with such a \(P(k)\) is called <strong>scale-free</strong>. In a power law, large degrees are rare but not extremely rare. A large network then has a few nodes with very many links, and these are called <strong>hubs</strong>. Compare an exponential distribution like \(P(k)\propto e^{-k/m}\). There the fraction of nodes falls so fast as \(k\) increases that there are no hubs.</p>
+
+<p><strong>Path length.</strong> The distance between two nodes is the smallest number of links you have to cross to get from one to the other. In the picture the distance from B to E is 3 (B to A, A to D, D to E). The <strong>average path length</strong> \(\bar\ell\) is the average distance over all pairs of nodes.</p>
+
+<p><strong>Clustering coefficient.</strong> This measures how many of a node's neighbours are linked to each other. A node with \(k_i\) neighbours has \(\binom{k_i}2 = \frac{k_i(k_i-1)}2\) pairs of neighbours. Then</p>
+<div class="eq boxed">\[C_i = \frac{\text{number of linked pairs of neighbours of } i}{k_i(k_i-1)/2}.\]</div>
+<p>Node A has neighbours B, C and D, so 3 pairs. Only B and C are linked, so \(C_A = \frac13\). The <strong>average clustering coefficient</strong> \(C\) is the average of \(C_i\) over all nodes. Each linked pair of neighbours forms a triangle with node \(i\), so high clustering means many triangles.</p>
+
+<details class="q"><summary><span class="qt">Try it</span><span>A network has 8 nodes and 12 links. What is \(\langle k\rangle\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\langle k\rangle = \frac{2L}N\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Every link has two ends, so the degrees add up to \(2L\) (Part 0a, "Degree").</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(\langle k\rangle = \frac{2\cdot12}{8} = \frac{24}8 = 3\).</p></div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">2024 class quiz 2 · 1 mark</span><span>In a social network, node A has neighbours B, C and D. If B and C are not connected to each other, what is the minimum possible local clustering coefficient of A? (0, 1, 2/3, 1/2, 1/3)</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(C_i = \frac{\text{linked pairs of neighbours}}{k_i(k_i-1)/2}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">The definition of the clustering coefficient (Part 0a).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(k_A = 3\), so there are \(\frac{3\cdot2}2 = 3\) pairs. B–C is not linked. The smallest value comes when B–D and C–D are not linked either, so 0 pairs are linked and \(C_A = \frac03 = 0\). The answer is 0.</p></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="b-dyn">0b · Equations that change in time</h2>
+<p>\(\dot x\) (read "x dot") means \(\frac{dx}{dt}\), the rate at which \(x\) changes with time. An equation like \(\dot x = f(x)\) gives that rate for every value of \(x\).</p>
+
+<p><strong>Fixed point.</strong> A fixed point \(x^*\) is a value where the rate is zero, \(f(x^*) = 0\). If \(x\) starts exactly there, it stays there.</p>
+
+<p><strong>Stability.</strong> A fixed point is <strong>stable</strong> if a small change away from it shrinks back to zero over time, and <strong>unstable</strong> if a small change grows. For one variable the test is the slope of \(f\).</p>
+<div class="eq">\[\dot x = f(x):\qquad x^*\text{ is stable if } f'(x^*)<0\text{ and unstable if } f'(x^*)>0.\]</div>
+
+<p><strong>The Jacobian.</strong> With several variables, say \(\dot x = f(x, y)\) and \(\dot y = g(x, y)\), the test uses the <strong>Jacobian matrix</strong>. Row 1 holds the partial derivatives of \(f\), and row 2 holds those of \(g\).</p>
+<div class="eq">\[J = \begin{pmatrix}\frac{\partial f}{\partial x} & \frac{\partial f}{\partial y}\\[4pt] \frac{\partial g}{\partial x} & \frac{\partial g}{\partial y}\end{pmatrix}\]</div>
+<p>A partial derivative \(\frac{\partial f}{\partial x}\) is the derivative of \(f\) with respect to \(x\), treating every other variable as a constant. You work out \(J\) with the variables left in, then put in the values at the fixed point.</p>
+
+<p><strong>Eigenvalues.</strong> The eigenvalues \(\lambda\) of \(J\) are the solutions of \(\det(J - \lambda I) = 0\). Near the fixed point, small changes grow or shrink like \(e^{\lambda t}\). So the fixed point is stable if every eigenvalue has a negative real part. It is unstable if any eigenvalue has a positive real part.</p>
+
+<p><strong>The 2×2 shortcut.</strong> For \(J = \begin{pmatrix}a & b\\ c & d\end{pmatrix}\), let \(T = a + d\) (the trace) and \(D = ad - bc\) (the determinant).</p>
+<div class="eq boxed">\[\lambda = \frac{T\pm\sqrt{T^2 - 4D}}{2},\qquad\text{stable}\iff T<0\text{ and }D>0.\]</div>
+<p>If \(D<0\), one eigenvalue is positive and one is negative. That fixed point is called a <strong>saddle</strong>, and it is unstable.</p>
+
+<p><strong>A 3×3 matrix that splits.</strong> If the third row and the third column are zero except for the corner entry, that corner entry is one eigenvalue. The other two come from the top-left 2×2 block. Part 5 uses this.</p>
+
+<details class="q"><summary><span class="qt">Try it</span><span>Find the fixed points of \(\dot x = x(1 - x)\) and say whether each is stable.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Fixed points solve \(f(x^*) = 0\). Stable if \(f'(x^*)<0\), unstable if \(f'(x^*)>0\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0b, "Fixed point" and "Stability".</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(f(x) = x(1 - x) = 0\) gives \(x^* = 0\) and \(x^* = 1\).</p><p>\(f'(x) = 1 - 2x\). \(f'(0) = 1>0\), so 0 is unstable. \(f'(1) = -1<0\), so 1 is stable.</p></div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt">Try it</span><span>A fixed point has \(J = \begin{pmatrix}-3 & 1\\ 2 & -2\end{pmatrix}\). Find the eigenvalues. Is it stable?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda = \frac{T\pm\sqrt{T^2 - 4D}}2\), with \(T = a + d\) and \(D = ad - bc\). Stable if and only if \(T<0\) and \(D>0\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0b, "The 2×2 shortcut".</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>\(T = -3 + (-2) = -5\). \(D = (-3)(-2) - (1)(2) = 4\).</p><p>\(\lambda = \frac{-5\pm\sqrt{25 - 16}}2 = \frac{-5\pm3}2\), which is \(-1\) or \(-4\). Both are negative, so the fixed point is stable.</p></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="b-tools">0c · Maths tools</h2>
+<p>Parts 1 and 2 use the same three tools again and again.</p>
+
+<p><strong>Separating variables.</strong> To solve \(\frac{dk}{dt} = \frac{k}{2t}\), put everything with \(k\) on one side and everything with \(t\) on the other, then integrate both sides.</p>
+<div class="eq">\[\frac{dk}{k} = \frac{dt}{2t}\;\Rightarrow\;\ln k = \tfrac12\ln t + c.\]</div>
+<p>A known starting value fixes the constant \(c\). You will need \(\int\frac{dx}x = \ln x\), \(\ln a - \ln b = \ln\frac ab\), and \(b\ln a = \ln a^b\).</p>
+
+<p><strong>Joining times are spread evenly.</strong> In a network where one node is added at each step \(1, 2, \dots, t\), every joining time occurs exactly once. So the fraction of nodes that joined after some time \(T\) is</p>
+<div class="eq boxed">\[\text{fraction with } t_i>T = \frac{t - T}{t} = 1 - \frac Tt.\]</div>
+
+<p><strong>From "fraction below \(k\)" to \(P(k)\).</strong> If \(F(k)\) is the fraction of nodes with degree below \(k\), then the degree distribution is its derivative, \(P(k) = \frac{dF}{dk}\).</p>
+
+<p><strong>Sine.</strong> \(\sin\phi\) is always between \(-1\) and \(1\). So \(\sin\phi = a\) has a solution only if \(|a|\le1\). When it does, there are two solutions between 0 and \(\pi\), namely \(\phi\) and \(\pi - \phi\). The one below \(\frac\pi2\) has \(\cos\phi>0\). Part 4 uses this.</p>
+
+<details class="q"><summary><span class="qt">Try it</span><span>Solve \(\frac{dk}{dt} = \frac{k}{2t}\) with \(k = 2\) at \(t = 5\). What is \(k\) at \(t = 20\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Separate variables, \(\frac{dk}{k} = \frac{dt}{2t}\), and use \(\int\frac{dx}x = \ln x\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Part 0c, "Separating variables".</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>Integrate from \(k = 2\) at \(t = 5\). \(\ln\frac k2 = \frac12\ln\frac t5\), so \(k = 2\sqrt{t/5}\).</p><p>At \(t = 20\), \(k = 2\sqrt{4} = 4\).</p></div></div>
+</div></details>
+</section>

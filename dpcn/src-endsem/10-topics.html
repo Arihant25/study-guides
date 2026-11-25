@@ -45,9 +45,9 @@
 <h2 id="e-sync">1 · Phase synchronisation</h2>
 <p class="about">Two oscillators each turn at their own speed. Coupling pulls each towards the other. If the pull is strong enough compared with the difference in speeds, they lock and turn together. The board's \(f_1(\omega_1, \theta_1, \theta_2, k_1)\) is \(\omega_1 + k_1\sin(\theta_2 - \theta_1)\).</p>
 <div class="card goal"><span class="tag">In plain words</span>
-<p>Picture two runners on a circular track. One is naturally faster, and their natural speeds are \(\omega_1\) and \(\omega_2\). Each runner watches the other and speeds up or slows down a little to close the gap. How hard runner 1 adjusts is \(k_1\), and how hard runner 2 adjusts is \(k_2\).</p>
-<p>If the adjusting can make up for the difference in speed, they end up running at one shared speed \(\Omega\) with a fixed gap \(\phi\) between them. That is locking. Since the gap stops changing, you set \(\dot\phi = 0\). The pull is \(\sin\phi\) times the coupling, and a sine is never bigger than 1. So the most the two can make up together is \(k_1 + k_2\), and they lock only when \(|\omega_2 - \omega_1|\le k_1 + k_2\).</p>
-<p>The shared speed lies between the two natural speeds. It is closer to the runner who adjusts less, because that runner mostly keeps their own pace.</p>
+<p>Each oscillator has a phase \(\theta\), an angle that increases at its natural frequency \(\omega\) when the oscillator is on its own. The coupling term \(k_1\sin(\theta_2 - \theta_1)\) is positive when \(\theta_2\) is slightly ahead of \(\theta_1\), so \(\theta_1\) then increases faster. The term in the second equation has the opposite sign, so \(\theta_2\) increases more slowly. Together the two terms reduce the phase difference \(\phi = \theta_2 - \theta_1\).</p>
+<p>The oscillators lock when \(\phi\) stays constant, so you set \(\dot\phi = 0\). The coupling terms are \(\sin\phi\) times the coupling strengths, and \(|\sin\phi|\le1\). So the coupling can cancel a difference in natural frequency of at most \(k_1 + k_2\), and the oscillators lock only when \(|\omega_2 - \omega_1|\le k_1 + k_2\).</p>
+<p>The common frequency \(\Omega\) lies between \(\omega_1\) and \(\omega_2\). It is closer to the natural frequency of the oscillator with the smaller coupling strength.</p>
 <p><strong>Recipe.</strong> Subtract the two equations to get \(\dot\phi\). Set \(\dot\phi = 0\) and use \(|\sin\phi|\le1\). Then put \(\sin\phi^*\) back into either equation to get \(\Omega\).</p>
 </div>
 <!--pick:src-remember/20-proofs.html#pf-twoosc-->
@@ -72,8 +72,8 @@
 <h2 id="e-ba">3 · Scale-free networks and the Barabási–Albert model</h2>
 <p class="about">Real networks grow, and new nodes prefer well-connected nodes. Those two ingredients give a power law with exponent 3. The board asks for the rate \(\frac{dk_i}{dt}\) and the distribution \(P(k)\), with the master equation as a second way to get \(P(k)\). It then asks what happens when you remove an ingredient or change one.</p>
 <div class="card goal"><span class="tag">In plain words</span>
-<p>The network grows one node at a time. Each new node brings \(m\) links and attaches them to nodes already there. It prefers popular nodes. The chance that a link lands on node \(i\) is \(k_i\) divided by the total degree, so the rich get richer.</p>
-<p><strong>How fast one node grows.</strong> Each step adds \(m\) links, and each link adds 2 to the total degree, so after \(t\) steps the total is \(2mt\). Node \(i\) gets each new link with chance \(\frac{k_i}{2mt}\), and \(m\) links arrive per step, so \(\frac{dk_i}{dt} = \frac{k_i}{2t}\). Node \(i\) had degree \(m\) when it joined at time \(t_i\). Separating and integrating gives \(k_i = m\sqrt{t/t_i}\), so older nodes are bigger.</p>
+<p>The network grows one node at a time. Each new node brings \(m\) links and attaches them to nodes already there. A link is more likely to attach to a node of high degree. The probability that a link attaches to node \(i\) is \(k_i\) divided by the total degree.</p>
+<p><strong>How fast one node grows.</strong> Each step adds \(m\) links, and each link adds 2 to the total degree, so after \(t\) steps the total is \(2mt\). Node \(i\) receives each new link with probability \(\frac{k_i}{2mt}\), and \(m\) links arrive per step, so \(\frac{dk_i}{dt} = \frac{k_i}{2t}\). Node \(i\) had degree \(m\) when it joined at time \(t_i\). Separating and integrating gives \(k_i = m\sqrt{t/t_i}\), so older nodes are bigger.</p>
 <p><strong>The degree distribution.</strong> A node has degree below \(k\) exactly when it joined late, after \(t_i = m^2t/k^2\). Nodes join at evenly spread times, so the fraction with degree below \(k\) is \(1 - \frac{m^2}{k^2}\). Differentiating with respect to \(k\) gives \(P(k) = \frac{2m^2}{k^3}\).</p>
 <p><strong>The master equation</strong> gets the same answer by counting. Instead of following one node, count how many nodes have degree \(k\). In one step, some degree-\((k-1)\) nodes get a link and become degree \(k\). Some degree-\(k\) nodes get a link and move up to \(k+1\). The new node adds one node of degree \(m\). When the fractions stop changing, what flows in equals what flows out. That gives \(\frac{P(k)}{P(k-1)} = \frac{k-1}{k+2}\), and multiplying these ratios together gives \(P(k)\sim k^{-3}\).</p>
 </div>
@@ -84,7 +84,7 @@
 <p>Each variant takes the BA model and changes one rule. The method stays the same. Write \(\frac{dk_i}{dt} = m\,\Pi\) with the new \(\Pi\), integrate from \(k_i(t_i) = m\), and see what kind of growth you get.</p>
 <p><strong>No preference (3a).</strong> Every old node is equally likely, so \(\Pi = \frac1t\). Big nodes no longer grow faster, the degree grows only like a logarithm, and \(P(k)\) falls off exponentially. There are no hubs.</p>
 <p><strong>No growth (3b).</strong> The number of nodes is fixed and links keep being added. Every node's degree rises like \(\frac{2t}N\), the same for all, so everyone ends up alike and the network fills in until every pair is linked.</p>
-<p><strong>Nonlinear (3c).</strong> With \(\Pi\propto k^\alpha\), the power \(\alpha\) sets how strongly popularity helps. Below 1 it helps too little, and there are no real hubs. At 1 you get BA. Above 1 it helps so much that one node grabs almost every link.</p>
+<p><strong>Nonlinear (3c).</strong> With \(\Pi\propto k^\alpha\), the power \(\alpha\) sets how strongly the degree of a node raises its chance of receiving a link. Below 1 the effect is too weak for hubs to form. At 1 you get BA. Above 1 the effect is so strong that one node receives almost every new link.</p>
 </div>
 <h3 id="nopa">3a · Growth without preferential attachment (Model A)</h3>
 <p>Keep growth, but let each new link pick an existing node uniformly at random, whatever its degree. There are \(m_0 + t - 1\approx t\) nodes to choose from, so</p>
@@ -279,7 +279,7 @@
 <ul>
 <li>\(\alpha = 0.5\) is sublinear. The largest hub grows like \((\ln t)^{1/(1-\alpha)} = (\ln t)^2\), which is slower than any power of \(t\). The distribution is a stretched exponential, so there is no power law.</li>
 <li>\(\alpha = 1\) is BA. The largest hub grows like \(t^{1/2}\) and \(P(k)\sim k^{-3}\). This is the only power law of the three.</li>
-<li>\(\alpha = 2\) is superlinear. One node's \(k^2\) outgrows the sum over everyone else, so it takes almost every new link and grows like \(t\). The rest stay small. This is winner takes all.</li>
+<li>\(\alpha = 2\) is superlinear. One node's \(k^2\) outgrows the sum over everyone else, so it receives almost every new link and its degree grows like \(t\). The rest stay small. This is winner takes all.</li>
 </ul>
 </div></details>
 
@@ -335,12 +335,12 @@
 <div class="ans">
 <p>\(|\Delta\omega| = 6\le k_1 + k_2 = 8\), so they lock. \(\sin\phi^* = \frac68 = \frac34\), so \(\phi^* = 0.85\) rad (the root with \(\cos\phi^*>0\)).</p>
 <p>\(\Omega = \frac{6\cdot0 + 2\cdot6}8 = 1.5\). Check with oscillator 1: \(\omega_1 + k_1\sin\phi^* = 0 + 2\cdot\frac34 = 1.5\). Check with oscillator 2: \(\omega_2 - k_2\sin\phi^* = 6 - 6\cdot\frac34 = 1.5\).</p>
-<p>\(\Omega\) is much closer to \(\omega_1\), because oscillator 1 adjusts only weakly (\(k_1 = 2\)) while oscillator 2 does most of the adjusting.</p>
+<p>\(\Omega\) is much closer to \(\omega_1\), because oscillator 1 has the smaller coupling strength (\(k_1 = 2\)), so its rate changes less than the rate of oscillator 2.</p>
 </div></details>
 <details class="q"><summary><span class="qt">Derive · 2 marks</span><span>Only oscillator 1 feels the other, so \(k_2 = 0\). Find the condition for locking and the common frequency.</span><span class="chev">›</span></summary>
 <div class="ans">
 <p>\(\dot\phi = \Delta\omega - k_1\sin\phi\), so locking needs \(|\Delta\omega|\le k_1\). Then \(\Omega = \frac{0\cdot\omega_1 + k_1\omega_2}{k_1} = \omega_2\).</p>
-<p>Oscillator 2 ignores oscillator 1 and keeps its own speed, and oscillator 1 has to follow it. This is how a pacemaker drives a heart, or the sun's cycle drives a body clock.</p>
+<p>Oscillator 2 is not affected by oscillator 1, so it keeps its natural frequency, and oscillator 1 locks to that frequency.</p>
 </div></details>
 
 <h3 id="d-lorenz">7 · Lorenz</h3>
