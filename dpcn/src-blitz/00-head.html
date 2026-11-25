@@ -252,6 +252,16 @@ details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-deco
 .sol{display:grid; grid-template-columns:150px 1fr; gap:4px 16px; padding:10px 0; border-top:1px solid var(--border)}
 .sol:first-child{border-top:0; padding-top:2px}
 .sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
+details.why{margin:14px 0 0; border:1px solid var(--border); border-radius:10px; background:var(--muted-2)}
+details.why>summary{cursor:pointer; list-style:none; min-height:44px; display:flex; align-items:center; gap:8px; padding:8px 14px; font-weight:650; font-size:.95rem}
+details.why>summary::-webkit-details-marker{display:none}
+details.why>summary::before{content:"+"; font-weight:700; width:1em; text-align:center}
+details.why[open]>summary::before{content:"\2212"}
+details.why>summary span{font-weight:400; color:var(--muted-fg)}
+details.why[open]{padding-bottom:6px}
+details.why .whyhead{margin:12px 14px 0; font-size:.8rem; font-weight:650; color:var(--muted-fg)}
+details.why .steps{margin:.4em 14px}
+@media(max-width:600px){details.why .steps{margin:.4em 4px} details.why .whyhead{margin-left:8px}}
 .sol .sb{min-width:0; overflow-wrap:break-word} .sol .sb math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
 @media(max-width:600px){.sol .sb .steps>li{padding-left:30px} .steps math[display="block"]{font-size:.88em}}
 .steps math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
