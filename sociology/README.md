@@ -2,7 +2,7 @@
 
 Revision notes for Intro to Sociology (HS2.201), built with plain HTML, CSS and JavaScript. There is no build step.
 
-**Live site:** `https://arihant25.github.io/study-guides/sociology/`
+**Live site:** `https://arihant25.github.io/sociology-study-guide/`
 
 ## Pages
 
@@ -10,7 +10,7 @@ Revision notes for Intro to Sociology (HS2.201), built with plain HTML, CSS and 
 |---|---|
 | `index.html` | Landing page with two choices, H1 and H2 |
 | `h1.html` | Midsem portion: Modules 1, 3, 4 and 5, Giddens chapters 1, 2 and 9, Grint chapter 3, and the midsem paper with its answer key |
-| `h2.html` | Endsem portion: Modules 6 to 9 |
+| `h2.html` | Endsem portion: Modules 6 to 9, written to be read top to bottom before the exam |
 
 ## Endsem readings in H2
 
@@ -19,7 +19,7 @@ Revision notes for Intro to Sociology (HS2.201), built with plain HTML, CSS and 
 | 6. Work, Economy and Society | Pasquinelli, *The Eye of the Master*; Grint on Marx, Taylorism and Braverman |
 | 7. Economic Sociology | Harriss-White, *India's Socially Regulated Economy*; Hayes on roboadvisors; Dale on Polanyi and embeddedness |
 | 8. Sociology of Culture | Ulturgasheva, *Ghosts of the Gulag*; Giddens on religion, education and critical theory; Ritzer on global cultural flows; Harkness, *True School* |
-| 9. Digital Sociology | Hine, *Ethnography for the Internet*; the RTI paper on safer civic participation; Muldoon and Parke, *Cruel Companionship* |
+| 9. Digital Sociology | Hine, *Ethnography for the Internet*; the RTI paper on safer civic participation; Muldoon and Parke, *Cruel Companionship*; Chiang, *The Lifecycle of Software Objects* |
 
 ## Features
 
