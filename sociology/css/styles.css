@@ -618,3 +618,7 @@ details.ans .abody ol, details.ans .abody ul { margin: 0 0 9px; padding-left: 1.
 
 /* H2 keeps its glossary only as the flashcard deck. */
 .defs[hidden] { display: none; }
+
+/* Time estimate under each H2 section heading */
+.section .est { font-family: var(--sans); font-size: .8rem; font-weight: 600; color: var(--rust-deep); margin-top: 4px; font-variant-numeric: tabular-nums; }
+:root[data-theme="dark"] .section .est { color: var(--rust); }
