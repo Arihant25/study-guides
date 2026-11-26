@@ -615,3 +615,6 @@ details.ans .abody ol, details.ans .abody ul { margin: 0 0 9px; padding-left: 1.
 
 /* The sidebar's reading rail already shows progress on wide screens. */
 @media (min-width: 921px) { #progress-bar { display: none; } }
+
+/* H2 keeps its glossary only as the flashcard deck. */
+.defs[hidden] { display: none; }
