@@ -19,7 +19,7 @@ Revision notes for Intro to Sociology (HS2.201), built with plain HTML, CSS and 
 | 6. Work, Economy and Society | Pasquinelli, *The Eye of the Master*; Grint on Marx, Taylorism and Braverman |
 | 7. Economic Sociology | Harriss-White, *India's Socially Regulated Economy*; Hayes on roboadvisors; Dale on Polanyi and embeddedness |
 | 8. Sociology of Culture | Ulturgasheva, *Ghosts of the Gulag*; Giddens on religion, education and critical theory; Ritzer on global cultural flows; Harkness, *True School* |
-| 9. Digital Sociology | Hine, *Ethnography for the Internet*; the RTI paper on safer civic participation; Muldoon and Parke, *Cruel Companionship*; Chiang, *The Lifecycle of Software Objects* |
+| 9. Digital Sociology | Hine, *Ethnography for the Internet*; the RTI paper on safer civic participation; Muldoon and Parke, *Cruel Companionship* |
 
 ## Features
 
