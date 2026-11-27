@@ -1,0 +1,213 @@
+<!--desc: Get ready for Statistical Methods in AI (SMAI) at IIIT Hyderabad before the semester starts. A study plan, the grading, the exam formats and a map of all 26 lectures from the Spring 2026 offering.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Start here</div>
+  <h1>Get ahead on SMAI before the semester starts</h1>
+  <p class="lead">This guide covers last year's run of Statistical Methods in AI, all 26 lectures from January to April 2026. Read this page first (about 15 minutes). It explains how the course works, what to revise and in what order to read the other pages.</p>
+</header>
+
+<section>
+<h2 id="read-first">Read this first</h2>
+<p>SMAI is the first machine learning course at IIIT Hyderabad. In Spring 2026 it was taught by C. V. Jawahar, and the slides call it "a fundamental course on machine learning, not an advanced course". It has two halves. The first teaches classical machine learning through linear algebra and probability: nearest neighbours, regression, PCA, Bayesian decisions, SVMs. The second teaches neural networks, from a single perceptron up to transformers and self-supervised learning.</p>
+<div class="notice">
+<p><strong>What this guide is based on.</strong> Everything here comes from the 2026 Moodle page. That means the 26 lecture slide decks, the Quiz 1 paper with its official solutions and marking rubric, the tutorial on probability and GMMs, the course's list of short videos, and the announcements. No mid-sem, Quiz 2 or end-sem papers were posted, so the practice questions for those were written for this guide and are labelled "Practice".</p>
+<p><strong>What may change.</strong> The 2027 course may move topics around, change the weights or skip a topic. A new guide built from the 2027 slides will replace this one once they are uploaded. The ideas themselves (regression, PCA, Bayes, backpropagation, attention) will not change, so reading ahead now still pays off.</p>
+</div>
+<p>The guide has six pages. Read them in order. Each one assumes only the pages before it.</p>
+<table class="tbl collapse-last">
+<thead><tr><th>Page</th><th>What it covers</th><th>Lectures</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td><a href="basics/">Maths basics</a><span class="sm">4 to 6 h</span></td><td>Vectors, norms, matrices, rank, eigenvectors, probability, Bayes' theorem, the Gaussian, gradients, the chain rule, Lagrange multipliers</td><td>Background for all</td><td>4 to 6 h</td></tr>
+<tr><td><a href="foundations/">1 · Foundations</a><span class="sm">8 to 10 h</span></td><td>k-NN, linear classifiers, features, metrics, linear, ridge and lasso regression, gradient descent, rank, SVD, PCA, the Quiz 1 paper solved</td><td>L01 to L07</td><td>8 to 10 h</td></tr>
+<tr><td><a href="probabilistic/">2 · Probabilistic ML</a><span class="sm">about 10 h</span></td><td>LDA, LSI, Bayesian decisions, MLE, GMMs and EM, k-means, naive Bayes, logistic regression, SVMs and kernels, overfitting and bias–variance</td><td>L08 to L13</td><td>about 10 h</td></tr>
+<tr><td><a href="neural/">3 · Neural networks</a><span class="sm">about 8 h</span></td><td>Perceptron, delta rule, MLPs, activations, backpropagation, training tricks, optimisers, a Quiz 2 practice set</td><td>L14 to L19</td><td>about 8 h</td></tr>
+<tr><td><a href="deep/">4 · Deep learning</a><span class="sm">about 8 h</span></td><td>CNNs, ResNets, RNNs and LSTMs, embeddings, attention, transformers, vision transformers, self-supervised and contrastive learning</td><td>L20 to L26</td><td>about 8 h</td></tr>
+<tr><td><a href="sheet/">Formula sheet</a><span class="sm">keep open</span></td><td>Every formula in one table, with the section it comes from</td><td>All</td><td>keep open</td></tr>
+</tbody>
+</table>
+<p>That adds up to roughly 40 hours. If you have less time, do the maths basics and Page 1 properly. The whole course is built on them, and Quiz 1 tests them directly.</p>
+</section>
+
+<section>
+<h2 id="how-to-read">How to use each page</h2>
+<p>Every topic follows the same pattern.</p>
+<ol>
+<li>A plain explanation of the idea and why the course cares about it, with the slides that matter shown next to the text. The line under each heading lists the lecture it comes from and the course's short video on it, if there is one.</li>
+<li>Each important formula, followed by a box headed "Reading the formula". It says what every symbol means and works a small example with real numbers.</li>
+<li>A box headed "Write this in the exam" for each derivation. Its numbered lines are what you would write on paper. Under a line, the small "Why" link opens the reasoning one step at a time. Read the lines first to see the shape of the proof, then open the explanations you need.</li>
+<li>A "Remember" box with the results to keep.</li>
+<li>Questions. Try each one on paper before opening the answer. Every worked answer has three rows: the formula to use, where it comes from on the page, and the working with a check at the end.</li>
+</ol>
+<p>Questions are labelled by where they come from. "Quiz 1, 2026" is the real paper. "L05 slide" is a problem the instructor put on that lecture's slides, which is the style of the in-class problem solving. "Practice" means the question was written for this guide.</p>
+</section>
+
+<section>
+<h2 id="grading">How the course is graded</h2>
+<p class="slides">From L01 (5 January 2026), with the changes announced in L26 (23 April 2026).</p>
+<table class="tbl">
+<thead><tr><th>Component</th><th>Announced in L01</th><th>Final scheme (L26)</th></tr></thead>
+<tbody>
+<tr><td>Quiz 1 and Quiz 2</td><td>7.5 + 7.5</td><td>7.5 + 7.5</td></tr>
+<tr><td>Mid-sem</td><td>12</td><td>14</td></tr>
+<tr><td>End-sem</td><td>18</td><td>21</td></tr>
+<tr><td>Class work (problem solving in class, 30 to 45 minutes)</td><td>20, best 80%</td><td>20, best 16</td></tr>
+<tr><td>Three assignments</td><td>20</td><td>20 (7 + 7 + 6)</td></tr>
+<tr><td>"Let us talk ML" (conceptual dialogues with an AI or a person)</td><td>10, best 25 of 30</td><td>5</td></tr>
+<tr><td>Participation</td><td>5</td><td>5</td></tr>
+</tbody>
+</table>
+<p>Two things stand out. First, 20% of the grade is problem solving done in class, so you have to keep up week by week. That is the main reason to read ahead. The slide problems on each page of this guide are the kind of thing those sessions ask. Second, exams were worth 45% at first and 50% by the end. The instructor said at the start that weights could move by up to 5%.</p>
+</section>
+
+<section>
+<h2 id="exams">The exams</h2>
+<h3>Quiz 1</h3>
+<p>Covers L01 to L07, roughly. It had 45 points across 12 questions (ten worth 3 points and two worth 7.5), in four sets with different numbers. The questions were short: compute some norms, pick which eigenvector solves an optimisation, mark the true statements about eigenfaces, compute precision and recall, run 1-NN by hand, fill in blanks about the SVD, mean-centre some points, write a loss function, do two steps of gradient descent, and fit a line with the closed-form formula. The class average was 29.67 out of 45. The whole paper is solved on <a href="foundations/#quiz1">Page 1</a>.</p>
+<h3>Mid-sem</h3>
+<p>Taken in early March, after L14 (the exact date is not on Moodle). The L14 slides end with a "Mid Exam" slide listing three questions (Q1, Q2, Q3) but not their content, and the paper was not posted. The class average was 44.98, and the announcement did not say out of how many marks. Expect everything from L01 to L13.</p>
+<h3>Quiz 2</h3>
+<p>The L18 slides list its scope: an overview of neural networks, neuron models, the single layer perceptron, the multi-layer perceptron, gradient descent, backpropagation and second order methods. That is exactly <a href="neural/">Page 3</a>, which ends with a practice set.</p>
+<h3>End-sem</h3>
+<p>The 2026 paper was not posted, but L26 shows the format of the 2025 final. It had three parts, each worth 60 marks and each taking 60 minutes.</p>
+<ol>
+<li>Objective questions: fill in the blanks and multiple-correct questions (12 of 5 marks or 15 of 4 marks).</li>
+<li>Numerical problem solving (4 of 15 marks or 5 of 12 marks).</li>
+<li>Analytical and conceptual questions (4 of 15 marks or 5 of 12 marks).</li>
+</ol>
+<p><a href="deep/#final-format">Page 4</a> says how to prepare for each part.</p>
+<div class="card watch"><span class="tag">"One, none or more correct"</span>
+<p>Many slide questions and the Quiz 1 statement questions say that any number of options can be correct, including none. Quiz 1 gave 0 marks if any wrong option was ticked, half marks for at least half of the right ones, and full marks for all of them. So check each option on its own as true or false, and do not tick an option you are unsure of.</p>
+</div>
+</section>
+
+<section>
+<h2 id="timeline">How the 2026 semester went</h2>
+<p>Dates come from the slide decks and the Moodle announcements.</p>
+<table class="tbl">
+<thead><tr><th>When</th><th>What</th></tr></thead>
+<tbody>
+<tr><td>5 Jan</td><td>L01. The first week was used to settle the course and the online mode.</td></tr>
+<tr><td>5 Jan to 29 Jan</td><td>L01 to L07: representation, k-NN, regression, regularisation, rank, SVD, PCA. L07 was a recap before Quiz 1.</td></tr>
+<tr><td>Around 30 Jan</td><td>Quiz 1, right after the L07 recap (the exact date is not on Moodle)</td></tr>
+<tr><td>8 Feb to 19 Feb</td><td>L08 to L13: low-rank data, Bayes, MLE, GMMs, k-means, logistic regression, SVMs, principles of learning</td></tr>
+<tr><td>11 Feb</td><td>Online tutorial on probability and GMMs, 7 pm, recorded. The TAs scheduled it through a WhatsApp poll.</td></tr>
+<tr><td>25 Feb</td><td>L14: neurons and perceptrons</td></tr>
+<tr><td>Early Mar</td><td>Mid-sem. The Quiz 1 solutions and rubric were posted on 3 March, with a Notion page for regrade requests.</td></tr>
+<tr><td>9 Mar to 30 Mar</td><td>L15 to L19: MLPs, backpropagation, training in practice, optimisers, then a recap</td></tr>
+<tr><td>Early Apr</td><td>Quiz 2, after the L19 recap (the exact date is not on Moodle)</td></tr>
+<tr><td>3 Apr</td><td>Quiz 1 and mid-sem marks released. Regrade requests went by email to a TA within two days.</td></tr>
+<tr><td>April</td><td>L20 to L25: CNNs, ResNets, RNNs, attention, transformers, self-supervised learning</td></tr>
+<tr><td>Mid Apr</td><td>Assignment 2 due. The assignment listed an estimated 28 hours of work, and students asked for an extension.</td></tr>
+<tr><td>22 Apr</td><td>An oral defence component for the assignments was announced, four days before the end-sems.</td></tr>
+<tr><td>23 Apr</td><td>L26: summary, the final grading scheme and the 2025 end-sem format</td></tr>
+</tbody>
+</table>
+<div class="card remember"><span class="tag">What to take from this</span>
+<ul>
+<li>Start each assignment the day it comes out. They are long (Assignment 2 listed 28 hours), and the deadline fell when many people were ill.</li>
+<li>You may have to explain your assignment code out loud, so write it yourself and understand every line.</li>
+<li>The course is front-loaded with linear algebra. Quiz 1 comes four weeks in, so the maths basics and Page 1 are the best use of time before the semester starts.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2 id="prereqs">What you need before you start</h2>
+<p class="slides">From L01, "Getting ready".</p>
+<p>The slides ask for typical engineering maths, nothing advanced: linear algebra, probability and differential calculus. They also ask that you be comfortable with Python and numpy, because programming is not taught. The assignments are in Python with PyTorch later on, and no heavy computation is planned, so a laptop is enough.</p>
+<p>Check yourself on these. If any of them is shaky, the <a href="basics/">maths basics</a> page teaches it from the start.</p>
+<ul>
+<li>Multiply two matrices, transpose a product, and find the inverse of a 2×2 matrix.</li>
+<li>Find the eigenvalues and eigenvectors of a 2×2 matrix by hand.</li>
+<li>Say what the rank of a matrix is and find it for a small one.</li>
+<li>Use Bayes' theorem on a medical-test problem.</li>
+<li>Write the density of a normal distribution and say what each symbol means.</li>
+<li>Differentiate \(\frac{1}{1+e^{-z}}\) and use the chain rule through three functions.</li>
+<li>In numpy, compute a mean, a covariance matrix, a matrix inverse and an eigen decomposition.</li>
+</ul>
+<p>The course recommends one textbook, <a href="https://mml-book.github.io/">Mathematics for Machine Learning</a> by Deisenroth, Faisal and Ong (free PDF). Chapters 2 (linear algebra) and 4 (matrix decompositions) are named in L05. Chapter 6 covers probability.</p>
+</section>
+
+<section>
+<h2 id="plan">A five-week plan before the semester</h2>
+<p>The semester starts in early January, so there are about five weeks from now. Two hours a day on weekdays fits the whole guide. If you have less time, stop after week 2.</p>
+<table class="tbl">
+<thead><tr><th>Week</th><th>Read</th><th>Also do</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><a href="basics/">Maths basics</a></td><td>Redo every 2×2 eigenvalue and Bayes question without looking.</td></tr>
+<tr><td>2</td><td><a href="foundations/">Page 1</a>, then the Quiz 1 paper as a timed test</td><td>Code k-NN, closed-form regression and PCA in numpy on a small dataset.</td></tr>
+<tr><td>3</td><td><a href="probabilistic/">Page 2</a></td><td>Code k-means and logistic regression with gradient descent.</td></tr>
+<tr><td>4</td><td><a href="neural/">Page 3</a></td><td>Do the backpropagation example by hand, then check it with PyTorch's autograd.</td></tr>
+<tr><td>5</td><td><a href="deep/">Page 4</a></td><td>Compute the output shape and parameter count of a small CNN, then check them with PyTorch.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="videos">The course's short videos</h2>
+<p>The 2026 Moodle page linked a list of 40 short videos. Most are by the instructor and run 5 to 15 minutes. Each one is also linked under the matching heading in the guide. They are useful when a topic does not click from the text.</p>
+<table class="tbl">
+<thead><tr><th>Video</th><th>Where it fits</th></tr></thead>
+<tbody>
+<tr><td><a href="https://www.youtube.com/watch?v=8xniRSjRyCQ">How can data be useful?</a></td><td><a href="foundations/">Page 1</a>, start</td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=47jEgvtKHuk">Nearest neighbour</a></td><td><a href="foundations/#knn">k-NN</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=5O3joUSYeYk">Representation</a> · <a href="https://www.youtube.com/watch?v=3WsDIkP8kMo">Representation II</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=P92mkhzt6Hg">Linear classifier</a></td><td><a href="foundations/#linear-classifier">Linear classifier</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=_eKO3j5W2nQ">Performance metrics I</a> · <a href="https://www.youtube.com/watch?v=dG0A2U8B8zQ">II</a></td><td><a href="foundations/#metrics">Metrics</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=w5phdIBr3Sw">Curse of dimensionality</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=AsQORY4_H9Q">Data from a multivariate distribution</a></td><td><a href="basics/#gaussian">The Gaussian</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=VBfo4L-Y_ug">Data as a matrix</a></td><td><a href="foundations/#data-matrix">Data matrix</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=DpXBPHnAmZw">Feature selection and extraction</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=m46Exp1E6X8">Distances and similarities</a></td><td><a href="foundations/#knn">k-NN</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=v9DKrX-3gEA">Supervised learning formulation</a></td><td><a href="foundations/#regression">Regression</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=SSuYxDOxANI">Linear regression</a> · <a href="https://youtu.be/i08JdWDc1MY">MSE using gradient descent</a></td><td><a href="foundations/#regression">Regression</a>, <a href="foundations/#gradient-descent">gradient descent</a></td></tr>
+<tr><td><a href="https://youtu.be/DnRWPq1UGyA">Regularisation in regression</a></td><td><a href="foundations/#regularization">Regularisation</a></td></tr>
+<tr><td><a href="https://youtu.be/DUOJM728TT4">Geometry of Gaussians</a></td><td><a href="basics/#gaussian">The Gaussian</a></td></tr>
+<tr><td><a href="https://youtu.be/__EBdS7pvo0">Eigen decomposition</a> · <a href="https://youtu.be/GvvRuEypvfw">Optimisation and eigenvectors</a></td><td><a href="basics/#eigen">Eigenvectors</a>, <a href="basics/#lagrange">Lagrange</a></td></tr>
+<tr><td><a href="https://youtu.be/oN7ddIkzcic">SVD</a></td><td><a href="foundations/#svd">SVD</a></td></tr>
+<tr><td><a href="https://youtu.be/likh0NUdvnc">Orthogonal line fitting</a> · <a href="https://youtu.be/YpLantxHNJ8">PCA</a> · <a href="https://youtu.be/EQfxYZiE0tg">PCA as compression</a> · <a href="https://youtu.be/X1cEIkXjewI">Eigenfaces</a></td><td><a href="foundations/#pca">PCA</a></td></tr>
+<tr><td><a href="https://youtu.be/rMaDnRLZAzM">LSI</a> · <a href="https://youtu.be/tP9e0PlmMKo">Rank and recommendations</a></td><td><a href="probabilistic/#lsi">LSI</a></td></tr>
+<tr><td><a href="https://youtu.be/6yKc_VdQ6Ys">LDA 1</a> · <a href="https://youtu.be/1gsL_KYaN1o">LDA 2</a></td><td><a href="probabilistic/#lda">LDA</a></td></tr>
+<tr><td><a href="https://youtu.be/p8XWxnBzUbk">MLE</a> · <a href="https://youtu.be/XfmZ3Ap-xHI">MSE as MLE</a></td><td><a href="probabilistic/#mle">MLE</a></td></tr>
+<tr><td><a href="https://youtu.be/8FZjrckX52E">Naive Bayes</a></td><td><a href="probabilistic/#naive-bayes">Naive Bayes</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=9_DJ4KvyYoo">SVM 1</a> · <a href="https://www.youtube.com/watch?v=ffF8UnbheLk">SVM 2</a> (longer lectures by Prof. Anoop)</td><td><a href="probabilistic/#svm">SVMs</a></td></tr>
+<tr><td><a href="https://youtu.be/GjSXrAurxi0">Generalisation and overfitting</a> · <a href="https://youtu.be/nwd0h8SkSAo">Occam's razor</a> · <a href="https://youtu.be/pvQNQBPCgg8">Validation</a> · <a href="https://youtu.be/IqdY9NWdhLk">Bias and variance</a></td><td><a href="probabilistic/#generalization">Generalisation</a></td></tr>
+<tr><td><a href="https://youtu.be/ZIKVS7RKFXg">Loss functions 1</a></td><td><a href="probabilistic/#logistic">Logistic regression</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=xnJuNxURtik">Neural network basics</a> · <a href="https://www.youtube.com/watch?v=u3rUkkh-Rac">Introduction to PyTorch</a></td><td><a href="neural/">Page 3</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="lecture-map">Every lecture, and where it is covered</h2>
+<table class="tbl">
+<thead><tr><th>Lecture</th><th>Date</th><th>Title</th><th>In this guide</th></tr></thead>
+<tbody>
+<tr><td>L01</td><td>5 Jan</td><td>Data driven problem solving</td><td><a href="foundations/#knn">k-NN</a>, <a href="foundations/#linear-classifier">linear classifier</a></td></tr>
+<tr><td>L02</td><td>12 Jan</td><td>Representation and feature engineering</td><td><a href="foundations/#features">Features</a>, <a href="foundations/#metrics">metrics</a></td></tr>
+<tr><td>L03</td><td>19 Jan</td><td>Supervised learning and linear regression</td><td><a href="foundations/#regression">Regression</a>, <a href="foundations/#gradient-descent">gradient descent</a></td></tr>
+<tr><td>L04</td><td>19 Jan</td><td>Linear regression, optimisation and regularisation</td><td><a href="foundations/#regularization">Regularisation</a></td></tr>
+<tr><td>L05</td><td>22 Jan</td><td>Rank of the data matrix</td><td><a href="foundations/#data-matrix">Data matrix</a>, <a href="foundations/#svd">SVD</a></td></tr>
+<tr><td>L06</td><td>27 Jan</td><td>PCA</td><td><a href="foundations/#pca">PCA</a></td></tr>
+<tr><td>L07</td><td>29 Jan</td><td>Recap before Quiz 1</td><td><a href="foundations/#quiz1">Quiz 1</a></td></tr>
+<tr><td>L08</td><td>8 Feb</td><td>Appreciating low rank data</td><td><a href="probabilistic/#pca-recon">PCA as reconstruction</a>, <a href="probabilistic/#lda">LDA</a>, <a href="probabilistic/#lsi">LSI</a></td></tr>
+<tr><td>L09</td><td>8 Feb</td><td>Data, distributions and Bayesian decision</td><td><a href="probabilistic/#bayes-decision">Bayesian decisions</a></td></tr>
+<tr><td>L10</td><td>9 Feb</td><td>MLE and GMMs</td><td><a href="probabilistic/#mle">MLE</a>, <a href="probabilistic/#gmm-em">GMM and EM</a></td></tr>
+<tr><td>L11</td><td>12 Feb</td><td>Three algorithms: probability to practice</td><td><a href="probabilistic/#kmeans">k-means</a>, <a href="probabilistic/#naive-bayes">naive Bayes</a>, <a href="probabilistic/#logistic">logistic regression</a></td></tr>
+<tr><td>L12</td><td>16 Feb</td><td>SVMs</td><td><a href="probabilistic/#svm">SVMs</a>, <a href="probabilistic/#kernels">kernels</a></td></tr>
+<tr><td>L13</td><td>19 Feb</td><td>Principles of learning</td><td><a href="probabilistic/#generalization">Generalisation</a></td></tr>
+<tr><td>L14</td><td>25 Feb</td><td>Neurons, neural networks and perceptrons</td><td><a href="neural/#neuron">Neurons</a>, <a href="neural/#perceptron">perceptron</a>, <a href="neural/#delta-rule">delta rule</a></td></tr>
+<tr><td>L15</td><td>9 Mar</td><td>Single layer to multi-layer perceptrons</td><td><a href="neural/#mlp">MLP</a>, <a href="neural/#activations">activations</a></td></tr>
+<tr><td>L16</td><td>12 Mar</td><td>Basic backpropagation</td><td><a href="neural/#backprop">Backpropagation</a></td></tr>
+<tr><td>L17</td><td>23 Mar</td><td>Practice of backpropagation</td><td><a href="neural/#training-practice">Training in practice</a></td></tr>
+<tr><td>L18</td><td>26 Mar</td><td>Beyond simple backpropagation</td><td><a href="neural/#optimizers">Optimisers</a></td></tr>
+<tr><td>L19</td><td>30 Mar</td><td>Recap of neural networks</td><td><a href="neural/#quiz2">Quiz 2</a></td></tr>
+<tr><td>L20</td><td>Apr</td><td>CNNs</td><td><a href="deep/#cnn">CNNs</a>, <a href="deep/#cnn-params">shapes and parameters</a></td></tr>
+<tr><td>L21</td><td>Apr</td><td>More on CNNs</td><td><a href="deep/#resnet">ResNets</a></td></tr>
+<tr><td>L22</td><td>Apr</td><td>RNNs</td><td><a href="deep/#rnn">RNNs</a>, <a href="deep/#lstm">LSTMs</a></td></tr>
+<tr><td>L23</td><td>Apr</td><td>Self-attention</td><td><a href="deep/#embeddings">Embeddings</a>, <a href="deep/#attention">attention</a></td></tr>
+<tr><td>L24</td><td>Apr</td><td>Transformers</td><td><a href="deep/#transformer">Transformers</a>, <a href="deep/#vit">ViT</a></td></tr>
+<tr><td>L25</td><td>Apr</td><td>Self-supervised learning</td><td><a href="deep/#ssl">Self-supervised learning</a>, <a href="deep/#contrastive">contrastive learning</a></td></tr>
+<tr><td>L26</td><td>23 Apr</td><td>Summary and closing</td><td><a href="#grading">Grading</a>, <a href="deep/#final-format">end-sem format</a></td></tr>
+</tbody>
+</table>
+</section>

@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SMAI 2026 prep · Statistical Methods in AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Get ready for Statistical Methods in AI (SMAI) at IIIT Hyderabad before the semester starts. A study plan, the grading, the exam formats and a map of all 26 lectures from the Spring 2026 offering.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --card:#ffffff; --muted:#f4f4f5; --muted-2:#fafafa;
+  --fg:#09090b; --muted-fg:#6b6b75; --border:#e4e4e7; --border-2:#d4d4d8;
+  --primary:#18181b; --primary-fg:#fafafa;
+  --brand:#0b6285; --brand-fg:#ffffff; --brand-soft:#eef6fa;
+  --stable:#0f766e; --unstable:#c2410c; --destructive:#dc2626; --destructive-soft:#fef2f2;
+  --amber-soft:#fffbeb; --amber:#b45309;
+  --c1:#0f766e; --c2:#c2410c; --c3:#4f46e5; --c4:#a21caf;
+  --grid:#efeff1; --axis:#a1a1aa;
+  --node:#f4f4f5; --node-stroke:#3f3f46; --edge:#a1a1aa;
+  --radius:0.7rem;
+  --shadow-sm:0 1px 2px 0 rgb(9 9 11 / .05);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0b0b0d; --card:#121215; --muted:#1c1c20; --muted-2:#16161a;
+  --fg:#f4f4f5; --muted-fg:#a1a1aa; --border:#27272a; --border-2:#3f3f46;
+  --primary:#f4f4f5; --primary-fg:#18181b;
+  --brand:#6cc8ec; --brand-fg:#09090b;
+  --brand-soft:#0f2430;
+  --stable:#2dd4bf; --unstable:#fb923c; --destructive:#f87171; --destructive-soft:#2a1414;
+  --amber-soft:#2a2110; --amber:#fbbf24;
+  --c1:#2dd4bf; --c2:#fb923c; --c3:#a5b4fc; --c4:#f0abfc;
+  --grid:#1f1f24; --axis:#52525b;
+  --node:#1c1c20; --node-stroke:#a1a1aa; --edge:#5b5b63;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .4);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0d; --card:#121215; --muted:#1c1c20; --muted-2:#16161a;
+  --fg:#f4f4f5; --muted-fg:#a1a1aa; --border:#27272a; --border-2:#3f3f46;
+  --primary:#f4f4f5; --primary-fg:#18181b;
+  --brand:#6cc8ec; --brand-fg:#09090b; --brand-soft:#0f2430;
+  --stable:#2dd4bf; --unstable:#fb923c; --destructive:#f87171; --destructive-soft:#2a1414;
+  --amber-soft:#2a2110; --amber:#fbbf24;
+  --c1:#2dd4bf; --c2:#fb923c; --c3:#a5b4fc; --c4:#f0abfc;
+  --grid:#1f1f24; --axis:#52525b;
+  --node:#1c1c20; --node-stroke:#a1a1aa; --edge:#5b5b63;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .4);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:"Hanken Grotesk",system-ui,-apple-system,sans-serif;
+  font-size:16.5px; line-height:1.68; -webkit-font-smoothing:antialiased}
+.wrap{display:grid; grid-template-columns:minmax(0,1fr)}
+@media(min-width:1060px){.wrap{grid-template-columns:280px minmax(0,1fr); align-items:start}}
+
+/* sidebar */
+.toc{position:sticky; top:0; align-self:start; max-height:100vh; overflow-y:auto; padding:26px 18px 48px;
+  border-right:1px solid var(--border); background:var(--card); display:none; scrollbar-width:thin; scrollbar-color:var(--border-2) transparent}
+@media(min-width:1060px){.toc{display:block}}
+.toc .brand{font-weight:700; font-size:1.02rem; letter-spacing:-.02em}
+.toc .brand small{display:block; font-weight:500; font-size:.68rem; letter-spacing:0; color:var(--muted-fg); margin-top:6px}
+.toc nav{margin-top:20px; font-size:.86rem}
+.toc .grp{letter-spacing:.11em; font-size:.64rem; color:var(--muted-fg); font-weight:700; margin:20px 0 6px; padding:0 10px}
+.toc a{display:block; color:var(--muted-fg); text-decoration:none; padding:5px 10px; border-radius:7px; line-height:1.35; margin:1px 0}
+.toc a:hover{color:var(--fg); background:var(--muted)}
+.toc a.other{margin:12px 0 0; padding:7px 10px; border:1px solid var(--border); border-radius:8px; color:var(--brand); font-size:.84rem; font-weight:600}
+.toc a.other:hover{background:var(--muted)}
+.toc a.active{color:var(--fg); background:var(--muted); font-weight:600}
+
+main{padding:0 clamp(18px,5vw,72px) 128px; max-width:900px}
+.hero{padding:clamp(44px,8vw,84px) 0 30px; border-bottom:1px solid var(--border)}
+.kicker{font-size:.72rem; letter-spacing:0; color:var(--muted-fg); font-weight:600}
+h1{font-weight:700; font-size:clamp(2.1rem,6vw,3.2rem); line-height:1.05; letter-spacing:-.035em; margin:.34em 0 .3em; text-wrap:balance}
+.hero .lead{font-size:1.12rem; color:var(--muted-fg); max-width:62ch; line-height:1.6}
+.part{margin:4.2em 0 0; padding:14px 0 0; border-top:2px solid var(--fg); font-size:.74rem; letter-spacing:0; font-weight:700}
+.part span{color:var(--muted-fg); font-weight:600; margin-left:.6em}
+h2{font-weight:700; font-size:clamp(1.55rem,3.4vw,2rem); letter-spacing:-.03em; margin:2.4em 0 .2em; padding-top:.3em; text-wrap:balance; scroll-margin-top:14px}
+.part+section h2{margin-top:.9em}
+h2 .num{color:var(--muted-fg); font-size:.56em; font-weight:600; margin-right:.55em; font-variant-numeric:tabular-nums}
+h3{font-weight:650; font-size:1.25rem; margin:2em 0 .35em; letter-spacing:-.02em; scroll-margin-top:14px}
+h4{font-weight:700; font-size:1.02rem; margin:1.5em 0 .3em}
+.oneline{font-size:1.1rem; line-height:1.55; max-width:64ch; margin:.6em 0 1em}
+p{max-width:70ch}
+a{color:var(--brand); text-underline-offset:2px}
+em.t{font-style:normal; font-weight:650; border-bottom:2px solid var(--brand)}
+ul,ol{max-width:68ch; padding-left:1.35em}
+li{margin:.35em 0}
+li::marker{color:var(--muted-fg)}
+.small{font-size:.87rem; color:var(--muted-fg)}
+.board{font-size:.7rem; font-weight:700; letter-spacing:0; color:var(--amber); background:var(--amber-soft);
+  border:1px solid color-mix(in srgb,var(--amber) 35%,var(--border)); border-radius:6px; padding:3px 9px; display:inline-block; margin-top:6px}
+
+/* math */
+math{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",math,serif; font-style:normal}
+p math, li math, td math, summary math, figcaption math{font-size:1.07em}
+.eq{display:block; margin:18px 0; text-align:center; overflow-x:auto; overflow-y:hidden; padding:6px 2px}
+.eq math{font-size:1.36em}
+.eq.boxed{background:var(--muted-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px}
+.eq .label{display:block; margin-top:6px; font-size:.8rem; color:var(--muted-fg)}
+math .tml-box, math menclose{border:1px solid var(--border-2); padding:3px}
+
+/* cards */
+.card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:20px 0; box-shadow:var(--shadow-sm)}
+.card>*:first-child{margin-top:0} .card>*:last-child{margin-bottom:0}
+.card.ex{background:var(--muted-2)}
+.card.watch{border-color:color-mix(in srgb,var(--destructive) 40%,var(--border)); background:var(--destructive-soft)}
+.card.goal{border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.card.exam{border:1.5px solid var(--fg)}
+.card.remember{background:var(--brand-soft); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.remember .tag{background:var(--brand); color:var(--brand-fg); border-color:var(--brand)}
+.about{font-size:1.08rem; line-height:1.6; max-width:66ch; margin:.6em 0 1em}
+.idea{background:var(--brand-soft); border:1px solid color-mix(in srgb,var(--brand) 30%,var(--border)); border-radius:8px; padding:10px 14px; max-width:none}
+.sym{font-size:.93rem; color:var(--muted-fg); margin:10px 0}
+.tag{display:inline-flex; font-size:.66rem; font-weight:700; letter-spacing:0; padding:3px 9px; border-radius:6px;
+  border:1px solid var(--border); background:var(--muted); color:var(--muted-fg); margin-bottom:10px}
+.goal .tag{background:var(--brand-soft); color:var(--brand); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.exam .tag{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+.watch .tag{background:transparent; color:var(--destructive); border-color:color-mix(in srgb,var(--destructive) 45%,var(--border))}
+.card h4:first-of-type{margin-top:.1em}
+.goal ul{margin:.2em 0}
+
+.steps{counter-reset:s; list-style:none; padding-left:0; max-width:72ch}
+.steps>li{counter-increment:s; position:relative; padding-left:42px; margin:.95em 0}
+.steps>li::before{content:counter(s); position:absolute; left:0; top:0; width:27px; height:27px; border-radius:8px;
+  background:var(--primary); color:var(--primary-fg); font-size:.8rem; font-weight:700; display:grid; place-items:center}
+
+/* tables */
+.tbl{width:100%; border-collapse:collapse; margin:16px 0; font-size:.92rem; display:block; overflow-x:auto}
+.tbl th,.tbl td{border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top}
+.tbl th{background:var(--muted); font-weight:650; font-size:.82rem}
+.tbl tr:nth-child(even) td{background:var(--muted-2)}
+.tbl td.c, .tbl th.c{text-align:center}
+
+/* figures */
+figure.fig{margin:20px 0; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-sm)}
+figure.fig svg{width:100%; height:auto; display:block; margin:0 auto}
+figure.fig svg.gr{max-width:460px}
+figure.fig svg.plot{max-width:620px}
+figure.fig figcaption{font-size:.86rem; color:var(--muted-fg); margin-top:10px; line-height:1.5; max-width:70ch}
+.figrow{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:20px 0}
+.figrow figure.fig{margin:0}
+svg.plot text{font-family:"Hanken Grotesk",sans-serif}
+svg.plot .tk{font-size:11px; fill:var(--muted-fg)}
+svg.plot .al{font-size:12.5px; fill:var(--muted-fg)}
+svg.plot .lb{font-size:12px; font-weight:600}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-size:.82rem; color:var(--muted-fg); margin:4px 0 10px}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.sw{width:24px; height:0; border-top:3px solid; display:inline-block}
+
+/* collapsibles */
+details.opt{border:1px dashed var(--border-2); border-radius:var(--radius); background:var(--muted-2); margin:16px 0; overflow:hidden}
+details.opt>summary{cursor:pointer; list-style:none; padding:10px 16px; font-weight:600; font-size:.92rem; color:var(--brand)}
+details.opt>summary::-webkit-details-marker{display:none}
+details.opt>summary::before{content:"▸  "; font-size:.8em}
+details.opt[open]>summary::before{content:"▾  "}
+details.opt[open]>summary{border-bottom:1px solid var(--border)}
+details.opt .body{padding:2px 16px 14px}
+.checkrow{display:flex; align-items:center; gap:12px; margin:34px 0 10px; font-size:.7rem; font-weight:700; letter-spacing:.1em; color:var(--muted-fg)}
+.checkrow::before,.checkrow::after{content:""; flex:1; height:1px; background:var(--border)}
+details.q{border:1px solid var(--border); border-radius:var(--radius); margin:12px 0; background:var(--card); overflow:hidden}
+details.q>summary{cursor:pointer; list-style:none; padding:13px 16px; display:flex; gap:11px; align-items:flex-start; font-weight:550}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:var(--muted)}
+details.q>summary>span:not(.qt):not(.chev){min-width:0; overflow-wrap:anywhere}
+.qt{flex:none; font-size:.6rem; font-weight:700; letter-spacing:0; padding:4px 8px; border-radius:6px; margin-top:2px;
+  background:var(--muted); color:var(--muted-fg); border:1px solid var(--border)}
+.qt.pyq{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+.chev{margin-left:auto; flex:none; color:var(--muted-fg); transition:transform .2s}
+details.q[open] .chev{transform:rotate(90deg)}
+details.q .ans{padding:2px 18px 16px; border-top:1px solid var(--border); background:var(--muted-2)}
+details.q .ans>*:first-child{margin-top:12px}
+
+/* theme toggle */
+.themebtn{position:fixed; top:14px; right:14px; z-index:20; background:var(--card); border:1px solid var(--border); color:var(--fg);
+  border-radius:8px; padding:7px 12px; font:inherit; font-size:.8rem; font-weight:500; cursor:pointer; box-shadow:var(--shadow-sm)}
+.themebtn:hover{background:var(--muted)}
+:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:4px}
+.tocwrap-mobile{display:block; padding:18px clamp(16px,5vw,72px) 0}
+@media(min-width:1060px){.tocwrap-mobile{display:none}}
+details.mtoc{border:1px solid var(--border); border-radius:var(--radius); background:var(--card); padding:2px 6px}
+details.mtoc>summary{padding:11px; font-weight:600; cursor:pointer}
+details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-decoration:none}
+
+@media (max-width:700px){
+  html,body{overflow-x:hidden}
+  body{font-size:16px}
+  main{padding:0 16px 96px}
+  .themebtn{top:auto; bottom:14px}
+  .card{padding:15px 15px}
+  .steps>li{padding-left:34px}
+  .steps>li::before{width:23px; height:23px; font-size:.72rem}
+  .eq math{font-size:1.15em}
+  .tbl{font-size:.85rem}
+  .tbl th,.tbl td{padding:7px 9px}
+  figure.fig{padding:10px}
+}
+@media print{.toc,.themebtn,.tocwrap-mobile{display:none} details{open:true}}
+
+/* worked answers laid out as formula, source, working */
+.sol{display:grid; grid-template-columns:150px 1fr; gap:4px 16px; padding:10px 0; border-top:1px solid var(--border)}
+.sol:first-child{border-top:0; padding-top:2px}
+.sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
+details.linewhy{margin:0}
+:root{interpolate-size:allow-keywords}
+details.linewhy::details-content{height:0; overflow:clip; opacity:0; transition:height .28s ease, opacity .2s ease, content-visibility .28s allow-discrete}
+details.linewhy[open]::details-content{height:auto; opacity:1}
+details.linewhy>summary::before{transition:transform .2s ease}
+@media (prefers-reduced-motion: reduce){details.linewhy::details-content{transition:none}}
+.eqn{display:none} @media(max-width:600px){.eqw{display:none} .eqn{display:block}}
+details.linewhy>summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px 0 0; border:0; background:none; font-size:.86rem; font-weight:600; color:var(--muted-fg)}
+details.linewhy>summary:hover{color:var(--fg)}
+details.linewhy>summary::-webkit-details-marker{display:none}
+details.linewhy>summary::before{content:"+"; font-weight:700; width:.9em; text-align:center}
+details.linewhy[open]>summary::before{content:"\2212"}
+details.linewhy>summary span{font-weight:400}
+details.linewhy[open]>summary{color:var(--fg)}
+details.linewhy>.steps{margin:0 0 .8em; padding:12px 14px 4px; border-radius:10px; background:var(--muted-2)}
+details.linewhy .steps>li::before{background:transparent; color:var(--muted-fg); border:1px solid var(--border-2)}
+.closeall{display:none; margin:6px 0 0; min-height:44px; padding:0 14px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--fg); font:inherit; font-size:.86rem; cursor:pointer}
+.closeall.show{display:inline-flex; align-items:center}
+@media print{details.linewhy>.steps{display:block}}
+@media(max-width:600px){details.linewhy>.steps{padding-left:6px; padding-right:6px} details.linewhy .steps>li{padding-left:30px} details.linewhy .steps math[display="block"]{font-size:.84em}}
+.sol .sb{min-width:0; overflow-wrap:break-word} .sol .sb math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
+@media(max-width:600px){.sol .sb .steps>li{padding-left:30px} .steps math[display="block"]{font-size:.88em}}
+.steps math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
+.sol .sb>*:first-child{margin-top:0} .sol .sb>*:last-child{margin-bottom:0}
+@media(max-width:600px){.sol{grid-template-columns:1fr}}
+.card.exam h4{margin:.5em 0 .2em}
+h1,h2,h3,h4{text-wrap:balance} p,li{text-wrap:pretty}
+.tbl{font-variant-numeric:tabular-nums}
+.tag, .qt{text-transform:none; letter-spacing:0; font-size:.74rem}
+.totop{width:44px; height:44px}
+button:active, details.q>summary:active{transform:scale(.98)}
+.tbl.sheet td:last-child{color:var(--muted-fg)}
+/* page switcher, shared by the sidebar and the phone menu */
+.pages{display:grid; gap:4px; margin-top:16px}
+.pages a{display:flex; gap:10px; align-items:flex-start; padding:7px 10px; border:1px solid var(--border); border-radius:8px; color:var(--fg); text-decoration:none; line-height:1.3; font-weight:600; font-size:.86rem}
+.pages a:hover{background:var(--muted)}
+.pages b{flex:none; width:22px; height:22px; border-radius:6px; display:grid; place-items:center; font-size:.74rem; background:var(--muted); color:var(--muted-fg)}
+.pages small{display:block; font-weight:400; font-size:.74rem; color:var(--muted-fg); margin-top:2px}
+.pages a[aria-current="page"]{border-color:var(--brand); background:var(--brand-soft)}
+.pages a[aria-current="page"] b{background:var(--brand); color:var(--brand-fg)}
+.toc .pages a{padding:6px 9px}
+
+/* phone and tablet: a sticky bar that opens a menu of pages and sections */
+@media(max-width:1059px){
+  .themebtn{top:auto; bottom:14px}
+  .tocwrap-mobile{position:sticky; top:0; z-index:15; background:var(--bg); border-bottom:1px solid var(--border);
+    margin:0 calc(-1 * clamp(18px,5vw,72px)); padding:8px clamp(18px,5vw,72px)}
+  details.mtoc{border:0; padding:0; background:transparent}
+  details.mtoc>summary{list-style:none; display:flex; align-items:center; gap:10px; padding:4px 0; font-size:.9rem}
+  details.mtoc>summary::-webkit-details-marker{display:none}
+  details.mtoc .here{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted-fg); font-weight:500}
+  details.mtoc .mbtn{flex:none; border:1px solid var(--border-2); border-radius:8px; padding:6px 12px; font-weight:600; background:var(--card); color:var(--fg)}
+  details.mtoc[open] .mbtn{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+  .mpanel{max-height:calc(100vh - 70px); max-height:calc(100dvh - 70px); overflow-y:auto; padding:6px 0 14px; overscroll-behavior:contain}
+  .mpanel .pages{margin-top:4px}
+  .mpanel .pages a{padding:10px 12px; font-size:.95rem}
+  .mgrp{letter-spacing:.11em; font-size:.66rem; color:var(--muted-fg); font-weight:700; margin:14px 0 4px}
+  details.mtoc .mpanel>a{display:block; padding:8px 4px; color:var(--fg); text-decoration:none; border-bottom:1px solid var(--border); font-size:.95rem}
+}
+@media(max-width:700px){
+  html,body{overflow-x:clip}
+  .tocwrap-mobile{margin:0 -16px; padding:8px 16px}
+}
+
+/* back-to-top arrow, shown once the page is scrolled */
+.totop{position:fixed; right:14px; bottom:14px; z-index:20; width:42px; height:42px; border-radius:50%; display:grid; place-items:center;
+  background:var(--card); color:var(--fg); border:1px solid var(--border); box-shadow:var(--shadow-sm); cursor:pointer;
+  font:inherit; font-size:1.2rem; line-height:1; opacity:0; visibility:hidden; transform:translateY(8px); transition:opacity .2s, transform .2s, visibility .2s}
+.totop:hover{background:var(--muted)}
+.totop.show{opacity:1; visibility:visible; transform:none}
+@media(max-width:1059px){.totop{bottom:62px}}
+@media print{.totop{display:none}}
+
+/* SMAI additions */
+.skip{position:absolute; left:-999px; top:8px; background:var(--card); padding:8px 12px; border:1px solid var(--border); border-radius:8px; z-index:30}
+.skip:focus{left:8px}
+.toc .brand a{color:inherit; text-decoration:none}
+.toc .brand a:hover{text-decoration:underline}
+.pages span{min-width:0}
+.pager{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:64px 0 16px; max-width:70ch}
+.pager a{display:block; padding:12px 16px; border:1px solid var(--border); border-radius:var(--radius); text-decoration:none; color:var(--fg); font-weight:600; min-height:44px}
+.pager a:hover{background:var(--muted)}
+.pager a.nx{text-align:right}
+.pager small{display:block; font-weight:500; color:var(--muted-fg); font-size:.78rem}
+.credit{margin-top:24px; max-width:70ch}
+.notice{background:var(--amber-soft); border:1px solid color-mix(in srgb,var(--amber) 35%,var(--border)); border-radius:var(--radius); padding:12px 16px; margin:18px 0; max-width:70ch}
+.notice>*:first-child{margin-top:0} .notice>*:last-child{margin-bottom:0}
+.slides{font-size:.84rem; color:var(--muted-fg); margin:.2em 0 1em}
+.mcq{list-style:none; padding-left:0}
+.mcq>li{margin:.2em 0}
+figure.slide{margin:20px 0; max-width:640px}
+figure.slide img{display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:8px; background:#fff}
+figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px; line-height:1.5}
+.slidepair{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px; margin:20px 0}
+.slidepair figure.slide{margin:0}
+.toc .brand a{display:inline; padding:0; margin:0; color:inherit; border-radius:0}
+.toc .brand a:hover{background:none; text-decoration:underline}
+@media(max-width:600px){ .tbl.collapse-last th:last-child, .tbl.collapse-last td:last-child{display:none} .tbl .sm{display:block; font-size:.8rem; color:var(--muted-fg)} }
+@media(min-width:601px){ .tbl .sm{display:none} }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the notes</a>
+<button class="themebtn" id="themebtn" type="button" aria-label="Switch colour theme (auto, light, dark)"><span class="ico" aria-hidden="true">◐</span> <span class="lbl">Auto</span></button>
+<div class="wrap">
+<aside class="toc">
+  <div class="brand"><a href="../">SMAI</a> · 2026 prep<small>Statistical Methods in AI (CS7.403)</small></div>
+  <nav class="pages" aria-label="Pages of the guide"><a href="" aria-current="page"><b>0</b><span>Start here<small>How the course runs, what to revise, the plan</small></span></a></nav>
+  <nav id="tocnav" aria-label="On this page">
+  <div class="grp">On this page</div>
+  <a href="#read-first">Read this first</a>
+<a href="#how-to-read">How to use each page</a>
+<a href="#grading">How the course is graded</a>
+<a href="#exams">The exams</a>
+<a href="#timeline">How the 2026 semester went</a>
+<a href="#prereqs">What you need before you start</a>
+<a href="#plan">A five-week plan before the semester</a>
+<a href="#videos">The course's short videos</a>
+<a href="#lecture-map">Every lecture, and where it is covered</a>
+  </nav>
+  <a class="other" href="../../">All study guides</a>
+</aside>
+<main id="main">
+<div class="tocwrap-mobile">
+<details class="mtoc"><summary><span class="here">SMAI 2026 prep · Start here</span><span class="mbtn">Menu</span></summary>
+<div class="mpanel">
+<nav class="pages" aria-label="Pages of the guide"><a href="" aria-current="page"><b>0</b><span>Start here<small>How the course runs, what to revise, the plan</small></span></a></nav>
+<div class="mgrp">On this page</div>
+<a href="#read-first">Read this first</a>
+<a href="#how-to-read">How to use each page</a>
+<a href="#grading">How the course is graded</a>
+<a href="#exams">The exams</a>
+<a href="#timeline">How the 2026 semester went</a>
+<a href="#prereqs">What you need before you start</a>
+<a href="#plan">A five-week plan before the semester</a>
+<a href="#videos">The course's short videos</a>
+<a href="#lecture-map">Every lecture, and where it is covered</a>
+<a href="../../">All study guides</a>
+</div>
+</details>
+</div>
+<!--desc: Get ready for Statistical Methods in AI (SMAI) at IIIT Hyderabad before the semester starts. A study plan, the grading, the exam formats and a map of all 26 lectures from the Spring 2026 offering.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Start here</div>
+  <h1>Get ahead on SMAI before the semester starts</h1>
+  <p class="lead">This guide covers last year's run of Statistical Methods in AI, all 26 lectures from January to April 2026. Read this page first (about 15 minutes). It explains how the course works, what to revise and in what order to read the other pages.</p>
+</header>
+
+<section>
+<h2 id="read-first">Read this first</h2>
+<p>SMAI is the first machine learning course at IIIT Hyderabad. In Spring 2026 it was taught by C. V. Jawahar, and the slides call it "a fundamental course on machine learning, not an advanced course". It has two halves. The first teaches classical machine learning through linear algebra and probability: nearest neighbours, regression, PCA, Bayesian decisions, SVMs. The second teaches neural networks, from a single perceptron up to transformers and self-supervised learning.</p>
+<div class="notice">
+<p><strong>What this guide is based on.</strong> Everything here comes from the 2026 Moodle page. That means the 26 lecture slide decks, the Quiz 1 paper with its official solutions and marking rubric, the tutorial on probability and GMMs, the course's list of short videos, and the announcements. No mid-sem, Quiz 2 or end-sem papers were posted, so the practice questions for those were written for this guide and are labelled "Practice".</p>
+<p><strong>What may change.</strong> The 2027 course may move topics around, change the weights or skip a topic. A new guide built from the 2027 slides will replace this one once they are uploaded. The ideas themselves (regression, PCA, Bayes, backpropagation, attention) will not change, so reading ahead now still pays off.</p>
+</div>
+<p>The guide has six pages. Read them in order. Each one assumes only the pages before it.</p>
+<table class="tbl collapse-last">
+<thead><tr><th>Page</th><th>What it covers</th><th>Lectures</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td><a href="basics/">Maths basics</a><span class="sm">4 to 6 h</span></td><td>Vectors, norms, matrices, rank, eigenvectors, probability, Bayes' theorem, the Gaussian, gradients, the chain rule, Lagrange multipliers</td><td>Background for all</td><td>4 to 6 h</td></tr>
+<tr><td><a href="foundations/">1 · Foundations</a><span class="sm">8 to 10 h</span></td><td>k-NN, linear classifiers, features, metrics, linear, ridge and lasso regression, gradient descent, rank, SVD, PCA, the Quiz 1 paper solved</td><td>L01 to L07</td><td>8 to 10 h</td></tr>
+<tr><td><a href="probabilistic/">2 · Probabilistic ML</a><span class="sm">about 10 h</span></td><td>LDA, LSI, Bayesian decisions, MLE, GMMs and EM, k-means, naive Bayes, logistic regression, SVMs and kernels, overfitting and bias–variance</td><td>L08 to L13</td><td>about 10 h</td></tr>
+<tr><td><a href="neural/">3 · Neural networks</a><span class="sm">about 8 h</span></td><td>Perceptron, delta rule, MLPs, activations, backpropagation, training tricks, optimisers, a Quiz 2 practice set</td><td>L14 to L19</td><td>about 8 h</td></tr>
+<tr><td><a href="deep/">4 · Deep learning</a><span class="sm">about 8 h</span></td><td>CNNs, ResNets, RNNs and LSTMs, embeddings, attention, transformers, vision transformers, self-supervised and contrastive learning</td><td>L20 to L26</td><td>about 8 h</td></tr>
+<tr><td><a href="sheet/">Formula sheet</a><span class="sm">keep open</span></td><td>Every formula in one table, with the section it comes from</td><td>All</td><td>keep open</td></tr>
+</tbody>
+</table>
+<p>That adds up to roughly 40 hours. If you have less time, do the maths basics and Page 1 properly. The whole course is built on them, and Quiz 1 tests them directly.</p>
+</section>
+
+<section>
+<h2 id="how-to-read">How to use each page</h2>
+<p>Every topic follows the same pattern.</p>
+<ol>
+<li>A plain explanation of the idea and why the course cares about it, with the slides that matter shown next to the text. The line under each heading lists the lecture it comes from and the course's short video on it, if there is one.</li>
+<li>Each important formula, followed by a box headed "Reading the formula". It says what every symbol means and works a small example with real numbers.</li>
+<li>A box headed "Write this in the exam" for each derivation. Its numbered lines are what you would write on paper. Under a line, the small "Why" link opens the reasoning one step at a time. Read the lines first to see the shape of the proof, then open the explanations you need.</li>
+<li>A "Remember" box with the results to keep.</li>
+<li>Questions. Try each one on paper before opening the answer. Every worked answer has three rows: the formula to use, where it comes from on the page, and the working with a check at the end.</li>
+</ol>
+<p>Questions are labelled by where they come from. "Quiz 1, 2026" is the real paper. "L05 slide" is a problem the instructor put on that lecture's slides, which is the style of the in-class problem solving. "Practice" means the question was written for this guide.</p>
+</section>
+
+<section>
+<h2 id="grading">How the course is graded</h2>
+<p class="slides">From L01 (5 January 2026), with the changes announced in L26 (23 April 2026).</p>
+<table class="tbl">
+<thead><tr><th>Component</th><th>Announced in L01</th><th>Final scheme (L26)</th></tr></thead>
+<tbody>
+<tr><td>Quiz 1 and Quiz 2</td><td>7.5 + 7.5</td><td>7.5 + 7.5</td></tr>
+<tr><td>Mid-sem</td><td>12</td><td>14</td></tr>
+<tr><td>End-sem</td><td>18</td><td>21</td></tr>
+<tr><td>Class work (problem solving in class, 30 to 45 minutes)</td><td>20, best 80%</td><td>20, best 16</td></tr>
+<tr><td>Three assignments</td><td>20</td><td>20 (7 + 7 + 6)</td></tr>
+<tr><td>"Let us talk ML" (conceptual dialogues with an AI or a person)</td><td>10, best 25 of 30</td><td>5</td></tr>
+<tr><td>Participation</td><td>5</td><td>5</td></tr>
+</tbody>
+</table>
+<p>Two things stand out. First, 20% of the grade is problem solving done in class, so you have to keep up week by week. That is the main reason to read ahead. The slide problems on each page of this guide are the kind of thing those sessions ask. Second, exams were worth 45% at first and 50% by the end. The instructor said at the start that weights could move by up to 5%.</p>
+</section>
+
+<section>
+<h2 id="exams">The exams</h2>
+<h3>Quiz 1</h3>
+<p>Covers L01 to L07, roughly. It had 45 points across 12 questions (ten worth 3 points and two worth 7.5), in four sets with different numbers. The questions were short: compute some norms, pick which eigenvector solves an optimisation, mark the true statements about eigenfaces, compute precision and recall, run 1-NN by hand, fill in blanks about the SVD, mean-centre some points, write a loss function, do two steps of gradient descent, and fit a line with the closed-form formula. The class average was 29.67 out of 45. The whole paper is solved on <a href="foundations/#quiz1">Page 1</a>.</p>
+<h3>Mid-sem</h3>
+<p>Taken in early March, after L14 (the exact date is not on Moodle). The L14 slides end with a "Mid Exam" slide listing three questions (Q1, Q2, Q3) but not their content, and the paper was not posted. The class average was 44.98, and the announcement did not say out of how many marks. Expect everything from L01 to L13.</p>
+<h3>Quiz 2</h3>
+<p>The L18 slides list its scope: an overview of neural networks, neuron models, the single layer perceptron, the multi-layer perceptron, gradient descent, backpropagation and second order methods. That is exactly <a href="neural/">Page 3</a>, which ends with a practice set.</p>
+<h3>End-sem</h3>
+<p>The 2026 paper was not posted, but L26 shows the format of the 2025 final. It had three parts, each worth 60 marks and each taking 60 minutes.</p>
+<ol>
+<li>Objective questions: fill in the blanks and multiple-correct questions (12 of 5 marks or 15 of 4 marks).</li>
+<li>Numerical problem solving (4 of 15 marks or 5 of 12 marks).</li>
+<li>Analytical and conceptual questions (4 of 15 marks or 5 of 12 marks).</li>
+</ol>
+<p><a href="deep/#final-format">Page 4</a> says how to prepare for each part.</p>
+<div class="card watch"><span class="tag">"One, none or more correct"</span>
+<p>Many slide questions and the Quiz 1 statement questions say that any number of options can be correct, including none. Quiz 1 gave 0 marks if any wrong option was ticked, half marks for at least half of the right ones, and full marks for all of them. So check each option on its own as true or false, and do not tick an option you are unsure of.</p>
+</div>
+</section>
+
+<section>
+<h2 id="timeline">How the 2026 semester went</h2>
+<p>Dates come from the slide decks and the Moodle announcements.</p>
+<table class="tbl">
+<thead><tr><th>When</th><th>What</th></tr></thead>
+<tbody>
+<tr><td>5 Jan</td><td>L01. The first week was used to settle the course and the online mode.</td></tr>
+<tr><td>5 Jan to 29 Jan</td><td>L01 to L07: representation, k-NN, regression, regularisation, rank, SVD, PCA. L07 was a recap before Quiz 1.</td></tr>
+<tr><td>Around 30 Jan</td><td>Quiz 1, right after the L07 recap (the exact date is not on Moodle)</td></tr>
+<tr><td>8 Feb to 19 Feb</td><td>L08 to L13: low-rank data, Bayes, MLE, GMMs, k-means, logistic regression, SVMs, principles of learning</td></tr>
+<tr><td>11 Feb</td><td>Online tutorial on probability and GMMs, 7 pm, recorded. The TAs scheduled it through a WhatsApp poll.</td></tr>
+<tr><td>25 Feb</td><td>L14: neurons and perceptrons</td></tr>
+<tr><td>Early Mar</td><td>Mid-sem. The Quiz 1 solutions and rubric were posted on 3 March, with a Notion page for regrade requests.</td></tr>
+<tr><td>9 Mar to 30 Mar</td><td>L15 to L19: MLPs, backpropagation, training in practice, optimisers, then a recap</td></tr>
+<tr><td>Early Apr</td><td>Quiz 2, after the L19 recap (the exact date is not on Moodle)</td></tr>
+<tr><td>3 Apr</td><td>Quiz 1 and mid-sem marks released. Regrade requests went by email to a TA within two days.</td></tr>
+<tr><td>April</td><td>L20 to L25: CNNs, ResNets, RNNs, attention, transformers, self-supervised learning</td></tr>
+<tr><td>Mid Apr</td><td>Assignment 2 due. The assignment listed an estimated 28 hours of work, and students asked for an extension.</td></tr>
+<tr><td>22 Apr</td><td>An oral defence component for the assignments was announced, four days before the end-sems.</td></tr>
+<tr><td>23 Apr</td><td>L26: summary, the final grading scheme and the 2025 end-sem format</td></tr>
+</tbody>
+</table>
+<div class="card remember"><span class="tag">What to take from this</span>
+<ul>
+<li>Start each assignment the day it comes out. They are long (Assignment 2 listed 28 hours), and the deadline fell when many people were ill.</li>
+<li>You may have to explain your assignment code out loud, so write it yourself and understand every line.</li>
+<li>The course is front-loaded with linear algebra. Quiz 1 comes four weeks in, so the maths basics and Page 1 are the best use of time before the semester starts.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2 id="prereqs">What you need before you start</h2>
+<p class="slides">From L01, "Getting ready".</p>
+<p>The slides ask for typical engineering maths, nothing advanced: linear algebra, probability and differential calculus. They also ask that you be comfortable with Python and numpy, because programming is not taught. The assignments are in Python with PyTorch later on, and no heavy computation is planned, so a laptop is enough.</p>
+<p>Check yourself on these. If any of them is shaky, the <a href="basics/">maths basics</a> page teaches it from the start.</p>
+<ul>
+<li>Multiply two matrices, transpose a product, and find the inverse of a 2×2 matrix.</li>
+<li>Find the eigenvalues and eigenvectors of a 2×2 matrix by hand.</li>
+<li>Say what the rank of a matrix is and find it for a small one.</li>
+<li>Use Bayes' theorem on a medical-test problem.</li>
+<li>Write the density of a normal distribution and say what each symbol means.</li>
+<li>Differentiate <math><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mi>z</mi></mrow></msup></mrow></mfrac></math> and use the chain rule through three functions.</li>
+<li>In numpy, compute a mean, a covariance matrix, a matrix inverse and an eigen decomposition.</li>
+</ul>
+<p>The course recommends one textbook, <a href="https://mml-book.github.io/">Mathematics for Machine Learning</a> by Deisenroth, Faisal and Ong (free PDF). Chapters 2 (linear algebra) and 4 (matrix decompositions) are named in L05. Chapter 6 covers probability.</p>
+</section>
+
+<section>
+<h2 id="plan">A five-week plan before the semester</h2>
+<p>The semester starts in early January, so there are about five weeks from now. Two hours a day on weekdays fits the whole guide. If you have less time, stop after week 2.</p>
+<table class="tbl">
+<thead><tr><th>Week</th><th>Read</th><th>Also do</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><a href="basics/">Maths basics</a></td><td>Redo every 2×2 eigenvalue and Bayes question without looking.</td></tr>
+<tr><td>2</td><td><a href="foundations/">Page 1</a>, then the Quiz 1 paper as a timed test</td><td>Code k-NN, closed-form regression and PCA in numpy on a small dataset.</td></tr>
+<tr><td>3</td><td><a href="probabilistic/">Page 2</a></td><td>Code k-means and logistic regression with gradient descent.</td></tr>
+<tr><td>4</td><td><a href="neural/">Page 3</a></td><td>Do the backpropagation example by hand, then check it with PyTorch's autograd.</td></tr>
+<tr><td>5</td><td><a href="deep/">Page 4</a></td><td>Compute the output shape and parameter count of a small CNN, then check them with PyTorch.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="videos">The course's short videos</h2>
+<p>The 2026 Moodle page linked a list of 40 short videos. Most are by the instructor and run 5 to 15 minutes. Each one is also linked under the matching heading in the guide. They are useful when a topic does not click from the text.</p>
+<table class="tbl">
+<thead><tr><th>Video</th><th>Where it fits</th></tr></thead>
+<tbody>
+<tr><td><a href="https://www.youtube.com/watch?v=8xniRSjRyCQ">How can data be useful?</a></td><td><a href="foundations/">Page 1</a>, start</td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=47jEgvtKHuk">Nearest neighbour</a></td><td><a href="foundations/#knn">k-NN</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=5O3joUSYeYk">Representation</a> · <a href="https://www.youtube.com/watch?v=3WsDIkP8kMo">Representation II</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=P92mkhzt6Hg">Linear classifier</a></td><td><a href="foundations/#linear-classifier">Linear classifier</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=_eKO3j5W2nQ">Performance metrics I</a> · <a href="https://www.youtube.com/watch?v=dG0A2U8B8zQ">II</a></td><td><a href="foundations/#metrics">Metrics</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=w5phdIBr3Sw">Curse of dimensionality</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=AsQORY4_H9Q">Data from a multivariate distribution</a></td><td><a href="basics/#gaussian">The Gaussian</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=VBfo4L-Y_ug">Data as a matrix</a></td><td><a href="foundations/#data-matrix">Data matrix</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=DpXBPHnAmZw">Feature selection and extraction</a></td><td><a href="foundations/#features">Features</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=m46Exp1E6X8">Distances and similarities</a></td><td><a href="foundations/#knn">k-NN</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=v9DKrX-3gEA">Supervised learning formulation</a></td><td><a href="foundations/#regression">Regression</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=SSuYxDOxANI">Linear regression</a> · <a href="https://youtu.be/i08JdWDc1MY">MSE using gradient descent</a></td><td><a href="foundations/#regression">Regression</a>, <a href="foundations/#gradient-descent">gradient descent</a></td></tr>
+<tr><td><a href="https://youtu.be/DnRWPq1UGyA">Regularisation in regression</a></td><td><a href="foundations/#regularization">Regularisation</a></td></tr>
+<tr><td><a href="https://youtu.be/DUOJM728TT4">Geometry of Gaussians</a></td><td><a href="basics/#gaussian">The Gaussian</a></td></tr>
+<tr><td><a href="https://youtu.be/__EBdS7pvo0">Eigen decomposition</a> · <a href="https://youtu.be/GvvRuEypvfw">Optimisation and eigenvectors</a></td><td><a href="basics/#eigen">Eigenvectors</a>, <a href="basics/#lagrange">Lagrange</a></td></tr>
+<tr><td><a href="https://youtu.be/oN7ddIkzcic">SVD</a></td><td><a href="foundations/#svd">SVD</a></td></tr>
+<tr><td><a href="https://youtu.be/likh0NUdvnc">Orthogonal line fitting</a> · <a href="https://youtu.be/YpLantxHNJ8">PCA</a> · <a href="https://youtu.be/EQfxYZiE0tg">PCA as compression</a> · <a href="https://youtu.be/X1cEIkXjewI">Eigenfaces</a></td><td><a href="foundations/#pca">PCA</a></td></tr>
+<tr><td><a href="https://youtu.be/rMaDnRLZAzM">LSI</a> · <a href="https://youtu.be/tP9e0PlmMKo">Rank and recommendations</a></td><td><a href="probabilistic/#lsi">LSI</a></td></tr>
+<tr><td><a href="https://youtu.be/6yKc_VdQ6Ys">LDA 1</a> · <a href="https://youtu.be/1gsL_KYaN1o">LDA 2</a></td><td><a href="probabilistic/#lda">LDA</a></td></tr>
+<tr><td><a href="https://youtu.be/p8XWxnBzUbk">MLE</a> · <a href="https://youtu.be/XfmZ3Ap-xHI">MSE as MLE</a></td><td><a href="probabilistic/#mle">MLE</a></td></tr>
+<tr><td><a href="https://youtu.be/8FZjrckX52E">Naive Bayes</a></td><td><a href="probabilistic/#naive-bayes">Naive Bayes</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=9_DJ4KvyYoo">SVM 1</a> · <a href="https://www.youtube.com/watch?v=ffF8UnbheLk">SVM 2</a> (longer lectures by Prof. Anoop)</td><td><a href="probabilistic/#svm">SVMs</a></td></tr>
+<tr><td><a href="https://youtu.be/GjSXrAurxi0">Generalisation and overfitting</a> · <a href="https://youtu.be/nwd0h8SkSAo">Occam's razor</a> · <a href="https://youtu.be/pvQNQBPCgg8">Validation</a> · <a href="https://youtu.be/IqdY9NWdhLk">Bias and variance</a></td><td><a href="probabilistic/#generalization">Generalisation</a></td></tr>
+<tr><td><a href="https://youtu.be/ZIKVS7RKFXg">Loss functions 1</a></td><td><a href="probabilistic/#logistic">Logistic regression</a></td></tr>
+<tr><td><a href="https://www.youtube.com/watch?v=xnJuNxURtik">Neural network basics</a> · <a href="https://www.youtube.com/watch?v=u3rUkkh-Rac">Introduction to PyTorch</a></td><td><a href="neural/">Page 3</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="lecture-map">Every lecture, and where it is covered</h2>
+<table class="tbl">
+<thead><tr><th>Lecture</th><th>Date</th><th>Title</th><th>In this guide</th></tr></thead>
+<tbody>
+<tr><td>L01</td><td>5 Jan</td><td>Data driven problem solving</td><td><a href="foundations/#knn">k-NN</a>, <a href="foundations/#linear-classifier">linear classifier</a></td></tr>
+<tr><td>L02</td><td>12 Jan</td><td>Representation and feature engineering</td><td><a href="foundations/#features">Features</a>, <a href="foundations/#metrics">metrics</a></td></tr>
+<tr><td>L03</td><td>19 Jan</td><td>Supervised learning and linear regression</td><td><a href="foundations/#regression">Regression</a>, <a href="foundations/#gradient-descent">gradient descent</a></td></tr>
+<tr><td>L04</td><td>19 Jan</td><td>Linear regression, optimisation and regularisation</td><td><a href="foundations/#regularization">Regularisation</a></td></tr>
+<tr><td>L05</td><td>22 Jan</td><td>Rank of the data matrix</td><td><a href="foundations/#data-matrix">Data matrix</a>, <a href="foundations/#svd">SVD</a></td></tr>
+<tr><td>L06</td><td>27 Jan</td><td>PCA</td><td><a href="foundations/#pca">PCA</a></td></tr>
+<tr><td>L07</td><td>29 Jan</td><td>Recap before Quiz 1</td><td><a href="foundations/#quiz1">Quiz 1</a></td></tr>
+<tr><td>L08</td><td>8 Feb</td><td>Appreciating low rank data</td><td><a href="probabilistic/#pca-recon">PCA as reconstruction</a>, <a href="probabilistic/#lda">LDA</a>, <a href="probabilistic/#lsi">LSI</a></td></tr>
+<tr><td>L09</td><td>8 Feb</td><td>Data, distributions and Bayesian decision</td><td><a href="probabilistic/#bayes-decision">Bayesian decisions</a></td></tr>
+<tr><td>L10</td><td>9 Feb</td><td>MLE and GMMs</td><td><a href="probabilistic/#mle">MLE</a>, <a href="probabilistic/#gmm-em">GMM and EM</a></td></tr>
+<tr><td>L11</td><td>12 Feb</td><td>Three algorithms: probability to practice</td><td><a href="probabilistic/#kmeans">k-means</a>, <a href="probabilistic/#naive-bayes">naive Bayes</a>, <a href="probabilistic/#logistic">logistic regression</a></td></tr>
+<tr><td>L12</td><td>16 Feb</td><td>SVMs</td><td><a href="probabilistic/#svm">SVMs</a>, <a href="probabilistic/#kernels">kernels</a></td></tr>
+<tr><td>L13</td><td>19 Feb</td><td>Principles of learning</td><td><a href="probabilistic/#generalization">Generalisation</a></td></tr>
+<tr><td>L14</td><td>25 Feb</td><td>Neurons, neural networks and perceptrons</td><td><a href="neural/#neuron">Neurons</a>, <a href="neural/#perceptron">perceptron</a>, <a href="neural/#delta-rule">delta rule</a></td></tr>
+<tr><td>L15</td><td>9 Mar</td><td>Single layer to multi-layer perceptrons</td><td><a href="neural/#mlp">MLP</a>, <a href="neural/#activations">activations</a></td></tr>
+<tr><td>L16</td><td>12 Mar</td><td>Basic backpropagation</td><td><a href="neural/#backprop">Backpropagation</a></td></tr>
+<tr><td>L17</td><td>23 Mar</td><td>Practice of backpropagation</td><td><a href="neural/#training-practice">Training in practice</a></td></tr>
+<tr><td>L18</td><td>26 Mar</td><td>Beyond simple backpropagation</td><td><a href="neural/#optimizers">Optimisers</a></td></tr>
+<tr><td>L19</td><td>30 Mar</td><td>Recap of neural networks</td><td><a href="neural/#quiz2">Quiz 2</a></td></tr>
+<tr><td>L20</td><td>Apr</td><td>CNNs</td><td><a href="deep/#cnn">CNNs</a>, <a href="deep/#cnn-params">shapes and parameters</a></td></tr>
+<tr><td>L21</td><td>Apr</td><td>More on CNNs</td><td><a href="deep/#resnet">ResNets</a></td></tr>
+<tr><td>L22</td><td>Apr</td><td>RNNs</td><td><a href="deep/#rnn">RNNs</a>, <a href="deep/#lstm">LSTMs</a></td></tr>
+<tr><td>L23</td><td>Apr</td><td>Self-attention</td><td><a href="deep/#embeddings">Embeddings</a>, <a href="deep/#attention">attention</a></td></tr>
+<tr><td>L24</td><td>Apr</td><td>Transformers</td><td><a href="deep/#transformer">Transformers</a>, <a href="deep/#vit">ViT</a></td></tr>
+<tr><td>L25</td><td>Apr</td><td>Self-supervised learning</td><td><a href="deep/#ssl">Self-supervised learning</a>, <a href="deep/#contrastive">contrastive learning</a></td></tr>
+<tr><td>L26</td><td>23 Apr</td><td>Summary and closing</td><td><a href="#grading">Grading</a>, <a href="deep/#final-format">end-sem format</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><span></span><span></span></nav>
+<p class="small credit">Built from the Spring 2026 offering of the course (slides by C. V. Jawahar, IIIT Hyderabad). The slides, quiz paper and solutions belong to the instructors and TAs and are used here for study. Notes under <a href="../../LICENSE-CONTENT">CC BY-SA 4.0</a>. Found a mistake? <a href="https://github.com/Arihant25/study-guides/issues/new/choose">Open an issue</a>.</p>
+</main>
+</div>
+<button class="totop" id="totop" type="button" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  // Colour theme: auto, light, dark (remembered in this browser if storage works)
+  var btn=document.getElementById('themebtn');
+  var ico=btn.querySelector('.ico'), lbl=btn.querySelector('.lbl');
+  var ICONS={auto:'◐',light:'☀',dark:'☾'}, ORDER=['auto','light','dark'];
+  function apply(mode){
+    if(mode==='light'||mode==='dark') document.documentElement.setAttribute('data-theme',mode);
+    else { document.documentElement.removeAttribute('data-theme'); mode='auto'; }
+    ico.textContent=ICONS[mode]; lbl.textContent=mode.charAt(0).toUpperCase()+mode.slice(1);
+    return mode;
+  }
+  var saved='auto'; try{ saved=localStorage.getItem('smai-theme')||'auto'; }catch(e){}
+  var current=apply(saved);
+  btn.addEventListener('click',function(){
+    current=apply(ORDER[(ORDER.indexOf(current)+1)%ORDER.length]);
+    try{ current==='auto' ? localStorage.removeItem('smai-theme') : localStorage.setItem('smai-theme',current); }catch(e){}
+  });
+
+  // Highlight the section being read in the sidebar
+  var links=[].slice.call(document.querySelectorAll('#tocnav a'));
+  var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        links.forEach(function(l){l.classList.remove('active');});
+        var a=map[en.target.id]; if(a){a.classList.add('active'); a.scrollIntoView({block:'nearest'});}
+      }});
+    },{rootMargin:'-8% 0px -80% 0px',threshold:0});
+    document.querySelectorAll('main h2[id]').forEach(function(el){ if(map[el.id]) obs.observe(el); });
+  }
+
+  // Close the phone menu after a jump
+  var mt=document.querySelector('details.mtoc');
+  if(mt) mt.addEventListener('click',function(e){ if(e.target.closest('a')) mt.open=false; });
+
+  // "Close all explanations" in each exam box, shown only while one is open
+  document.querySelectorAll('.card.exam').forEach(function(card){
+    var whys=card.querySelectorAll('details.linewhy');
+    if(!whys.length) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='closeall'; b.textContent='Close all explanations';
+    card.appendChild(b);
+    function update(){ b.classList.toggle('show',[].some.call(whys,function(d){return d.open;})); }
+    whys.forEach(function(d){ d.addEventListener('toggle',update); });
+    b.addEventListener('click',function(){ whys.forEach(function(d){d.open=false;}); update(); card.scrollIntoView({block:'nearest'}); });
+  });
+
+  // Back to top
+  var top=document.getElementById('totop');
+  function onScroll(){ top.classList.toggle('show', window.scrollY>900); }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  top.addEventListener('click',function(){ window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); });
+})();
+
+</script>
+</body>
+</html>

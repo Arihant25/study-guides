@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Study Guides · IIIT Hyderabad course notes</title>
-<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, signal processing, sociology and AI accelerators.">
+<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, signal processing, sociology, AI accelerators and statistical methods in AI.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
@@ -30,6 +30,7 @@
   --sdet: #2a55a8;
   --sociology: #7a5200;
   --sp: #6b3fa0;
+  --smai: #0b6285;
   --ui: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --read: "Source Serif 4", Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -47,6 +48,7 @@
     --sdet: #8fb0ff;
     --sociology: #e9b860;
     --sp: #c7a8ff;
+    --smai: #6cc8ec;
   }
 }
 
@@ -118,6 +120,7 @@ h3 a:hover { color: var(--c); text-decoration: underline; text-decoration-thickn
 .sdet { --c: var(--sdet); }
 .sociology { --c: var(--sociology); }
 .sp { --c: var(--sp); }
+.smai { --c: var(--smai); }
 
 @media (min-width: 720px) {
   .course { grid-template-columns: 9.5rem 1fr; }
@@ -149,6 +152,29 @@ footer a:hover { color: var(--ink); }
       <h1>Notes for IIIT Hyderabad courses</h1>
       <p>We made these for our own coursework, one for each course we took. Every guide assumes you have never seen the material, so it explains each symbol where it first appears and works through the past papers where they exist.</p>
       <p class="aside">They are plain web pages, so they load fast on a phone and print cleanly. If you find a mistake, <a href="https://github.com/Arihant25/study-guides/issues/new/choose">open an issue</a>.</p>
+    </section>
+
+    <section class="term" aria-labelledby="spring-2027">
+      <div class="term-head">
+        <h2 id="spring-2027">Spring 2027</h2>
+        <span>1 course, in progress</span>
+      </div>
+
+      <article class="course smai">
+        <div class="code">CS7.403<small>smai</small></div>
+        <div>
+          <h3><a href="smai/">Statistical Methods in AI</a></h3>
+          <p>The 2027 guide will be written as the slides come out. Until then, there is a prep guide built from all 26 lectures of the 2026 course, from k-NN and PCA to backpropagation and transformers. It starts with the maths the course assumes, shows the important slides next to each explanation, and solves the Quiz 1 paper and every problem on the slides.</p>
+          <ul class="parts">
+            <li><a href="smai/2026/">2026 prep guide</a><span>start here</span></li>
+            <li><a href="smai/2026/basics/">Maths basics</a></li>
+            <li><a href="smai/2026/foundations/">Foundations</a><span>L01–L07</span></li>
+            <li><a href="smai/2026/probabilistic/">Probabilistic ML</a><span>L08–L13</span></li>
+            <li><a href="smai/2026/neural/">Neural networks</a><span>L14–L19</span></li>
+            <li><a href="smai/2026/deep/">Deep learning</a><span>L20–L26</span></li>
+          </ul>
+        </div>
+      </article>
     </section>
 
     <section class="term" aria-labelledby="monsoon-2026">

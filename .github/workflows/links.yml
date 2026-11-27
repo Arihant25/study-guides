@@ -24,6 +24,8 @@ jobs:
             --exclude-path dpcn/node_modules
             --exclude-path 'dpcn/src.*'
             --exclude-path dpcn/shared
+            --exclude-path smai/node_modules
+            --exclude-path smai/src
             --exclude-path 404.html
             './**/*.html'
           fail: true

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMAI Study Guide · Statistical Methods in AI</title>
+<meta name="description" content="Study guide for Statistical Methods in AI (CS7.403) at IIIT Hyderabad. The Spring 2027 guide is coming soon. Until then, a prep guide built from the 2026 course covers all 26 lectures.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  --paper: #f5f6f8; --ink: #15181d; --muted: #525a66; --rule: #d7dbe1; --link: #1d4fa8; --c: #0b6285;
+  --ui: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  --read: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #111317; --ink: #e9ebef; --muted: #a3abb7; --rule: #2a2f37; --link: #8fb4ff; --c: #6cc8ec; }
+}
+:root[data-theme="dark"] { --paper: #111317; --ink: #e9ebef; --muted: #a3abb7; --rule: #2a2f37; --link: #8fb4ff; --c: #6cc8ec; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.55 var(--read); }
+a { color: var(--link); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 52rem; margin: 0 auto; padding: 0 16px; }
+.masthead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 22px 0 18px; border-bottom: 1px solid var(--rule); font-family: var(--ui); }
+.wordmark { font-weight: 700; font-size: 1.05rem; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.masthead nav a { font-size: 0.95rem; font-weight: 500; color: var(--muted); text-decoration: none; }
+.masthead nav a:hover { color: var(--ink); text-decoration: underline; }
+.intro { padding: 56px 0 8px; }
+.code { font: 500 0.85rem/1.4 var(--mono); color: var(--c); margin: 0 0 14px; }
+h1 { font: 700 clamp(2rem, 1.3rem + 3vw, 3rem)/1.08 var(--ui); letter-spacing: -0.025em; margin: 0 0 20px; max-width: 18ch; text-wrap: balance; }
+h2 { font: 600 1.35rem/1.2 var(--ui); margin: 0 0 10px; letter-spacing: -0.01em; text-wrap: balance; }
+p { margin: 0 0 14px; max-width: 62ch; text-wrap: pretty; }
+.status { display: inline-flex; align-items: center; gap: 10px; font: 500 0.92rem/1.4 var(--ui); color: var(--muted); margin: 0 0 22px; }
+.status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.block { padding: 36px 0 34px; border-top: 1px solid var(--rule); margin-top: 40px; }
+.go { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 8px; background: var(--ink); color: var(--paper); font: 600 1rem var(--ui); text-decoration: none; transition: opacity 120ms; }
+.go:hover { opacity: .88; }
+.go:active { transform: scale(.98); }
+.parts { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font: 500 0.92rem/1.5 var(--ui); }
+.parts a { color: var(--ink); text-decoration-color: var(--rule); text-decoration-thickness: 2px; display: inline-block; padding: 10px 0; }
+.parts a:hover { color: var(--c); text-decoration-color: currentColor; }
+.parts span { font: 400 0.8rem var(--mono); color: var(--muted); margin-left: 4px; }
+ul.plain { margin: 0 0 14px; padding-left: 1.2em; max-width: 62ch; }
+ul.plain li { margin: 4px 0; }
+footer { padding: 40px 0 64px; color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--rule); margin-top: 24px; }
+footer a { color: inherit; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <a class="wordmark" href="../">Study Guides</a>
+    <nav><a href="https://github.com/Arihant25/study-guides">Source on GitHub</a></nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="code">CS7.403 · smai</p>
+      <h1>Statistical Methods in AI</h1>
+      <p class="status">Spring 2027 guide coming soon</p>
+      <p>The full guide for the Spring 2027 offering will be written as the slides are uploaded, lecture by lecture, with each slide explained and the quizzes and exams solved.</p>
+      <p>Until then, you can get ahead with the prep guide below. It is built from last year's course.</p>
+    </section>
+
+    <section class="block" aria-labelledby="prep">
+      <h2 id="prep">SMAI 2026 prep guide</h2>
+      <p>All 26 lectures of the Spring 2026 offering, written for someone seeing the material for the first time. It starts with the maths the course assumes, explains every formula with a worked example, shows the important slides next to the text, and solves the Quiz 1 paper and every problem from the slides. It also has the grading scheme, the exam formats and a five-week plan for the break.</p>
+      <a class="go" href="2026/">Open the 2026 prep guide</a>
+      <ul class="parts">
+        <li><a href="2026/basics/">Maths basics</a><span>start here</span></li>
+        <li><a href="2026/foundations/">Foundations</a><span>L01–L07</span></li>
+        <li><a href="2026/probabilistic/">Probabilistic ML</a><span>L08–L13</span></li>
+        <li><a href="2026/neural/">Neural networks</a><span>L14–L19</span></li>
+        <li><a href="2026/deep/">Deep learning</a><span>L20–L26</span></li>
+        <li><a href="2026/foundations/#quiz1">Quiz 1, 2026</a><span>solved</span></li>
+        <li><a href="2026/sheet/">Formula sheet</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Notes under <a href="../LICENSE-CONTENT">CC BY-SA 4.0</a>. Lecture slides and the quiz paper belong to the course instructors and are included for study.</p>
+  </footer>
+</div>
+</body>
+</html>

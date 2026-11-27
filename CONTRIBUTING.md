@@ -9,7 +9,7 @@ Thanks for helping. Most contributions are small fixes, and those are the most u
 ## Fixing something yourself
 
 1. Fork the repo and create a branch.
-2. Edit the HTML in the course folder. Guides are plain HTML, so there is nothing to build, except for DPCN (see below).
+2. Edit the HTML in the course folder. Guides are plain HTML, so there is nothing to build, except for DPCN and SMAI (see below).
 3. Serve the repo root with `python -m http.server` and check the page in a browser, including at phone width.
 4. Open a pull request that says what changed and why.
 
@@ -21,6 +21,16 @@ The pages in `dpcn/quiz1/`, `dpcn/midsem/` and so on are generated. Edit the mat
 
 ```sh
 cd dpcn
+npm install
+node build.mjs
+```
+
+### SMAI
+
+The pages in `smai/2026/` are generated. Edit `smai/src/2026/`, then run:
+
+```sh
+cd smai
 npm install
 node build.mjs
 ```

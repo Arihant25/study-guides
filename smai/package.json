@@ -1,0 +1,12 @@
+{
+  "name": "smai",
+  "private": true,
+  "description": "Build script for the SMAI (Statistical Methods in AI) study guide",
+  "type": "module",
+  "scripts": { "build": "node build.mjs" },
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer-core": "^25.11.0",
+    "temml": "^0.13.5"
+  }
+}
