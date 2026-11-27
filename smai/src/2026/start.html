@@ -7,7 +7,7 @@
 
 <section>
 <h2 id="read-first">Read this first</h2>
-<p>SMAI is the first machine learning course at IIIT Hyderabad. In Spring 2026 it was taught by C. V. Jawahar, and the slides call it "a fundamental course on machine learning, not an advanced course". It has two halves. The first teaches classical machine learning through linear algebra and probability: nearest neighbours, regression, PCA, Bayesian decisions, SVMs. The second teaches neural networks, from a single perceptron up to transformers and self-supervised learning.</p>
+<p>SMAI is the first machine learning course at IIIT Hyderabad. In Spring 2026 it was taught by C. V. Jawahar, and the slides call it "a fundamental course on machine learning, not an advanced course". It has two halves. The first teaches classical machine learning through linear algebra and probability, with nearest neighbours, regression, PCA, Bayesian decisions and SVMs. The second teaches neural networks, from a single perceptron up to transformers and self-supervised learning.</p>
 <div class="notice">
 <p><strong>What this guide is based on.</strong> Everything here comes from the 2026 Moodle page. That means the 26 lecture slide decks, the Quiz 1 paper with its official solutions and marking rubric, the tutorial on probability and GMMs, the course's list of short videos, and the announcements. No mid-sem, Quiz 2 or end-sem papers were posted, so the practice questions for those were written for this guide and are labelled "Practice".</p>
 <p><strong>What may change.</strong> The 2027 course may move topics around, change the weights or skip a topic. A new guide built from the 2027 slides will replace this one once they are uploaded. The ideas themselves (regression, PCA, Bayes, backpropagation, attention) will not change, so reading ahead now still pays off.</p>
@@ -35,7 +35,7 @@
 <li>Each important formula, followed by a box headed "Reading the formula". It says what every symbol means and works a small example with real numbers.</li>
 <li>A box headed "Write this in the exam" for each derivation. Its numbered lines are what you would write on paper. Under a line, the small "Why" link opens the reasoning one step at a time. Read the lines first to see the shape of the proof, then open the explanations you need.</li>
 <li>A "Remember" box with the results to keep.</li>
-<li>Questions. Try each one on paper before opening the answer. Every worked answer has three rows: the formula to use, where it comes from on the page, and the working with a check at the end.</li>
+<li>Questions. Try each one on paper before opening the answer. Every worked answer has three rows. They give the formula to use, where it comes from on the page, and the working with a check at the end.</li>
 </ol>
 <p>Questions are labelled by where they come from. "Quiz 1, 2026" is the real paper. "L05 slide" is a problem the instructor put on that lecture's slides, which is the style of the in-class problem solving. "Practice" means the question was written for this guide.</p>
 </section>
@@ -61,15 +61,15 @@
 <section>
 <h2 id="exams">The exams</h2>
 <h3>Quiz 1</h3>
-<p>Covers L01 to L07, roughly. It had 45 points across 12 questions (ten worth 3 points and two worth 7.5), in four sets with different numbers. The questions were short: compute some norms, pick which eigenvector solves an optimisation, mark the true statements about eigenfaces, compute precision and recall, run 1-NN by hand, fill in blanks about the SVD, mean-centre some points, write a loss function, do two steps of gradient descent, and fit a line with the closed-form formula. The class average was 29.67 out of 45. The whole paper is solved on <a href="foundations/#quiz1">Page 1</a>.</p>
+<p>Covers L01 to L07, roughly. It had 45 points across 12 questions (ten worth 3 points and two worth 7.5), in four sets with different numbers. The questions were short. They asked you to compute some norms, pick which eigenvector solves an optimisation, mark the true statements about eigenfaces, compute precision and recall, run 1-NN by hand, fill in blanks about the SVD, mean-centre some points, write a loss function, do two steps of gradient descent, and fit a line with the closed-form formula. The class average was 29.67 out of 45. The whole paper is solved on <a href="foundations/#quiz1">Page 1</a>.</p>
 <h3>Mid-sem</h3>
 <p>Taken in early March, after L14 (the exact date is not on Moodle). The L14 slides end with a "Mid Exam" slide listing three questions (Q1, Q2, Q3) but not their content, and the paper was not posted. The class average was 44.98, and the announcement did not say out of how many marks. Expect everything from L01 to L13.</p>
 <h3>Quiz 2</h3>
-<p>The L18 slides list its scope: an overview of neural networks, neuron models, the single layer perceptron, the multi-layer perceptron, gradient descent, backpropagation and second order methods. That is exactly <a href="neural/">Page 3</a>, which ends with a practice set.</p>
+<p>The L18 slides list its scope as an overview of neural networks, neuron models, the single layer perceptron, the multi-layer perceptron, gradient descent, backpropagation and second order methods. That is exactly <a href="neural/">Page 3</a>, which ends with a practice set.</p>
 <h3>End-sem</h3>
 <p>The 2026 paper was not posted, but L26 shows the format of the 2025 final. It had three parts, each worth 60 marks and each taking 60 minutes.</p>
 <ol>
-<li>Objective questions: fill in the blanks and multiple-correct questions (12 of 5 marks or 15 of 4 marks).</li>
+<li>Objective questions, such as fill in the blanks and multiple-correct questions (12 of 5 marks or 15 of 4 marks).</li>
 <li>Numerical problem solving (4 of 15 marks or 5 of 12 marks).</li>
 <li>Analytical and conceptual questions (4 of 15 marks or 5 of 12 marks).</li>
 </ol>
@@ -113,7 +113,7 @@
 <section>
 <h2 id="prereqs">What you need before you start</h2>
 <p class="slides">From L01, "Getting ready".</p>
-<p>The slides ask for typical engineering maths, nothing advanced: linear algebra, probability and differential calculus. They also ask that you be comfortable with Python and numpy, because programming is not taught. The assignments are in Python with PyTorch later on, and no heavy computation is planned, so a laptop is enough.</p>
+<p>The slides ask for typical engineering maths and nothing advanced, meaning linear algebra, probability and differential calculus. They also ask that you be comfortable with Python and numpy, because programming is not taught. The assignments are in Python with PyTorch later on, and no heavy computation is planned, so a laptop is enough.</p>
 <p>Check yourself on these. If any of them is shaky, the <a href="basics/">maths basics</a> page teaches it from the start.</p>
 <ul>
 <li>Multiply two matrices, transpose a product, and find the inverse of a 2×2 matrix.</li>

@@ -1,0 +1,1051 @@
+<!--desc: The maths that SMAI assumes, taught from school level: vectors, norms, matrices, rank, eigenvectors, a first look at SVD, probability, Bayes' theorem, the Gaussian, gradients, the chain rule and Lagrange multipliers, with worked questions from the 2026 slides.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Page B</div>
+  <h1>Maths basics</h1>
+  <p class="lead">Every later page uses the linear algebra, probability and calculus on this page. It starts from school maths, defines each symbol the first time it appears and ends each section with questions, many taken from the 2026 slides. Expect about 6 hours with pen and paper.</p>
+</header>
+
+<section>
+<h2 id="read-first">Read this first</h2>
+<p>In the first lecture the instructor said the course needs "typical engineering maths" in linear algebra, probability and differential calculus, and asked students to revise vectors, matrices, probability distributions and Bayes' theorem on their own. Lecture 5 added a list of topics to revise. They are matrix properties, positive semi-definite matrices, eigenvalues and eigenvectors, determinants, rank and the SVD. This page covers all of that, plus the calculus that backpropagation needs later.</p>
+<p>Read it from top to bottom. Each section explains the idea, gives the formula with a "Reading the formula" box and a small worked example, and ends with questions. Try each question on paper before you open the answer.</p>
+<table class="tbl sheet">
+<thead><tr><th>Section</th><th>Used later for</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td>B.1 Vectors</td><td>every page (a data point is a vector)</td><td>30 min</td></tr>
+<tr><td>B.2 Norms</td><td>distances in k-NN, ridge and lasso regression</td><td>15 min</td></tr>
+<tr><td>B.3 Matrices</td><td>the data matrix, regression, covariance</td><td>35 min</td></tr>
+<tr><td>B.4 Rank</td><td>low-rank data, PCA, LSI</td><td>25 min</td></tr>
+<tr><td>B.5 Eigenvalues and eigenvectors</td><td>PCA, LDA, eigenfaces</td><td>45 min</td></tr>
+<tr><td>B.6 A first look at SVD</td><td>low-rank approximation, LSI</td><td>20 min</td></tr>
+<tr><td>B.7 Probability</td><td>Bayes classifier, naive Bayes, GMM</td><td>35 min</td></tr>
+<tr><td>B.8 Bayes' theorem</td><td>Bayesian decision, MAP, GMM responsibilities</td><td>35 min</td></tr>
+<tr><td>B.9 The Gaussian</td><td>MLE, GMM, MSE as MLE</td><td>25 min</td></tr>
+<tr><td>B.10 Derivatives</td><td>gradient descent</td><td>15 min</td></tr>
+<tr><td>B.11 Gradients of vector expressions</td><td>closed-form regression, PCA, LDA</td><td>25 min</td></tr>
+<tr><td>B.12 The chain rule</td><td>backpropagation</td><td>20 min</td></tr>
+<tr><td>B.13 Lagrange multipliers</td><td>PCA, LDA, SVM</td><td>25 min</td></tr>
+<tr><td colspan="2"><strong>Total</strong></td><td><strong>5 h 50 min</strong></td></tr>
+</tbody>
+</table>
+<p>If time is short, do B.5, B.8 and B.11 first. The quizzes and the mid-sem in 2026 asked directly about norms, eigenvectors as solutions of optimisation problems, covariance matrices and Bayes' theorem.</p>
+<p>Many questions in this course are "one, none or more correct". For those, check every option on its own and mark each one true or false. Never stop at the first true option.</p>
+<p class="small">This page is based on the 2026 slides (L01, L04, L05, L06, L09, L11, L12, L16), the review questions on them and the course's short videos. Questions tagged "Practice" were written for this guide in the same style. The slides call Lagrange multipliers "out of scope" as theory, but the course uses the result for PCA and LDA, so the method is taught here.</p>
+</section>
+
+<div class="part">Linear algebra<span>B.1 to B.6</span></div>
+
+<section>
+<h2 id="vectors"><span class="num">B.1</span>Vectors</h2>
+<p class="slides">Used from L01 onward · <a href="https://www.youtube.com/watch?v=VBfo4L-Y_ug">Short video: Data as matrix</a> · <a href="https://www.youtube.com/watch?v=m46Exp1E6X8">Short video: Distances and similarities</a> · Read: <a href="https://mml-book.github.io/">Mathematics for Machine Learning</a>, chapter 2</p>
+<p class="oneline">A vector is a list of numbers. In this course every data point (an email, an image, a day's weather) is turned into a vector before any algorithm sees it.</p>
+<p>A <em class="t">vector</em> with \(d\) entries is written as a column:</p>
+<div class="eq">\[\mathbf x = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_d \end{bmatrix}.\]</div>
+<p>Bold lower-case letters (\(\mathbf x, \mathbf w\)) are vectors. Plain letters with a subscript (\(x_1, x_2\)) are the numbers inside. The number of entries \(d\) is called the <em class="t">dimension</em>. The slides often drop the bold and write \(x\) for a vector too, so read the context.</p>
+<p>The statement \(\mathbf x \in \R^d\) is read "x is in R d" and means "x is a list of \(d\) real numbers". The symbol \(\in\) means "is a member of", and \(\R\) is the set of real numbers.</p>
+<p>The <em class="t">transpose</em>, written with a superscript \(\mathsf T\), turns a column into a row, so \(\mathbf x\T \)<wbr>\({}= [x_1, x_2, \dots, x_d]\). The slides write vectors inline as \([1, 2]^{\mathsf T}\) to save space, which means the column with entries 1 and 2.</p>
+
+<h3>Adding and scaling</h3>
+<p>Vectors of the same dimension add entry by entry, so \([1,2]\T + [3,5]\T = [4,7]\T\). Multiplying by a number (a <em class="t">scalar</em>) multiplies every entry, so \(3\,[1,2]\T = [3,6]\T\).</p>
+
+<h3>The dot product</h3>
+<div class="eq boxed">\[\mathbf w\T\mathbf x = \sum_{i=1}^{d} w_i x_i.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The symbol \(\sum\) (capital sigma) means "add up". The \(i=1\) underneath and the \(d\) on top say that \(i\) runs through \(1, 2, \dots, d\). For each \(i\) we write the term \(w_ix_i\), and then we add all the terms.</p>
+<p>Written out, it is \(w_1x_1 + w_2x_2 + \dots + w_dx_d\). So the dot product multiplies matching entries and adds the results. The answer is a single number, not a vector.</p>
+<p><strong>Example.</strong> \(\mathbf w = [1,1,1,1]\T\) and \(\mathbf x = [0,1,2,3]\T\). The products are \(1\cdot0, 1\cdot1, 1\cdot2, 1\cdot3\), that is 0, 1, 2, 3. Their sum is \(\mathbf w\T\mathbf x = 6\).</p>
+<p>The linear classifier of L01 decides the class from the sign of \(\mathbf w\T\mathbf x\), so you will compute this number all the time.</p>
+</div>
+
+<h3>Length and angle</h3>
+<p>The length of a vector comes from Pythagoras' theorem, which gives \(\|\mathbf x\| \)<wbr>\({}= \sqrt{x_1^2 + \dots + x_d^2} \)<wbr>\({}= \sqrt{\mathbf x\T\mathbf x}\). The double bars \(\|\cdot\|\) mean "length" (more on this in B.2).</p>
+<p>The dot product also measures the angle \(\theta\) (theta) between two vectors:</p>
+<div class="eq">\[\cos\theta = \frac{\mathbf a\T\mathbf b}{\|\mathbf a\|\,\|\mathbf b\|}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The top is the dot product. The bottom is the product of the two lengths. Dividing by the lengths removes the effect of how long the vectors are, so only the direction matters. The result always lies between \(-1\) and \(1\).</p>
+<ul>
+<li>\(\cos\theta = 1\) means the vectors point the same way (\(\theta = 0°\)).</li>
+<li>\(\cos\theta = 0\) means they are at right angles (\(\theta = 90°\)). Such vectors are called <em class="t">orthogonal</em>.</li>
+<li>\(\cos\theta = -1\) means they point in opposite directions.</li>
+</ul>
+<p><strong>Example.</strong> \(\mathbf a = [3,4]\T\), \(\mathbf b = [4,3]\T\). The dot product is \(12 + 12 = 24\). Both lengths are \(\sqrt{9+16} = 5\). So \(\cos\theta \)<wbr>\({}= \frac{24}{25} \)<wbr>\({}= 0.96\), and \(\theta \approx 16°\).</p>
+<p>This quantity is called <em class="t">cosine similarity</em>. Latent semantic indexing (L08) uses it to compare documents.</p>
+</div>
+
+<h3>Projection onto a direction</h3>
+<p>A <em class="t">unit vector</em> has length 1. If \(\mathbf u\) is a unit vector, the number \(\mathbf u\T\mathbf x\) is how far \(\mathbf x\) reaches along the direction of \(\mathbf u\). The vector \((\mathbf u\T\mathbf x)\,\mathbf u\) is the <em class="t">projection</em> of \(\mathbf x\) onto that direction, the closest point to \(\mathbf x\) on the line through the origin along \(\mathbf u\).</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>\(\mathbf u \)<wbr>\({}= \frac1{\sqrt2}[1,1]\T\) (length \(\sqrt{\frac12+\frac12} = 1\)) and \(\mathbf x = [3,1]\T\).</p>
+<ol class="steps">
+<li>\(\mathbf u\T\mathbf x \)<wbr>\({}= \frac1{\sqrt2}(3 + 1) \)<wbr>\({}= \frac4{\sqrt2} \)<wbr>\({}= 2\sqrt2\).</li>
+<li>The projection is \(2\sqrt2\cdot\frac1{\sqrt2}[1,1]\T \)<wbr>\({}= [2,2]\T\).</li>
+<li>The leftover \(\mathbf x - [2,2]\T = [1,-1]\T\) is at right angles to \(\mathbf u\), because \([1,1]\cdot[1,-1] = 1 - 1 = 0\). This always happens. The leftover of a projection is orthogonal to the direction.</li>
+</ol>
+<p>PCA (page 1) keeps the projections onto a few chosen directions and throws away the leftovers.</p>
+</div>
+
+<h3>The augmented vector, and why the bias disappears</h3>
+<p>A line in the plane that passes through the origin can be written \(\mathbf w\T\mathbf x = 0\). A general line needs an extra number \(b\), called the <em class="t">bias</em>, giving \(\mathbf w\T\mathbf x + b = 0\). L01 shows a trick to hide \(b\). Add a 1 to the end of \(\mathbf x\) and put \(b\) at the end of \(\mathbf w\).</p>
+<div class="eq">\[\begin{bmatrix} w_1 \\ w_2 \\ b\end{bmatrix}^{\mathsf T}\begin{bmatrix} x_1 \\ x_2 \\ 1\end{bmatrix} = w_1x_1 + w_2x_2 + b.\]</div>
+<p>The longer \(\mathbf x\) is called the <em class="t">augmented vector</em>. From now on, when the slides write \(\mathbf w\T\mathbf x\), assume \(\mathbf x\) has been augmented and the bias is inside \(\mathbf w\) unless the slide says otherwise.</p>
+
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(\mathbf w\T\mathbf x \)<wbr>\({}= \sum_i w_ix_i\), a single number.</li>
+<li>\(\|\mathbf x\| \)<wbr>\({}= \sqrt{\mathbf x\T\mathbf x}\), and \(\cos\theta \)<wbr>\({}= \frac{\mathbf a\T\mathbf b}{\|\mathbf a\|\|\mathbf b\|}\).</li>
+<li>Orthogonal means dot product 0.</li>
+<li>Projection of \(\mathbf x\) onto unit \(\mathbf u\) is \((\mathbf u\T\mathbf x)\mathbf u\).</li>
+<li>Appending a 1 to \(\mathbf x\) absorbs the bias into \(\mathbf w\).</li>
+</ul>
+</div>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L01 slide</span><span>What is the angle between the lines with normals \(\mathbf w_1 = [1,1]\T\) and \(\mathbf w_2 = [1,-1]\T\)? (a) 0 (b) 45 (c) 90 (d) 120</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\cos\theta \)<wbr>\({}= \frac{\mathbf a\T\mathbf b}{\|\mathbf a\|\,\|\mathbf b\|}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, length and angle</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The dot product is \(1\cdot1 + 1\cdot(-1) = 0\).</li>
+<li>So \(\cos\theta = 0\) whatever the lengths are.</li>
+<li>\(\cos\theta = 0\) means \(\theta = 90°\). Answer (c).</li>
+<li>Check. \([1,1]\) points up and to the right at 45°, and \([1,-1]\) points down and to the right at \(-45°\). The difference is 90°.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L01 slide</span><span>The rule is "class A if \(\mathbf w\T\mathbf x \ge 0\), else class B", with \(\mathbf w = [1,1,1,1]\T\). Classify (i) \([1,1,1,1]\) (ii) \([0,1,2,3]\) (iii) \([-1,1,-1,1]\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w\T\mathbf x \)<wbr>\({}= \sum_i w_ix_i\), then look at its sign</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, the dot product</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(i) \(1+1+1+1 = 4 \ge 0\), so class A.</li>
+<li>(ii) \(0+1+2+3 = 6 \ge 0\), so class A.</li>
+<li>(iii) \(-1+1-1+1 = 0\). The rule says \(\ge 0\), so a value of exactly 0 goes to class A. This point lies on the boundary.</li>
+<li>Check: with \(\mathbf w\) all ones, the dot product is just the sum of the entries, which matches each line above.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Project \(\mathbf x = [2,5]\T\) onto the direction of \([3,4]\T\). Give the projected vector and the leftover, and check they are orthogonal.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Projection \(= (\mathbf u\T\mathbf x)\,\mathbf u\) with \(\mathbf u\) a unit vector</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, projection onto a direction</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\([3,4]\T\) has length 5, so the unit vector is \(\mathbf u = [0.6, 0.8]\T\).</li>
+<li>\(\mathbf u\T\mathbf x \)<wbr>\({}= 0.6\cdot2 + 0.8\cdot5 \)<wbr>\({}= 1.2 + 4 \)<wbr>\({}= 5.2\).</li>
+<li>Projection: \(5.2\,[0.6,0.8]\T \)<wbr>\({}= [3.12, 4.16]\T\).</li>
+<li>Leftover: \([2,5]\T - [3.12,4.16]\T \)<wbr>\({}= [-1.12, 0.84]\T\).</li>
+<li>Check. \([-1.12, 0.84]\cdot[0.6,0.8] \)<wbr>\({}= -0.672 + 0.672 \)<wbr>\({}= 0\). They are orthogonal.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="norms"><span class="num">B.2</span>Norms</h2>
+<p class="slides">Lecture L04 · Quiz 1 question 1 in all four sets</p>
+<p class="oneline">A norm is a way to measure the size of a vector. Different norms give different sizes, and the course uses four of them.</p>
+<p>The general <em class="t">Lp norm</em> (read "L p norm") of a vector \(\mathbf x \in \R^d\) is</p>
+<div class="eq boxed">\[\|\mathbf x\|_p = \Big(\sum_{i=1}^d |x_i|^p\Big)^{1/p}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(|x_i|\) is the absolute value of the entry (drop its minus sign). Raise each one to the power \(p\), add them up, then take the \(p\)-th root. The \(p\)-th root undoes the power so the answer has the same units as the entries.</p>
+<ul>
+<li>\(p = 2\) gives the <em class="t">L2 norm</em>, the ordinary length, \(\|\mathbf x\|_2 \)<wbr>\({}= \sqrt{x_1^2 + \dots + x_d^2}\).</li>
+<li>\(p = 1\) gives the <em class="t">L1 norm</em>, the sum of absolute values, \(\|\mathbf x\|_1 \)<wbr>\({}= |x_1| + \dots + |x_d|\). It is also called the Manhattan or city-block distance when applied to \(\mathbf x - \mathbf y\), because it is how far you walk along a street grid.</li>
+<li>The <em class="t">L∞ norm</em> (L infinity, the max norm) is the largest absolute entry. As \(p\) grows, the biggest entry dominates the sum, which is why the limit is the maximum.</li>
+<li>The <em class="t">L0 "norm"</em> counts the non-zero entries. It is not a true norm (scaling \(\mathbf x\) by 2 does not double it), but the slides call it a norm.</li>
+</ul>
+<p><strong>Example.</strong> \(\mathbf x = [3, -4, 0, 12]\T\).</p>
+<ul>
+<li>L0: three entries are non-zero, so 3.</li>
+<li>L1: \(3 + 4 + 0 + 12 = 19\).</li>
+<li>L2: \(\sqrt{9 + 16 + 0 + 144} \)<wbr>\({}= \sqrt{169} \)<wbr>\({}= 13\).</li>
+<li>L∞: the largest absolute entry is 12.</li>
+</ul>
+<p>Ridge regression (page 1) adds \(\|\mathbf w\|_2^2\) to the loss, and lasso adds \(\|\mathbf w\|_1\). L04 explains that the L1 penalty pushes some weights to exactly zero, which is what the L0 count really wants but cannot be optimised directly.</p>
+</div>
+<p>A norm of a difference, \(\|\mathbf x - \mathbf y\|\), is a <em class="t">distance</em>. L02 lists the four properties a distance function (a <em class="t">metric</em>) must have. The distance from a point to itself is 0 (identity), distances are never negative, the distance from \(\mathbf x\) to \(\mathbf y\) equals that from \(\mathbf y\) to \(\mathbf x\) (symmetry), and going via a third point is never shorter (the triangle inequality).</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>L0 counts non-zeros, L1 adds absolute values, L2 is the usual length, L∞ is the largest absolute entry.</li>
+<li>For any vector, \(\|\mathbf x\|_\infty \le \|\mathbf x\|_2 \le \|\mathbf x\|_1\). Use this to check your answers.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Find the L0, L1, L2 and L∞ norms of \([-6, 3, 2, 0]\T\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\|\mathbf x\|_p \)<wbr>\({}= (\sum_i |x_i|^p)^{1/p}\), L0 counts non-zeros, L∞ is the largest \(|x_i|\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.2</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>L0: \(-6, 3, 2\) are non-zero, so 3.</li>
+<li>L1: \(6 + 3 + 2 + 0 = 11\).</li>
+<li>L2: \(\sqrt{36 + 9 + 4 + 0} \)<wbr>\({}= \sqrt{49} \)<wbr>\({}= 7\).</li>
+<li>L∞: \(\max(6, 3, 2, 0) = 6\).</li>
+<li>Check. \(6 \le 7 \le 11\), as the ordering in the Remember box requires. (This is set 2 of the 2026 Quiz 1, question 1. Page 1 has the full paper.)</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Points \(\mathbf a = [1,2]\T\) and \(\mathbf b = [4,-2]\T\). Find their L1 (Manhattan) and L2 (Euclidean) distances.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">distance \(= \|\mathbf a - \mathbf b\|_p\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.2, the paragraph on distances</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\mathbf a - \mathbf b \)<wbr>\({}= [1-4, 2-(-2)]\T \)<wbr>\({}= [-3, 4]\T\).</li>
+<li>L1: \(3 + 4 = 7\).</li>
+<li>L2: \(\sqrt{9 + 16} = 5\).</li>
+<li>Check: L2 is never larger than L1, and \(5 \le 7\).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="matrices"><span class="num">B.3</span>Matrices</h2>
+<p class="slides">Lectures L03 to L05 · <a href="https://www.youtube.com/watch?v=VBfo4L-Y_ug">Short video: Data as matrix</a> · Reference: <a href="https://tminka.github.io/papers/matrix/minka-matrix.pdf">Minka, Old and new matrix algebra useful for statistics</a></p>
+<p class="oneline">A matrix is a table of numbers. In SMAI the most important one is the data matrix, with one data point per row.</p>
+<p>An \(m \times n\) matrix has \(m\) rows and \(n\) columns. The entry in row \(i\) and column \(j\) is written \(A_{ij}\). If you have \(N\) data points, each a vector in \(\R^d\), stacking them as rows gives the \(N \times d\) <em class="t">data matrix</em> \(X\). Some slides stack them as columns instead (a \(d\times N\) matrix), so always check which convention a question uses.</p>
+
+<h3>Multiplying matrices</h3>
+<p>The product \(AB\) exists when the number of columns of \(A\) equals the number of rows of \(B\). If \(A\) is \(m\times n\) and \(B\) is \(n\times p\), then \(AB\) is \(m\times p\), and</p>
+<div class="eq">\[(AB)_{ij} = \sum_{k=1}^n A_{ik}B_{kj}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Entry \((i,j)\) of the product is the dot product of row \(i\) of \(A\) with column \(j\) of \(B\). The index \(k\) walks along that row and down that column at the same time.</p>
+<p><strong>Example.</strong></p>
+<div class="eq">\[\begin{bmatrix}1&2\\3&4\end{bmatrix}\begin{bmatrix}5\\6\end{bmatrix} = \begin{bmatrix}1\cdot5+2\cdot6\\3\cdot5+4\cdot6\end{bmatrix} = \begin{bmatrix}17\\39\end{bmatrix}.\]</div>
+<p>A \(2\times2\) matrix times a \(2\times1\) vector gives a \(2\times1\) vector. Order matters, because \(AB\) is usually not equal to \(BA\).</p>
+</div>
+<p>A matrix times a vector, \(\mathbf x' = W\mathbf x\), is the <em class="t">linear feature transformation</em> of L02. If \(W\) is \(k\times d\) with \(k \lt d\), the new vector is shorter, which is dimensionality reduction.</p>
+
+<h3>Special matrices</h3>
+<ul>
+<li>The <em class="t">transpose</em> \(A\T\) swaps rows and columns, so \((A\T)_{ij} = A_{ji}\). A useful rule is \((AB)\T = B\T A\T\) (the order reverses).</li>
+<li>The <em class="t">identity matrix</em> \(I\) has 1 on the diagonal and 0 elsewhere. \(I\mathbf x = \mathbf x\) for every \(\mathbf x\), so it is the matrix version of the number 1.</li>
+<li>A <em class="t">diagonal</em> matrix has non-zero entries only on the diagonal. The slides write \(\operatorname{Diag}(\alpha_i)\) for the diagonal matrix with \(\alpha_1, \alpha_2, \dots\) on the diagonal.</li>
+<li>A <em class="t">symmetric</em> matrix equals its transpose, \(A = A\T\). Covariance matrices are symmetric.</li>
+<li>An <em class="t">upper triangular</em> matrix has only zeros below the diagonal.</li>
+<li>The <em class="t">inverse</em> \(A^{-1}\) of a square matrix satisfies \(AA^{-1} = A^{-1}A = I\). It exists only when the determinant (below) is not zero. Such a matrix is called invertible or non-singular. One without an inverse is <em class="t">singular</em>.</li>
+<li>An <em class="t">orthogonal</em> matrix \(Q\) has orthonormal columns (unit length, pairwise orthogonal), so \(Q\T Q = I\) and \(Q^{-1} = Q\T\).</li>
+</ul>
+
+<h3>Determinant and trace of a 2×2 matrix</h3>
+<div class="eq">\[A = \begin{bmatrix}a&b\\c&d\end{bmatrix}\]</div>
+<div class="eq">\[\det A = ad - bc,\qquad \operatorname{tr}A = a + d\]</div>
+<div class="eq">\[A^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The <em class="t">determinant</em> \(\det A\) is one number that says how much the matrix stretches areas. If it is 0, the matrix squashes the plane onto a line, information is lost, and no inverse can undo it. That is why \(\det A\) sits in the bottom of the inverse formula.</p>
+<p>The <em class="t">trace</em> \(\operatorname{tr}A\) is the sum of the diagonal entries.</p>
+<p><strong>Example.</strong> \(A \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\). \(\det A = 4 - 1 = 3\), \(\operatorname{tr} A = 4\), and \(A^{-1} \)<wbr>\({}= \frac13\begin{bmatrix}2&-1\\-1&2\end{bmatrix}\). To check one entry of \(AA^{-1}\), note that row 1 times column 1 is \(\frac13(2\cdot2 + 1\cdot(-1)) \)<wbr>\({}= \frac33 \)<wbr>\({}= 1\). Good.</p>
+<p>The closed-form regression of page 1 needs \((X\T X)^{-1}\), and for two parameters that is exactly this \(2\times2\) inverse.</p>
+</div>
+
+<h3>Positive semi-definite matrices</h3>
+<p>A symmetric matrix \(A\) is <em class="t">positive semi-definite</em> (PSD) if \(\mathbf z\T A\mathbf z \ge 0\) for every vector \(\mathbf z\). The expression \(\mathbf z\T A\mathbf z\) is a single number (a row times a matrix times a column), called a <em class="t">quadratic form</em>. Covariance matrices and every matrix of the form \(X\T X\) are PSD. The derivation below is a question the slides asked twice (L05 and L06).</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that \(A = X\T X\) is symmetric and positive semi-definite.</h4>
+<ol class="steps lines">
+<li>\(A\T \)<wbr>\({}= (X\T X)\T \)<wbr>\({}= X\T (X\T)\T \)<wbr>\({}= X\T X \)<wbr>\({}= A\), so \(A\) is symmetric.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Use the rule \((PQ)\T = Q\T P\T\) with \(P = X\T\) and \(Q = X\). This gives \((X\T X)\T = X\T (X\T)\T\).</li>
+<li>Transposing twice gives back the original matrix, so \((X\T)\T = X\).</li>
+<li>So \(A\T = X\T X = A\). A matrix equal to its transpose is symmetric by definition.</li>
+</ol>
+</details></li>
+<li>For any \(\mathbf z\), \(\mathbf z\T A\mathbf z \)<wbr>\({}= \mathbf z\T X\T X\mathbf z \)<wbr>\({}= (X\mathbf z)\T(X\mathbf z) \)<wbr>\({}= \|X\mathbf z\|^2 \ge 0\), so \(A\) is PSD.
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Substitute \(A = X\T X\). This gives \(\mathbf z\T X\T X\mathbf z\).</li>
+<li>By the same transpose rule, \(\mathbf z\T X\T \)<wbr>\({}= (X\mathbf z)\T\). So the expression is \((X\mathbf z)\T(X\mathbf z)\).</li>
+<li>\(X\mathbf z\) is a vector, and a vector dotted with itself is its squared length (B.1). So the expression equals \(\|X\mathbf z\|^2\).</li>
+<li>A squared length is never negative. This holds for every \(\mathbf z\), which is the definition of PSD.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\((AB)_{ij}\) = row \(i\) of \(A\) dotted with column \(j\) of \(B\). The sizes follow \((m\times n)(n\times p) \)<wbr>\({}= m\times p\).</li>
+<li>\((AB)\T = B\T A\T\) and \((AB)^{-1} = B^{-1}A^{-1}\).</li>
+<li>\(2\times2\): \(\det = ad - bc\), inverse swaps \(a,d\), negates \(b,c\), divides by \(\det\).</li>
+<li>\(X\T X\) is always symmetric and PSD.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L04 slide</span><span>The inverse of an upper triangular matrix is (a) upper triangular (b) lower triangular (c) need not be triangular (d) will not exist (e) none of the above.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>Check each option.</p>
+<ol class="steps">
+<li>Try a small case. \(U \)<wbr>\({}= \begin{bmatrix}2&1\\0&4\end{bmatrix}\), with \(\det U = 8\). By the \(2\times2\) formula, \(U^{-1} \)<wbr>\({}= \frac18\begin{bmatrix}4&-1\\0&2\end{bmatrix}\). The bottom-left entry is still 0, so it is upper triangular.</li>
+<li>This holds in general. The inverse of an invertible upper triangular matrix is upper triangular. (Solving \(U\mathbf x = \mathbf b\) by back substitution never needs entries below the diagonal.) So (a) is true.</li>
+<li>(b) and (c) are false, since the inverse is always upper triangular.</li>
+<li>(d) is false in general. The inverse fails to exist only when a diagonal entry is 0, because the determinant of a triangular matrix is the product of its diagonal entries.</li>
+<li>Answer (a), with the condition that the diagonal has no zeros.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>\(X\) is a data matrix with \(N = 200\) rows and \(d = 5\) columns. What are the sizes of \(X\T X\) and \(XX\T\)? Which one is a scaled covariance matrix if the columns have mean zero?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(X\T\) is \(5\times200\) and \(X\) is \(200\times5\), so \(X\T X\) is \(5\times5\).</li>
+<li>\(X\) is \(200\times5\) and \(X\T\) is \(5\times200\), so \(XX\T\) is \(200\times200\).</li>
+<li>Entry \((j,k)\) of \(X\T X\) is \(\sum_i x_{ij}x_{ik}\), the sum over data points of feature \(j\) times feature \(k\). With mean-zero columns, dividing by \(N\) gives the covariance of features \(j\) and \(k\) (see B.7). So \(X\T X\) is the scaled covariance matrix (\(d\times d\)).</li>
+<li>\(XX\T\) instead compares data points with each other. Its entry \((i,i')\) is the dot product of point \(i\) with point \(i'\).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Invert \(A \)<wbr>\({}= \begin{bmatrix}3&1\\4&2\end{bmatrix}\) and check your answer.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(A^{-1} \)<wbr>\({}= \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.3, determinant and trace</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\det A = 3\cdot2 - 1\cdot4 = 2\).</li>
+<li>Swap the diagonal entries and negate the others. \(\begin{bmatrix}2&-1\\-4&3\end{bmatrix}\).</li>
+<li>Divide by 2. \(A^{-1} \)<wbr>\({}= \begin{bmatrix}1&-0.5\\-2&1.5\end{bmatrix}\).</li>
+<li>Check. \(AA^{-1}\) row 1 is \([3\cdot1 + 1\cdot(-2),\ 3\cdot(-0.5) + 1\cdot1.5] \)<wbr>\({}= [1, 0]\). Row 2 is \([4 - 4,\ -2 + 3] = [0, 1]\). That is \(I\).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="rank"><span class="num">B.4</span>Rank</h2>
+<p class="slides">Lecture L05 (the whole lecture is about the rank of the data matrix)</p>
+<p class="oneline">The rank of a matrix is the number of genuinely different directions among its rows. Real data matrices usually have far lower rank than their size suggests, and the course builds on that fact.</p>
+<p>A set of vectors is <em class="t">linearly dependent</em> if one of them can be written as a combination of the others (numbers times vectors, added). Otherwise they are <em class="t">linearly independent</em>. The <em class="t">rank</em> of a matrix is the largest number of linearly independent rows. It always equals the largest number of linearly independent columns too, so an \(N\times d\) matrix has rank at most \(\min(N, d)\). A square matrix with rank equal to its size is <em class="t">full rank</em>, and that is the same as having a non-zero determinant.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p11.webp" alt="Slide: the 3 by 3 matrix of 1 to 9, with the hint that rows 2 and 3 are row 1 plus 3 and plus 6" loading="lazy">
+<figcaption>L05, slide 11. The hint writes every row as row 1 plus a constant, which shows the rank without any calculation.</figcaption></figure>
+<div class="card ex"><span class="tag">Example</span>
+<p>Why is the rank of \(\begin{bmatrix}1&2&3\\4&5&6\\7&8&9\end{bmatrix}\) equal to 2?</p>
+<ol class="steps">
+<li>Write \(\mathbf r = [1,2,3]\) and \(\mathbf 1 = [1,1,1]\).</li>
+<li>Row 1 is \(\mathbf r\). Row 2 is \(\mathbf r + 3\cdot\mathbf 1\). Row 3 is \(\mathbf r + 6\cdot\mathbf 1\).</li>
+<li>So every row is a combination of the two vectors \(\mathbf r\) and \(\mathbf 1\). The rank is at most 2.</li>
+<li>Rows 1 and 2 are not multiples of each other (\(4/1 \ne 5/2\)), so the rank is at least 2.</li>
+<li>So the rank is 2. Its determinant is 0, and one of its eigenvalues is 0 (B.5).</li>
+</ol>
+</div>
+<p>L05 uses this idea on data. Suppose 300 documents are each turned into a 300-word histogram. The data matrix is \(300\times300\), but if the documents really come from only 3 topics, the rows are close to combinations of 3 "topic" rows, and the matrix behaves as if it had rank close to 3. That is the <em class="t">low-rank</em> idea behind PCA, eigenfaces, LSI and recommendation systems.</p>
+<p>With measured data, noise makes almost every matrix full rank in the strict sense. What matters is the <em class="t">effective rank</em>, the number of eigenvalues (or singular values) that are large. The rest are tiny and come from noise.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Rank = number of independent rows = number of independent columns \(\le \min(N,d)\).</li>
+<li>For a square matrix, three statements go together. It is full rank, its determinant is non-zero, and it is invertible. If one holds, all three hold.</li>
+<li>Duplicate or near-duplicate data points do not raise the rank.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L05 slide</span><span>The \(5\times5\) matrix formed by writing 1 to 25 row by row. What is its rank?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Row 1 is \(\mathbf r = [1,2,3,4,5]\). Row \(i\) starts at \(5(i-1)+1\), so row \(i\) is \(\mathbf r + 5(i-1)\cdot\mathbf 1\), where \(\mathbf 1 = [1,1,1,1,1]\).</li>
+<li>So all five rows are combinations of \(\mathbf r\) and \(\mathbf 1\). The rank is at most 2.</li>
+<li>\(\mathbf r\) and \(\mathbf 1\) are not multiples of each other, so the rank is at least 2.</li>
+<li>Rank 2. The same argument shows that any \(n\times n\) matrix of consecutive numbers (with \(n \ge 2\)) has rank 2.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>100 documents each from sports, politics and finance are turned into 300-word bag-of-words histograms, one per row. (a) What is the size of the matrix? (b) A bug copied one sports article 100 times, and the same for the other two topics. What is the rank? (c) Instead, 100 journalists each rewrote the same sports article slightly. What happens to the rank?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>(a) 300 documents and 300 words, so \(300\times300\).</li>
+<li>(b) There are only 3 different rows, each repeated 100 times. Repeated rows add nothing new, so the rank is 3 (assuming the three articles have different histograms).</li>
+<li>(c) Slight rewrites change the word counts a little, so the rows are no longer exact copies. The rank in the strict sense goes up, possibly to 300. But the rows are all close to 3 directions, so there will be 3 large eigenvalues and many small ones. The effective rank stays close to 3.</li>
+<li>Reordering words (the first kind of plagiarism on the slide) does not change a bag-of-words histogram at all, so rows built that way are exact copies and do not raise the rank.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>A TA creates two classes by taking two very different vectors in \(\R^d\) and adding small noise to make \(N\) samples. What is the rank of the data matrix, and what does the eigenvalue spectrum look like?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Without noise, every row is one of two vectors, so the rank would be 2.</li>
+<li>Noise in every dimension makes the rows slightly different, so the strict rank becomes \(\min(N, d)\).</li>
+<li>The spectrum has 2 large eigenvalues (the two base vectors) and the rest small, roughly equal, from the noise. The effective rank is 2.</li>
+<li>In general, \(N\) samples built from \(p\) "concepts" have effective rank about \(p\), whatever \(N\) and \(d\) are.</li>
+</ol>
+</div></details>
+</section>
+
+<section>
+<h2 id="eigen"><span class="num">B.5</span>Eigenvalues and eigenvectors</h2>
+<p class="slides">Lectures L04 to L06 · <a href="https://youtu.be/__EBdS7pvo0">Short video: Eigen decomposition</a> · <a href="https://youtu.be/GvvRuEypvfw">Short video: Optimization and eigen vectors</a></p>
+<p class="oneline">An eigenvector of a matrix is a direction that the matrix only stretches, without turning. The stretch factor is the eigenvalue. PCA, LDA and eigenfaces are all "find the eigenvectors" problems.</p>
+<div class="eq boxed">\[A\mathbf v = \lambda\mathbf v,\qquad \mathbf v \ne \mathbf 0.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(A\) is a square \(n\times n\) matrix. \(\mathbf v\) is a non-zero vector, and \(\lambda\) (lambda) is a number. The equation says that multiplying \(\mathbf v\) by \(A\) gives back \(\mathbf v\) scaled by \(\lambda\). The direction does not change.</p>
+<p>The name comes from the German "eigen", meaning "own". These are the matrix's own special directions.</p>
+<p><strong>Example.</strong> \(A \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\) and \(\mathbf v = [1,1]\T\). Then \(A\mathbf v \)<wbr>\({}= [2+1, 1+2]\T \)<wbr>\({}= [3,3]\T \)<wbr>\({}= 3\mathbf v\). So \(\mathbf v\) is an eigenvector with eigenvalue 3. Try \([1,-1]\T\) instead. \(A[1,-1]\T = [1,-1]\T\), so that is an eigenvector with eigenvalue 1. Most vectors, such as \([1,0]\T \mapsto [2,1]\T\), change direction and are not eigenvectors.</p>
+<p>Any multiple of an eigenvector is also an eigenvector, so we usually scale it to length 1. The slides also sort the eigenvalues from largest to smallest.</p>
+</div>
+
+<h3>Finding them by hand for a 2×2 matrix</h3>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Find the eigenvalues and unit eigenvectors of \(A \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\).</h4>
+<ol class="steps lines">
+<li>Eigenvalues solve \(\det(A - \lambda I) = 0\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Start from \(A\mathbf v = \lambda\mathbf v\). Write \(\lambda\mathbf v\) as \(\lambda I\mathbf v\), which is allowed because \(I\mathbf v = \mathbf v\).</li>
+<li>Move everything to one side. \((A - \lambda I)\mathbf v \)<wbr>\({}= \mathbf 0\).</li>
+<li>If \(A - \lambda I\) had an inverse, multiplying both sides by it would give \(\mathbf v = \mathbf 0\). But an eigenvector must be non-zero.</li>
+<li>So \(A - \lambda I\) has no inverse, which means its determinant is 0 (B.3).</li>
+</ol>
+</details></li>
+<li>\(\det\begin{bmatrix}2-\lambda&1\\1&2-\lambda\end{bmatrix} \)<wbr>\({}= (2-\lambda)^2 - 1 \)<wbr>\({}= 0\), so \(\lambda^2 - 4\lambda + 3 = 0\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Subtracting \(\lambda I\) takes \(\lambda\) off each diagonal entry.</li>
+<li>Apply \(\det = ad - bc\). \((2-\lambda)(2-\lambda) - 1\cdot1\).</li>
+<li>Expand. \(4 - 4\lambda + \lambda^2 - 1 \)<wbr>\({}= \lambda^2 - 4\lambda + 3\).</li>
+</ol>
+</details></li>
+<li>\((\lambda - 3)(\lambda - 1) = 0\), so \(\lambda_1 = 3\) and \(\lambda_2 = 1\).</li>
+<li>For \(\lambda_1 = 3\), the equation \((A - 3I)\mathbf v = \mathbf 0\) gives \(-v_1 + v_2 = 0\), so \(\mathbf v_1 \)<wbr>\({}= \frac1{\sqrt2}[1,1]\T\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>\(A - 3I \)<wbr>\({}= \begin{bmatrix}-1&1\\1&-1\end{bmatrix}\).</li>
+<li>Its first row gives the equation \(-v_1 + v_2 = 0\), so \(v_2 = v_1\). The second row gives the same equation, as it must, since the determinant is 0.</li>
+<li>So any vector \([t, t]\T\) works. Take \(t = 1\), which gives \([1,1]\T\).</li>
+<li>Divide by its length \(\sqrt2\) to make it a unit vector.</li>
+</ol>
+</details></li>
+<li>For \(\lambda_2 = 1\), the equation \((A - I)\mathbf v = \mathbf 0\) gives \(v_1 + v_2 = 0\), so \(\mathbf v_2 \)<wbr>\({}= \frac1{\sqrt2}[1,-1]\T\).</li>
+<li>Check. \(\lambda_1 + \lambda_2 \)<wbr>\({}= 4 \)<wbr>\({}= \operatorname{tr}A\) and \(\lambda_1\lambda_2 \)<wbr>\({}= 3 \)<wbr>\({}= \det A\).</li>
+</ol>
+</div>
+<p>The check in the last line is a general fact, and it gives a shortcut. For any \(2\times2\) matrix, line 2 always comes out as \(\lambda^2 - (\operatorname{tr}A)\lambda + \det A \)<wbr>\({}= 0\). (Expand \((a-\lambda)(d-\lambda) - bc\) to see it.) A quadratic \(\lambda^2 - S\lambda + P\) has roots that add to \(S\) and multiply to \(P\).</p>
+
+<h3>Properties the course uses</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p14.webp" alt="Slide: Av = lambda v, eigenvectors orthogonal, product of eigenvalues is the determinant, number of non-zero eigenvalues is the rank, PSD definition" loading="lazy">
+<figcaption>L05, slide 14. The slide's list of properties. The first two bullets after the definition need the matrix to be symmetric, as explained below.</figcaption></figure>
+<ul>
+<li>The sum of the eigenvalues is the trace. The product of the eigenvalues is the determinant. So a matrix with a zero eigenvalue has determinant 0 and is singular.</li>
+<li>If \(A\) is <strong>symmetric</strong>, all its eigenvalues are real and eigenvectors for different eigenvalues are orthogonal. The slide states orthogonality without this condition, but it needs symmetry. Covariance matrices are symmetric, so it always holds where the course uses it.</li>
+<li>For a symmetric matrix, the number of non-zero eigenvalues equals the rank. (This can fail for non-symmetric matrices, such as \(\begin{bmatrix}0&1\\0&0\end{bmatrix}\), which has rank 1 but both eigenvalues 0.)</li>
+<li>A symmetric matrix is PSD if and only if all its eigenvalues are \(\ge 0\). So covariance matrices have non-negative eigenvalues.</li>
+<li>\(A\T\) has the same eigenvalues as \(A\), because \(\det(A\T - \lambda I) \)<wbr>\({}= \det(A - \lambda I)\). Its eigenvectors are generally different unless \(A\) is symmetric.</li>
+<li>\(cA\) (every entry times the number \(c\)) has eigenvalues \(c\lambda_i\) and the same eigenvectors, because \(cA\mathbf v \)<wbr>\({}= c\lambda\mathbf v\).</li>
+<li>\(A^{-1}\) has eigenvalues \(1/\lambda_i\) and the same eigenvectors.</li>
+</ul>
+
+<h3>Eigen decomposition</h3>
+<p>A symmetric matrix can be rebuilt from its eigenvalues and unit eigenvectors:</p>
+<div class="eq">\[A = Q\Lambda Q\T = \sum_{i=1}^n \lambda_i\,\mathbf v_i\mathbf v_i\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(Q\) has the unit eigenvectors as its columns, so it is orthogonal. \(\Lambda\) (capital lambda) is the diagonal matrix of eigenvalues. The second form writes \(A\) as a sum of simple pieces. Each \(\mathbf v_i\mathbf v_i\T\) is an \(n\times n\) matrix of rank 1 (a column times a row), weighted by \(\lambda_i\).</p>
+<p><strong>Example.</strong> With the matrix above, \(\mathbf v_1\mathbf v_1\T \)<wbr>\({}= \frac12\begin{bmatrix}1&1\\1&1\end{bmatrix}\) and \(\mathbf v_2\mathbf v_2\T \)<wbr>\({}= \frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix}\). Then \(3\cdot\frac12\begin{bmatrix}1&1\\1&1\end{bmatrix} + 1\cdot\frac12\begin{bmatrix}1&-1\\-1&1\end{bmatrix} \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\). That is \(A\).</p>
+<p>If some \(\lambda_i\) are tiny, dropping their terms changes \(A\) very little. That is the whole idea of PCA, on page 1.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Solve \(\det(A - \lambda I) = 0\), then \((A - \lambda I)\mathbf v \)<wbr>\({}= \mathbf 0\).</li>
+<li>Sum of eigenvalues = trace, product = determinant.</li>
+<li>Symmetric: real eigenvalues, orthogonal eigenvectors, \(A \)<wbr>\({}= \sum_i\lambda_i\mathbf v_i\mathbf v_i\T\), non-zero eigenvalue count = rank.</li>
+<li>\(cA \to c\lambda\), \(A\T \to\) same \(\lambda\), \(A^{-1} \to 1/\lambda\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L04 slide</span><span>A square matrix \(A\) has eigenvalues \(\lambda_i\) and eigenvectors \(\mathbf v_i\). Which is true of \(A\T\)? (a) eigenvalues and eigenvectors are the same (b) eigenvalues are the same, eigenvectors are \(\mathbf v_i\T\) (c) eigenvalues are \(1/\lambda_i\) (d) we can comment for symmetric \(A\) but not for other square matrices (e) none of the above. One, none or more correct.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>Check each option. Use the non-symmetric example \(A \)<wbr>\({}= \begin{bmatrix}2&1\\0&3\end{bmatrix}\).</p>
+<ol class="steps">
+<li>\(A\) is triangular, so its eigenvalues are the diagonal entries 2 and 3. The eigenvectors are \([1,0]\T\) (for 2) and \([1,1]\T\) (for 3).</li>
+<li>\(A\T \)<wbr>\({}= \begin{bmatrix}2&0\\1&3\end{bmatrix}\) also has eigenvalues 2 and 3. Its eigenvectors are \([1,-1]\T\) (for 2) and \([0,1]\T\) (for 3).</li>
+<li>(a) False. The eigenvectors differ in the example.</li>
+<li>(b) False. \(\mathbf v_i\T\) is just the same vector written as a row, and the example shows the eigenvectors really change.</li>
+<li>(c) False. The eigenvalues stay 2 and 3, not \(\frac12\) and \(\frac13\).</li>
+<li>(d) False as stated. We can always say the eigenvalues are the same, for any square matrix.</li>
+<li>So (e) is the answer if (a) to (d) are all judged false. The correct statement is "same eigenvalues, and the same eigenvectors only when \(A\) is symmetric".</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L04 slide</span><span>The eigenvalues of \(A\) are \(\lambda_i\). What are the eigenvalues of \(\alpha A\), where \(\alpha\) is a number?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Start from \(A\mathbf v = \lambda\mathbf v\).</li>
+<li>Multiply both sides by \(\alpha\). \((\alpha A)\mathbf v \)<wbr>\({}= (\alpha\lambda)\mathbf v\).</li>
+<li>So \(\mathbf v\) is still an eigenvector, and the eigenvalue is \(\alpha\lambda_i\).</li>
+<li>Check with \(A \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\) and \(\alpha = 2\). \(2A\) has trace 8 and determinant \(16 - 4 = 12\). The roots of \(\lambda^2 - 8\lambda + 12\) are 6 and 2, which are \(2\times3\) and \(2\times1\).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Find the eigenvalues and unit eigenvectors of \(\Sigma \)<wbr>\({}= \begin{bmatrix}5&2\\2&2\end{bmatrix}\). Check them with the trace and determinant.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda^2 - (\operatorname{tr})\lambda + \det \)<wbr>\({}= 0\), then \((\Sigma - \lambda I)\mathbf v \)<wbr>\({}= \mathbf 0\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.5, lines 1 to 5 of the exam box and the shortcut under it</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\operatorname{tr} = 7\), \(\det = 10 - 4 = 6\). So \(\lambda^2 - 7\lambda + 6 = 0\).</li>
+<li>Factor. \((\lambda - 6)(\lambda - 1) = 0\), so \(\lambda_1 = 6\), \(\lambda_2 = 1\).</li>
+<li>\(\lambda = 6\): \(\Sigma - 6I \)<wbr>\({}= \begin{bmatrix}-1&2\\2&-4\end{bmatrix}\). Row 1 gives \(-v_1 + 2v_2 = 0\), so \(v_1 = 2v_2\). Take \([2,1]\T\), length \(\sqrt5\), unit \(\frac1{\sqrt5}[2,1]\T\).</li>
+<li>\(\lambda = 1\): \(\Sigma - I \)<wbr>\({}= \begin{bmatrix}4&2\\2&1\end{bmatrix}\). Row 1 gives \(4v_1 + 2v_2 = 0\), so \(v_2 = -2v_1\). Take \([1,-2]\T\), unit \(\frac1{\sqrt5}[1,-2]\T\).</li>
+<li>Check. \(6 + 1 = 7\) (trace), \(6\times1 = 6\) (determinant), and \([2,1]\cdot[1,-2] = 0\) (orthogonal, as a symmetric matrix requires).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>Let \(M\) be the \(3\times3\) matrix of 1 to 9 and \(A = M + \epsilon B\) with \(B\) full rank (say \(B = I\)). What is the rank of \(A\) when \(\epsilon = 1\) and when \(\epsilon = 10^{-100}\)? What happens to the eigenvalues?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(M\) has rank 2, so one eigenvalue is 0. Its eigenvalues are about 16.12, \(-1.12\) and 0. (They add up to the trace \(1+5+9 = 15\).)</li>
+<li>Adding \(\epsilon I\) adds \(\epsilon\) to every eigenvalue, because \((M + \epsilon I)\mathbf v \)<wbr>\({}= (\lambda + \epsilon)\mathbf v\) for each eigenvector \(\mathbf v\) of \(M\).</li>
+<li>\(\epsilon = 1\): the eigenvalues become about 17.12, \(-0.12\) and 1. None is 0, so the rank is 3.</li>
+<li>\(\epsilon = 10^{-100}\): the eigenvalues are 16.12, \(-1.12\) and \(10^{-100}\). In exact arithmetic the rank is 3, but one eigenvalue is so small that a computer cannot tell it from 0. The effective rank is 2.</li>
+<li>Lesson: a tiny perturbation makes a matrix technically full rank but adds only a tiny eigenvalue. Count the large eigenvalues, not the non-zero ones.</li>
+</ol>
+</div></details>
+</section>
+
+<section>
+<h2 id="svd-basics"><span class="num">B.6</span>A first look at the SVD</h2>
+<p class="slides">Lectures L05, L07, L08 · <a href="https://youtu.be/oN7ddIkzcic">Short video: SVD</a> · Full treatment on page 1, <a href="../foundations/#svd">SVD and low-rank approximation</a></p>
+<p class="oneline">Eigenvectors only work for square matrices. The singular value decomposition (SVD) does the same job for any matrix, including a rectangular data matrix.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p16.webp" alt="Slide: definition of the SVD, M = U D V transpose, with the sizes of U, D and V" loading="lazy">
+<figcaption>L05, slide 16. The definition used in the course, with \(U\) of size \(m\times n\) (the "thin" SVD).</figcaption></figure>
+<div class="eq boxed">\[M = UDV\T = \sum_i d_i\,\mathbf u_i\mathbf v_i\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(M\) is any \(m\times n\) matrix (take \(m \ge n\)).</p>
+<ul>
+<li>\(V\) is \(n\times n\) and orthogonal. Its columns \(\mathbf v_i\) are the <em class="t">right singular vectors</em>.</li>
+<li>\(D\) is \(n\times n\) and diagonal, with entries \(d_1 \ge d_2 \ge \dots \ge 0\), the <em class="t">singular values</em>.</li>
+<li>\(U\) is \(m\times n\) with orthonormal columns \(\mathbf u_i\), the <em class="t">left singular vectors</em>, so \(U\T U = I_n\).</li>
+</ul>
+<p>They come from two facts, \(M\T M = VD^2V\T\) and \(MM\T = UD^2U\T\). So the \(\mathbf v_i\) are eigenvectors of \(M\T M\), the \(\mathbf u_i\) are eigenvectors of \(MM\T\), and each \(d_i\) is the square root of an eigenvalue of \(M\T M\). The number of non-zero singular values is the rank of \(M\).</p>
+<p><strong>Example.</strong> \(M \)<wbr>\({}= \begin{bmatrix}3&0\\4&5\end{bmatrix}\). \(M\T M \)<wbr>\({}= \begin{bmatrix}25&20\\20&25\end{bmatrix}\), with trace 50 and determinant \(625 - 400 = 225\). The eigenvalues solve \(\lambda^2 - 50\lambda + 225 \)<wbr>\({}= 0\), giving 45 and 5. So \(d_1 \)<wbr>\({}= \sqrt{45} \)<wbr>\({}= 3\sqrt5 \approx 6.71\) and \(d_2 = \sqrt5 \approx 2.24\). The eigenvectors of \(M\T M\) are \(\mathbf v_1 \)<wbr>\({}= \frac1{\sqrt2}[1,1]\T\) and \(\mathbf v_2 \)<wbr>\({}= \frac1{\sqrt2}[1,-1]\T\). Each \(\mathbf u_i = M\mathbf v_i/d_i\), which gives \(\mathbf u_1 \)<wbr>\({}= \frac1{\sqrt{10}}[1,3]\T\) and \(\mathbf u_2 \)<wbr>\({}= \frac1{\sqrt{10}}[3,-1]\T\).</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(M = UDV\T\): \(V\) from eigenvectors of \(M\T M\), \(U\) from eigenvectors of \(MM\T\), \(d_i = \sqrt{\lambda_i(M\T M)}\).</li>
+<li>Number of non-zero singular values = rank.</li>
+<li>For a symmetric PSD matrix, the SVD and the eigen decomposition are the same thing.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L05 slide</span><span>If \(A = \mathbf p\mathbf q\T\) is a \(3\times3\) matrix (\(\mathbf p, \mathbf q \in \R^3\), both non-zero), what is its SVD?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Every column of \(\mathbf p\mathbf q\T\) is a multiple of \(\mathbf p\) (column \(j\) is \(q_j\mathbf p\)), so the rank is 1. There is exactly one non-zero singular value.</li>
+<li>Write \(\mathbf p \)<wbr>\({}= \|\mathbf p\|\,\hat{\mathbf p}\) and \(\mathbf q \)<wbr>\({}= \|\mathbf q\|\,\hat{\mathbf q}\), where the hat means the unit vector in that direction.</li>
+<li>Then \(A \)<wbr>\({}= (\|\mathbf p\|\|\mathbf q\|)\,\hat{\mathbf p}\hat{\mathbf q}\T\). This is the form \(d_1\mathbf u_1\mathbf v_1\T\).</li>
+<li>So \(d_1 \)<wbr>\({}= \|\mathbf p\|\|\mathbf q\|\), \(\mathbf u_1 = \hat{\mathbf p}\), \(\mathbf v_1 = \hat{\mathbf q}\), and \(d_2 = d_3 = 0\). The other columns of \(U\) and \(V\) can be any unit vectors orthogonal to these.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>An \(m \times n\) matrix \(A\) with \(m > n\) has SVD \(A = UDV\T\). Fill in the blanks. The singular values are the square roots of the eigenvalues of ____, and the number of non-zero singular values is the ____ of \(A\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(A\T A \)<wbr>\({}= VD\T U\T UDV\T \)<wbr>\({}= VD^2V\T\), using \(U\T U = I\). So the eigenvalues of \(A\T A\) are the \(d_i^2\).</li>
+<li>The non-zero eigenvalues of \(AA\T\) are the same \(d_i^2\), so either matrix is accepted. (The 2026 Quiz 1 rubric accepted both.)</li>
+<li>The number of non-zero singular values is the rank.</li>
+</ol>
+</div></details>
+</section>
+
+<div class="part">Probability<span>B.7 to B.9</span></div>
+
+<section>
+<h2 id="probability"><span class="num">B.7</span>Probability, expectation and covariance</h2>
+<p class="slides">Lecture L09 "Probability: Revise" · <a href="https://www.youtube.com/watch?v=AsQORY4_H9Q">Short video: Data from multivariate distribution</a></p>
+<p class="oneline">Probability gives a number between 0 and 1 to how likely something is. The course treats each data point as a random draw from some distribution and reasons about the classes with these rules.</p>
+<h3>Events and random variables</h3>
+<p>An <em class="t">event</em> is something that may or may not happen, like "the email is spam". \(P(A)\) is its probability. A <em class="t">random variable</em> is a quantity whose value is random, like the temperature tomorrow.</p>
+<ul>
+<li>A <em class="t">discrete</em> random variable takes separate values (a coin shows H or T). Its probabilities \(P(X = x)\) add up to 1. For example, a <em class="t">Bernoulli</em> variable is 1 with probability \(p\) and 0 with probability \(1-p\).</li>
+<li>A <em class="t">continuous</em> random variable takes any value in a range. It has a <em class="t">probability density</em> \(p(x)\), whose area under the curve over an interval gives the probability of landing there. The total area is 1. A density can be larger than 1 at a point, because only areas are probabilities.</li>
+</ul>
+<h3>Joint, conditional and the two rules</h3>
+<p>\(P(A, B)\) is the <em class="t">joint probability</em> that both happen. \(P(A \mid B)\) is the <em class="t">conditional probability</em> of \(A\) given that \(B\) happened. The bar \(\mid\) is read "given". (Some slides write it with a slash, \(P(A/B)\). It means the same.)</p>
+<p>The <em class="t">product rule</em> and the <em class="t">sum rule</em> are</p>
+<div class="eq boxed">\[P(A, B) = P(A \mid B)\,P(B),\]</div>
+<div class="eq boxed">\[P(A) = \sum_{B} P(A, B).\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The product rule says that for both to happen, \(B\) must happen (probability \(P(B)\)), and then \(A\) must happen given \(B\). Dividing both sides by \(P(B)\) gives the definition \(P(A\mid B) \)<wbr>\({}= \frac{P(A,B)}{P(B)}\).</p>
+<p>The sum rule says that to get \(P(A)\) on its own, add the joint probability over every possible value of \(B\). Combining the two gives the <em class="t">law of total probability</em>:</p>
+<div class="eq">\[P(A) = \sum_i P(A \mid B_i)\,P(B_i),\]</div>
+<p>where \(B_1, B_2, \dots\) are cases that do not overlap and cover everything.</p>
+<p><strong>Example.</strong> A basket has 90 mangoes and 10 pears (L10). 5 of the mangoes and 8 of the pears are yellow. What is \(P(\text{yellow})\)?</p>
+<ol class="steps">
+<li>The two cases are mango and pear, with \(P(\text{mango}) = 0.9\) and \(P(\text{pear}) = 0.1\).</li>
+<li>\(P(\text{yellow}\mid\text{mango}) = \frac5{90}\) and \(P(\text{yellow}\mid\text{pear}) = \frac8{10}\).</li>
+<li>The mango term is \(\frac5{90}\times0.9 = 0.05\). The pear term is \(\frac8{10}\times0.1 = 0.08\).</li>
+<li>Add them. \(P(\text{yellow}) = 0.05 + 0.08 = 0.13\).</li>
+<li>Check by counting: 13 yellow fruits out of 100.</li>
+</ol>
+</div>
+<p>Two events are <em class="t">independent</em> if \(P(A, B) = P(A)P(B)\), which is the same as \(P(A\mid B) = P(A)\). Knowing \(B\) tells you nothing about \(A\). Naive Bayes (page 2) assumes the features are independent once the class is known.</p>
+
+<h3>Expectation and variance</h3>
+<p>The <em class="t">expectation</em> (mean) \(E[X]\) is the probability-weighted average value, \(E[X] = \sum_x x\,P(X = x)\), or \(\int x\,p(x)\,dx\) for a continuous variable. It is often written \(\mu\) (mu). The <em class="t">variance</em> \(\operatorname{Var}(X) \)<wbr>\({}= E[(X - \mu)^2]\), written \(\sigma^2\) (sigma squared), is the average squared distance from the mean. Its square root \(\sigma\) is the <em class="t">standard deviation</em>.</p>
+<p>From a sample \(x_1, \dots, x_N\), the course estimates these as</p>
+<div class="eq">\[\mu = \frac1N\sum_{i=1}^N x_i,\qquad \sigma^2 = \frac1N\sum_{i=1}^N (x_i - \mu)^2.\]</div>
+<p>(Statistics courses often divide by \(N-1\) for the variance. SMAI uses \(1/N\), which is what maximum likelihood gives on page 2.)</p>
+
+<h3>Covariance and the covariance matrix</h3>
+<p>For two features, the <em class="t">covariance</em> measures whether they move together. It is \(\operatorname{cov}(X, Y) \)<wbr>\({}= E[(X - \mu_X)(Y - \mu_Y)]\). It is positive if they tend to be large together, negative if one is large when the other is small, and 0 if there is no linear relation.</p>
+<p>For data points \(\mathbf x_i \in \R^d\), the <em class="t">covariance matrix</em> collects all the variances and covariances:</p>
+<div class="eq boxed">\[\Sigma = \frac1N\sum_{i=1}^N (\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\boldsymbol\mu\) is the mean vector. Each \((\mathbf x_i - \boldsymbol\mu)\) is a \(d\times1\) column, and a column times a row gives a \(d\times d\) matrix. Averaging these matrices gives \(\Sigma\) (capital sigma, not the summation sign here).</p>
+<p>The diagonal entry \(\Sigma_{jj}\) is the variance of feature \(j\). The off-diagonal \(\Sigma_{jk}\) is the covariance of features \(j\) and \(k\). Since \(\Sigma_{jk} = \Sigma_{kj}\), the matrix is symmetric. It is also PSD, by the same argument as \(X\T X\) in B.3. If \(X\) is the mean-subtracted \(N\times d\) data matrix, \(\Sigma = \frac1N X\T X\).</p>
+<p><strong>Example.</strong> Points \((1,1), (2,3), (3,2)\).</p>
+<ol class="steps">
+<li>Mean: \(\boldsymbol\mu \)<wbr>\({}= [\frac{1+2+3}3, \frac{1+3+2}3]\T \)<wbr>\({}= [2,2]\T\).</li>
+<li>Subtract it. \((-1,-1), (0,1), (1,0)\).</li>
+<li>The variance of \(x\) is \(\frac{1 + 0 + 1}3 = \frac23\). The variance of \(y\) is \(\frac{1 + 1 + 0}3 = \frac23\).</li>
+<li>Covariance: \(\frac{(-1)(-1) + 0\cdot1 + 1\cdot0}3 \)<wbr>\({}= \frac13\).</li>
+<li>So \(\Sigma \)<wbr>\({}= \begin{bmatrix}2/3&1/3\\1/3&2/3\end{bmatrix}\). It is symmetric, and its eigenvalues are 1 and \(\frac13\), both \(\ge 0\).</li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(P(A,B) = P(A\mid B)P(B)\) and \(P(A) \)<wbr>\({}= \sum_i P(A\mid B_i)P(B_i)\).</li>
+<li>\(\mu = \frac1N\sum x_i\), \(\sigma^2 \)<wbr>\({}= \frac1N\sum(x_i - \mu)^2\).</li>
+<li>\(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\) is \(d\times d\), symmetric and PSD. It is diagonal when the features are uncorrelated.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L05 slide</span><span>Which are true of a covariance matrix? It (a) can never be diagonal (b) can be diagonal (c) is always PSD (d) is always full rank (e) is never full rank (f) is always symmetric (g) is not guaranteed to be symmetric. One, none or more correct.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>(a) False and (b) true. If the features are uncorrelated, every covariance is 0 and \(\Sigma\) is diagonal.</li>
+<li>(c) True. \(\mathbf z\T\Sigma\mathbf z \)<wbr>\({}= \frac1N\sum_i ((\mathbf x_i - \boldsymbol\mu)\T\mathbf z)^2 \ge 0\).</li>
+<li>(d) False. Points that all lie on a line in 2-D give a rank-1 covariance. So does having fewer points than dimensions.</li>
+<li>(e) False. Spread-out data in 2-D gives a full-rank \(2\times2\) covariance, like the example above.</li>
+<li>(f) True and (g) false, since \(\Sigma_{jk} = \Sigma_{kj}\).</li>
+<li>Answer: (b), (c) and (f).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>Let \(\boldsymbol\mu \)<wbr>\({}= \frac1N\sum_i\mathbf x_i\) be the mean of \(\mathbf x_1, \dots, \mathbf x_N \in \R^d\). Which are true? (a) \(\boldsymbol\mu \in \R^d\) (b) \(\boldsymbol\mu\) is always one of the samples (c) it can never be one of the samples (d) it can be one of the samples (e) it is equidistant from all samples (f) it minimises \(\sum_i\|\mathbf x_i - \mathbf y\|^2\) over \(\mathbf y\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>(a) True. An average of vectors in \(\R^d\) is in \(\R^d\).</li>
+<li>(b) False. The mean of 0 and 2 is 1, which is not a sample.</li>
+<li>(c) False and (d) true. The mean of 0, 1 and 2 is 1, which is a sample.</li>
+<li>(e) False. For 0, 1 and 5 the mean is 2, which is at distance 2, 1 and 3 from the samples.</li>
+<li>(f) True. L09 derives it. Differentiate \(\sum_i(\mathbf x_i - \mathbf y)\T(\mathbf x_i - \mathbf y)\) with respect to \(\mathbf y\) and set it to zero, giving \(-2\sum_i\mathbf x_i + 2N\mathbf y \)<wbr>\({}= \mathbf 0\), so \(\mathbf y = \boldsymbol\mu\). B.11 explains how to differentiate such expressions.</li>
+<li>Answer: (a), (d) and (f).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>Samples arrive one at a time. You have the mean \(\mu_N\) of the first \(N\). Sample \(x_{N+1}\) arrives. Write the new mean without storing the old samples.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>The sum of the first \(N\) samples is \(N\mu_N\), by the definition of the mean.</li>
+<li>Adding the new sample gives the new sum \(N\mu_N + x_{N+1}\).</li>
+<li>Divide by the new count. \(\mu_{N+1} \)<wbr>\({}= \frac{N\mu_N + x_{N+1}}{N+1}\).</li>
+<li>Check with 2, 4 then 9. \(\mu_2 = 3\), and \(\mu_3 \)<wbr>\({}= \frac{2\cdot3 + 9}{3} \)<wbr>\({}= 5\). Directly, \(\frac{2+4+9}3 = 5\).</li>
+<li>Such "online" updates are needed for streaming data and for batch normalisation in neural networks (page 3).</li>
+</ol>
+</div></details>
+</section>
+
+<section>
+<h2 id="bayes"><span class="num">B.8</span>Bayes' theorem</h2>
+<p class="slides">Lectures L06, L09, L10 · Tutorial 2 (probability and GMMs)</p>
+<p class="oneline">Bayes' theorem turns "how likely is the evidence if the class is true" into "how likely is the class now that I have seen the evidence". Every probabilistic classifier in the course rests on it.</p>
+<div class="eq boxed">\[P(\omega_i \mid \mathbf x) = \frac{p(\mathbf x \mid \omega_i)\,P(\omega_i)}{p(\mathbf x)},\]</div>
+<div class="eq">\[p(\mathbf x) = \sum_j p(\mathbf x\mid\omega_j)\,P(\omega_j).\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\omega_i\) (omega i) is class \(i\), and \(\mathbf x\) is what we observed.</p>
+<ul>
+<li>\(P(\omega_i)\) is the <em class="t">prior</em>, how common the class is before we look at \(\mathbf x\).</li>
+<li>\(p(\mathbf x\mid\omega_i)\) is the <em class="t">likelihood</em>, how probable this observation is if the class is \(\omega_i\).</li>
+<li>\(p(\mathbf x)\) is the <em class="t">evidence</em>, the overall probability of the observation. The second line computes it with the law of total probability.</li>
+<li>\(P(\omega_i\mid\mathbf x)\) is the <em class="t">posterior</em>, the probability of the class after seeing \(\mathbf x\).</li>
+</ul>
+<p>In words, the posterior is the likelihood times the prior, divided by the evidence. The bottom is the same for every class, so it only rescales the posteriors to add up to 1.</p>
+<p>It follows from the product rule, which gives \(P(\omega, \mathbf x) \)<wbr>\({}= P(\omega\mid\mathbf x)p(\mathbf x)\) and also \(P(\omega, \mathbf x) \)<wbr>\({}= p(\mathbf x\mid\omega)P(\omega)\). Set them equal and divide by \(p(\mathbf x)\).</p>
+<p><strong>Example (L10).</strong> Mangoes 90, pears 10. 5 mangoes and 8 pears are yellow. You see a yellow fruit. \(P(\text{mango}\mid\text{yellow}) \)<wbr>\({}= \frac{(5/90)(90/100)}{0.13} \)<wbr>\({}= \frac{0.05}{0.13} \approx 0.385\), and \(P(\text{pear}\mid\text{yellow}) \)<wbr>\({}= \frac{0.08}{0.13} \approx 0.615\). The prior said mango (0.9), but the evidence makes pear the better guess.</p>
+</div>
+<p>When a question gives "true positive rate" and "false positive rate" for a test, translate them first. The <em class="t">true positive rate</em> is \(P(+\mid\text{sick})\). The <em class="t">false positive rate</em> is \(P(+\mid\text{healthy})\).</p>
+<div class="card watch"><span class="tag">Common mistake</span>
+<p>\(P(+\mid\text{sick})\) is not \(P(\text{sick}\mid+)\). A test that catches 90% of sick people can still be wrong most of the time it says "positive" when the disease is rare. Always write down which conditional you are given and which one you want.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Posterior = likelihood × prior ÷ evidence, with evidence \(= \sum_j\) likelihood\(_j\) × prior\(_j\).</li>
+<li>Write the four numbers (two priors, two likelihoods) before computing.</li>
+<li>A rare class needs strong evidence to become the most probable.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L06 slide</span><span>A disease affects 1% of the population. The test is 90% accurate in both directions. A person tests positive. What is the chance they have the disease, to the nearest percent?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid+) \)<wbr>\({}= \frac{P(+\mid S)P(S)}{P(+\mid S)P(S) + P(+\mid \bar S)P(\bar S)}\), where \(\bar S\) means "not sick"</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Prior: \(P(S) = 0.01\), so \(P(\bar S) = 0.99\).</li>
+<li>"90% accurate in both directions" means \(P(+\mid S) = 0.9\) and \(P(-\mid\bar S) = 0.9\), so \(P(+\mid\bar S) = 0.1\).</li>
+<li>Top: \(0.9 \times 0.01 = 0.009\).</li>
+<li>Bottom: \(0.009 + 0.1\times0.99 \)<wbr>\({}= 0.009 + 0.099 \)<wbr>\({}= 0.108\).</li>
+<li>\(P(S\mid+) \)<wbr>\({}= \frac{0.009}{0.108} \approx 0.083\), about 8%.</li>
+<li>Check by counting. In 1000 people, 10 are sick and 9 of them test positive. Of the 990 healthy, 99 test positive. So 9 of the 108 positives are sick, which is 8.3%.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>A disease is present in 40% of the population. The test detects it with probability 0.6 and gives a false positive with probability 0.1. A person tests positive. What is the probability they are sick? (a) 0.6 (b) 0.7 (c) 0.8 (d) 0.9 (e) 0.95</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid P) \)<wbr>\({}= \frac{P(P\mid S)P(S)}{P(P\mid S)P(S) + P(P\mid\bar S)P(\bar S)}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula (the slide gives this hint)</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P(S) = 0.4\), \(P(\bar S) = 0.6\), \(P(P\mid S) = 0.6\), \(P(P\mid\bar S) = 0.1\).</li>
+<li>Top: \(0.6\times0.4 = 0.24\).</li>
+<li>Bottom: \(0.24 + 0.1\times0.6 \)<wbr>\({}= 0.24 + 0.06 \)<wbr>\({}= 0.30\).</li>
+<li>\(\frac{0.24}{0.30} = 0.8\). Answer (c).</li>
+<li>Check by counting. Of 100 people, 40 are sick and 24 test positive. Of 60 healthy, 6 test positive. 24 of 30 positives are sick, which is 0.8.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>The morning is cloudy. 50% of rainy days start cloudy, 40% of all days start cloudy, and only 10% of days are rainy this month. What is the chance of rain? (a) 10% (b) 12.5% (c) 15% (d) more than 20% (e) less than 20%</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(R\mid C) \)<wbr>\({}= \frac{P(C\mid R)P(R)}{P(C)}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8. Here the evidence \(P(C) = 0.4\) is given directly, so no total-probability sum is needed.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P(C\mid R) = 0.5\), \(P(R) = 0.1\), \(P(C) = 0.4\).</li>
+<li>\(P(R\mid C) \)<wbr>\({}= \frac{0.5\times0.1}{0.4} \)<wbr>\({}= \frac{0.05}{0.4} \)<wbr>\({}= 0.125\).</li>
+<li>So 12.5%, which is option (b). It is also less than 20%, so (e) is true as well. Mark both if the question allows more than one.</li>
+<li>Check: the answer is between 0 and 1, and it is larger than the prior 0.1, which makes sense because clouds are more common on rainy days (50%) than on average (40%).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>A man speaks the truth 2 out of 3 times. He throws a die and reports a four. What is the probability it really was a four?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(4\mid\text{says }4) \)<wbr>\({}= \frac{P(\text{says }4\mid 4)P(4)}{P(\text{says }4\mid4)P(4) + P(\text{says }4\mid\text{not }4)P(\text{not }4)}\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Prior: \(P(4) = \frac16\), \(P(\text{not }4) = \frac56\).</li>
+<li>If it was a four, he says four when he tells the truth, so \(P(\text{says }4\mid4) \)<wbr>\({}= \frac23\).</li>
+<li>If it was not a four, he says four only when he lies. The usual textbook answer assumes a lie about a non-four is reported as "four": \(P(\text{says }4\mid\text{not }4) \)<wbr>\({}= \frac13\).</li>
+<li>The top is \(\frac23\cdot\frac16 \)<wbr>\({}= \frac2{18}\). The bottom is \(\frac2{18} + \frac13\cdot\frac56 \)<wbr>\({}= \frac2{18} + \frac5{18} \)<wbr>\({}= \frac7{18}\).</li>
+<li>Answer: \(\frac{2/18}{7/18} \)<wbr>\({}= \frac27 \approx 0.29\).</li>
+<li>Check the assumption. If instead a liar picks one of the 5 wrong numbers at random, \(P(\text{says }4\mid\text{not }4) \)<wbr>\({}= \frac13\cdot\frac15 \)<wbr>\({}= \frac1{15}\), and the answer becomes \(\frac{2/18}{2/18 + 1/18} \)<wbr>\({}= \frac23\). The slide does not say which model it wants. Write your assumption down. \(\frac27\) is the standard textbook answer.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Monty Hall. You pick one of three doors. The host, who knows where the prize is, opens another door with no prize and offers a switch. What is the probability of winning if you switch?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Say you pick door 1 and the host opens door 3. Let \(D_k\) be "prize behind door \(k\)". The priors are \(P(D_1) \)<wbr>\({}= P(D_2) \)<wbr>\({}= P(D_3) \)<wbr>\({}= \frac13\).</li>
+<li>Likelihood of "host opens 3" under each case. If \(D_1\), the host can open 2 or 3 and picks either, so \(\frac12\). If \(D_2\), he must open 3, so 1. If \(D_3\), he never opens 3, so 0.</li>
+<li>Evidence: \(\frac12\cdot\frac13 + 1\cdot\frac13 + 0\cdot\frac13 \)<wbr>\({}= \frac16 + \frac13 \)<wbr>\({}= \frac12\).</li>
+<li>\(P(D_2\mid\text{opens }3) \)<wbr>\({}= \frac{1\cdot\frac13}{\frac12} \)<wbr>\({}= \frac23\). \(P(D_1\mid\text{opens }3) \)<wbr>\({}= \frac{\frac12\cdot\frac13}{\frac12} \)<wbr>\({}= \frac13\).</li>
+<li>Switching wins with probability \(\frac23\). Option (c) on the slide.</li>
+<li>Check: the two posteriors add to 1, and \(P(D_3\mid\text{opens }3) = 0\).</li>
+</ol>
+</div></details>
+</section>
+
+<section>
+<h2 id="gaussian"><span class="num">B.9</span>The Gaussian (normal) distribution</h2>
+<p class="slides">Lectures L09, L10 · <a href="https://youtu.be/DUOJM728TT4">Short video: Geometry of Gaussians</a></p>
+<p class="oneline">The Gaussian is the bell-shaped distribution. The course uses it to model each class, the noise in regression and the clusters of a GMM.</p>
+<div class="eq boxed">\[p(x\mid\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\,e^{-(x-\mu)^2/(2\sigma^2)}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>This is the density of the <em class="t">univariate</em> (one-variable) normal distribution, written \(\mathcal N(\mu, \sigma^2)\). \(\mu\) is the mean (the centre of the bell) and \(\sigma^2\) is the variance (how wide it is). \(\exp(z)\) means \(e^z\).</p>
+<ul>
+<li>The exponent \(-\frac{(x-\mu)^2}{2\sigma^2}\) is 0 at \(x = \mu\) and becomes more negative as \(x\) moves away, so the density is highest at the mean and falls off on both sides. Dividing by \(\sigma^2\) measures the distance in units of the spread.</li>
+<li>The front factor \(\frac1{\sqrt{2\pi\sigma^2}}\) is chosen so the total area is 1. A wider bell (bigger \(\sigma\)) must be lower.</li>
+</ul>
+<p><strong>Example.</strong> For \(\mathcal N(0,1)\), at \(x = 0\) the density is \(\frac1{\sqrt{2\pi}} \approx 0.399\). At \(x = 1\) it is \(0.399\times e^{-1/2} \approx 0.399\times0.607 \approx 0.242\).</p>
+<p>About 68% of the probability lies within one \(\sigma\) of the mean, 95% within two and 99.7% within three.</p>
+</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L09/p05.webp" alt="Slide: a 1-D bell curve with the 68, 95 and 99.7 percent bands, and a 2-D Gaussian scatter with an elliptical contour" loading="lazy">
+<figcaption>L09, slide 5. Left, the 1-D bell with its 1, 2 and 3 standard deviation bands. Right, samples from a 2-D Gaussian. The points of equal density form an ellipse.</figcaption></figure>
+<p>For a vector \(\mathbf x \in \R^d\), the <em class="t">multivariate</em> normal \(\mathcal N(\boldsymbol\mu, \Sigma)\) has density</p>
+<div class="eq boxed">\[p(\mathbf x\mid\boldsymbol\mu,\Sigma) = \frac{1}{(2\pi)^{d/2}\,|\Sigma|^{1/2}}\,e^{-\Delta^2/2},\]</div>
+<div class="eq">\[\Delta^2 = (\mathbf x - \boldsymbol\mu)\T\Sigma^{-1}(\mathbf x - \boldsymbol\mu).\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Each piece is the vector version of the 1-D formula.</p>
+<ul>
+<li>\(\boldsymbol\mu \in \R^d\) is the mean vector, the centre.</li>
+<li>\(\Sigma\) is the \(d\times d\) covariance matrix (B.7). It plays the role of \(\sigma^2\).</li>
+<li>\(\Delta^2\) (delta squared) replaces \(\frac{(x - \mu)^2}{\sigma^2}\). It is a single number, the squared <em class="t">Mahalanobis distance</em> from \(\mathbf x\) to the centre, measured in units of the spread in each direction.</li>
+<li>\(|\Sigma|\) here means the determinant of \(\Sigma\), not an absolute value. It replaces \(\sigma^2\) in the normalising factor, and \((2\pi)^{d/2}\) replaces \(\sqrt{2\pi}\).</li>
+</ul>
+<p><strong>Example.</strong> If \(\Sigma = \sigma^2 I\) (same variance in every direction, no correlation), then \(\Sigma^{-1} \)<wbr>\({}= \frac1{\sigma^2}I\) and the exponent becomes \(-\frac{\|\mathbf x - \boldsymbol\mu\|^2}{2\sigma^2}\). The density depends only on the ordinary distance from the centre, and its contours are circles. If \(\Sigma\) is diagonal with different entries, the contours are ellipses lined up with the axes. A general \(\Sigma\) gives tilted ellipses whose axes are the eigenvectors of \(\Sigma\).</p>
+<p>Page 2 shows that when two classes are Gaussian with the same \(\Sigma\), the Bayes decision boundary is a straight line, and with different \(\Sigma\) it is curved.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>In 1-D the density is \(\frac1{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/(2\sigma^2)}\).</li>
+<li>In \(d\) dimensions it is \(\frac1{(2\pi)^{d/2}|\Sigma|^{1/2}}e^{-\Delta^2/2}\) with \(\Delta^2 = (\mathbf x-\boldsymbol\mu)\T\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\).</li>
+<li>\(\Sigma = \sigma^2I\) gives circular contours, diagonal \(\Sigma\) gives axis-aligned ellipses.</li>
+<li>Taking the log turns the product of exponentials into sums of squares, which is how MLE and MSE meet on page 2.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>\(\mathbf x \in \R^2\) follows \(\mathcal N(\mathbf 0, \Sigma)\) with \(\Sigma \)<wbr>\({}= \begin{bmatrix}4&0\\0&1\end{bmatrix}\). Compute the exponent \(-\frac12\mathbf x\T\Sigma^{-1}\mathbf x\) at \(\mathbf x = [2,0]\T\) and at \([0,1]\T\). What does the answer say about the contours?</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(\Sigma\) is diagonal, so \(\Sigma^{-1} \)<wbr>\({}= \begin{bmatrix}1/4&0\\0&1\end{bmatrix}\).</li>
+<li>At \([2,0]\T\), \(\mathbf x\T\Sigma^{-1}\mathbf x \)<wbr>\({}= \frac14\cdot4 + 0 \)<wbr>\({}= 1\), so the exponent is \(-\frac12\).</li>
+<li>At \([0,1]\T\), it is \(0 + 1\cdot1 = 1\), so the exponent is also \(-\frac12\).</li>
+<li>The two points have the same density even though one is twice as far from the centre. The spread along \(x_1\) is twice the spread along \(x_2\) (standard deviations 2 and 1), so the contours are ellipses twice as wide as they are tall.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Show that \(\mathcal N(\boldsymbol\mu, \Sigma)\) with diagonal \(\Sigma \)<wbr>\({}= \operatorname{Diag}(\sigma_1^2, \sigma_2^2)\) is the product of two 1-D Gaussians.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(|\Sigma| \)<wbr>\({}= \sigma_1^2\sigma_2^2\), so \(|\Sigma|^{1/2} \)<wbr>\({}= \sigma_1\sigma_2\). With \(d = 2\), \((2\pi)^{d/2} \)<wbr>\({}= 2\pi \)<wbr>\({}= \sqrt{2\pi}\sqrt{2\pi}\).</li>
+<li>So the front factor is \(\frac1{\sqrt{2\pi\sigma_1^2}}\cdot\frac1{\sqrt{2\pi\sigma_2^2}}\).</li>
+<li>\(\Sigma^{-1} \)<wbr>\({}= \operatorname{Diag}(1/\sigma_1^2, 1/\sigma_2^2)\), so the quadratic form is \(\frac{(x_1-\mu_1)^2}{\sigma_1^2} + \frac{(x_2-\mu_2)^2}{\sigma_2^2}\).</li>
+<li>\(e^{-\frac12(a+b)} \)<wbr>\({}= e^{-a/2}e^{-b/2}\), so the exponential splits into one factor per coordinate.</li>
+<li>Putting it together gives \(\mathcal N(x_1\mid\mu_1,\sigma_1^2)\cdot\mathcal N(x_2\mid\mu_2,\sigma_2^2)\). A product of densities means the two coordinates are independent, so uncorrelated Gaussian features are independent.</li>
+</ol>
+</div></details>
+</section>
+
+<div class="part">Calculus<span>B.10 to B.13</span></div>
+
+<section>
+<h2 id="calculus"><span class="num">B.10</span>Derivatives and minima</h2>
+<p class="slides">Lectures L03, L04 · <a href="https://youtu.be/i08JdWDc1MY">Short video: MSE using GD</a></p>
+<p class="oneline">Training a model means finding the parameters that make a loss as small as possible. Derivatives tell us which way is downhill.</p>
+<p>The <em class="t">derivative</em> \(f'(x)\), also written \(\frac{df}{dx}\), is the slope of \(f\) at \(x\). It says how much \(f\) changes per unit change in \(x\). The rules you need are \(\frac{d}{dx}x^n = nx^{n-1}\), \(\frac{d}{dx}e^x = e^x\), \(\frac{d}{dx}\ln x = \frac1x\), and that the derivative of a sum is the sum of the derivatives.</p>
+<p>At a minimum or maximum of a smooth function, the slope is 0. So to find the minimum, set \(f'(x) = 0\) and solve. The <em class="t">second derivative</em> \(f''(x)\) tells you which it is. If \(f'' > 0\), the curve bends upward and the point is a minimum.</p>
+<p>A function whose second derivative is never negative is <em class="t">convex</em> (bowl-shaped). A convex function has no separate local minima. Any point with zero slope is the global minimum. Linear regression's loss is convex, and a neural network's is not, which is why L03 and L15 ask about "global versus local optima".</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>Minimise \(f(x) = x^2 - 2x + 4\) (an L03 problem).</p>
+<ol class="steps">
+<li>\(f'(x) = 2x - 2\).</li>
+<li>Set it to 0. \(2x - 2 = 0\), so \(x = 1\).</li>
+<li>\(f''(x) = 2 > 0\), so this is a minimum.</li>
+<li>The minimum value is \(f(1) = 1 - 2 + 4 = 3\). On the slide's options that is (c).</li>
+<li>Check by completing the square. \(x^2 - 2x + 4 = (x - 1)^2 + 3\), which is at least 3 and equals 3 at \(x = 1\).</li>
+</ol>
+</div>
+<p>When setting the derivative to zero cannot be solved by hand, we walk downhill instead. That is <em class="t">gradient descent</em>, \(x_{k+1} = x_k - \eta f'(x_k)\), where \(\eta\) (eta) is a small step size called the <em class="t">learning rate</em>. Page 1 covers it in detail. The minus sign moves against the slope, which is downhill.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Minimum: \(f'(x) = 0\) and \(f''(x) > 0\).</li>
+<li>Convex means any stationary point is the global minimum.</li>
+<li>Gradient descent: \(x \leftarrow x - \eta f'(x)\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>\(L(w) = 2w^2 - 4w + 7\). (i) Write the gradient descent update. (ii) Starting at \(w_0 = 2\) with \(\eta = 0.2\), find \(w_1\) and \(w_2\). (iii) Find the minimum by calculus.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(w_{k+1} = w_k - \eta L'(w_k)\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.10, the paragraph on gradient descent</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(L'(w) = 4w - 4\), so the update is \(w_{k+1} = w_k - \eta(4w_k - 4)\).</li>
+<li>\(w_1 \)<wbr>\({}= 2 - 0.2(8 - 4) \)<wbr>\({}= 2 - 0.8 \)<wbr>\({}= 1.2\).</li>
+<li>\(w_2 \)<wbr>\({}= 1.2 - 0.2(4.8 - 4) \)<wbr>\({}= 1.2 - 0.16 \)<wbr>\({}= 1.04\).</li>
+<li>Minimum: \(4w - 4 = 0\) gives \(w = 1\), and \(L(1) = 2 - 4 + 7 = 5\).</li>
+<li>Check: the iterates 2, 1.2, 1.04 approach 1. (This is question 11 of the 2026 Quiz 1, set 1.)</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="gradient"><span class="num">B.11</span>Gradients of vector expressions</h2>
+<p class="slides">Lectures L03, L04, L06, L09 · Reference: <a href="https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf">The Matrix Cookbook</a></p>
+<p class="oneline">When the parameter is a vector \(\mathbf w\), the derivative becomes a vector of slopes called the gradient. Two identities do almost all the work in this course.</p>
+<p>A <em class="t">partial derivative</em> \(\frac{\partial f}{\partial w_k}\) (the curly \(\partial\) is read "partial") is the derivative of \(f\) with respect to \(w_k\), treating every other variable as a constant. The <em class="t">gradient</em> \(\nabla f\) (nabla f), also written \(\frac{\partial f}{\partial\mathbf w}\), stacks them into a vector:</p>
+<div class="eq">\[\nabla f(\mathbf w) = \Big[\frac{\partial f}{\partial w_1}, \dots, \frac{\partial f}{\partial w_d}\Big]\T.\]</div>
+<p>The gradient points in the direction of steepest increase. Gradient descent steps the other way, \(\mathbf w \leftarrow \mathbf w - \eta\nabla f(\mathbf w)\). At a minimum of a smooth function, every partial derivative is 0, so \(\nabla f = \mathbf 0\).</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>\(f(w_1, w_2) = w_1^2 + 3w_1w_2\). Treating \(w_2\) as a constant, \(\frac{\partial f}{\partial w_1} \)<wbr>\({}= 2w_1 + 3w_2\). Treating \(w_1\) as a constant, \(\frac{\partial f}{\partial w_2} \)<wbr>\({}= 3w_1\). So \(\nabla f \)<wbr>\({}= [2w_1 + 3w_2,\ 3w_1]\T\). At \(\mathbf w = [1,2]\T\) it is \([8, 3]\T\).</p>
+</div>
+<h3>The two identities</h3>
+<div class="eq boxed">\[\frac{\partial}{\partial\mathbf w}(\mathbf w\T\mathbf a) = \mathbf a,\]</div>
+<div class="eq boxed">\[\frac{\partial}{\partial\mathbf w}(\mathbf w\T A\mathbf w) = (A + A\T)\mathbf w.\]</div>
+<p>If \(A\) is symmetric, \(A + A\T = 2A\), so the second gradient is \(2A\mathbf w\).</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive both identities.</h4>
+<ol class="steps lines">
+<li>\(\mathbf w\T\mathbf a \)<wbr>\({}= \sum_i w_ia_i\), so \(\frac{\partial}{\partial w_k} \)<wbr>\({}= a_k\), and the gradient is \(\mathbf a\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Write the dot product as a sum. \(w_1a_1 + w_2a_2 + \dots + w_da_d\).</li>
+<li>Differentiate with respect to one entry \(w_k\). Every term without \(w_k\) is a constant and gives 0. The term \(w_ka_k\) gives \(a_k\).</li>
+<li>Stack the \(d\) partial derivatives. \([a_1, \dots, a_d]\T \)<wbr>\({}= \mathbf a\).</li>
+</ol>
+</details></li>
+<li>\(\mathbf w\T A\mathbf w \)<wbr>\({}= \sum_i\sum_j w_iA_{ij}w_j\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(A\mathbf w\) is the vector whose entry \(i\) is \(\sum_jA_{ij}w_j\).</li>
+<li>Dotting with \(\mathbf w\) multiplies entry \(i\) by \(w_i\) and adds over \(i\).</li>
+</ol>
+</details></li>
+<li>\(\frac{\partial}{\partial w_k} \)<wbr>\({}= \sum_j A_{kj}w_j + \sum_i w_iA_{ik} \)<wbr>\({}= (A\mathbf w)_k + (A\T\mathbf w)_k\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>\(w_k\) appears in the double sum in two ways, as \(w_i\) with \(i = k\) and as \(w_j\) with \(j = k\).</li>
+<li>Terms with \(i = k\) are \(w_k\sum_jA_{kj}w_j\). Differentiating gives \(\sum_jA_{kj}w_j\), which is entry \(k\) of \(A\mathbf w\).</li>
+<li>Terms with \(j = k\) are \(w_k\sum_iw_iA_{ik}\). Differentiating gives \(\sum_iA_{ik}w_i\). Since \(A_{ik} = (A\T)_{ki}\), this is entry \(k\) of \(A\T\mathbf w\).</li>
+<li>The term \(i = j = k\) is \(A_{kk}w_k^2\), with derivative \(2A_{kk}w_k\). It is counted once in each of the two sums above, so nothing is missed or doubled.</li>
+</ol>
+</details></li>
+<li>So the gradient is \((A + A\T)\mathbf w\), which is \(2A\mathbf w\) when \(A = A\T\).</li>
+<li>Check in 1-D. With \(A = a\), \(\mathbf w\T A\mathbf w = aw^2\) and its derivative is \(2aw\). It matches.</li>
+</ol>
+</div>
+<p>These two identities give the closed-form regression \(\mathbf w \)<wbr>\({}= (X\T X)^{-1}X\T\mathbf y\) on page 1, the mean as the best representative point, the eigenvector condition of PCA (B.13) and Fisher's LDA.</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>Gradient of \(J(\mathbf w) \)<wbr>\({}= \|\mathbf y - X\mathbf w\|^2\), the regression loss.</p>
+<ol class="steps">
+<li>Expand. \((\mathbf y - X\mathbf w)\T(\mathbf y - X\mathbf w) \)<wbr>\({}= \mathbf y\T\mathbf y - 2\mathbf w\T X\T\mathbf y + \mathbf w\T X\T X\mathbf w\). (The two cross terms \(\mathbf y\T X\mathbf w\) and \(\mathbf w\T X\T\mathbf y\) are the same number, so they combine.)</li>
+<li>\(\mathbf y\T\mathbf y\) has no \(\mathbf w\), so its gradient is \(\mathbf 0\).</li>
+<li>\(-2\mathbf w\T(X\T\mathbf y)\) has gradient \(-2X\T\mathbf y\), by the first identity with \(\mathbf a = X\T\mathbf y\).</li>
+<li>\(\mathbf w\T(X\T X)\mathbf w\) has gradient \(2X\T X\mathbf w\), by the second identity, since \(X\T X\) is symmetric.</li>
+<li>Total: \(\nabla J \)<wbr>\({}= 2X\T X\mathbf w - 2X\T\mathbf y\). Page 1 sets this to zero.</li>
+</ol>
+</div>
+<p>The <em class="t">Hessian</em> is the matrix of second partial derivatives, \(H_{jk} \)<wbr>\({}= \frac{\partial^2 f}{\partial w_j\partial w_k}\). It is the vector version of \(f''\). If it is PSD everywhere, \(f\) is convex. For \(J\) above, \(H = 2X\T X\), which is PSD (B.3), so the regression loss is convex. Newton's method (L18) uses the Hessian to take better steps than plain gradient descent.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(\nabla(\mathbf w\T\mathbf a) \)<wbr>\({}= \mathbf a\), \(\nabla(\mathbf w\T A\mathbf w) \)<wbr>\({}= (A + A\T)\mathbf w\).</li>
+<li>\(\nabla\|\mathbf y - X\mathbf w\|^2 \)<wbr>\({}= 2X\T X\mathbf w - 2X\T\mathbf y\).</li>
+<li>Hessian PSD means convex.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Show that the point \(\mathbf y\) minimising \(\sum_{i=1}^N\|\mathbf x_i - \mathbf y\|^2\) is the mean.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\nabla(\mathbf y\T\mathbf a) \)<wbr>\({}= \mathbf a\), \(\nabla(\mathbf y\T\mathbf y) \)<wbr>\({}= 2\mathbf y\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.11, both identities (the second with \(A = I\))</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Expand each term. \(\|\mathbf x_i - \mathbf y\|^2 \)<wbr>\({}= \mathbf x_i\T\mathbf x_i - 2\mathbf y\T\mathbf x_i + \mathbf y\T\mathbf y\).</li>
+<li>The gradient of each term with respect to \(\mathbf y\) is \(\mathbf 0 - 2\mathbf x_i + 2\mathbf y\).</li>
+<li>Add over \(i\). \(-2\sum_i\mathbf x_i + 2N\mathbf y\).</li>
+<li>Set to zero. \(2N\mathbf y \)<wbr>\({}= 2\sum_i\mathbf x_i\), so \(\mathbf y \)<wbr>\({}= \frac1N\sum_i\mathbf x_i\), the mean.</li>
+<li>Check it is a minimum. The Hessian is \(2NI\), which is PSD, so the function is convex.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Find the gradient of \(f(\mathbf w) \)<wbr>\({}= \mathbf w\T\begin{bmatrix}1&2\\0&3\end{bmatrix}\mathbf w\) at \(\mathbf w = [1,1]\T\), and check it by expanding \(f\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>The matrix is not symmetric, so use \((A + A\T)\mathbf w\). \(A + A\T \)<wbr>\({}= \begin{bmatrix}2&2\\2&6\end{bmatrix}\).</li>
+<li>At \([1,1]\T\) this is \([2 + 2, 2 + 6]\T = [4, 8]\T\).</li>
+<li>Check by expanding. \(f = w_1^2 + 2w_1w_2 + 3w_2^2\). Then \(\frac{\partial f}{\partial w_1} \)<wbr>\({}= 2w_1 + 2w_2 \)<wbr>\({}= 4\) and \(\frac{\partial f}{\partial w_2} \)<wbr>\({}= 2w_1 + 6w_2 \)<wbr>\({}= 8\). It matches.</li>
+<li>Using \(2A\mathbf w = [6, 6]\T\) would be wrong, because \(A\) is not symmetric.</li>
+</ol>
+</div></details>
+</section>
+
+<section>
+<h2 id="chain-rule"><span class="num">B.12</span>The chain rule</h2>
+<p class="slides">Lectures L11, L15, L16 · <a href="https://www.youtube.com/watch?v=xnJuNxURtik">Short video: Neural networks basics</a></p>
+<p class="oneline">A neural network is a long chain of simple functions. The chain rule says how to differentiate a chain, and backpropagation is the chain rule applied carefully.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L16/p06.webp" alt="Slide: calculus primer with derivatives of wx, of (o minus y) squared, and of the sigmoid" loading="lazy">
+<figcaption>L16, slide 6. The three derivatives the backpropagation lectures use again and again.</figcaption></figure>
+<p>If \(y = f(u)\) and \(u = g(x)\), then</p>
+<div class="eq boxed">\[\frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>A small change in \(x\) changes \(u\) by \(\frac{du}{dx}\) times as much, and that change in \(u\) changes \(y\) by \(\frac{dy}{du}\) times as much. So the overall rate is the product. Longer chains just multiply more factors, as in \(\frac{dL}{dw} \)<wbr>\({}= \frac{dL}{do}\cdot\frac{do}{ds}\cdot\frac{ds}{dw}\).</p>
+<p><strong>Example.</strong> \(L = (wx - y)^2\) with \(w = 2\), \(x = 3\), \(y = 4\). Let \(o = wx = 6\). Then \(\frac{dL}{do} = 2(o - y) = 4\) and \(\frac{do}{dw} = x = 3\). So \(\frac{dL}{dw} = 4\times3 = 12\). To check, expand \(L = (3w - 4)^2\), so \(\frac{dL}{dw} \)<wbr>\({}= 2(3w - 4)\cdot3 \)<wbr>\({}= 6(6 - 4) \)<wbr>\({}= 12\).</p>
+</div>
+<h3>The sigmoid and its derivative</h3>
+<p>The <em class="t">sigmoid</em> (or logistic) function \(\sigma(z) = \frac1{1 + e^{-z}}\) squashes any number into the range 0 to 1. Logistic regression (page 2) and early neural networks (page 3) use it. (The slides also write it \(g(z)\) or \(\phi(z)\). This \(\sigma\) is not a standard deviation.)</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that \(\sigma'(z) \)<wbr>\({}= \sigma(z)\big(1 - \sigma(z)\big)\).</h4>
+<ol class="steps lines">
+<li>\(\sigma(z) = (1 + e^{-z})^{-1}\), so \(\sigma'(z) \)<wbr>\({}= \frac{e^{-z}}{(1 + e^{-z})^2}\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Let \(u = 1 + e^{-z}\), so \(\sigma = u^{-1}\).</li>
+<li>\(\frac{d\sigma}{du} = -u^{-2}\).</li>
+<li>\(\frac{du}{dz} = -e^{-z}\), using the chain rule on \(e^{-z}\) (outer \(e^v\), inner \(v = -z\)).</li>
+<li>Multiply. \(\sigma'(z) \)<wbr>\({}= (-u^{-2})(-e^{-z}) \)<wbr>\({}= \frac{e^{-z}}{(1 + e^{-z})^2}\).</li>
+</ol>
+</details></li>
+<li>Split. \(\frac{e^{-z}}{(1+e^{-z})^2} \)<wbr>\({}= \frac1{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}\).</li>
+<li>\(\frac{e^{-z}}{1+e^{-z}} \)<wbr>\({}= 1 - \frac1{1+e^{-z}} \)<wbr>\({}= 1 - \sigma(z)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Write the top as \((1 + e^{-z}) - 1\).</li>
+<li>Divide each part by \(1 + e^{-z}\). \(1 - \frac1{1+e^{-z}}\).</li>
+</ol>
+</details></li>
+<li>So \(\sigma'(z) \)<wbr>\({}= \sigma(z)(1 - \sigma(z))\).</li>
+<li>Check at \(z = 0\). \(\sigma(0) = \frac12\), so \(\sigma'(0) = \frac14\). From line 1, \(\frac{1}{(1+1)^2} = \frac14\). It matches.</li>
+</ol>
+</div>
+<p>The largest value of \(\sigma'\) is \(\frac14\), at \(z = 0\). Far from 0 it is nearly 0. A chain of many sigmoids multiplies many numbers below \(\frac14\), so the gradient shrinks towards zero. That is the <em class="t">vanishing gradient</em> problem of L16, and it is one reason ReLU is used instead.</p>
+<p>The <em class="t">hyperbolic tangent</em> \(\tanh(z) \)<wbr>\({}= \frac{e^z - e^{-z}}{e^z + e^{-z}}\) squashes into \(-1\) to 1. Its derivative is \(\tanh'(z) = 1 - \tanh^2(z)\).</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Chain rule: multiply the local derivatives along the chain.</li>
+<li>\(\sigma' = \sigma(1 - \sigma)\), at most \(\frac14\). \(\tanh' = 1 - \tanh^2\), at most 1.</li>
+<li>\(\frac{\partial(wx)}{\partial w} \)<wbr>\({}= x\), \(\frac{\partial(wx)}{\partial x} \)<wbr>\({}= w\), \(\frac{\partial(o - y)^2}{\partial o} \)<wbr>\({}= 2(o - y)\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Prove that \(\tanh'(z) = 1 - \tanh^2(z)\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Write \(\tanh = \frac{N}{D}\) with \(N = e^z - e^{-z}\) and \(D = e^z + e^{-z}\). Then \(N' = e^z + e^{-z} = D\) and \(D' = e^z - e^{-z} = N\).</li>
+<li>Quotient rule: \(\tanh' \)<wbr>\({}= \frac{N'D - ND'}{D^2} \)<wbr>\({}= \frac{D\cdot D - N\cdot N}{D^2}\).</li>
+<li>Split the fraction. \(\frac{D^2}{D^2} - \frac{N^2}{D^2} \)<wbr>\({}= 1 - \tanh^2(z)\).</li>
+<li>Check at \(z = 0\). \(\tanh(0) = 0\), so \(\tanh'(0) = 1\). The tanh curve does have slope 1 at the origin.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Verify that \(\tanh(z) = 2\sigma(2z) - 1\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(2\sigma(2z) - 1 \)<wbr>\({}= \frac{2}{1 + e^{-2z}} - 1 \)<wbr>\({}= \frac{2 - (1 + e^{-2z})}{1 + e^{-2z}} \)<wbr>\({}= \frac{1 - e^{-2z}}{1 + e^{-2z}}\).</li>
+<li>Multiply the top and bottom by \(e^z\). \(\frac{e^z - e^{-z}}{e^z + e^{-z}}\).</li>
+<li>That is \(\tanh(z)\).</li>
+<li>Check at \(z = 0\). \(2\cdot\frac12 - 1 \)<wbr>\({}= 0 \)<wbr>\({}= \tanh 0\).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>\(o = \sigma(wx)\), \(L = (o - y)^2\). With \(w = 0\), \(x = 2\), \(y = 1\), find \(\frac{\partial L}{\partial w}\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial L}{\partial w} \)<wbr>\({}= \frac{\partial L}{\partial o}\cdot\frac{\partial o}{\partial s}\cdot\frac{\partial s}{\partial w}\) with \(s = wx\)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.12, the chain rule and the sigmoid derivative (line 4 of the exam box)</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Forward: \(s = 0\cdot2 = 0\), \(o = \sigma(0) = 0.5\), \(L = (0.5 - 1)^2 = 0.25\).</li>
+<li>\(\frac{\partial L}{\partial o} \)<wbr>\({}= 2(o - y) \)<wbr>\({}= -1\).</li>
+<li>\(\frac{\partial o}{\partial s} \)<wbr>\({}= \sigma(0)(1 - \sigma(0)) \)<wbr>\({}= 0.25\).</li>
+<li>\(\frac{\partial s}{\partial w} \)<wbr>\({}= x \)<wbr>\({}= 2\).</li>
+<li>Multiply. \(-1\times0.25\times2 = -0.5\).</li>
+<li>Check the sign. The gradient is negative, so gradient descent increases \(w\). That raises \(o\) towards the target 1, which is the right direction.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="lagrange"><span class="num">B.13</span>Lagrange multipliers</h2>
+<p class="slides">Lectures L04, L06, L12 · <a href="https://youtu.be/GvvRuEypvfw">Short video: Optimization and eigen vectors</a></p>
+<p class="oneline">Some problems ask for the best \(\mathbf w\) subject to a condition, such as "\(\mathbf w\) has length 1". A Lagrange multiplier turns that into an ordinary "set the gradient to zero" problem.</p>
+<p>To maximise (or minimise) \(f(\mathbf w)\) subject to the constraint \(g(\mathbf w) = c\), form the <em class="t">Lagrangian</em></p>
+<div class="eq boxed">\[\mathcal L(\mathbf w, \lambda) = f(\mathbf w) - \lambda\big(g(\mathbf w) - c\big)\]</div>
+<p>and set its partial derivatives with respect to \(\mathbf w\) and \(\lambda\) to zero. The new variable \(\lambda\) is the <em class="t">Lagrange multiplier</em>, named after the mathematician Joseph-Louis Lagrange.</p>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Setting \(\frac{\partial\mathcal L}{\partial\lambda} \)<wbr>\({}= 0\) gives back \(g(\mathbf w) = c\), so the constraint is enforced. Setting \(\nabla_{\mathbf w}\mathcal L \)<wbr>\({}= \mathbf 0\) gives \(\nabla f = \lambda\nabla g\). This says that at the best point, the gradient of \(f\) is parallel to the gradient of the constraint. If it were not, you could slide along the constraint and still increase \(f\).</p>
+<p><strong>Example.</strong> Maximise \(f = xy\) subject to \(x + y = 10\). \(\mathcal L \)<wbr>\({}= xy - \lambda(x + y - 10)\). The partial derivatives are \(y - \lambda = 0\) and \(x - \lambda = 0\), so \(x = y = \lambda\). The constraint gives \(2\lambda = 10\), so \(x = y = 5\) and \(f = 25\). Check: \(x = 4, y = 6\) gives 24, which is smaller.</p>
+</div>
+<p>The slides call the theory of Lagrange multipliers out of scope, but the following result is used for PCA (L06), for LDA (L08) and in the SVM dual (L12). Learn the derivation.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the maximum of \(\mathbf w\T A\mathbf w\) subject to \(\mathbf w\T\mathbf w = 1\), for symmetric \(A\), is the largest eigenvalue, reached at its eigenvector.</h4>
+<ol class="steps lines">
+<li>\(\mathcal L(\mathbf w,\lambda) \)<wbr>\({}= \mathbf w\T A\mathbf w - \lambda(\mathbf w\T\mathbf w - 1)\).</li>
+<li>\(\nabla_{\mathbf w}\mathcal L \)<wbr>\({}= 2A\mathbf w - 2\lambda\mathbf w \)<wbr>\({}= \mathbf 0\), so \(A\mathbf w = \lambda\mathbf w\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Gradient of \(\mathbf w\T A\mathbf w\) is \(2A\mathbf w\), by B.11 with symmetric \(A\).</li>
+<li>Gradient of \(\mathbf w\T\mathbf w\) is \(2\mathbf w\), by B.11 with \(A = I\). The constant \(-1\) has gradient \(\mathbf 0\).</li>
+<li>So \(\nabla_{\mathbf w}\mathcal L \)<wbr>\({}= 2A\mathbf w - 2\lambda\mathbf w\). Set it to \(\mathbf 0\).</li>
+<li>Divide by 2 and move the second term across. \(A\mathbf w = \lambda\mathbf w\). This is the eigenvector equation, so \(\mathbf w\) must be an eigenvector of \(A\) and \(\lambda\) its eigenvalue.</li>
+</ol>
+</details></li>
+<li>At such a \(\mathbf w\), the objective is \(\mathbf w\T A\mathbf w \)<wbr>\({}= \lambda\,\mathbf w\T\mathbf w \)<wbr>\({}= \lambda\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Replace \(A\mathbf w\) by \(\lambda\mathbf w\) from line 2. \(\mathbf w\T(\lambda\mathbf w) \)<wbr>\({}= \lambda\,\mathbf w\T\mathbf w\).</li>
+<li>The constraint says \(\mathbf w\T\mathbf w = 1\), so the value is \(\lambda\).</li>
+</ol>
+</details></li>
+<li>So the maximum is the largest eigenvalue, at its unit eigenvector. The minimum is the smallest eigenvalue, at its unit eigenvector.</li>
+</ol>
+</div>
+<div class="card ex"><span class="tag">Example</span>
+<p>\(A \)<wbr>\({}= \begin{bmatrix}2&1\\1&2\end{bmatrix}\) has eigenvalues 3 and 1 (B.5). The largest value of \(\mathbf w\T A\mathbf w\) over unit vectors is 3, at \(\mathbf w \)<wbr>\({}= \frac1{\sqrt2}[1,1]\T\). Check. \(\frac12[1,1]A[1,1]\T \)<wbr>\({}= \frac12(2 + 1 + 1 + 2) \)<wbr>\({}= 3\). Try another unit vector, \([1,0]\T\), which gives \(A_{11} = 2\). That is less than 3, as it should be.</p>
+<p>In PCA, \(A\) is the covariance matrix and \(\mathbf w\T A\mathbf w\) is the variance of the data along \(\mathbf w\). So the direction of most variance is the top eigenvector of the covariance.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(\mathcal L \)<wbr>\({}= f - \lambda(g - c)\), then set all partial derivatives to zero.</li>
+<li>\(\max \mathbf w\T A\mathbf w\) with \(\|\mathbf w\| = 1\) gives the top eigenvector, and the value is the top eigenvalue. Minimising gives the bottom one.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L04 slide</span><span>We want to solve an overdetermined homogeneous system \(A\mathbf x = \mathbf 0\) (\(A\) is \(m\times n\)) as \(\argmin_{\mathbf x}\|A\mathbf x\|\) subject to \(\|\mathbf x\| = 1\). The solution is the eigenvector for the (a) largest eigenvalue of \(AA\T\) (b) largest of \(A\T A\) (c) smallest of \(AA\T\) (d) smallest of \(A\T A\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Minimising \(\|A\mathbf x\|\) is the same as minimising its square, \(\|A\mathbf x\|^2 \)<wbr>\({}= \mathbf x\T A\T A\mathbf x\).</li>
+<li>This is \(\mathbf x\T M\mathbf x\) with \(M = A\T A\), a symmetric \(n\times n\) matrix, subject to \(\mathbf x\T\mathbf x = 1\).</li>
+<li>By the exam box above, the minimum is at the eigenvector of the smallest eigenvalue of \(M\).</li>
+<li>\(\mathbf x\) is in \(\R^n\), so the matrix must be \(n\times n\). That rules out \(AA\T\), which is \(m\times m\).</li>
+<li>Answer (d).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Find the unit vector \(\mathbf w\) that maximises \(\mathbf w\T\Sigma\mathbf w\) for \(\Sigma \)<wbr>\({}= \begin{bmatrix}5&2\\2&2\end{bmatrix}\), and the maximum value.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Maximiser = top unit eigenvector, maximum = top eigenvalue</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.13, lines 2 to 4 of the exam box. The eigenvectors were found in B.5 (practice question 3).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>From B.5, the eigenvalues are 6 and 1, with unit eigenvectors \(\frac1{\sqrt5}[2,1]\T\) and \(\frac1{\sqrt5}[1,-2]\T\).</li>
+<li>The maximiser is \(\mathbf w \)<wbr>\({}= \frac1{\sqrt5}[2,1]\T\), and the maximum is 6.</li>
+<li>Check directly. \(\Sigma[2,1]\T \)<wbr>\({}= [10 + 2, 4 + 2]\T \)<wbr>\({}= [12, 6]\T\). Then \([2,1]\cdot[12,6] = 30\), and dividing by \(\|[2,1]\|^2 = 5\) gives 6.</li>
+</ol></div></div>
+</div></details>
+</section>

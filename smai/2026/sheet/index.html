@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Formula sheet · SMAI 2026 prep · Statistical Methods in AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every formula from the SMAI 2026 prep guide on one page, grouped by page, each with a link to the section that explains and derives it.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --card:#ffffff; --muted:#f4f4f5; --muted-2:#fafafa;
+  --fg:#09090b; --muted-fg:#6b6b75; --border:#e4e4e7; --border-2:#d4d4d8;
+  --primary:#18181b; --primary-fg:#fafafa;
+  --brand:#0b6285; --brand-fg:#ffffff; --brand-soft:#eef6fa;
+  --stable:#0f766e; --unstable:#c2410c; --destructive:#dc2626; --destructive-soft:#fef2f2;
+  --amber-soft:#fffbeb; --amber:#b45309;
+  --c1:#0f766e; --c2:#c2410c; --c3:#4f46e5; --c4:#a21caf;
+  --grid:#efeff1; --axis:#a1a1aa;
+  --node:#f4f4f5; --node-stroke:#3f3f46; --edge:#a1a1aa;
+  --radius:0.7rem;
+  --shadow-sm:0 1px 2px 0 rgb(9 9 11 / .05);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0b0b0d; --card:#121215; --muted:#1c1c20; --muted-2:#16161a;
+  --fg:#f4f4f5; --muted-fg:#a1a1aa; --border:#27272a; --border-2:#3f3f46;
+  --primary:#f4f4f5; --primary-fg:#18181b;
+  --brand:#6cc8ec; --brand-fg:#09090b;
+  --brand-soft:#0f2430;
+  --stable:#2dd4bf; --unstable:#fb923c; --destructive:#f87171; --destructive-soft:#2a1414;
+  --amber-soft:#2a2110; --amber:#fbbf24;
+  --c1:#2dd4bf; --c2:#fb923c; --c3:#a5b4fc; --c4:#f0abfc;
+  --grid:#1f1f24; --axis:#52525b;
+  --node:#1c1c20; --node-stroke:#a1a1aa; --edge:#5b5b63;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .4);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0d; --card:#121215; --muted:#1c1c20; --muted-2:#16161a;
+  --fg:#f4f4f5; --muted-fg:#a1a1aa; --border:#27272a; --border-2:#3f3f46;
+  --primary:#f4f4f5; --primary-fg:#18181b;
+  --brand:#6cc8ec; --brand-fg:#09090b; --brand-soft:#0f2430;
+  --stable:#2dd4bf; --unstable:#fb923c; --destructive:#f87171; --destructive-soft:#2a1414;
+  --amber-soft:#2a2110; --amber:#fbbf24;
+  --c1:#2dd4bf; --c2:#fb923c; --c3:#a5b4fc; --c4:#f0abfc;
+  --grid:#1f1f24; --axis:#52525b;
+  --node:#1c1c20; --node-stroke:#a1a1aa; --edge:#5b5b63;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .4);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:"Hanken Grotesk",system-ui,-apple-system,sans-serif;
+  font-size:16.5px; line-height:1.68; -webkit-font-smoothing:antialiased}
+.wrap{display:grid; grid-template-columns:minmax(0,1fr)}
+@media(min-width:1060px){.wrap{grid-template-columns:280px minmax(0,1fr); align-items:start}}
+
+/* sidebar */
+.toc{position:sticky; top:0; align-self:start; max-height:100vh; overflow-y:auto; padding:26px 18px 48px;
+  border-right:1px solid var(--border); background:var(--card); display:none; scrollbar-width:thin; scrollbar-color:var(--border-2) transparent}
+@media(min-width:1060px){.toc{display:block}}
+.toc .brand{font-weight:700; font-size:1.02rem; letter-spacing:-.02em}
+.toc .brand small{display:block; font-weight:500; font-size:.68rem; letter-spacing:0; color:var(--muted-fg); margin-top:6px}
+.toc nav{margin-top:20px; font-size:.86rem}
+.toc .grp{letter-spacing:.11em; font-size:.64rem; color:var(--muted-fg); font-weight:700; margin:20px 0 6px; padding:0 10px}
+.toc a{display:block; color:var(--muted-fg); text-decoration:none; padding:5px 10px; border-radius:7px; line-height:1.35; margin:1px 0}
+.toc a:hover{color:var(--fg); background:var(--muted)}
+.toc a.other{margin:12px 0 0; padding:7px 10px; border:1px solid var(--border); border-radius:8px; color:var(--brand); font-size:.84rem; font-weight:600}
+.toc a.other:hover{background:var(--muted)}
+.toc a.active{color:var(--fg); background:var(--muted); font-weight:600}
+
+main{padding:0 clamp(18px,5vw,72px) 128px; max-width:900px}
+.hero{padding:clamp(44px,8vw,84px) 0 30px; border-bottom:1px solid var(--border)}
+.kicker{font-size:.72rem; letter-spacing:0; color:var(--muted-fg); font-weight:600}
+h1{font-weight:700; font-size:clamp(2.1rem,6vw,3.2rem); line-height:1.05; letter-spacing:-.035em; margin:.34em 0 .3em; text-wrap:balance}
+.hero .lead{font-size:1.12rem; color:var(--muted-fg); max-width:62ch; line-height:1.6}
+.part{margin:4.2em 0 0; padding:14px 0 0; border-top:2px solid var(--fg); font-size:.74rem; letter-spacing:0; font-weight:700}
+.part span{color:var(--muted-fg); font-weight:600; margin-left:.6em}
+h2{font-weight:700; font-size:clamp(1.55rem,3.4vw,2rem); letter-spacing:-.03em; margin:2.4em 0 .2em; padding-top:.3em; text-wrap:balance; scroll-margin-top:14px}
+.part+section h2{margin-top:.9em}
+h2 .num{color:var(--muted-fg); font-size:.56em; font-weight:600; margin-right:.55em; font-variant-numeric:tabular-nums}
+h3{font-weight:650; font-size:1.25rem; margin:2em 0 .35em; letter-spacing:-.02em; scroll-margin-top:14px}
+h4{font-weight:700; font-size:1.02rem; margin:1.5em 0 .3em}
+.oneline{font-size:1.1rem; line-height:1.55; max-width:64ch; margin:.6em 0 1em}
+p{max-width:70ch}
+a{color:var(--brand); text-underline-offset:2px}
+em.t{font-style:normal; font-weight:650; border-bottom:2px solid var(--brand)}
+ul,ol{max-width:68ch; padding-left:1.35em}
+li{margin:.35em 0}
+li::marker{color:var(--muted-fg)}
+.small{font-size:.87rem; color:var(--muted-fg)}
+.board{font-size:.7rem; font-weight:700; letter-spacing:0; color:var(--amber); background:var(--amber-soft);
+  border:1px solid color-mix(in srgb,var(--amber) 35%,var(--border)); border-radius:6px; padding:3px 9px; display:inline-block; margin-top:6px}
+
+/* math */
+math{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",math,serif; font-style:normal}
+p math, li math, td math, summary math, figcaption math{font-size:1.07em}
+.eq{display:block; margin:18px 0; text-align:center; overflow-x:auto; overflow-y:hidden; padding:6px 2px}
+.eq math{font-size:1.36em}
+.eq.boxed{background:var(--muted-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px}
+.eq .label{display:block; margin-top:6px; font-size:.8rem; color:var(--muted-fg)}
+math .tml-box, math menclose{border:1px solid var(--border-2); padding:3px}
+
+/* cards */
+.card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:20px 0; box-shadow:var(--shadow-sm)}
+.card>*:first-child{margin-top:0} .card>*:last-child{margin-bottom:0}
+.card.ex{background:var(--muted-2)}
+.card.watch{border-color:color-mix(in srgb,var(--destructive) 40%,var(--border)); background:var(--destructive-soft)}
+.card.goal{border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.card.exam{border:1.5px solid var(--fg)}
+.card.remember{background:var(--brand-soft); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.remember .tag{background:var(--brand); color:var(--brand-fg); border-color:var(--brand)}
+.about{font-size:1.08rem; line-height:1.6; max-width:66ch; margin:.6em 0 1em}
+.idea{background:var(--brand-soft); border:1px solid color-mix(in srgb,var(--brand) 30%,var(--border)); border-radius:8px; padding:10px 14px; max-width:none}
+.sym{font-size:.93rem; color:var(--muted-fg); margin:10px 0}
+.tag{display:inline-flex; font-size:.66rem; font-weight:700; letter-spacing:0; padding:3px 9px; border-radius:6px;
+  border:1px solid var(--border); background:var(--muted); color:var(--muted-fg); margin-bottom:10px}
+.goal .tag{background:var(--brand-soft); color:var(--brand); border-color:color-mix(in srgb,var(--brand) 35%,var(--border))}
+.exam .tag{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+.watch .tag{background:transparent; color:var(--destructive); border-color:color-mix(in srgb,var(--destructive) 45%,var(--border))}
+.card h4:first-of-type{margin-top:.1em}
+.goal ul{margin:.2em 0}
+
+.steps{counter-reset:s; list-style:none; padding-left:0; max-width:72ch}
+.steps>li{counter-increment:s; position:relative; padding-left:42px; margin:.95em 0}
+.steps>li::before{content:counter(s); position:absolute; left:0; top:0; width:27px; height:27px; border-radius:8px;
+  background:var(--primary); color:var(--primary-fg); font-size:.8rem; font-weight:700; display:grid; place-items:center}
+
+/* tables */
+.tbl{width:100%; border-collapse:collapse; margin:16px 0; font-size:.92rem; display:block; overflow-x:auto}
+.tbl th,.tbl td{border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top}
+.tbl th{background:var(--muted); font-weight:650; font-size:.82rem}
+.tbl tr:nth-child(even) td{background:var(--muted-2)}
+.tbl td.c, .tbl th.c{text-align:center}
+
+/* figures */
+figure.fig{margin:20px 0; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-sm)}
+figure.fig svg{width:100%; height:auto; display:block; margin:0 auto}
+figure.fig svg.gr{max-width:460px}
+figure.fig svg.plot{max-width:620px}
+figure.fig figcaption{font-size:.86rem; color:var(--muted-fg); margin-top:10px; line-height:1.5; max-width:70ch}
+.figrow{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:20px 0}
+.figrow figure.fig{margin:0}
+svg.plot text{font-family:"Hanken Grotesk",sans-serif}
+svg.plot .tk{font-size:11px; fill:var(--muted-fg)}
+svg.plot .al{font-size:12.5px; fill:var(--muted-fg)}
+svg.plot .lb{font-size:12px; font-weight:600}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-size:.82rem; color:var(--muted-fg); margin:4px 0 10px}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.sw{width:24px; height:0; border-top:3px solid; display:inline-block}
+
+/* collapsibles */
+details.opt{border:1px dashed var(--border-2); border-radius:var(--radius); background:var(--muted-2); margin:16px 0; overflow:hidden}
+details.opt>summary{cursor:pointer; list-style:none; padding:10px 16px; font-weight:600; font-size:.92rem; color:var(--brand)}
+details.opt>summary::-webkit-details-marker{display:none}
+details.opt>summary::before{content:"▸  "; font-size:.8em}
+details.opt[open]>summary::before{content:"▾  "}
+details.opt[open]>summary{border-bottom:1px solid var(--border)}
+details.opt .body{padding:2px 16px 14px}
+.checkrow{display:flex; align-items:center; gap:12px; margin:34px 0 10px; font-size:.7rem; font-weight:700; letter-spacing:.1em; color:var(--muted-fg)}
+.checkrow::before,.checkrow::after{content:""; flex:1; height:1px; background:var(--border)}
+details.q{border:1px solid var(--border); border-radius:var(--radius); margin:12px 0; background:var(--card); overflow:hidden}
+details.q>summary{cursor:pointer; list-style:none; padding:13px 16px; display:flex; gap:11px; align-items:flex-start; font-weight:550}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:var(--muted)}
+details.q>summary>span:not(.qt):not(.chev){min-width:0; overflow-wrap:anywhere}
+.qt{flex:none; font-size:.6rem; font-weight:700; letter-spacing:0; padding:4px 8px; border-radius:6px; margin-top:2px;
+  background:var(--muted); color:var(--muted-fg); border:1px solid var(--border)}
+.qt.pyq{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+.chev{margin-left:auto; flex:none; color:var(--muted-fg); transition:transform .2s}
+details.q[open] .chev{transform:rotate(90deg)}
+details.q .ans{padding:2px 18px 16px; border-top:1px solid var(--border); background:var(--muted-2)}
+details.q .ans>*:first-child{margin-top:12px}
+
+/* theme toggle */
+.themebtn{position:fixed; top:14px; right:14px; z-index:20; background:var(--card); border:1px solid var(--border); color:var(--fg);
+  border-radius:8px; padding:7px 12px; font:inherit; font-size:.8rem; font-weight:500; cursor:pointer; box-shadow:var(--shadow-sm)}
+.themebtn:hover{background:var(--muted)}
+:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:4px}
+.tocwrap-mobile{display:block; padding:18px clamp(16px,5vw,72px) 0}
+@media(min-width:1060px){.tocwrap-mobile{display:none}}
+details.mtoc{border:1px solid var(--border); border-radius:var(--radius); background:var(--card); padding:2px 6px}
+details.mtoc>summary{padding:11px; font-weight:600; cursor:pointer}
+details.mtoc a{display:block; padding:6px 12px; color:var(--muted-fg); text-decoration:none}
+
+@media (max-width:700px){
+  html,body{overflow-x:hidden}
+  body{font-size:16px}
+  main{padding:0 16px 96px}
+  .themebtn{top:auto; bottom:14px}
+  .card{padding:15px 15px}
+  .steps>li{padding-left:34px}
+  .steps>li::before{width:23px; height:23px; font-size:.72rem}
+  .eq math{font-size:1.15em}
+  .tbl{font-size:.85rem}
+  .tbl th,.tbl td{padding:7px 9px}
+  figure.fig{padding:10px}
+}
+@media print{.toc,.themebtn,.tocwrap-mobile{display:none} details{open:true}}
+
+/* worked answers laid out as formula, source, working */
+.sol{display:grid; grid-template-columns:150px 1fr; gap:4px 16px; padding:10px 0; border-top:1px solid var(--border)}
+.sol:first-child{border-top:0; padding-top:2px}
+.sol .sl{font-size:.8rem; font-weight:650; color:var(--muted-fg); padding-top:3px}
+details.linewhy{margin:0}
+:root{interpolate-size:allow-keywords}
+details.linewhy::details-content{height:0; overflow:clip; opacity:0; transition:height .28s ease, opacity .2s ease, content-visibility .28s allow-discrete}
+details.linewhy[open]::details-content{height:auto; opacity:1}
+details.linewhy>summary::before{transition:transform .2s ease}
+@media (prefers-reduced-motion: reduce){details.linewhy::details-content{transition:none}}
+.eqn{display:none} @media(max-width:600px){.eqw{display:none} .eqn{display:block}}
+details.linewhy>summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 8px 0 0; border:0; background:none; font-size:.86rem; font-weight:600; color:var(--muted-fg)}
+details.linewhy>summary:hover{color:var(--fg)}
+details.linewhy>summary::-webkit-details-marker{display:none}
+details.linewhy>summary::before{content:"+"; font-weight:700; width:.9em; text-align:center}
+details.linewhy[open]>summary::before{content:"\2212"}
+details.linewhy>summary span{font-weight:400}
+details.linewhy[open]>summary{color:var(--fg)}
+details.linewhy>.steps{margin:0 0 .8em; padding:12px 14px 4px; border-radius:10px; background:var(--muted-2)}
+details.linewhy .steps>li::before{background:transparent; color:var(--muted-fg); border:1px solid var(--border-2)}
+.closeall{display:none; margin:6px 0 0; min-height:44px; padding:0 14px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--fg); font:inherit; font-size:.86rem; cursor:pointer}
+.closeall.show{display:inline-flex; align-items:center}
+@media print{details.linewhy>.steps{display:block}}
+@media(max-width:600px){details.linewhy>.steps{padding-left:6px; padding-right:6px} details.linewhy .steps>li{padding-left:30px} details.linewhy .steps math[display="block"]{font-size:.84em}}
+.sol .sb{min-width:0; overflow-wrap:break-word} .sol .sb math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
+@media(max-width:600px){.sol .sb .steps>li{padding-left:30px} .steps math[display="block"]{font-size:.88em}}
+.steps math[display="block"]{max-width:100%; overflow-x:auto; overflow-y:hidden; padding-block:4px; scrollbar-width:thin}
+.sol .sb>*:first-child{margin-top:0} .sol .sb>*:last-child{margin-bottom:0}
+@media(max-width:600px){.sol{grid-template-columns:1fr}}
+.card.exam h4{margin:.5em 0 .2em}
+h1,h2,h3,h4{text-wrap:balance} p,li{text-wrap:pretty}
+.tbl{font-variant-numeric:tabular-nums}
+.tag, .qt{text-transform:none; letter-spacing:0; font-size:.74rem}
+.totop{width:44px; height:44px}
+button:active, details.q>summary:active{transform:scale(.98)}
+.tbl.sheet td:last-child{color:var(--muted-fg)}
+/* page switcher, shared by the sidebar and the phone menu */
+.pages{display:grid; gap:4px; margin-top:16px}
+.pages a{display:flex; gap:10px; align-items:flex-start; padding:7px 10px; border:1px solid var(--border); border-radius:8px; color:var(--fg); text-decoration:none; line-height:1.3; font-weight:600; font-size:.86rem}
+.pages a:hover{background:var(--muted)}
+.pages b{flex:none; width:22px; height:22px; border-radius:6px; display:grid; place-items:center; font-size:.74rem; background:var(--muted); color:var(--muted-fg)}
+.pages small{display:block; font-weight:400; font-size:.74rem; color:var(--muted-fg); margin-top:2px}
+.pages a[aria-current="page"]{border-color:var(--brand); background:var(--brand-soft)}
+.pages a[aria-current="page"] b{background:var(--brand); color:var(--brand-fg)}
+.toc .pages a{padding:6px 9px}
+
+/* phone and tablet: a sticky bar that opens a menu of pages and sections */
+@media(max-width:1059px){
+  .themebtn{top:auto; bottom:14px}
+  .tocwrap-mobile{position:sticky; top:0; z-index:15; background:var(--bg); border-bottom:1px solid var(--border);
+    margin:0 calc(-1 * clamp(18px,5vw,72px)); padding:8px clamp(18px,5vw,72px)}
+  details.mtoc{border:0; padding:0; background:transparent}
+  details.mtoc>summary{list-style:none; display:flex; align-items:center; gap:10px; padding:4px 0; font-size:.9rem}
+  details.mtoc>summary::-webkit-details-marker{display:none}
+  details.mtoc .here{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted-fg); font-weight:500}
+  details.mtoc .mbtn{flex:none; border:1px solid var(--border-2); border-radius:8px; padding:6px 12px; font-weight:600; background:var(--card); color:var(--fg)}
+  details.mtoc[open] .mbtn{background:var(--primary); color:var(--primary-fg); border-color:var(--primary)}
+  .mpanel{max-height:calc(100vh - 70px); max-height:calc(100dvh - 70px); overflow-y:auto; padding:6px 0 14px; overscroll-behavior:contain}
+  .mpanel .pages{margin-top:4px}
+  .mpanel .pages a{padding:10px 12px; font-size:.95rem}
+  .mgrp{letter-spacing:.11em; font-size:.66rem; color:var(--muted-fg); font-weight:700; margin:14px 0 4px}
+  details.mtoc .mpanel>a{display:block; padding:8px 4px; color:var(--fg); text-decoration:none; border-bottom:1px solid var(--border); font-size:.95rem}
+}
+@media(max-width:700px){
+  html,body{overflow-x:clip}
+  .tocwrap-mobile{margin:0 -16px; padding:8px 16px}
+}
+
+/* back-to-top arrow, shown once the page is scrolled */
+.totop{position:fixed; right:14px; bottom:14px; z-index:20; width:42px; height:42px; border-radius:50%; display:grid; place-items:center;
+  background:var(--card); color:var(--fg); border:1px solid var(--border); box-shadow:var(--shadow-sm); cursor:pointer;
+  font:inherit; font-size:1.2rem; line-height:1; opacity:0; visibility:hidden; transform:translateY(8px); transition:opacity .2s, transform .2s, visibility .2s}
+.totop:hover{background:var(--muted)}
+.totop.show{opacity:1; visibility:visible; transform:none}
+@media(max-width:1059px){.totop{bottom:62px}}
+@media print{.totop{display:none}}
+
+/* SMAI additions */
+.skip{position:absolute; left:-999px; top:8px; background:var(--card); padding:8px 12px; border:1px solid var(--border); border-radius:8px; z-index:30}
+.skip:focus{left:8px}
+.toc .brand a{color:inherit; text-decoration:none}
+.toc .brand a:hover{text-decoration:underline}
+.pages span{min-width:0}
+.pager{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:64px 0 16px; max-width:70ch}
+.pager a{display:block; padding:12px 16px; border:1px solid var(--border); border-radius:var(--radius); text-decoration:none; color:var(--fg); font-weight:600; min-height:44px}
+.pager a:hover{background:var(--muted)}
+.pager a.nx{text-align:right}
+.pager small{display:block; font-weight:500; color:var(--muted-fg); font-size:.78rem}
+.credit{margin-top:24px; max-width:70ch}
+.notice{background:var(--amber-soft); border:1px solid color-mix(in srgb,var(--amber) 35%,var(--border)); border-radius:var(--radius); padding:12px 16px; margin:18px 0; max-width:70ch}
+.notice>*:first-child{margin-top:0} .notice>*:last-child{margin-bottom:0}
+.slides{font-size:.84rem; color:var(--muted-fg); margin:.2em 0 1em}
+.mcq{list-style:none; padding-left:0}
+.mcq>li{margin:.2em 0}
+figure.slide{margin:20px 0; max-width:640px}
+figure.slide img{display:block; width:100%; height:auto; border:1px solid var(--border); border-radius:8px; background:#fff}
+figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px; line-height:1.5}
+.slidepair{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px; margin:20px 0}
+.slidepair figure.slide{margin:0}
+.toc .brand a{display:inline; padding:0; margin:0; color:inherit; border-radius:0}
+.toc .brand a:hover{background:none; text-decoration:underline}
+@media(max-width:600px){ .tbl.collapse-last th:last-child, .tbl.collapse-last td:last-child{display:none} .tbl .sm{display:block; font-size:.8rem; color:var(--muted-fg)} }
+@media(min-width:601px){ .tbl .sm{display:none} }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the notes</a>
+<button class="themebtn" id="themebtn" type="button" aria-label="Switch colour theme (auto, light, dark)"><span class="ico" aria-hidden="true">◐</span> <span class="lbl">Auto</span></button>
+<div class="wrap">
+<aside class="toc">
+  <div class="brand"><a href="../../">SMAI</a> · 2026 prep<small>Statistical Methods in AI (CS7.403)</small></div>
+  <nav class="pages" aria-label="Pages of the guide"><a href="../"><b>0</b><span>Start here<small>How the course runs, what to revise, the plan</small></span></a><a href="../basics/"><b>B</b><span>Maths basics<small>Vectors, matrices, eigenvectors, probability, gradients</small></span></a><a href="../foundations/"><b>1</b><span>Foundations<small>L01–L07: k-NN, regression, rank, SVD, PCA, Quiz 1</small></span></a><a href="../probabilistic/"><b>2</b><span>Probabilistic ML<small>L08–L13: LDA, LSI, Bayes, MLE, GMM, SVM, generalisation</small></span></a><a href="../neural/"><b>3</b><span>Neural networks<small>L14–L19: perceptron, MLP, backprop, training</small></span></a><a href="../deep/"><b>4</b><span>Deep learning<small>L20–L26: CNNs, RNNs, attention, transformers</small></span></a><a href="../sheet/" aria-current="page"><b>F</b><span>Formula sheet<small>Every formula on one page, with where it comes from</small></span></a></nav>
+  <nav id="tocnav" aria-label="On this page">
+  <div class="grp">On this page</div>
+  <a href="#conventions">Notation used throughout</a>
+<a href="#f-basics">Maths basics</a>
+<a href="#f-foundations">Page 1 · Foundations</a>
+<a href="#f-probabilistic">Page 2 · Probabilistic ML</a>
+<a href="#f-neural">Page 3 · Neural networks</a>
+<a href="#f-deep">Page 4 · Deep learning</a>
+<a href="#checks">Quick checks on an answer</a>
+  </nav>
+  <a class="other" href="../../../">All study guides</a>
+</aside>
+<main id="main">
+<div class="tocwrap-mobile">
+<details class="mtoc"><summary><span class="here">SMAI 2026 prep · Formula sheet</span><span class="mbtn">Menu</span></summary>
+<div class="mpanel">
+<nav class="pages" aria-label="Pages of the guide"><a href="../"><b>0</b><span>Start here<small>How the course runs, what to revise, the plan</small></span></a><a href="../basics/"><b>B</b><span>Maths basics<small>Vectors, matrices, eigenvectors, probability, gradients</small></span></a><a href="../foundations/"><b>1</b><span>Foundations<small>L01–L07: k-NN, regression, rank, SVD, PCA, Quiz 1</small></span></a><a href="../probabilistic/"><b>2</b><span>Probabilistic ML<small>L08–L13: LDA, LSI, Bayes, MLE, GMM, SVM, generalisation</small></span></a><a href="../neural/"><b>3</b><span>Neural networks<small>L14–L19: perceptron, MLP, backprop, training</small></span></a><a href="../deep/"><b>4</b><span>Deep learning<small>L20–L26: CNNs, RNNs, attention, transformers</small></span></a><a href="../sheet/" aria-current="page"><b>F</b><span>Formula sheet<small>Every formula on one page, with where it comes from</small></span></a></nav>
+<div class="mgrp">On this page</div>
+<a href="#conventions">Notation used throughout</a>
+<a href="#f-basics">Maths basics</a>
+<a href="#f-foundations">Page 1 · Foundations</a>
+<a href="#f-probabilistic">Page 2 · Probabilistic ML</a>
+<a href="#f-neural">Page 3 · Neural networks</a>
+<a href="#f-deep">Page 4 · Deep learning</a>
+<a href="#checks">Quick checks on an answer</a>
+<a href="../../../">All study guides</a>
+</div>
+</details>
+</div>
+<!--desc: Every formula from the SMAI 2026 prep guide on one page, grouped by page, each with a link to the section that explains and derives it.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Formula sheet</div>
+  <h1>Formula sheet</h1>
+  <p class="lead">Every formula in the guide, grouped by page. The last column links to the section that explains the symbols and derives the result. Use the sheet to revise, not to learn. If a row means nothing to you, follow its link.</p>
+</header>
+
+<section>
+<h2 id="conventions">Notation used throughout</h2>
+<table class="tbl sheet">
+<thead><tr><th>Symbol</th><th>Meaning</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td><math><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mi>d</mi></msup></mrow></math></td><td>The <math><mi>i</mi></math>-th sample, a column of <math><mi>d</mi></math> numbers (features)</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td><math><msub><mi>y</mi><mi>i</mi></msub></math></td><td>Its label or target</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td><math><mi>N</mi></math></td><td>Number of samples</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td><math><mi>X</mi></math></td><td>Data matrix, one sample per row (<math><mrow><mi>N</mi><mo>×</mo><mi>d</mi></mrow></math>) unless a section says otherwise</td><td><a href="../foundations/#data-matrix">1.10</a></td></tr>
+<tr><td><math><mi>w</mi></math>, <math><mi>b</mi></math></td><td>Weights and bias. With an augmented <math><mrow><mi>x</mi><mo>=</mo><msup><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><msup><mi>x</mi><mi class="tml-sml-pad">𝖳</mi></msup><mo separator="true">,</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">]</mo></mrow><mi>𝖳</mi></msup></mrow></math>, the bias is the last weight</td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td><math><mi>η</mi></math></td><td>Learning rate (eta)</td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td><math><mi>λ</mi></math></td><td>Regularisation strength, or an eigenvalue (lambda)</td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td><math><mi>μ</mi></math>, <math><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow></math></td><td>Mean vector and covariance matrix</td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td><math><mrow><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>z</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td>Sigmoid <math><mrow><mn>1</mn><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mi>z</mi></mrow></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-basics">Maths basics</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Dot product and angle</td><td><math><mrow><msup><mi>a</mi><mi>𝖳</mi></msup><mi>b</mi><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>a</mi><mi>i</mi></msub><msub><mi>b</mi><mi>i</mi></msub></mrow></math><wbr><math><mrow><mrow></mrow><mo>=</mo><mi>‖</mi><mi>a</mi><mi>‖</mi><mi>‖</mi><mi>b</mi><mi>‖</mi><mrow><mspace width="0.1667em"></mspace><mi>cos</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>θ</mi></mrow></math></td><td><a href="../basics/#vectors">B.1</a></td></tr>
+<tr><td>Projection of <math><mi>x</mi></math> on unit <math><mi>u</mi></math></td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>u</mi><mi class="tml-sml-pad">𝖳</mi></msup><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><mi>u</mi></mrow></math></td><td><a href="../basics/#vectors">B.1</a></td></tr>
+<tr><td><math><msub><mi>L</mi><mi>p</mi></msub></math> norm</td><td><math><mrow><mi>‖</mi><mi>x</mi><msub><mi>‖</mi><mi>p</mi></msub><mo>=</mo><msup><mrow><mo fence="true" form="prefix" stretchy="true">(</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mi>|</mi><msub><mi>x</mi><mi>i</mi></msub><msup><mi>|</mi><mi>p</mi></msup><mo fence="true" form="postfix" stretchy="true">)</mo></mrow><mrow><mn>1</mn><mi>/</mi><mi>p</mi></mrow></msup></mrow></math></td><td><a href="../basics/#norms">B.2</a></td></tr>
+<tr><td><math><msub><mi>L</mi><mn>0</mn></msub></math>, <math><msub><mi>L</mi><mi>∞</mi></msub></math></td><td>number of non-zero entries, largest <math><mrow><mi>|</mi><msub><mi>x</mi><mi>i</mi></msub><mi>|</mi></mrow></math></td><td><a href="../basics/#norms">B.2</a></td></tr>
+<tr><td>Transpose and inverse of a product</td><td><math><mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup><mo>=</mo><msup><mi>B</mi><mi class="tml-med-pad">𝖳</mi></msup><msup><mi>A</mi><mi class="tml-lrg-pad">𝖳</mi></msup></mrow></math>, <math><mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><mo>=</mo><msup><mi>B</mi><mrow class="tml-med-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><msup><mi>A</mi><mrow class="tml-lrg-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup></mrow></math></td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Inverse of a 2×2</td><td><math><mrow><msup><mrow><mo fence="true" form="prefix" stretchy="true">[</mo><mtable><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mi>a</mi></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mi>b</mi></mtd></mtr><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mi>c</mi></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mi>d</mi></mtd></mtr></mtable><mo fence="true" form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><mo>=</mo><mfrac><mn>1</mn><mrow><mi>a</mi><mi>d</mi><mo>−</mo><mi>b</mi><mi>c</mi></mrow></mfrac><mrow><mo fence="true" form="prefix" stretchy="true">[</mo><mtable><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mi>d</mi></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mrow><mo form="prefix" stretchy="false">−</mo><mi>b</mi></mrow></mtd></mtr><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mrow><mo form="prefix" stretchy="false">−</mo><mi>c</mi></mrow></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mi>a</mi></mtd></mtr></mtable><mo fence="true" form="postfix" stretchy="true">]</mo></mrow></mrow></math></td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Positive semi-definite</td><td><math><mrow><msup><mi>z</mi><mi class="tml-sml-pad">𝖳</mi></msup><mi>A</mi><mi>z</mi><mo>≥</mo><mn>0</mn></mrow></math> for every <math><mi>z</mi></math></td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Rank of a product</td><td><math><mrow><mi>rank</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>rank</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>X</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≤</mo><mrow><mi>min</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>N</mi><mo separator="true">,</mo><mi>d</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../basics/#rank">B.4</a></td></tr>
+<tr><td>Eigenvalues</td><td><math><mrow><mi>A</mi><mi>v</mi><mo>=</mo><mi>λ</mi><mi>v</mi></mrow></math>, found from <math><mrow><mrow><mi>det</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mo>−</mo><mi>λ</mi><mi>I</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0</mn></mrow></math></td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>2×2 shortcut</td><td><math><mrow><msup><mi>λ</mi><mn>2</mn></msup><mo>−</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>tr</mi><mo>⁡</mo><mspace width="0.1667em"></mspace><mi>A</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>λ</mi><mo>+</mo><mrow><mi>det</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>A</mi><mo>=</mo><mn>0</mn></mrow></math></td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>Sum and product of eigenvalues</td><td><math><mrow><mo movablelimits="false">∑</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>=</mo><mi>tr</mi><mo>⁡</mo><mspace width="0.1667em"></mspace><mi>A</mi></mrow></math>, <math><mrow><mo movablelimits="false">∏</mo><msub><mi>λ</mi><mi>i</mi></msub><mo>=</mo><mrow><mi>det</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>A</mi></mrow></math></td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>Eigen decomposition (symmetric <math><mi>A</mi></math>)</td><td><math><mrow><mi>A</mi><mo>=</mo><mi>Q</mi><mrow><mi mathvariant="normal">Λ</mi><mspace></mspace></mrow><msup><mi>Q</mi><mi class="tml-med-pad">𝖳</mi></msup><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>λ</mi><mi>i</mi></msub><msub><mi>q</mi><mi>i</mi></msub><msubsup><mi>q</mi><mi>i</mi><mi class="tml-med-pad">𝖳</mi></msubsup></mrow></math></td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>SVD</td><td><math><mrow><mi>M</mi><mo>=</mo><mi>U</mi><mi>D</mi><msup><mi>V</mi><mi>𝖳</mi></msup><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>d</mi><mi>i</mi></msub><msub><mi>u</mi><mi>i</mi></msub><msubsup><mi>v</mi><mi>i</mi><mi class="tml-sml-pad">𝖳</mi></msubsup></mrow></math>, <math><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>=</mo><msqrt><mrow><msub><mi>λ</mi><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>M</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>M</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></msqrt></mrow></math></td><td><a href="../basics/#svd-basics">B.6</a></td></tr>
+<tr><td>Expectation and variance</td><td><math><mrow><mi>E</mi><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">]</mo></mrow><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>x</mi></msub><mi>x</mi><mspace width="0.1667em"></mspace><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><mi>Var</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math><wbr><math><mrow><mrow></mrow><mo>=</mo><mi>E</mi><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><msup><mi>x</mi><mn class="tml-sml-pad">2</mn></msup><mo fence="true" form="postfix" stretchy="false">]</mo></mrow><mo>−</mo><mi>E</mi><msup><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">]</mo></mrow><mn>2</mn></msup></mrow></math></td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td>Sample covariance</td><td><math><mrow><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup></mrow></math></td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td>Total probability</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>B</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>A</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>A</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../basics/#bayes">B.8</a></td></tr>
+<tr><td>Bayes' theorem</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>B</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>A</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></mfrac></mrow></math></td><td><a href="../basics/#bayes">B.8</a></td></tr>
+<tr><td>Univariate normal</td><td><math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><msqrt><mrow><mn>2</mn><mi>π</mi><msup><mi>σ</mi><mn>2</mn></msup></mrow></msqrt></mfrac><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></msup></mrow></math></td><td><a href="../basics/#gaussian">B.9</a></td></tr>
+<tr><td>Multivariate normal</td><td><math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>2</mn><mi>π</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mi>d</mi><mi>/</mi><mn>2</mn></mrow></msup><mi>|</mi><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><msup><mi>|</mi><mrow><mn>1</mn><mi>/</mi><mn>2</mn></mrow></msup></mrow></mfrac><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mfrac><mn scriptlevel="2" style="math-depth:2;">1</mn><mn scriptlevel="2" style="math-depth:2;">2</mn></mfrac><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup><msup><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></msup></mrow></math></td><td><a href="../basics/#gaussian">B.9</a></td></tr>
+<tr><td>Vector gradients</td><td><math><mrow><msub><mo form="prefix" stretchy="false">∇</mo><mi>w</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>a</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>a</mi></mrow></math>, <math><mrow><msub><mo form="prefix" stretchy="false">∇</mo><mi>w</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>A</mi><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math><wbr><math><mrow><mrow></mrow><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mo>+</mo><msup><mi>A</mi><mi class="tml-lrg-pad">𝖳</mi></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>w</mi></mrow></math></td><td><a href="../basics/#gradient">B.11</a></td></tr>
+<tr><td>Sigmoid and tanh derivatives</td><td><math><mrow><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mo>=</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>σ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msup><mi>tanh</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mo>⁡</mo><mspace width="0.1667em"></mspace><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>tanh</mi><mn>2</mn></msup><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow></math></td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+<tr><td>Chain rule</td><td><math><mrow><mfrac><mrow><mi>d</mi><mi>L</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>d</mi><mi>L</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac><mo>⋅</mo><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac></mrow></math></td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+<tr><td>Lagrangian, one constraint</td><td><math><mrow><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo separator="true">,</mo><mi>λ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>f</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>−</mo><mi>λ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>g</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>−</mo><mi>c</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, set both gradients to 0</td><td><a href="../basics/#lagrange">B.13</a></td></tr>
+<tr><td>Max <math><mrow><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>A</mi><mi>w</mi></mrow></math> with <math><mrow><mi>‖</mi><mi>w</mi><mi>‖</mi><mo>=</mo><mn>1</mn></mrow></math></td><td>top eigenvector of <math><mi>A</mi></math> (min gives the bottom one)</td><td><a href="../basics/#lagrange">B.13</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-foundations">Page 1 · Foundations</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>k-NN</td><td>majority label of the <math><mi>k</mi></math> nearest training samples</td><td><a href="../foundations/#knn">1.2</a></td></tr>
+<tr><td>Euclidean and Manhattan distance</td><td><math><mrow><mi>‖</mi><mi>x</mi><mo>−</mo><mi>z</mi><msub><mi>‖</mi><mn>2</mn></msub></mrow></math>, <math><mrow><mi>‖</mi><mi>x</mi><mo>−</mo><mi>z</mi><msub><mi>‖</mi><mn>1</mn></msub><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mi>|</mi><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>z</mi><mi>i</mi></msub><mi>|</mi></mrow></math></td><td><a href="../foundations/#knn">1.2</a></td></tr>
+<tr><td>Linear classifier</td><td><math><mrow><mover><mi>y</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mi>sign</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>x</mi><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td>Multi-class (one weight vector per class)</td><td><math><mrow><mover><mi>y</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><msub><mi>arg max</mi><mi>c</mi></msub><mo>⁡</mo><mspace width="0.1667em"></mspace><msubsup><mi>w</mi><mi>c</mi><mi class="tml-med-pad">𝖳</mi></msubsup><mi>x</mi></mrow></math></td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td>Min–max scaling</td><td><math><mrow><msup><mi>x</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msup><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><msub><mi>x</mi><mrow><mi>min</mi><mo>⁡</mo></mrow></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mrow><mi>max</mi><mo>⁡</mo></mrow></msub><mo>−</mo><msub><mi>x</mi><mrow><mi>min</mi><mo>⁡</mo></mrow></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Standardising (z-score)</td><td><math><mrow><msup><mi>x</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msup><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mi>σ</mi></mrow></math></td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Weighted Euclidean distance</td><td><math><msqrt><mrow><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>a</mi><mi>i</mi></msub><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>z</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></msqrt></math></td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Accuracy</td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>T</mi><mi>P</mi><mo>+</mo><mi>T</mi><mi>N</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mi>N</mi></mrow></math></td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>Precision and recall</td><td><math><mrow><mi>T</mi><mi>P</mi><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>T</mi><mi>P</mi><mo>+</mo><mi>F</mi><mi>P</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><mi>T</mi><mi>P</mi><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>T</mi><mi>P</mi><mo>+</mo><mi>F</mi><mi>N</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>F-score</td><td><math><mrow><msub><mi>F</mi><mn>1</mn></msub><mo>=</mo><mn>2</mn><mi>P</mi><mi>R</mi><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>P</mi><mo>+</mo><mi>R</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>MSE loss</td><td><math><mrow><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math><wbr><math><mrow><mrow></mrow><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><mi>‖</mi><mi>y</mi><mo>−</mo><mi>X</mi><mi>w</mi><msup><mi>‖</mi><mn>2</mn></msup></mrow></math></td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Closed-form least squares</td><td><math><mrow><mi>w</mi><mo>=</mo><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>y</mi></mrow></math></td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Weighted least squares</td><td><math><mrow><mi>w</mi><mo>=</mo><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mi mathvariant="normal">Λ</mi><mspace></mspace></mrow><mi>X</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mi mathvariant="normal">Λ</mi><mspace></mspace></mrow><mi>y</mi></mrow></math>, <math><mrow><mrow><mi mathvariant="normal">Λ</mi><mspace></mspace></mrow><mo>=</mo><mi>diag</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>λ</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Gradient descent step</td><td><math><mrow><msub><mi>w</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi>w</mi><mi>k</mi></msub><mo>−</mo><mi>η</mi><mo form="prefix" stretchy="false">∇</mo><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>w</mi><mi>k</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td>MSE gradient</td><td><math><mrow><mo form="prefix" stretchy="false">∇</mo><mi>J</mi><mo>=</mo><mo form="prefix" stretchy="false">−</mo><mfrac><mn>2</mn><mi>N</mi></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msub><mi>x</mi><mi>i</mi></msub></mrow></math></td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td>Ridge</td><td><math><mrow><mi>J</mi><mo>=</mo><mi>‖</mi><mi>y</mi><mo>−</mo><mi>X</mi><mi>w</mi><msup><mi>‖</mi><mn>2</mn></msup><mo>+</mo><mi>λ</mi><mi>‖</mi><mi>w</mi><msubsup><mi>‖</mi><mn>2</mn><mn>2</mn></msubsup></mrow></math>, <math><mi>w</mi></math><wbr><math><mrow><mrow></mrow><mo>=</mo><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi><mo>+</mo><mi>λ</mi><mi>I</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>y</mi></mrow></math></td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td>Lasso</td><td><math><mrow><mi>J</mi><mo>=</mo><mi>‖</mi><mi>y</mi><mo>−</mo><mi>X</mi><mi>w</mi><msup><mi>‖</mi><mn>2</mn></msup><mo>+</mo><mi>λ</mi><mi>‖</mi><mi>w</mi><msub><mi>‖</mi><mn>1</mn></msub></mrow></math> (no closed form, gives sparse <math><mi>w</mi></math>)</td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td>Homogeneous system <math><mrow><mi>A</mi><mi>x</mi><mo>=</mo><mn>0</mn></mrow></math>, <math><mrow><mi>‖</mi><mi>x</mi><mi>‖</mi><mo>=</mo><mn>1</mn></mrow></math></td><td>eigenvector of <math><mrow><msup><mi>A</mi><mi class="tml-lrg-pad">𝖳</mi></msup><mi>A</mi></mrow></math> with the smallest eigenvalue</td><td><a href="../foundations/#eigen-opt">1.9</a></td></tr>
+<tr><td>Rank of a data matrix</td><td>at most <math><mrow><mrow><mi>min</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>N</mi><mo separator="true">,</mo><mi>d</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, about the number of distinct "concepts" in practice</td><td><a href="../foundations/#data-matrix">1.10</a></td></tr>
+<tr><td>Best rank-<math><mi>k</mi></math> approximation</td><td>keep the <math><mi>k</mi></math> largest singular values, <math><mrow><mover><mi>A</mi><mo stretchy="false" class="chr-lrg wbk-lrg-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><msub><mi>U</mi><mi>k</mi></msub><msub><mi>D</mi><mi>k</mi></msub><msubsup><mi>V</mi><mi>k</mi><mi>𝖳</mi></msubsup></mrow></math></td><td><a href="../foundations/#svd">1.11</a></td></tr>
+<tr><td>PCA direction</td><td>top eigenvectors of the covariance <math><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow></math> (of <math><mrow><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi></mrow></math> for centred <math><mi>X</mi></math>)</td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>PCA projection and reconstruction</td><td><math><mrow><msup><mi>x</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msup><mo>=</mo><mi>W</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi>μ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><mover><mi>x</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mi>μ</mi><mo>+</mo><msup><mi>W</mi><mi>𝖳</mi></msup><msup><mi>x</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msup></mrow></math></td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>How many components</td><td>smallest <math><mi>p</mi></math> with <math><mrow><msub><mo movablelimits="false">∑</mo><mrow><mi>i</mi><mo>≤</mo><mi>p</mi></mrow></msub><msub><mi>λ</mi><mi>i</mi></msub><mo fence="false" stretchy="true" symmetric="true" minsize="1.2em" maxsize="1.2em">/</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>λ</mi><mi>i</mi></msub><mo>≥</mo><mn>0.95</mn></mrow></math></td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>Small-matrix trick</td><td>if <math><mrow><mi>X</mi><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>u</mi><mo>=</mo><mi>λ</mi><mi>u</mi></mrow></math> then <math><mrow><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>u</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>λ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>u</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../foundations/#eigenfaces">1.13</a></td></tr>
+<tr><td>Running mean</td><td><math><mrow><msub><mi>μ</mi><mrow><mi>N</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mfrac><mrow><mi>N</mi><msub><mi>μ</mi><mi>N</mi></msub><mo>+</mo><msub><mi>x</mi><mrow><mi>N</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><mrow><mi>N</mi><mo>+</mo><mn>1</mn></mrow></mfrac></mrow></math></td><td><a href="../foundations/#odds-and-ends">1.14</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-probabilistic">Page 2 · Probabilistic ML</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>PCA as reconstruction</td><td><math><mrow><msub><mi>min</mi><mi>u</mi></msub><mo>⁡</mo><mspace width="0.1667em"></mspace><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mi>‖</mi><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mi>u</mi><msup><mi>u</mi><mi class="tml-sml-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><msup><mi>‖</mi><mn>2</mn></msup></mrow></math> is the same as <math><mrow><msub><mi>max</mi><mi>u</mi></msub><mo>⁡</mo><mspace width="0.1667em"></mspace><msup><mi>u</mi><mi class="tml-sml-pad">𝖳</mi></msup><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mi>u</mi></mrow></math></td><td><a href="../probabilistic/#pca-recon">2.1</a></td></tr>
+<tr><td>Fisher criterion</td><td><math><mrow><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>u</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mrow><msup><mi>u</mi><mi class="tml-sml-pad">𝖳</mi></msup><msub><mi>S</mi><mi>B</mi></msub><mi>u</mi></mrow><mrow><msup><mi>u</mi><mi class="tml-sml-pad">𝖳</mi></msup><msub><mi>S</mi><mi>W</mi></msub><mi>u</mi></mrow></mfrac></mrow></math></td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Fisher direction (two classes)</td><td><math><mrow><mi>u</mi><mo>∝</mo><msubsup><mi>S</mi><mi>W</mi><mrow class="tml-med-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>μ</mi><mn>1</mn></msub><mo>−</mo><msub><mi>μ</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Scatter matrices</td><td><math><mrow><msub><mi>S</mi><mi>B</mi></msub><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>μ</mi><mn>1</mn></msub><mo>−</mo><msub><mi>μ</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>μ</mi><mn>1</mn></msub><mo>−</mo><msub><mi>μ</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup></mrow></math>, <math><mrow><msub><mi>S</mi><mi>W</mi></msub><mo>=</mo><msub><mi>S</mi><mn>1</mn></msub><mo>+</mo><msub><mi>S</mi><mn>2</mn></msub></mrow></math></td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Nuclear norm</td><td><math><mrow><mi>‖</mi><mi>A</mi><msub><mi>‖</mi><mo>∗</mo></msub><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>d</mi><mi>i</mi></msub></mrow></math> (sum of singular values)</td><td><a href="../probabilistic/#lowrank">2.3</a></td></tr>
+<tr><td>LSI query in <math><mi>k</mi></math> dimensions</td><td><math><mrow><mover><mi>q</mi><mo stretchy="false" class="chr-med wbk-med-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><msubsup><mi>D</mi><mi>k</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msubsup><msubsup><mi>U</mi><mi>k</mi><mi class="tml-sml-pad">𝖳</mi></msubsup><mi>q</mi></mrow></math>, compare by cosine</td><td><a href="../probabilistic/#lsi">2.4</a></td></tr>
+<tr><td>Posterior</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mi>i</mi></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><mrow><msub><mo movablelimits="false">∑</mo><mi>j</mi></msub><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mi>j</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mi>j</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></mfrac></mrow></math></td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Bayes (MAP) rule</td><td>choose <math><msub><mi>ω</mi><mn>1</mn></msub></math> if <math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≥</mo><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Threshold, equal variance and priors</td><td><math><mrow><msup><mi>x</mi><mo form="prefix" stretchy="false" class="tml-sml-pad">∗</mo></msup><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>μ</mi><mn>1</mn></msub><mo>+</mo><msub><mi>μ</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></math></td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Boundary shape</td><td>shared <math><mrow><msup><mi>σ</mi><mn>2</mn></msup><mi>I</mi></mrow></math> gives the perpendicular bisector of the means, a shared <math><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow></math> gives a straight line, different <math><msub><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mi>i</mi></msub></math> give a curve (quadratic)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Risk-weighted rule</td><td>choose <math><msub><mi>ω</mi><mn>1</mn></msub></math> if <math><mrow><msub><mi>λ</mi><mn>1</mn></msub><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>1</mn></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≥</mo><msub><mi>λ</mi><mn>2</mn></msub><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>2</mn></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Log-likelihood</td><td><math><mrow><mi>ℓ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>θ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mi>ln</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>θ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>Gaussian MLE</td><td><math><mrow><mover><mi>μ</mi><mo stretchy="false" class="wbk-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub></mrow></math>, <math><mrow><mover><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mo stretchy="false" class="wbk-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>μ</mi><mo stretchy="false" class="wbk-acc" style="math-depth:0;">ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>μ</mi><mo stretchy="false" class="wbk-acc" style="math-depth:0;">ˆ</mo></mover><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup></mrow></math></td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>Coin MLE</td><td><math><mrow><mover><mi>p</mi><mo stretchy="false" class="chr-med wbk-med-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mtext>number of heads</mtext><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mi>N</mi></mrow></math></td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>MSE is MLE</td><td>Gaussian noise gives <math><mrow><mi>ℓ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>K</mi><mo>−</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math></td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>GMM density</td><td><math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>k</mi></msub><msub><mi>π</mi><mi>k</mi></msub><mspace width="0.1667em"></mspace><mi class="mathcal">𝒩</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>μ</mi><mi>k</mi></msub><mo separator="true">,</mo><msub><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mi>k</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msub><mo movablelimits="false">∑</mo><mi>k</mi></msub><msub><mi>π</mi><mi>k</mi></msub><mo>=</mo><mn>1</mn></mrow></math></td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>E-step (responsibilities)</td><td><math><mrow><msub><mi>γ</mi><mi>k</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mrow><msub><mi>π</mi><mi>k</mi></msub><mi class="mathcal">𝒩</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>μ</mi><mi>k</mi></msub><mo separator="true">,</mo><msub><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mi>k</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow><mrow><msub><mo movablelimits="false">∑</mo><mi>j</mi></msub><msub><mi>π</mi><mi>j</mi></msub><mi class="mathcal">𝒩</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>μ</mi><mi>j</mi></msub><mo separator="true">,</mo><msub><mrow><mi mathvariant="normal">Σ</mi><mspace></mspace></mrow><mi>j</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></mfrac></mrow></math></td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>M-step</td><td><math><mrow><msub><mi>N</mi><mi>k</mi></msub><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>γ</mi><mi>k</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msub><mi>μ</mi><mi>k</mi></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>N</mi><mi>k</mi></msub></mfrac><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>γ</mi><mi>k</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msub><mi>x</mi><mi>i</mi></msub></mrow></math>, <math><mrow><msub><mi>π</mi><mi>k</mi></msub><mo>=</mo><msub><mi>N</mi><mi>k</mi></msub><mi>/</mi><mi>N</mi></mrow></math></td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>k-means objective</td><td><math><mrow><mi>J</mi><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>k</mi></msub><msub><mo movablelimits="false">∑</mo><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>∈</mo><msub><mi>C</mi><mi>k</mi></msub></mrow></msub><mi>‖</mi><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>μ</mi><mi>k</mi></msub><msup><mi>‖</mi><mn>2</mn></msup></mrow></math></td><td><a href="../probabilistic/#kmeans">2.8</a></td></tr>
+<tr><td>Naive Bayes</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>y</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>∝</mo><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msub><mo movablelimits="false">∏</mo><mi>j</mi></msub><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>j</mi></msub><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#naive-bayes">2.9</a></td></tr>
+<tr><td>Logistic model</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>y</mi><mo>=</mo><mn>1</mn><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Binary cross-entropy</td><td><math><mrow><mi>L</mi><mo>=</mo><mo form="prefix" stretchy="false">−</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><msub><mi>y</mi><mi>i</mi></msub><mrow><mi>ln</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>z</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>+</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mi>ln</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>z</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">]</mo></mrow></mrow></math></td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Its gradient</td><td><math><mrow><mo form="prefix" stretchy="false">∇</mo><mi>L</mi><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msub><mi>x</mi><mi>i</mi></msub></mrow></math></td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Labels <math><mrow><mo form="prefix" stretchy="false">±</mo><mn>1</mn></mrow></math></td><td><math><mrow><mi>L</mi><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><mrow><mi>ln</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><msub><mi>y</mi><mi>i</mi></msub><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub></mrow></msup><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Softmax</td><td><math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>y</mi><mo>=</mo><mi>c</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><msup><mi>e</mi><mrow class="tml-sml-pad"><msubsup><mi>w</mi><mi>c</mi><mi class="tml-med-pad">𝖳</mi></msubsup><mi>x</mi></mrow></msup><mo fence="false" stretchy="true" symmetric="true" minsize="1.2em" maxsize="1.2em">/</mo><msub><mo movablelimits="false">∑</mo><mi>j</mi></msub><msup><mi>e</mi><mrow class="tml-sml-pad"><msubsup><mi>w</mi><mi>j</mi><mi class="tml-med-pad">𝖳</mi></msubsup><mi>x</mi></mrow></msup></mrow></math></td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>SVM margin</td><td><math><mrow><mn>2</mn><mi>/</mi><mi>‖</mi><mi>w</mi><mi>‖</mi></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Hard-margin SVM</td><td><math><mrow><mrow><mi>min</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>w</mi></mrow></math> such that <math><mrow><msub><mi>y</mi><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≥</mo><mn>1</mn></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Soft-margin SVM</td><td><math><mrow><mrow><mi>min</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>w</mi><mo>+</mo><mi>C</mi><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>ξ</mi><mi>i</mi></msub></mrow></math>, <math><mrow><msub><mi>y</mi><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≥</mo><mn>1</mn><mo>−</mo><msub><mi>ξ</mi><mi>i</mi></msub></mrow></math>, <math><mrow><msub><mi>ξ</mi><mi>i</mi></msub><mo>≥</mo><mn>0</mn></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Hinge loss</td><td><math><mrow><mrow><mi>max</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo>−</mo><mi>y</mi><mi>f</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>SVM dual</td><td><math><mrow><mrow><mi>max</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>α</mi><mi>i</mi></msub><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mo movablelimits="false">∑</mo><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><msub><mi>α</mi><mi>i</mi></msub><msub><mi>α</mi><mi>j</mi></msub><msub><mi>y</mi><mi>i</mi></msub><msub><mi>y</mi><mi>j</mi></msub><mspace width="0.1667em"></mspace><msubsup><mi>x</mi><mi>i</mi><mi class="tml-sml-pad">𝖳</mi></msubsup><msub><mi>x</mi><mi>j</mi></msub></mrow></math>, <math><mrow><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>α</mi><mi>i</mi></msub><msub><mi>y</mi><mi>i</mi></msub><mo>=</mo><mn>0</mn></mrow></math>, <math><mrow><mn>0</mn><mo>≤</mo><msub><mi>α</mi><mi>i</mi></msub><mo>≤</mo><mi>C</mi></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Weights from the dual</td><td><math><mrow><mi>w</mi><mo>=</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>α</mi><mi>i</mi></msub><msub><mi>y</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub></mrow></math></td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Kernel</td><td><math><mrow><mi>K</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>ϕ</mi><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>p</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup><mi>ϕ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>q</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, decision <math><mrow><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>α</mi><mi>i</mi></msub><msub><mi>y</mi><mi>i</mi></msub><mi>K</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo separator="true">,</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>+</mo><mi>b</mi></mrow></math></td><td><a href="../probabilistic/#kernels">2.12</a></td></tr>
+<tr><td>Polynomial kernels</td><td><math><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>p</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>q</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></math>, <math><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>p</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>q</mi><mo>+</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></math></td><td><a href="../probabilistic/#kernels">2.12</a></td></tr>
+<tr><td>Bias–variance</td><td>expected error = bias² + variance + irreducible noise</td><td><a href="../probabilistic/#generalization">2.13</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-neural">Page 3 · Neural networks</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Neuron</td><td><math><mrow><mi>o</mi><mo>=</mo><mi>ϕ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>w</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>x</mi><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../neural/#neuron">3.1</a></td></tr>
+<tr><td>Perceptron rule</td><td><math><mrow><msub><mi>w</mi><mi>i</mi></msub><mo stretchy="false">←</mo><msub><mi>w</mi><mi>i</mi></msub><mo>+</mo><mi>η</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>t</mi><mo>−</mo><mi>o</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msub><mi>x</mi><mi>i</mi></msub></mrow></math></td><td><a href="../neural/#perceptron">3.2</a></td></tr>
+<tr><td>Delta rule</td><td><math><mrow><mi>E</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mo movablelimits="false">∑</mo><mi>d</mi></msub><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>t</mi><mi>d</mi></msub><mo>−</mo><msub><mi>o</mi><mi>d</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math>, <math><mrow><mrow><mi mathvariant="normal">Δ</mi><mspace></mspace></mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mi>η</mi><msub><mo movablelimits="false">∑</mo><mi>d</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>t</mi><mi>d</mi></msub><mo>−</mo><msub><mi>o</mi><mi>d</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msub><mi>x</mi><mrow><mi>i</mi><mi>d</mi></mrow></msub></mrow></math></td><td><a href="../neural/#delta-rule">3.3</a></td></tr>
+<tr><td>MLP layer</td><td><math><mrow><mi>q</mi><mo>=</mo><mi>ϕ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>W</mi><mi>x</mi><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>Parameters of a dense layer</td><td>(inputs + 1) × outputs</td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>Cross-entropy</td><td><math><mrow><mi>L</mi><mo>=</mo><mo form="prefix" stretchy="false">−</mo><msub><mo movablelimits="false">∑</mo><mi>i</mi></msub><msub><mi>t</mi><mi>i</mi></msub><mrow><mi>ln</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><msub><mi>o</mi><mi>i</mi></msub></mrow></math></td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>ReLU and leaky ReLU</td><td><math><mrow><mrow><mi>max</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mi>x</mi></math> if <math><mrow><mi>x</mi><mo>&gt;</mo><mn>0</mn></mrow></math> else <math><mrow><mi>c</mi><mi>x</mi></mrow></math></td><td><a href="../neural/#activations">3.5</a></td></tr>
+<tr><td>ELU</td><td><math><mi>x</mi></math> if <math><mrow><mi>x</mi><mo>&gt;</mo><mn>0</mn></mrow></math> else <math><mrow><mi>a</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msup><mi>e</mi><mi class="tml-sml-pad">x</mi></msup><mo>−</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../neural/#activations">3.5</a></td></tr>
+<tr><td>Backprop, output layer</td><td><math><mrow><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><msub><mi>u</mi><mn>1</mn></msub></mrow></mfrac><mo>=</mo><mn>2</mn><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>o</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>s</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msub><mi>q</mi><mn>1</mn></msub></mrow></math></td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Backprop, hidden layer</td><td><math><mrow><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><msub><mi>w</mi><mn>11</mn></msub></mrow></mfrac><mo>=</mo><mn>2</mn><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>o</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>s</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msub><mi>u</mi><mn>1</mn></msub><mspace width="0.1667em"></mspace><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>p</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msub><mi>x</mi><mn>1</mn></msub></mrow></math></td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Through a layer</td><td><math><mrow><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>p</mi></mrow></mfrac><mfrac><mrow><mi>∂</mi><mi>p</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></mrow></math>, <math><mrow><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>W</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>∂</mi><mi>L</mi></mrow><mrow><mi>∂</mi><mi>p</mi></mrow></mfrac><mfrac><mrow><mi>∂</mi><mi>p</mi></mrow><mrow><mi>∂</mi><mi>W</mi></mrow></mfrac></mrow></math></td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Momentum</td><td><math><mrow><mrow><mi mathvariant="normal">Δ</mi><mspace></mspace></mrow><msup><mi>θ</mi><mi>k</mi></msup><mo>=</mo><mi>η</mi><mo form="prefix" stretchy="false">∇</mo><mi>L</mi><mo>+</mo><mi>γ</mi><mrow><mi mathvariant="normal">Δ</mi><mspace></mspace></mrow><msup><mi>θ</mi><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow></math>, <math><mrow><mi>θ</mi><mo stretchy="false">←</mo><mi>θ</mi><mo>−</mo><mrow><mi mathvariant="normal">Δ</mi><mspace></mspace></mrow><msup><mi>θ</mi><mi>k</mi></msup></mrow></math></td><td><a href="../neural/#training-practice">3.7</a></td></tr>
+<tr><td>Batch normalisation</td><td><math><mrow><mover><mi>x</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo>−</mo><msub><mi>μ</mi><mi>B</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><msqrt><mrow><msubsup><mi>σ</mi><mi>B</mi><mn>2</mn></msubsup><mo>+</mo><mi>ϵ</mi></mrow></msqrt></mrow></math>, <math><mrow><mi>y</mi><mo>=</mo><mi>γ</mi><mover><mi>x</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover><mo>+</mo><mi>β</mi></mrow></math></td><td><a href="../neural/#training-practice">3.7</a></td></tr>
+<tr><td>Taylor step</td><td><math><mrow><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo>−</mo><mi>η</mi><mi>g</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>≈</mo><mi>J</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>−</mo><mi>η</mi><mi>‖</mi><mi>g</mi><msup><mi>‖</mi><mn>2</mn></msup></mrow></math> for small <math><mi>η</mi></math></td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Optimal step (quadratic)</td><td><math><mrow><msup><mi>η</mi><mo form="prefix" stretchy="false">∗</mo></msup><mo>=</mo><mfrac><mrow><mi>‖</mi><mo form="prefix" stretchy="false">∇</mo><mi>J</mi><msup><mi>‖</mi><mn>2</mn></msup></mrow><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">∇</mo><msup><mi>J</mi><mi class="tml-lrg-pad">𝖳</mi></msup><mi>H</mi><mspace width="0.1667em"></mspace><mo form="prefix" stretchy="false">∇</mo><mi>J</mi></mrow></mfrac></mrow></math></td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Newton's method</td><td><math><mrow><mi>w</mi><mo stretchy="false">←</mo><mi>w</mi><mo>−</mo><msup><mi>H</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>1</mn></mrow></msup><mo form="prefix" stretchy="false">∇</mo><mi>J</mi></mrow></math></td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Adam</td><td><math><mrow><mi>m</mi><mo stretchy="false">←</mo><msub><mi>β</mi><mn>1</mn></msub><mi>m</mi><mo>+</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>β</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>g</mi></mrow></math>, <math><mrow><mi>v</mi><mo stretchy="false">←</mo><msub><mi>β</mi><mn>2</mn></msub><mi>v</mi><mo>+</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>β</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msup><mi>g</mi><mn class="tml-sml-pad">2</mn></msup></mrow></math>, <math><mrow><mi>w</mi><mo stretchy="false">←</mo><mi>w</mi><mo>−</mo><mi>η</mi><mspace width="0.1667em"></mspace><mover><mi>m</mi><mo stretchy="false" class="wbk-acc" style="math-depth:0;">ˆ</mo></mover><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msqrt><mover><mi>v</mi><mo stretchy="false" class="chr-sml wbk-sml-acc" style="math-depth:0;">ˆ</mo></mover></msqrt><mo>+</mo><mi>ϵ</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-deep">Page 4 · Deep learning</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Convolution output size</td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">⌊</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>n</mi><mo>+</mo><mn>2</mn><mi>p</mi><mo>−</mo><mi>k</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mi>s</mi><mo fence="true" form="postfix" stretchy="false">⌋</mo></mrow><mo>+</mo><mn>1</mn></mrow></math></td><td><a href="../deep/#conv-size">4.3</a></td></tr>
+<tr><td>Same padding (stride 1)</td><td><math><mrow><mi>p</mi><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></math></td><td><a href="../deep/#conv-size">4.3</a></td></tr>
+<tr><td>Conv layer parameters</td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>F</mi><mo>⋅</mo><mi>F</mi><mo>⋅</mo><mi>D</mi><mo>+</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>⋅</mo><mi>K</mi></mrow></math></td><td><a href="../deep/#cnn-params">4.4</a></td></tr>
+<tr><td>Two 3×3 versus one 5×5</td><td><math><mrow><mn>18</mn><msup><mi>C</mi><mn class="tml-med-pad">2</mn></msup></mrow></math> versus <math><mrow><mn>25</mn><msup><mi>C</mi><mn class="tml-med-pad">2</mn></msup></mrow></math> weights, same receptive field</td><td><a href="../deep/#cnn-design">4.5</a></td></tr>
+<tr><td>Residual block</td><td><math><mrow><mi>y</mi><mo>=</mo><mi>x</mi><mo>+</mo><mi>F</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../deep/#resnet">4.6</a></td></tr>
+<tr><td>RNN</td><td><math><mrow><msub><mi>h</mi><mi>t</mi></msub><mo>=</mo><mrow><mi>tanh</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>U</mi><msub><mi>x</mi><mi>t</mi></msub><mo>+</mo><mi>W</mi><msub><mi>h</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><msub><mi>o</mi><mi>t</mi></msub></math><wbr><math><mrow><mrow></mrow><mo>=</mo><mi>softmax</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>V</mi><msub><mi>h</mi><mi>t</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../deep/#rnn">4.8</a></td></tr>
+<tr><td>LSTM cell</td><td><math><mrow><msub><mi>C</mi><mi>t</mi></msub><mo>=</mo><msub><mi>f</mi><mi>t</mi></msub><mo>⊙</mo><msub><mi>C</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>i</mi><mi>t</mi></msub><mo>⊙</mo><msub><mover><mi>C</mi><mo stretchy="false" class="chr-med wbk-med" style="math-depth:0;">~</mo></mover><mi>t</mi></msub></mrow></math>, <math><msub><mi>h</mi><mi>t</mi></msub></math><wbr><math><mrow><mrow></mrow><mo>=</mo><msub><mi>o</mi><mi>t</mi></msub><mo>⊙</mo><mrow><mi>tanh</mi><mo>⁡</mo><mspace width="0.1667em"></mspace></mrow><msub><mi>C</mi><mi>t</mi></msub></mrow></math></td><td><a href="../deep/#lstm">4.9</a></td></tr>
+<tr><td>Cosine similarity</td><td><math><mrow><msup><mi>a</mi><mi>𝖳</mi></msup><mi>b</mi><mi>/</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>‖</mi><mi>a</mi><mi>‖</mi><mi>‖</mi><mi>b</mi><mi>‖</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../deep/#embeddings">4.10</a></td></tr>
+<tr><td>Attention</td><td><math><mrow><mi>softmax</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>Q</mi><msup><mi>K</mi><mi class="tml-sml-pad">𝖳</mi></msup><mi>/</mi><msqrt><msub><mi>d</mi><mi>k</mi></msub></msqrt><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><mi>V</mi></mrow></math></td><td><a href="../deep/#attention">4.11</a></td></tr>
+<tr><td>Queries, keys, values</td><td><math><mrow><mi>Q</mi><mo>=</mo><mi>X</mi><msub><mi>W</mi><mi>Q</mi></msub></mrow></math>, <math><mrow><mi>K</mi><mo>=</mo><mi>X</mi><msub><mi>W</mi><mi>K</mi></msub></mrow></math>, <math><mrow><mi>V</mi><mo>=</mo><mi>X</mi><msub><mi>W</mi><mi>V</mi></msub></mrow></math></td><td><a href="../deep/#attention">4.11</a></td></tr>
+<tr><td>Transformer block weights</td><td><math><mrow><mn>12</mn><msup><mi>D</mi><mn class="tml-sml-pad">2</mn></msup></mrow></math> (attention <math><mrow><mn>4</mn><msup><mi>D</mi><mn class="tml-sml-pad">2</mn></msup></mrow></math>, MLP <math><mrow><mn>8</mn><msup><mi>D</mi><mn class="tml-sml-pad">2</mn></msup></mrow></math>)</td><td><a href="../deep/#transformer">4.12</a></td></tr>
+<tr><td>ViT tokens</td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>H</mi><mi>/</mi><mi>P</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>W</mi><mi>/</mi><mi>P</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>+</mo><mn>1</mn></mrow></math></td><td><a href="../deep/#vit">4.13</a></td></tr>
+<tr><td>Contrastive loss</td><td><math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>Y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>D</mi><mn class="tml-sml-pad">2</mn></msup><mo>+</mo><mi>Y</mi><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mi>max</mi><mo>⁡</mo></mrow><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mi>m</mi><mo>−</mo><mi>D</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math></td><td><a href="../deep/#contrastive">4.15</a></td></tr>
+<tr><td>Triplet loss</td><td><math><mrow><mrow><mi>max</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mi>d</mi><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>p</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup><mo>−</mo><mi>d</mi><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>n</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mi>α</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math></td><td><a href="../deep/#contrastive">4.15</a></td></tr>
+</tbody>
+</table>
+<p>The full list for this page, with the LSTM parameter count, layer normalisation, position encodings and LoRA, is in <a href="../deep/#page-formulas">section 4.17</a>.</p>
+</section>
+
+<section>
+<h2 id="checks">Quick checks on an answer</h2>
+<ul>
+<li>A probability lies between 0 and 1, and the posteriors of all the classes add up to 1.</li>
+<li>A covariance matrix is symmetric, and its diagonal (the variances) is never negative.</li>
+<li>Eigenvalues of a symmetric PSD matrix (<math><mrow><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mi>X</mi></mrow></math>, a covariance) are never negative. They add up to the trace.</li>
+<li>Singular values are never negative, and there are at most <math><mrow><mrow><mi>min</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>m</mi><mo separator="true">,</mo><mi>n</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> non-zero ones.</li>
+<li>Precision, recall and accuracy lie between 0 and 1. Recall cannot change if you only change how many negatives there are.</li>
+<li>After mean-centring, the new points add up to the zero vector.</li>
+<li>A gradient descent step on a convex bowl should lower the loss. If it rises, the learning rate is too big or the sign is wrong.</li>
+<li>Substitute a closed-form <math><mi>w</mi></math> back into the data. For points that lie exactly on a line, the fit should go through every point.</li>
+<li>Check a convolution output size by counting positions on a small grid, and check a parameter count against PyTorch.</li>
+</ul>
+</section>
+
+<nav class="pager" aria-label="Previous and next page"><a href="../deep/"><small>Previous</small>Deep learning</a><span></span></nav>
+<p class="small credit">Built from the Spring 2026 offering of the course (slides by C. V. Jawahar, IIIT Hyderabad). The slides, quiz paper and solutions belong to the instructors and TAs and are used here for study. Notes under <a href="../../../LICENSE-CONTENT">CC BY-SA 4.0</a>. Found a mistake? <a href="https://github.com/Arihant25/study-guides/issues/new/choose">Open an issue</a>.</p>
+</main>
+</div>
+<button class="totop" id="totop" type="button" aria-label="Back to top">↑</button>
+<script>
+(function(){
+  // Colour theme: auto, light, dark (remembered in this browser if storage works)
+  var btn=document.getElementById('themebtn');
+  var ico=btn.querySelector('.ico'), lbl=btn.querySelector('.lbl');
+  var ICONS={auto:'◐',light:'☀',dark:'☾'}, ORDER=['auto','light','dark'];
+  function apply(mode){
+    if(mode==='light'||mode==='dark') document.documentElement.setAttribute('data-theme',mode);
+    else { document.documentElement.removeAttribute('data-theme'); mode='auto'; }
+    ico.textContent=ICONS[mode]; lbl.textContent=mode.charAt(0).toUpperCase()+mode.slice(1);
+    return mode;
+  }
+  var saved='auto'; try{ saved=localStorage.getItem('smai-theme')||'auto'; }catch(e){}
+  var current=apply(saved);
+  btn.addEventListener('click',function(){
+    current=apply(ORDER[(ORDER.indexOf(current)+1)%ORDER.length]);
+    try{ current==='auto' ? localStorage.removeItem('smai-theme') : localStorage.setItem('smai-theme',current); }catch(e){}
+  });
+
+  // Highlight the section being read in the sidebar
+  var links=[].slice.call(document.querySelectorAll('#tocnav a'));
+  var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        links.forEach(function(l){l.classList.remove('active');});
+        var a=map[en.target.id]; if(a){a.classList.add('active'); a.scrollIntoView({block:'nearest'});}
+      }});
+    },{rootMargin:'-8% 0px -80% 0px',threshold:0});
+    document.querySelectorAll('main h2[id]').forEach(function(el){ if(map[el.id]) obs.observe(el); });
+  }
+
+  // Close the phone menu after a jump
+  var mt=document.querySelector('details.mtoc');
+  if(mt) mt.addEventListener('click',function(e){ if(e.target.closest('a')) mt.open=false; });
+
+  // "Close all explanations" in each exam box, shown only while one is open
+  document.querySelectorAll('.card.exam').forEach(function(card){
+    var whys=card.querySelectorAll('details.linewhy');
+    if(!whys.length) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='closeall'; b.textContent='Close all explanations';
+    card.appendChild(b);
+    function update(){ b.classList.toggle('show',[].some.call(whys,function(d){return d.open;})); }
+    whys.forEach(function(d){ d.addEventListener('toggle',update); });
+    b.addEventListener('click',function(){ whys.forEach(function(d){d.open=false;}); update(); card.scrollIntoView({block:'nearest'}); });
+  });
+
+  // Back to top
+  var top=document.getElementById('totop');
+  function onScroll(){ top.classList.toggle('show', window.scrollY>900); }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  top.addEventListener('click',function(){ window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); });
+})();
+
+</script>
+</body>
+</html>

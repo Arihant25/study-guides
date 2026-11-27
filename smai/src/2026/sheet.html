@@ -1,0 +1,199 @@
+<!--desc: Every formula from the SMAI 2026 prep guide on one page, grouped by page, each with a link to the section that explains and derives it.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Formula sheet</div>
+  <h1>Formula sheet</h1>
+  <p class="lead">Every formula in the guide, grouped by page. The last column links to the section that explains the symbols and derives the result. Use the sheet to revise, not to learn. If a row means nothing to you, follow its link.</p>
+</header>
+
+<section>
+<h2 id="conventions">Notation used throughout</h2>
+<table class="tbl sheet">
+<thead><tr><th>Symbol</th><th>Meaning</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>\(x_i \in \R^d\)</td><td>The \(i\)-th sample, a column of \(d\) numbers (features)</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td>\(y_i\)</td><td>Its label or target</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td>\(N\)</td><td>Number of samples</td><td><a href="../foundations/#learning-setup">1.1</a></td></tr>
+<tr><td>\(X\)</td><td>Data matrix, one sample per row (\(N\times d\)) unless a section says otherwise</td><td><a href="../foundations/#data-matrix">1.10</a></td></tr>
+<tr><td>\(w\), \(b\)</td><td>Weights and bias. With an augmented \(x = [x\T, 1]\T\), the bias is the last weight</td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td>\(\eta\)</td><td>Learning rate (eta)</td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td>\(\lambda\)</td><td>Regularisation strength, or an eigenvalue (lambda)</td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td>\(\mu\), \(\Sigma\)</td><td>Mean vector and covariance matrix</td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td>\(\sigma(z)\)</td><td>Sigmoid \(1/(1+e^{-z})\)</td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-basics">Maths basics</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Dot product and angle</td><td>\(a\T b = \sum_i a_ib_i \)<wbr>\({}= \|a\|\|b\|\cos\theta\)</td><td><a href="../basics/#vectors">B.1</a></td></tr>
+<tr><td>Projection of \(x\) on unit \(u\)</td><td>\((u\T x)\,u\)</td><td><a href="../basics/#vectors">B.1</a></td></tr>
+<tr><td>\(L_p\) norm</td><td>\(\|x\|_p = \left(\sum_i |x_i|^p\right)^{1/p}\)</td><td><a href="../basics/#norms">B.2</a></td></tr>
+<tr><td>\(L_0\), \(L_\infty\)</td><td>number of non-zero entries, largest \(|x_i|\)</td><td><a href="../basics/#norms">B.2</a></td></tr>
+<tr><td>Transpose and inverse of a product</td><td>\((AB)\T = B\T A\T\), \((AB)^{-1} = B^{-1}A^{-1}\)</td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Inverse of a 2×2</td><td>\(\begin{bmatrix}a&b\\c&d\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\)</td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Positive semi-definite</td><td>\(z\T Az \ge 0\) for every \(z\)</td><td><a href="../basics/#matrices">B.3</a></td></tr>
+<tr><td>Rank of a product</td><td>\(\operatorname{rank}(X\T X) = \operatorname{rank}(X) \le \min(N, d)\)</td><td><a href="../basics/#rank">B.4</a></td></tr>
+<tr><td>Eigenvalues</td><td>\(Av = \lambda v\), found from \(\det(A - \lambda I) = 0\)</td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>2×2 shortcut</td><td>\(\lambda^2 - (\operatorname{tr}A)\lambda + \det A = 0\)</td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>Sum and product of eigenvalues</td><td>\(\sum\lambda_i = \operatorname{tr}A\), \(\prod\lambda_i = \det A\)</td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>Eigen decomposition (symmetric \(A\))</td><td>\(A = Q\Lambda Q\T = \sum_i\lambda_iq_iq_i\T\)</td><td><a href="../basics/#eigen">B.5</a></td></tr>
+<tr><td>SVD</td><td>\(M = UDV\T = \sum_i d_iu_iv_i\T\), \(d_i = \sqrt{\lambda_i(M\T M)}\)</td><td><a href="../basics/#svd-basics">B.6</a></td></tr>
+<tr><td>Expectation and variance</td><td>\(E[x] = \sum_x x\,p(x)\), \(\operatorname{Var}(x) \)<wbr>\({}= E[x^2] - E[x]^2\)</td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td>Sample covariance</td><td>\(\Sigma = \frac1N\sum_i(x_i-\mu)(x_i-\mu)\T\)</td><td><a href="../basics/#probability">B.7</a></td></tr>
+<tr><td>Total probability</td><td>\(P(B) = \sum_i P(B\mid A_i)P(A_i)\)</td><td><a href="../basics/#bayes">B.8</a></td></tr>
+<tr><td>Bayes' theorem</td><td>\(P(A\mid B) = \frac{P(B\mid A)P(A)}{P(B)}\)</td><td><a href="../basics/#bayes">B.8</a></td></tr>
+<tr><td>Univariate normal</td><td>\(p(x) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/(2\sigma^2)}\)</td><td><a href="../basics/#gaussian">B.9</a></td></tr>
+<tr><td>Multivariate normal</td><td>\(p(x) = \frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}}e^{-\frac12(x-\mu)\T\Sigma^{-1}(x-\mu)}\)</td><td><a href="../basics/#gaussian">B.9</a></td></tr>
+<tr><td>Vector gradients</td><td>\(\nabla_w(w\T a) = a\), \(\nabla_w(w\T Aw) \)<wbr>\({}= (A + A\T)w\)</td><td><a href="../basics/#gradient">B.11</a></td></tr>
+<tr><td>Sigmoid and tanh derivatives</td><td>\(\sigma' = \sigma(1-\sigma)\), \(\tanh' = 1 - \tanh^2\)</td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+<tr><td>Chain rule</td><td>\(\frac{dL}{dx} = \frac{dL}{dy}\cdot\frac{dy}{dx}\)</td><td><a href="../basics/#chain-rule">B.12</a></td></tr>
+<tr><td>Lagrangian, one constraint</td><td>\(J(w,\lambda) = f(w) - \lambda(g(w) - c)\), set both gradients to 0</td><td><a href="../basics/#lagrange">B.13</a></td></tr>
+<tr><td>Max \(w\T Aw\) with \(\|w\| = 1\)</td><td>top eigenvector of \(A\) (min gives the bottom one)</td><td><a href="../basics/#lagrange">B.13</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-foundations">Page 1 · Foundations</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>k-NN</td><td>majority label of the \(k\) nearest training samples</td><td><a href="../foundations/#knn">1.2</a></td></tr>
+<tr><td>Euclidean and Manhattan distance</td><td>\(\|x - z\|_2\), \(\|x - z\|_1 = \sum_i|x_i - z_i|\)</td><td><a href="../foundations/#knn">1.2</a></td></tr>
+<tr><td>Linear classifier</td><td>\(\hat y = \operatorname{sign}(w\T x + b)\)</td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td>Multi-class (one weight vector per class)</td><td>\(\hat y = \argmax_c w_c\T x\)</td><td><a href="../foundations/#linear-classifier">1.3</a></td></tr>
+<tr><td>Min–max scaling</td><td>\(x' = (x - x_{\min})/(x_{\max} - x_{\min})\)</td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Standardising (z-score)</td><td>\(x' = (x - \mu)/\sigma\)</td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Weighted Euclidean distance</td><td>\(\sqrt{\sum_i a_i(x_i - z_i)^2}\)</td><td><a href="../foundations/#features">1.4</a></td></tr>
+<tr><td>Accuracy</td><td>\((TP + TN)/N\)</td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>Precision and recall</td><td>\(TP/(TP + FP)\), \(TP/(TP + FN)\)</td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>F-score</td><td>\(F_1 = 2PR/(P + R)\)</td><td><a href="../foundations/#metrics">1.5</a></td></tr>
+<tr><td>MSE loss</td><td>\(J(w) = \frac1N\sum_i(y_i - w\T x_i)^2 \)<wbr>\({}= \frac1N\|y - Xw\|^2\)</td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Closed-form least squares</td><td>\(w = (X\T X)^{-1}X\T y\)</td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Weighted least squares</td><td>\(w = (X\T\Lambda X)^{-1}X\T\Lambda y\), \(\Lambda = \operatorname{diag}(\lambda_i)\)</td><td><a href="../foundations/#regression">1.6</a></td></tr>
+<tr><td>Gradient descent step</td><td>\(w_{k+1} = w_k - \eta\nabla J(w_k)\)</td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td>MSE gradient</td><td>\(\nabla J = -\frac2N\sum_i(y_i - w\T x_i)\,x_i\)</td><td><a href="../foundations/#gradient-descent">1.7</a></td></tr>
+<tr><td>Ridge</td><td>\(J = \|y - Xw\|^2 + \lambda\|w\|_2^2\), \(w \)<wbr>\({}= (X\T X + \lambda I)^{-1}X\T y\)</td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td>Lasso</td><td>\(J = \|y - Xw\|^2 + \lambda\|w\|_1\) (no closed form, gives sparse \(w\))</td><td><a href="../foundations/#regularization">1.8</a></td></tr>
+<tr><td>Homogeneous system \(Ax = 0\), \(\|x\| = 1\)</td><td>eigenvector of \(A\T A\) with the smallest eigenvalue</td><td><a href="../foundations/#eigen-opt">1.9</a></td></tr>
+<tr><td>Rank of a data matrix</td><td>at most \(\min(N, d)\), about the number of distinct "concepts" in practice</td><td><a href="../foundations/#data-matrix">1.10</a></td></tr>
+<tr><td>Best rank-\(k\) approximation</td><td>keep the \(k\) largest singular values, \(\hat A = U_kD_kV_k\T\)</td><td><a href="../foundations/#svd">1.11</a></td></tr>
+<tr><td>PCA direction</td><td>top eigenvectors of the covariance \(\Sigma\) (of \(X\T X\) for centred \(X\))</td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>PCA projection and reconstruction</td><td>\(x' = W(x - \mu)\), \(\hat x = \mu + W\T x'\)</td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>How many components</td><td>smallest \(p\) with \(\sum_{i\le p}\lambda_i \big/ \sum_i\lambda_i \ge 0.95\)</td><td><a href="../foundations/#pca">1.12</a></td></tr>
+<tr><td>Small-matrix trick</td><td>if \(XX\T u = \lambda u\) then \(X\T X(X\T u) = \lambda(X\T u)\)</td><td><a href="../foundations/#eigenfaces">1.13</a></td></tr>
+<tr><td>Running mean</td><td>\(\mu_{N+1} = \frac{N\mu_N + x_{N+1}}{N+1}\)</td><td><a href="../foundations/#odds-and-ends">1.14</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-probabilistic">Page 2 · Probabilistic ML</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>PCA as reconstruction</td><td>\(\min_u\sum_i\|x_i - uu\T x_i\|^2\) is the same as \(\max_u u\T\Sigma u\)</td><td><a href="../probabilistic/#pca-recon">2.1</a></td></tr>
+<tr><td>Fisher criterion</td><td>\(J(u) = \frac{u\T S_Bu}{u\T S_Wu}\)</td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Fisher direction (two classes)</td><td>\(u \propto S_W^{-1}(\mu_1 - \mu_2)\)</td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Scatter matrices</td><td>\(S_B = (\mu_1 - \mu_2)(\mu_1 - \mu_2)\T\), \(S_W = S_1 + S_2\)</td><td><a href="../probabilistic/#lda">2.2</a></td></tr>
+<tr><td>Nuclear norm</td><td>\(\|A\|_* = \sum_id_i\) (sum of singular values)</td><td><a href="../probabilistic/#lowrank">2.3</a></td></tr>
+<tr><td>LSI query in \(k\) dimensions</td><td>\(\hat q = D_k^{-1}U_k\T q\), compare by cosine</td><td><a href="../probabilistic/#lsi">2.4</a></td></tr>
+<tr><td>Posterior</td><td>\(P(\omega_i\mid x) = \frac{p(x\mid\omega_i)P(\omega_i)}{\sum_jp(x\mid\omega_j)P(\omega_j)}\)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Bayes (MAP) rule</td><td>choose \(\omega_1\) if \(p(x\mid\omega_1)P(\omega_1) \ge p(x\mid\omega_2)P(\omega_2)\)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Threshold, equal variance and priors</td><td>\(x^* = (\mu_1 + \mu_2)/2\)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Boundary shape</td><td>shared \(\sigma^2I\) gives the perpendicular bisector of the means, a shared \(\Sigma\) gives a straight line, different \(\Sigma_i\) give a curve (quadratic)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Risk-weighted rule</td><td>choose \(\omega_1\) if \(\lambda_1P(\omega_1\mid x) \ge \lambda_2P(\omega_2\mid x)\)</td><td><a href="../probabilistic/#bayes-decision">2.5</a></td></tr>
+<tr><td>Log-likelihood</td><td>\(\ell(\theta) = \sum_i\ln p(x_i\mid\theta)\)</td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>Gaussian MLE</td><td>\(\hat\mu = \frac1N\sum_ix_i\), \(\hat\Sigma = \frac1N\sum_i(x_i - \hat\mu)(x_i - \hat\mu)\T\)</td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>Coin MLE</td><td>\(\hat p = (\text{number of heads})/N\)</td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>MSE is MLE</td><td>Gaussian noise gives \(\ell(w) = K - \frac{1}{2\sigma^2}\sum_i(y_i - w\T x_i)^2\)</td><td><a href="../probabilistic/#mle">2.6</a></td></tr>
+<tr><td>GMM density</td><td>\(p(x) = \sum_k\pi_k\,\mathcal N(x\mid\mu_k,\Sigma_k)\), \(\sum_k\pi_k = 1\)</td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>E-step (responsibilities)</td><td>\(\gamma_k(x_i) = \frac{\pi_k\mathcal N(x_i\mid\mu_k,\Sigma_k)}{\sum_j\pi_j\mathcal N(x_i\mid\mu_j,\Sigma_j)}\)</td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>M-step</td><td>\(N_k = \sum_i\gamma_k(x_i)\), \(\mu_k = \frac{1}{N_k}\sum_i\gamma_k(x_i)x_i\), \(\pi_k = N_k/N\)</td><td><a href="../probabilistic/#gmm-em">2.7</a></td></tr>
+<tr><td>k-means objective</td><td>\(J = \sum_k\sum_{x_i\in C_k}\|x_i - \mu_k\|^2\)</td><td><a href="../probabilistic/#kmeans">2.8</a></td></tr>
+<tr><td>Naive Bayes</td><td>\(P(y\mid x) \propto P(y)\prod_jP(x_j\mid y)\)</td><td><a href="../probabilistic/#naive-bayes">2.9</a></td></tr>
+<tr><td>Logistic model</td><td>\(P(y = 1\mid x) = \sigma(w\T x)\)</td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Binary cross-entropy</td><td>\(L = -\sum_i[y_i\ln\sigma(z_i) + (1 - y_i)\ln(1 - \sigma(z_i))]\)</td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Its gradient</td><td>\(\nabla L = \sum_i(\sigma(w\T x_i) - y_i)\,x_i\)</td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Labels \(\pm1\)</td><td>\(L = \sum_i\ln(1 + e^{-y_iw\T x_i})\)</td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>Softmax</td><td>\(P(y = c\mid x) = e^{w_c\T x}\big/\sum_je^{w_j\T x}\)</td><td><a href="../probabilistic/#logistic">2.10</a></td></tr>
+<tr><td>SVM margin</td><td>\(2/\|w\|\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Hard-margin SVM</td><td>\(\min\frac12w\T w\) such that \(y_i(w\T x_i + b) \ge 1\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Soft-margin SVM</td><td>\(\min\frac12w\T w + C\sum_i\xi_i\), \(y_i(w\T x_i + b) \ge 1 - \xi_i\), \(\xi_i \ge 0\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Hinge loss</td><td>\(\max(0, 1 - yf(x))\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>SVM dual</td><td>\(\max\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,x_i\T x_j\), \(\sum_i\alpha_iy_i = 0\), \(0 \le \alpha_i \le C\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Weights from the dual</td><td>\(w = \sum_i\alpha_iy_ix_i\)</td><td><a href="../probabilistic/#svm">2.11</a></td></tr>
+<tr><td>Kernel</td><td>\(K(p, q) = \phi(p)\T\phi(q)\), decision \(\sum_i\alpha_iy_iK(x_i, x) + b\)</td><td><a href="../probabilistic/#kernels">2.12</a></td></tr>
+<tr><td>Polynomial kernels</td><td>\((p\T q)^2\), \((p\T q + 1)^2\)</td><td><a href="../probabilistic/#kernels">2.12</a></td></tr>
+<tr><td>Bias–variance</td><td>expected error = bias² + variance + irreducible noise</td><td><a href="../probabilistic/#generalization">2.13</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-neural">Page 3 · Neural networks</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Neuron</td><td>\(o = \phi(w\T x + b)\)</td><td><a href="../neural/#neuron">3.1</a></td></tr>
+<tr><td>Perceptron rule</td><td>\(w_i \leftarrow w_i + \eta(t - o)x_i\)</td><td><a href="../neural/#perceptron">3.2</a></td></tr>
+<tr><td>Delta rule</td><td>\(E = \frac12\sum_d(t_d - o_d)^2\), \(\Delta w_i = \eta\sum_d(t_d - o_d)x_{id}\)</td><td><a href="../neural/#delta-rule">3.3</a></td></tr>
+<tr><td>MLP layer</td><td>\(q = \phi(Wx + b)\)</td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>Parameters of a dense layer</td><td>(inputs + 1) × outputs</td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>Cross-entropy</td><td>\(L = -\sum_it_i\ln o_i\)</td><td><a href="../neural/#mlp">3.4</a></td></tr>
+<tr><td>ReLU and leaky ReLU</td><td>\(\max(0, x)\), \(x\) if \(x > 0\) else \(cx\)</td><td><a href="../neural/#activations">3.5</a></td></tr>
+<tr><td>ELU</td><td>\(x\) if \(x > 0\) else \(a(e^x - 1)\)</td><td><a href="../neural/#activations">3.5</a></td></tr>
+<tr><td>Backprop, output layer</td><td>\(\frac{\partial L}{\partial u_1} = 2(o - y)\,\sigma'(s)\,q_1\)</td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Backprop, hidden layer</td><td>\(\frac{\partial L}{\partial w_{11}} = 2(o - y)\,\sigma'(s)\,u_1\,\sigma'(p_1)\,x_1\)</td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Through a layer</td><td>\(\frac{\partial L}{\partial x} = \frac{\partial L}{\partial p}\frac{\partial p}{\partial x}\), \(\frac{\partial L}{\partial W} = \frac{\partial L}{\partial p}\frac{\partial p}{\partial W}\)</td><td><a href="../neural/#backprop">3.6</a></td></tr>
+<tr><td>Momentum</td><td>\(\Delta\theta^k = \eta\nabla L + \gamma\Delta\theta^{k-1}\), \(\theta \leftarrow \theta - \Delta\theta^k\)</td><td><a href="../neural/#training-practice">3.7</a></td></tr>
+<tr><td>Batch normalisation</td><td>\(\hat x = (x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}\), \(y = \gamma\hat x + \beta\)</td><td><a href="../neural/#training-practice">3.7</a></td></tr>
+<tr><td>Taylor step</td><td>\(J(w - \eta g) \approx J(w) - \eta\|g\|^2\) for small \(\eta\)</td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Optimal step (quadratic)</td><td>\(\eta^* = \frac{\|\nabla J\|^2}{\nabla J\T H\,\nabla J}\)</td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Newton's method</td><td>\(w \leftarrow w - H^{-1}\nabla J\)</td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+<tr><td>Adam</td><td>\(m \leftarrow \beta_1m + (1 - \beta_1)g\), \(v \leftarrow \beta_2v + (1 - \beta_2)g^2\), \(w \leftarrow w - \eta\,\hat m/(\sqrt{\hat v} + \epsilon)\)</td><td><a href="../neural/#optimizers">3.8</a></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2 id="f-deep">Page 4 · Deep learning</h2>
+<table class="tbl sheet">
+<thead><tr><th>What</th><th>Formula</th><th>Section</th></tr></thead>
+<tbody>
+<tr><td>Convolution output size</td><td>\(\lfloor(n + 2p - k)/s\rfloor + 1\)</td><td><a href="../deep/#conv-size">4.3</a></td></tr>
+<tr><td>Same padding (stride 1)</td><td>\(p = (k - 1)/2\)</td><td><a href="../deep/#conv-size">4.3</a></td></tr>
+<tr><td>Conv layer parameters</td><td>\((F\cdot F\cdot D + 1)\cdot K\)</td><td><a href="../deep/#cnn-params">4.4</a></td></tr>
+<tr><td>Two 3×3 versus one 5×5</td><td>\(18C^2\) versus \(25C^2\) weights, same receptive field</td><td><a href="../deep/#cnn-design">4.5</a></td></tr>
+<tr><td>Residual block</td><td>\(y = x + F(x)\)</td><td><a href="../deep/#resnet">4.6</a></td></tr>
+<tr><td>RNN</td><td>\(h_t = \tanh(Ux_t + Wh_{t-1})\), \(o_t \)<wbr>\({}= \operatorname{softmax}(Vh_t)\)</td><td><a href="../deep/#rnn">4.8</a></td></tr>
+<tr><td>LSTM cell</td><td>\(C_t = f_t\odot C_{t-1} + i_t\odot\tilde C_t\), \(h_t \)<wbr>\({}= o_t\odot\tanh C_t\)</td><td><a href="../deep/#lstm">4.9</a></td></tr>
+<tr><td>Cosine similarity</td><td>\(a\T b/(\|a\|\|b\|)\)</td><td><a href="../deep/#embeddings">4.10</a></td></tr>
+<tr><td>Attention</td><td>\(\operatorname{softmax}(QK\T/\sqrt{d_k})\,V\)</td><td><a href="../deep/#attention">4.11</a></td></tr>
+<tr><td>Queries, keys, values</td><td>\(Q = XW_Q\), \(K = XW_K\), \(V = XW_V\)</td><td><a href="../deep/#attention">4.11</a></td></tr>
+<tr><td>Transformer block weights</td><td>\(12D^2\) (attention \(4D^2\), MLP \(8D^2\))</td><td><a href="../deep/#transformer">4.12</a></td></tr>
+<tr><td>ViT tokens</td><td>\((H/P)(W/P) + 1\)</td><td><a href="../deep/#vit">4.13</a></td></tr>
+<tr><td>Contrastive loss</td><td>\((1 - Y)\frac12D^2 + Y\frac12\max(0, m - D)^2\)</td><td><a href="../deep/#contrastive">4.15</a></td></tr>
+<tr><td>Triplet loss</td><td>\(\max(0, d(a,p)^2 - d(a,n)^2 + \alpha)\)</td><td><a href="../deep/#contrastive">4.15</a></td></tr>
+</tbody>
+</table>
+<p>The full list for this page, with the LSTM parameter count, layer normalisation, position encodings and LoRA, is in <a href="../deep/#page-formulas">section 4.17</a>.</p>
+</section>
+
+<section>
+<h2 id="checks">Quick checks on an answer</h2>
+<ul>
+<li>A probability lies between 0 and 1, and the posteriors of all the classes add up to 1.</li>
+<li>A covariance matrix is symmetric, and its diagonal (the variances) is never negative.</li>
+<li>Eigenvalues of a symmetric PSD matrix (\(X\T X\), a covariance) are never negative. They add up to the trace.</li>
+<li>Singular values are never negative, and there are at most \(\min(m, n)\) non-zero ones.</li>
+<li>Precision, recall and accuracy lie between 0 and 1. Recall cannot change if you only change how many negatives there are.</li>
+<li>After mean-centring, the new points add up to the zero vector.</li>
+<li>A gradient descent step on a convex bowl should lower the loss. If it rises, the learning rate is too big or the sign is wrong.</li>
+<li>Substitute a closed-form \(w\) back into the data. For points that lie exactly on a line, the fit should go through every point.</li>
+<li>Check a convolution output size by counting positions on a small grid, and check a parameter count against PyTorch.</li>
+</ul>
+</section>

@@ -1,0 +1,1184 @@
+<!--desc: SMAI lectures L08 to L13 from zero. PCA as reconstruction, Fisher LDA, SVD and LSI, Bayesian decisions, MLE, GMMs and EM, k-means, naive Bayes, logistic regression, SVMs, kernels and generalisation, with the slides and worked answers.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Page 2</div>
+  <h1>Probabilistic ML</h1>
+  <p class="lead">Lectures L08 to L13 and Tutorial 2. This is the second half of the mid-sem syllabus. It covers PCA seen as compression, Fisher LDA, SVD and LSI, then the probabilistic view of classification (Bayes, MLE, GMMs), the three practical algorithms (k-means, naive Bayes, logistic regression), SVMs with kernels, and the principles of generalisation. Plan for about 10 hours with pen and paper.</p>
+</header>
+
+<section>
+<h2 id="read-first">Read this first</h2>
+<p>This page assumes you have read <a href="../foundations/">Page 1</a> (k-NN, linear classifiers, regression, rank, SVD and PCA) and the <a href="../basics/">maths basics</a>. When an idea from there is used, the text links back to it.</p>
+<table class="tbl sheet">
+<tr><th>Section</th><th>Lecture</th><th>Time</th></tr>
+<tr><td>2.1 PCA as minimum reconstruction error</td><td>L08</td><td>40 min</td></tr>
+<tr><td>2.2 Fisher LDA and other ways to reduce dimension</td><td>L08</td><td>50 min</td></tr>
+<tr><td>2.3 Low-rank approximation and matrix completion</td><td>L08</td><td>40 min</td></tr>
+<tr><td>2.4 LSI</td><td>L08</td><td>40 min</td></tr>
+<tr><td>2.5 Bayesian decision</td><td>L09, L10</td><td>80 min</td></tr>
+<tr><td>2.6 Maximum likelihood</td><td>L09, L10</td><td>50 min</td></tr>
+<tr><td>2.7 GMMs and EM</td><td>L10, L11, Tutorial 2</td><td>50 min</td></tr>
+<tr><td>2.8 k-means</td><td>L10, L11</td><td>35 min</td></tr>
+<tr><td>2.9 Naive Bayes</td><td>L11, Tutorial 2</td><td>35 min</td></tr>
+<tr><td>2.10 Logistic regression</td><td>L11</td><td>60 min</td></tr>
+<tr><td>2.11 SVMs</td><td>L12</td><td>60 min</td></tr>
+<tr><td>2.12 Kernels</td><td>L12</td><td>30 min</td></tr>
+<tr><td>2.13 Principles of learning</td><td>L13</td><td>40 min</td></tr>
+<tr><td></td><td>Total</td><td>10 h 10 min</td></tr>
+</table>
+<p>If time is short, do 2.5, 2.6, 2.10 and 2.11 first. They carry the most derivations, and the later neural network pages build on logistic regression and on the idea of a loss that comes from a likelihood.</p>
+<p>The questions come in three kinds. <span class="qt pyq">Quiz 1, 2026</span> marks a real exam question. <span class="qt">L09 slide</span> marks a problem the lecturer put on a slide. <span class="qt">Practice</span> marks a question written for this guide in the same style. Answers are folded, so try each one on paper first.</p>
+<p>Many slide questions say "one, none or more correct". For those, judge each option on its own as true or false. Do not stop at the first true option.</p>
+<p>The slides shown on this page are from the 2026 offering. The 2027 slides may differ, and this guide will be updated when they are out.</p>
+</section>
+
+<div class="part">Part A<span>L08 · low-rank data</span></div>
+
+<section>
+<h2 id="pca-recon"><span class="num">2.1</span>PCA as minimum reconstruction error</h2>
+<p class="slides">Lecture L08 · <a href="https://youtu.be/EQfxYZiE0tg">Short video: PCA as compression</a> · <a href="https://youtu.be/likh0NUdvnc">Short video: Orthogonal line fitting</a></p>
+<p class="oneline">Keeping the directions of largest variance is the same as throwing away as little of each sample as possible.</p>
+<p>On <a href="../foundations/#pca">Page 1</a> PCA was found by asking for the direction along which the data varies most. L08 asks a second question. If each sample is squashed onto one line and then expanded back, which line loses the least? The answer is the same line, and this section shows why.</p>
+
+<h3>Writing a sample in a new basis</h3>
+<p>A <em class="t">basis</em> of \(\R^d\) is a set of \(d\) directions such that every vector is a unique mix of them. The usual basis is \(u_1 = [1,0,\dots,0]\T\), \(u_2 = [0,1,0,\dots,0]\T\) and so on. Here \(\R^d\) means "lists of \(d\) real numbers", and \(\T\) (transpose) turns a row into a column.</p>
+<p>If the basis vectors are <em class="t">orthonormal</em> (each has length 1 and each pair is at right angles, so \(u_i\T u_j = 0\) for \(i \ne j\) and \(u_i\T u_i = 1\)), then the amount of \(x\) along \(u_i\) is just the dot product \(\alpha_i = x\T u_i\), and</p>
+<div class="eq">\[x = \alpha_1 u_1 + \alpha_2 u_2 + \dots + \alpha_d u_d.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Each \(\alpha_i\) is a number, the coordinate of \(x\) along direction \(u_i\). Each \(u_i\) is a direction. The sum rebuilds \(x\) from its pieces.</p>
+<p><strong>Example.</strong> Take \(d = 2\), \(u_1 = \frac{1}{\sqrt2}[1, 1]\T\), \(u_2 = \frac1{\sqrt2}[1, -1]\T\) and \(x = [3, 1]\T\). Then \(\alpha_1 \)<wbr>\({}= \frac{3 + 1}{\sqrt2} \)<wbr>\({}= \frac{4}{\sqrt2}\) and \(\alpha_2 \)<wbr>\({}= \frac{3 - 1}{\sqrt2} \)<wbr>\({}= \frac{2}{\sqrt2}\). Rebuild the point. \(\frac4{\sqrt2}\cdot\frac1{\sqrt2}[1,1]\T + \frac2{\sqrt2}\cdot\frac1{\sqrt2}[1,-1]\T \)<wbr>\({}= [2,2]\T + [1,-1]\T \)<wbr>\({}= [3,1]\T\). It matches \(x\).</p>
+<p>If we keep only the first term, we get \([2,2]\T\). The part we threw away is \([1,-1]\T\), whose squared length is 2. That lost part is the <em class="t">reconstruction error</em>.</p>
+</div>
+<p>PCA keeps only the first \(d'\) terms, where \(d' \lt d\). The question is which \(d'\) directions to keep so that the thrown-away part is as small as possible, summed over all samples.</p>
+
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p06.webp" alt="Slide: PCA as minimizing reconstruction loss, the derivation" loading="lazy">
+<figcaption>L08, slide 6. The derivation below follows this slide, with every step written out.</figcaption></figure>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the unit vector \(u\) that minimises the total reconstruction error \(\sum_i \|x_i - uu\T x_i\|^2\) is the top eigenvector of \(\Sigma = \sum_i x_i x_i\T\) (data mean-subtracted).</h4>
+<ol class="steps lines">
+<li>The projection of \(x_i\) onto the line along \(u\) is \(uu\T x_i\), with \(u\T u = 1\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>The amount of \(x_i\) along \(u\) is the number \(u\T x_i\), because \(u\) has length 1.</li>
+<li>Going that amount along direction \(u\) gives the point \((u\T x_i)\,u\).</li>
+<li>A number can be moved to either side of a vector, so \((u\T x_i)\,u \)<wbr>\({}= u\,(u\T x_i) \)<wbr>\({}= uu\T x_i\).</li>
+</ol>
+</details></li>
+<li>Expand one error term. \(\|x_i - uu\T x_i\|^2 \)<wbr>\({}= x_i\T x_i - (u\T x_i)^2\).
+<details class="linewhy"><summary>Why <span>(5 steps)</span></summary>
+<ol class="steps">
+<li>For any vector \(v\), \(\|v\|^2 = v\T v\). So the term is \((x_i - uu\T x_i)\T(x_i - uu\T x_i)\).</li>
+<li>Multiply out like \((a-b)\T(a-b) \)<wbr>\({}= a\T a - 2a\T b + b\T b\). This gives \(x_i\T x_i - 2x_i\T uu\T x_i + x_i\T u u\T u u\T x_i\).</li>
+<li>In the last term \(u\T u = 1\) sits in the middle, so it becomes \(x_i\T u u\T x_i\).</li>
+<li>Combine the middle and last terms. \(-2x_i\T uu\T x_i + x_i\T uu\T x_i \)<wbr>\({}= -x_i\T uu\T x_i\).</li>
+<li>Now \(x_i\T u\) and \(u\T x_i\) are the same number, so \(x_i\T uu\T x_i = (u\T x_i)^2\).</li>
+</ol>
+</details></li>
+<li>The first term does not depend on \(u\), so minimising the total error is the same as maximising \(\sum_i (u\T x_i)^2\).</li>
+<li>Rewrite. \(\sum_i (u\T x_i)^2 \)<wbr>\({}= \sum_i u\T x_i x_i\T u \)<wbr>\({}= u\T \Sigma u\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\((u\T x_i)^2 \)<wbr>\({}= (u\T x_i)(x_i\T u)\), because a number equals its own transpose.</li>
+<li>That is \(u\T (x_i x_i\T) u\).</li>
+<li>Add over \(i\) and pull \(u\T\) and \(u\) outside the sum, since they do not depend on \(i\). The sum left inside is \(\Sigma = \sum_i x_ix_i\T\).</li>
+</ol>
+</details></li>
+<li>Maximise \(u\T\Sigma u\) subject to \(u\T u = 1\). The Lagrangian gives \(\Sigma u = \lambda u\), so \(u\) is an eigenvector.
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Build \(J(u,\lambda) \)<wbr>\({}= u\T\Sigma u - \lambda(u\T u - 1)\). The number \(\lambda\) (lambda) is a Lagrange multiplier. It enforces the constraint (see <a href="../basics/#lagrange">basics</a>).</li>
+<li>Differentiate with respect to \(u\). For symmetric \(\Sigma\), the derivative of \(u\T\Sigma u\) is \(2\Sigma u\), and of \(u\T u\) is \(2u\).</li>
+<li>Set the derivative to zero. \(2\Sigma u - 2\lambda u = 0\), so \(\Sigma u = \lambda u\).</li>
+<li>This says \(u\) is an eigenvector of \(\Sigma\) and \(\lambda\) its eigenvalue.</li>
+</ol>
+</details></li>
+<li>At such a \(u\), the value is \(u\T\Sigma u \)<wbr>\({}= \lambda u\T u \)<wbr>\({}= \lambda\). So pick the eigenvector with the largest eigenvalue.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Substitute \(\Sigma u = \lambda u\) into \(u\T\Sigma u\). This gives \(u\T(\lambda u) \)<wbr>\({}= \lambda\,u\T u\).</li>
+<li>Use \(u\T u = 1\). The value is \(\lambda\).</li>
+<li>We want the largest value, so we want the largest \(\lambda\). The total error left over is \(\sum_i x_i\T x_i - \lambda_1\).</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<p>For \(d'\) directions, the same argument gives the top \(d'\) eigenvectors. The error left is the sum of the eigenvalues that were dropped, \(\lambda_{d'+1} + \dots + \lambda_d\). This is why L06 chose \(d'\) as the smallest number for which the kept eigenvalues make up 95% of the total.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Max variance and min reconstruction error give the same PCA directions, the top eigenvectors of the covariance.</li>
+<li>Reconstruction error of a \(d'\)-dimensional PCA equals the sum of the dropped eigenvalues (with \(\Sigma = \sum_i x_ix_i\T\)).</li>
+<li>Subtract the mean first. Otherwise the first direction just points at the mean.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Three mean-subtracted samples have covariance eigenvalues 6, 3 and 1 (with \(\Sigma = \sum_i x_ix_i\T\)). PCA keeps 1 direction. What is the total reconstruction error, and what fraction of the variance is kept?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Error \(= \sum_{j > d'} \lambda_j\). Kept fraction \(= \frac{\sum_{j\le d'}\lambda_j}{\sum_j\lambda_j}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.1, line 6, extended to \(d'\) directions.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps"><li>Keep \(\lambda_1 = 6\). The dropped ones are 3 and 1.</li><li>Error \(= 3 + 1 = 4\).</li><li>Total \(= 6 + 3 + 1 = 10\). Kept fraction \(= 6/10 = 0.6\).</li><li>Check: kept plus lost is \(6 + 4 = 10\), the total.</li></ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="lda"><span class="num">2.2</span>Fisher LDA and other ways to reduce dimension</h2>
+<p class="slides">Lecture L08 · <a href="https://youtu.be/6yKc_VdQ6Ys">Short video: LDA 1</a> · <a href="https://youtu.be/1gsL_KYaN1o">Short video: LDA 2</a></p>
+<p class="oneline">PCA ignores labels. LDA uses them to find the direction on which the two classes are furthest apart compared with their spread.</p>
+<h3>Why reduce dimension at all</h3>
+<p>L08 lists the reasons. Fewer numbers per sample means compression, fewer parameters to learn (so less data is needed), less overfitting, faster computation and pictures you can look at (2 or 3 dimensions). It also sorts the methods along two axes.</p>
+<table class="tbl">
+<tr><th></th><th>Unsupervised (no labels)</th><th>Supervised (uses labels)</th></tr>
+<tr><td>Linear, \(x' = Wx\)</td><td>PCA</td><td>Fisher LDA</td></tr>
+<tr><td>Nonlinear, \(x' = f(W, x)\)</td><td>Autoencoder, t-SNE</td><td>(the hidden layers of a trained network)</td></tr>
+</table>
+<p>An <em class="t">autoencoder</em> is a neural network trained to output its own input through a narrow middle layer. The middle layer becomes a short code for the input. It comes back on the <a href="../neural/">neural network pages</a>. Manifold methods such as LLE and ISOMAP were named as out of scope.</p>
+<p><em class="t">t-SNE</em> (t-distributed stochastic neighbour embedding) is used only for pictures. It places each high-dimensional point in 2-D so that points that were close neighbours stay close neighbours. It does not give a formula \(x' = Wx\) that you could apply to a new point, and distances between far-apart clusters in the picture mean little. Know what it is for, not how it is computed.</p>
+
+<h3>The idea of Fisher LDA</h3>
+<p>LDA stands for linear discriminant analysis. It was proposed by the statistician R. A. Fisher, hence "Fisher linear discriminant". We project each sample onto one direction \(u\), giving a single number \(z = u\T x\). A good \(u\) makes the two class means far apart along \(u\) while each class stays tightly packed along \(u\).</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p09.webp" alt="Slide: Fisher linear discriminant, scatter matrices and the solution" loading="lazy">
+<figcaption>L08, slide 9. The two scatter matrices, the ratio \(J(u)\) and the answer \(u \)<wbr>\({}= \alpha S_W^{-1}(\mu_1-\mu_2)\).</figcaption></figure>
+<p>Two matrices measure "far apart" and "tightly packed".</p>
+<div class="eq">\[S_B = (\mu_1 - \mu_2)(\mu_1-\mu_2)\T\]</div>
+<div class="eq">\[S_W = S_1 + S_2,\]</div>
+<div class="eq">\[S_k = \sum_{x\in\omega_k}(x-\mu_k)(x-\mu_k)\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\omega_1\) and \(\omega_2\) (omega) name the two classes. \(\mu_1\) and \(\mu_2\) (mu) are the class means. \(S_B\) is the <em class="t">between-class scatter</em>, built only from the gap between the means. \(S_W\) is the <em class="t">within-class scatter</em>, the spread of each class around its own mean, added for both classes.</p>
+<p>Projected onto \(u\), the gap between the projected means squared is \((u\T\mu_1 - u\T\mu_2)^2 \)<wbr>\({}= u\T S_B u\). The spread of the projected samples is \(u\T S_W u\). Fisher's criterion is the ratio</p>
+<div class="eq">\[J(u) = \frac{u\T S_B u}{u\T S_W u}.\]</div>
+<p>A large top and a small bottom both make \(J\) large, so we maximise it.</p>
+</div>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the Fisher direction is \(u \propto S_W^{-1}(\mu_1 - \mu_2)\).</h4>
+<ol class="steps lines">
+<li>\(J(u)\) does not change if \(u\) is scaled, so fix \(u\T S_W u = 1\) and maximise \(u\T S_B u\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Replace \(u\) by \(cu\). Top and bottom both get a factor \(c^2\), which cancels.</li>
+<li>So only the direction of \(u\) matters. We may choose its length so that the bottom equals 1.</li>
+</ol>
+</details></li>
+<li>Lagrangian \(L \)<wbr>\({}= \frac12 u\T S_B u - \frac{\lambda}{2}(u\T S_W u - 1)\). Setting its derivative to zero gives \(S_B u = \lambda S_W u\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Both matrices are symmetric, so the derivative of \(\frac12 u\T S u\) with respect to \(u\) is \(Su\).</li>
+<li>The derivative of \(L\) is \(S_B u - \lambda S_W u\).</li>
+<li>Set it to zero. \(S_B u = \lambda S_W u\). This is called a <em class="t">generalised eigenvalue problem</em>, because a matrix \(S_W\) appears on the right where an ordinary eigenproblem has \(I\).</li>
+</ol>
+</details></li>
+<li>\(S_B u \)<wbr>\({}= (\mu_1-\mu_2)\big((\mu_1-\mu_2)\T u\big)\) is always a multiple of \(\mu_1 - \mu_2\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Group the product as \((\mu_1-\mu_2)\,[(\mu_1-\mu_2)\T u]\).</li>
+<li>The bracket is a dot product, a single number. Call it \(c\). So \(S_B u = c\,(\mu_1-\mu_2)\).</li>
+</ol>
+</details></li>
+<li>So \(\lambda S_W u = c(\mu_1-\mu_2)\). Multiply both sides by \(S_W^{-1}\). This gives \(u \)<wbr>\({}= \frac{c}{\lambda}S_W^{-1}(\mu_1 - \mu_2)\).</li>
+<li>Only the direction matters, so \(u \propto S_W^{-1}(\mu_1-\mu_2)\). (The symbol \(\propto\) means "is a multiple of".)</li>
+</ol>
+</div>
+<p>Compare with PCA. PCA needed an eigenvector computation. Two-class LDA needs only one matrix inverse, because \(S_B\) has rank 1.</p>
+<div class="card watch"><span class="tag">Common mistake</span>
+<p>The direction joining the two means, \(\mu_1 - \mu_2\), is not the LDA answer unless \(S_W\) is a multiple of \(I\). When the classes are stretched, \(S_W^{-1}\) turns the direction away from the stretch, so that the spread along \(u\) stays small.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(J(u) \)<wbr>\({}= \dfrac{u\T S_B u}{u\T S_W u}\), maximised by \(u \propto S_W^{-1}(\mu_1-\mu_2)\).</li>
+<li>PCA is unsupervised and keeps variance. LDA is supervised and keeps class separation.</li>
+<li>t-SNE is nonlinear and for visualisation only.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Class 1 has samples \((1,2), (2,3), (3,3)\). Class 2 has \((4,5), (5,5), (6,6)\). Find the Fisher direction and check that it separates the classes.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(u \propto S_W^{-1}(\mu_1-\mu_2)\), with \(S_W = S_1 + S_2\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.2, line 5 of the derivation.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Means. \(\mu_1 \)<wbr>\({}= \left(\frac{1+2+3}{3}, \frac{2+3+3}{3}\right) \)<wbr>\({}= (2, \tfrac83)\). \(\mu_2 \)<wbr>\({}= \left(\frac{4+5+6}3, \frac{5+5+6}3\right) \)<wbr>\({}= (5, \tfrac{16}3)\).</li>
+<li>Deviations in class 1 are \((-1,-\tfrac23), (0, \tfrac13), (1,\tfrac13)\).</li>
+<li>\(S_1\) adds the outer products. Top-left \(1 + 0 + 1 = 2\). Off-diagonal \(\tfrac23 + 0 + \tfrac13 = 1\). Bottom-right \(\tfrac49 + \tfrac19 + \tfrac19 \)<wbr>\({}= \tfrac23\). So \(S_1 = \begin{bmatrix}2 & 1\\ 1 & \tfrac23\end{bmatrix}\).</li>
+<li>Class 2 deviations are \((-1,-\tfrac13), (0,-\tfrac13), (1, \tfrac23)\). The same arithmetic gives \(S_2 = \begin{bmatrix}2 & 1\\ 1 & \tfrac23\end{bmatrix}\).</li>
+<li>\(S_W = S_1 + S_2 = \begin{bmatrix}4 & 2\\ 2 & \tfrac43\end{bmatrix}\). Its determinant is \(4\cdot\tfrac43 - 2\cdot 2 \)<wbr>\({}= \tfrac{16}3 - 4 \)<wbr>\({}= \tfrac43\).</li>
+<li>For a 2×2 matrix, swap the diagonal, negate the off-diagonal and divide by the determinant. \(S_W^{-1} = \tfrac34\begin{bmatrix}\tfrac43 & -2\\ -2 & 4\end{bmatrix} = \begin{bmatrix}1 & -1.5\\ -1.5 & 3\end{bmatrix}\).</li>
+<li>\(\mu_1 - \mu_2 \)<wbr>\({}= (-3, -\tfrac83)\).</li>
+<li>\(u = S_W^{-1}(\mu_1-\mu_2)\). Its first entry is \(1\cdot(-3) + (-1.5)(-\tfrac83) \)<wbr>\({}= -3 + 4 \)<wbr>\({}= 1\).</li>
+<li>Its second entry is \((-1.5)(-3) + 3\cdot(-\tfrac83) \)<wbr>\({}= 4.5 - 8 \)<wbr>\({}= -3.5\). So \(u = (1, -3.5)\).</li>
+<li>Project with \(z = x_1 - 3.5x_2\). Class 1 gives \(-6, -8.5, -7.5\). Class 2 gives \(-13.5, -12.5, -15\).</li>
+<li>Check: every class 1 value is above \(-9\) and every class 2 value is below \(-12\), so a single threshold such as \(z = -10.5\) separates them.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>List the kinds of dimensionality reduction, and say which are supervised and which are linear.</span><span class="chev">›</span></summary>
+<div class="ans"><p>Linear and unsupervised is PCA. Linear and supervised is Fisher LDA. Nonlinear and unsupervised are the autoencoder and t-SNE. Manifold methods (LLE, ISOMAP) are nonlinear and out of scope. The table at the start of this section shows the same split.</p></div></details>
+</section>
+
+<section>
+<h2 id="lowrank"><span class="num">2.3</span>Low-rank approximation and matrix completion</h2>
+<p class="slides">Lecture L08 · <a href="https://youtu.be/oN7ddIkzcic">Short video: SVD</a> · <a href="https://youtu.be/tP9e0PlmMKo">Short video: Rank and recommendations</a> · <a href="https://web.stanford.edu/class/cs168/l/l9.pdf">Read: Stanford CS168 notes on low-rank approximation</a></p>
+<p class="oneline">Cut the SVD after \(k\) terms and you get the closest rank-\(k\) matrix. Real data matrices are often close to low rank, which is what makes recommendations possible.</p>
+<p>Recall the SVD from <a href="../foundations/#svd">Page 1</a>. Any \(m\times n\) matrix can be written \(A \)<wbr>\({}= UDV\T \)<wbr>\({}= \sum_i d_i\, u_i v_i\T\), where the \(d_i\) are the <em class="t">singular values</em> (non-negative, largest first), the \(u_i\) are orthonormal columns of \(U\) and the \(v_i\) orthonormal columns of \(V\). Each term \(d_iu_iv_i\T\) is a rank-1 matrix.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p17.webp" alt="Slide: low rank approximation using SVD, four steps" loading="lazy">
+<figcaption>L08, slide 17. The low-rank approximation recipe.</figcaption></figure>
+<p>To get the best rank-\(k\) approximation, keep the first \(k\) terms. \(\hat A \)<wbr>\({}= \sum_{i=1}^k d_iu_iv_i\T \)<wbr>\({}= U_kD_kV_k\T\), where \(U_k\) and \(V_k\) are the first \(k\) columns. "Best" means the sum of squared entry differences \(\sum_{i,j}(A_{ij} - \hat A_{ij})^2\) is as small as possible among all rank-\(k\) matrices, and that smallest value equals \(d_{k+1}^2 + d_{k+2}^2 + \dots\).</p>
+
+<h3>Where low-rank matrices appear</h3>
+<p>A user-by-movie rating matrix is mostly empty (sparse), and its filled part is close to low rank, because tastes come in a few kinds. A term-by-document matrix for documents that are either medical or legal is close to rank 2, because there are two topics. A rank-1 matrix has every row a multiple of every other row.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p20.webp" alt="Slide: completing a 5 by 3 rank-1 matrix with missing entries" loading="lazy">
+<figcaption>L08, slide 20. A rank-1 matrix with missing entries, and its completion.</figcaption></figure>
+<p><em class="t">Matrix completion</em> fills in missing entries by assuming the full matrix has low rank. The formulation on the slide is</p>
+<div class="eq">\[\min_B \sum_{(i,j)\in\mathcal K} (A_{ij} - B_{ij})^2\]</div>
+<p>such that \(\operatorname{rank}(B) = 1\). Here \(\mathcal K\) is the set of known positions.</p>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The sum runs over the positions \((i,j)\) where \(A\) has a known number. The minimum is over all matrices \(B\) of the same size. So we look for a rank-1 \(B\) that agrees with \(A\) where \(A\) is known. Its other entries are the guesses.</p>
+<p>The rank condition is hard to optimise, because rank counts non-zero singular values (an "L0 norm" of the singular values, like the L0 norm of a vector). The usual fix is to penalise the <em class="t">nuclear norm</em> \(\|B\|_* = \sum_i d_i\), the sum of singular values. This is the L1 norm of the singular values, and it relates to rank the way Lasso's L1 penalty relates to counting non-zero weights.</p>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L08 slide</span><span>Complete the rank-1 matrix \(A\) with rows \([7,?,?], [?,8,?], [?,12,6], [?,?,2], [21,6,?]\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Rank 1 means \(A_{ij} = r_i c_j\), every row a multiple of one row pattern \([c_1, c_2, c_3]\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.3, definition of rank 1.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Row 5 is \([21, 6, ?]\). Row 3 is \([?, 12, 6]\). Column 2 says row 3 is twice row 5, because \(12 = 2\times 6\).</li>
+<li>So row 3, column 1 is \(2 \times 21 = 42\). Row 3 is \([42, 12, 6]\).</li>
+<li>Then row 5 is half of row 3, so row 5, column 3 is \(6/2 = 3\). Row 5 is \([21, 6, 3]\).</li>
+<li>Row 2 has 8 in column 2. Row 3 has 12, so row 2 is \(\tfrac{8}{12} = \tfrac23\) of row 3. Row 2 is \([28, 8, 4]\).</li>
+<li>Row 4 has 2 in column 3. Row 3 has 6, so row 4 is \(\tfrac13\) of row 3. Row 4 is \([14, 4, 2]\).</li>
+<li>Row 1 has 7 in column 1. Row 3 has 42, so row 1 is \(\tfrac16\) of row 3. Row 1 is \([7, 2, 1]\).</li>
+<li>Check: all rows are multiples of \([7,2,1]\) (by 1, 4, 6, 2 and 3), so the matrix has rank 1. It matches the slide.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>Find rank-1 and rank-2 approximations of the 5×5 matrix holding 1 to 25 in row order. What is the error of each?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Error of the best rank-\(k\) approximation \(= \sqrt{d_{k+1}^2 + d_{k+2}^2 + \dots}\) (the square root of the summed squared entry errors).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.3, the low-rank recipe.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Each row is the previous row plus \([5,5,5,5,5]\). So every row is (row 1) plus a multiple of \([1,1,1,1,1]\). All rows lie in the span of two vectors, so the rank is 2.</li>
+<li>So only two singular values are non-zero. An online SVD tool (as the slide suggests) gives \(d_1 \approx 74.25\) and \(d_2 \approx 3.37\).</li>
+<li>The rank-2 approximation is exact. Its error is 0.</li>
+<li>The rank-1 approximation keeps only \(d_1u_1v_1\T\). Its error is \(\sqrt{d_2^2} \)<wbr>\({}= d_2 \)<wbr>\({}\approx 3.37\).</li>
+<li>Check: the matrix's total size \(\sqrt{\sum A_{ij}^2} \)<wbr>\({}= \sqrt{1^2 + \dots + 25^2} \)<wbr>\({}= \sqrt{5525} \)<wbr>\({}\approx 74.33\), and \(\sqrt{74.25^2 + 3.37^2} \)<wbr>\({}\approx 74.33\). The singular values account for all of it.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>If \(A = UDV\T\) (square and invertible), find the SVD of \(A^{-1}\), the eigenvalues and eigenvectors of \(AA\T\) and \(A\T A\), and the left and right inverses.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>\(U\) and \(V\) are orthogonal, so \(U^{-1} = U\T\) and \(V^{-1} = V\T\).</li>
+<li>Invert a product by reversing the order. \(A^{-1} \)<wbr>\({}= (V\T)^{-1}D^{-1}U^{-1} \)<wbr>\({}= VD^{-1}U\T\). So the SVD of \(A^{-1}\) has singular values \(1/d_i\), with the roles of \(U\) and \(V\) swapped.</li>
+<li>\(AA\T = UDV\T VDU\T\). The middle \(V\T V = I\), so \(AA\T = UD^2U\T\). Its eigenvectors are the columns of \(U\) and its eigenvalues are \(d_i^2\).</li>
+<li>\(A\T A = VDU\T UDV\T = VD^2V\T\). Its eigenvectors are the columns of \(V\), eigenvalues \(d_i^2\).</li>
+<li>For a tall matrix with independent columns, the <em class="t">left inverse</em> \(L\) satisfies \(LA = I\). It is \(L \)<wbr>\({}= (A\T A)^{-1}A\T \)<wbr>\({}= VD^{-1}U\T\). Check. \(LA \)<wbr>\({}= VD^{-1}U\T UDV\T \)<wbr>\({}= VV\T \)<wbr>\({}= I\).</li>
+<li>For a wide matrix with independent rows, the <em class="t">right inverse</em> \(R\) satisfies \(AR = I\). It is \(R = A\T(AA\T)^{-1}\), and in SVD form it is the same \(VD^{-1}U\T\) (with \(U\) square this time).</li>
+<li>The left inverse is the same matrix that appeared in least-squares regression, \(w = (X\T X)^{-1}X\T y\).</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>If \(A = UDV\T\), then \(A\T A\) is (i) always rank deficient (ii) \(VD^2V\T\) (iii) \(UD^2U\T\) (iv) square (v) always full rank (vi) sometimes full rank. One, none or more correct.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(i) False. If \(A\) has independent columns, \(A\T A\) is invertible.</li>
+<li>(ii) True, from the working of the previous question.</li>
+<li>(iii) False. \(UD^2U\T\) is \(AA\T\).</li>
+<li>(iv) True. If \(A\) is \(m\times n\), \(A\T A\) is \(n\times n\).</li>
+<li>(v) False. If \(A\) has a repeated column, \(A\T A\) is singular.</li>
+<li>(vi) True.</li>
+</ol><p>Correct options are (ii), (iv) and (vi).</p></div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>Let \(A \)<wbr>\({}= \sum_{i=1}^k \alpha_i a_ia_i\T + \sum_{i=k+1}^d \beta_i bb\T\), with random vectors \(a_i, b\in\R^d\). Comment on the effective rank of \(A\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Each \(a_ia_i\T\) is rank 1. With \(k\) random vectors (independent with probability 1) and all \(\alpha_i \ne 0\), the first sum has rank \(k\).</li>
+<li>Every term in the second sum is a multiple of the same matrix \(bb\T\). They add to \(\left(\sum\beta_i\right)bb\T\), one rank-1 matrix.</li>
+<li>So the rank is \(k + 1\) if \(\sum\beta_i \ne 0\), and \(k\) if \(\sum\beta_i = 0\).</li>
+<li>If some \(\alpha_i\) are tiny compared with the rest, those directions give tiny singular values. The matrix is then close to a lower-rank matrix, so its effective rank is smaller than its exact rank.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="lsi"><span class="num">2.4</span>LSI</h2>
+<p class="slides">Lecture L08 · <a href="https://youtu.be/rMaDnRLZAzM">Short video: LSI</a> · <a href="https://en.wikipedia.org/wiki/Latent_semantic_analysis">Read: latent semantic analysis</a></p>
+<p class="oneline">Take the SVD of a term-by-document matrix, keep \(k\) dimensions, and compare documents there. Documents about the same topic come out close even when they share no words.</p>
+<p><em class="t">LSI</em> stands for latent semantic indexing. "Latent" means hidden. The hidden things are topics. "Semantic" means to do with meaning. "Indexing" is the search-engine word for organising documents so they can be found.</p>
+<p>Start from a <em class="t">term-document matrix</em> \(C\). Row \(t\) is a word, column \(j\) is a document, and the entry is 1 if the word occurs in the document (or a count). Each document is a column vector, and similar documents should be similar vectors. Comparing raw columns fails when two documents use different words for the same thing, such as "ship" and "boat" (synonymy).</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p24.webp" alt="Slide: term document matrix C with ship, boat, ocean, wood, tree over six documents, with U, Sigma, V transpose" loading="lazy">
+<figcaption>L08, slide 24. A 5-word, 6-document matrix \(C\) and its SVD. Keeping two singular values (2.16 and 1.59) gives the rank-2 version.</figcaption></figure>
+<p>Take the SVD \(C = UDV\T\) and keep \(k\) terms. Each document \(d\) (a column of \(C\)) gets a short \(k\)-number code</p>
+<div class="eq">\[\hat d = d\T U_k D_k^{-1}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(d\) is a 5-number column (one per word). \(U_k\) is \(5\times k\), the first \(k\) columns of \(U\). So \(d\T U_k\) is a row of \(k\) numbers, how much of each "topic direction" the document contains. Dividing by \(D_k\) scales each topic by its singular value.</p>
+<p>For a document already in the matrix this gives exactly its row of \(V_k\). Since \(C = UDV\T\), we have \(C\T U = VD\), so \(C\T U_kD_k^{-1} = V_k\). That is why a new query mapped the same way can be compared with the rows of \(V_k\).</p>
+<p><strong>Example.</strong> Document \(d_3\) contains only "ship", so \(d_3 = [1,0,0,0,0]\T\). Then \(d_3\T U_2 = [-0.44, -0.30]\) (the "ship" row of \(U\)). Divide by 2.16 and 1.59. \(\hat d_3 = [-0.204, -0.189]\), which matches column \(d_3\) of \(V\T\) on the slide (\(-0.20\) and \(-0.19\)).</p>
+</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p25.webp" alt="Slide: original matrix C and rank-2 reconstruction C2, asking how close d2 and d3 are" loading="lazy">
+<figcaption>L08, slide 25. In \(C\), documents \(d_2\) (boat, ocean) and \(d_3\) (ship) share no word. In the rank-2 version they have similar columns.</figcaption></figure>
+<p>In the original space, \(d_2 = [0,1,1,0,0]\T\) and \(d_3 = [1,0,0,0,0]\T\) have dot product 0, so their cosine similarity is 0. In the 2-D latent space, \(\hat d_2 = [-0.282, -0.528]\) and \(\hat d_3 = [-0.204, -0.189]\), and their cosine similarity is about 0.95. LSI has learned that ship, boat and ocean go together, because they occur together across the collection.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>LSI is a truncated SVD of the term-document matrix. Documents become rows of \(V_k\). A query \(q\) becomes \(q\T U_kD_k^{-1}\).</li>
+<li>Compare in the latent space with cosine similarity, \(\cos(a,b) \)<wbr>\({}= \dfrac{a\T b}{\|a\|\,\|b\|}\).</li>
+<li>It helps with synonymy (different words, same meaning) and with clustering documents by topic.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L08/p26.webp" alt="Slide: LSI query problem with new document 1 0 1 0 0" loading="lazy">
+<figcaption>L08, slide 26.</figcaption></figure>
+<details class="q"><summary><span class="qt">L08 slide</span><span>Using the LSI example, a new document is \([1,0,1,0,0]\T\) (it contains "ship" and "ocean"). Find its cosine similarity with all six documents in the latent space of dimension 2, and the nearest document. Repeat in dimension 1.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\hat q = q\T U_kD_k^{-1}\), documents \(\hat d_j\) = rows of \(V_k\), and \(\cos(\hat q,\hat d_j) \)<wbr>\({}= \dfrac{\hat q\T\hat d_j}{\|\hat q\|\,\|\hat d_j\|}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.4, the mapping \(\hat d = d\T U_kD_k^{-1}\).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(q\T U_2\) adds the "ship" and "ocean" rows of \(U_2\). \([-0.44, -0.30] + [-0.48, -0.51] \)<wbr>\({}= [-0.92, -0.81]\).</li>
+<li>Divide by the singular values. \(\hat q \)<wbr>\({}= [-0.92/2.16,\ -0.81/1.59] \)<wbr>\({}= [-0.426, -0.509]\).</li>
+<li>Read the documents from the first two rows of \(V\T\). \(\hat d_1 = [-0.75, -0.29]\), \(\hat d_2 = [-0.28, -0.53]\), \(\hat d_3 = [-0.20, -0.19]\), \(\hat d_4 = [-0.45, 0.63]\), \(\hat d_5 = [-0.33, 0.22]\), \(\hat d_6 = [-0.12, 0.41]\).</li>
+<li>\(\|\hat q\| \)<wbr>\({}= \sqrt{0.426^2 + 0.509^2} \)<wbr>\({}= \sqrt{0.181 + 0.259} \)<wbr>\({}= \sqrt{0.440} \)<wbr>\({}= 0.664\).</li>
+<li>For \(d_3\). Dot product \(= (-0.426)(-0.20) \)<wbr>\({}+ (-0.509)(-0.19) \)<wbr>\({}= 0.085 + 0.097 \)<wbr>\({}= 0.182\). \(\|\hat d_3\| \)<wbr>\({}= \sqrt{0.04 + 0.036} \)<wbr>\({}= 0.276\). Cosine \(= 0.182/(0.664\times 0.276) \)<wbr>\({}= 0.99\).</li>
+<li>The same steps for the others give \(d_1\) 0.87, \(d_2\) 0.98, \(d_3\) 0.99, \(d_4\) \(-0.26\), \(d_5\) 0.10, \(d_6\) \(-0.55\).</li>
+<li>Nearest in 2-D is \(d_3\), closely followed by \(d_2\) and \(d_1\). These are the three "sea" documents.</li>
+<li>In dimension 1, each vector is a single number. Cosine similarity of two non-zero numbers is +1 if they have the same sign and −1 otherwise. All seven numbers are negative, so every cosine is 1 and cosine cannot pick a winner.</li>
+<li>Compare positions instead. \(\hat q = -0.426\). The documents are \(-0.75\), \(-0.28\), \(-0.20\), \(-0.44\), \(-0.32\) and \(-0.12\). The closest is \(d_4\) at \(-0.44\), a "wood/tree" document.</li>
+<li>Check: in the original 5-D space the cosines are \(d_1\) 0.82, \(d_3\) 0.71, \(d_2\) 0.5 and 0 for the rest, so \(d_1\) wins there. The 2-D answer moves \(d_2\) and \(d_3\) up, which is the LSI effect. The 1-D answer is poor, because one dimension cannot hold two topics.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L08 slide</span><span>How does LSI help with synonymy, and with clustering documents?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Synonyms such as "ship" and "boat" occur with the same neighbouring words ("ocean") across many documents. The SVD puts words that co-occur along the same latent direction, so two documents that use different synonyms land near each other. For clustering, documents are compared in the short latent space, where each coordinate is close to a topic, so a simple method such as k-means on the rows of \(V_k\) groups documents by topic.</p></div></details>
+</section>
+
+<div class="part">Part B<span>L09, L10 · the probabilistic view</span></div>
+
+<section>
+<h2 id="bayes-decision"><span class="num">2.5</span>Bayesian decision</h2>
+<p class="slides">Lectures L09, L10, Tutorial 2 · <a href="https://youtu.be/DUOJM728TT4">Short video: Geometry of Gaussians</a> · <a href="https://www.youtube.com/watch?v=AsQORY4_H9Q">Short video: Data from multivariate distribution</a></p>
+<p class="oneline">Pick the class with the larger posterior probability. No classifier makes fewer mistakes on average, and with Gaussian classes this rule turns into nearest-mean, linear or quadratic boundaries.</p>
+<p>The <a href="../basics/#bayes">basics page</a> has Bayes' theorem. Here it is in classification language. There are classes \(\omega_1, \omega_2, \dots\) (omega). A sample has measured features \(x\). Then</p>
+<div class="eq boxed">\[P(\omega_i\mid x) = \frac{p(x\mid\omega_i)\,P(\omega_i)}{p(x)}\]</div>
+<div class="eq">\[p(x) = \sum_j p(x\mid\omega_j)P(\omega_j)\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(P(\omega_i)\) is the <em class="t">prior</em>, how common class \(i\) is before looking at \(x\). \(p(x\mid\omega_i)\) is the <em class="t">likelihood</em>, how typical \(x\) is for class \(i\). \(P(\omega_i\mid x)\) is the <em class="t">posterior</em>, the probability of class \(i\) after seeing \(x\). The bottom, \(p(x)\), is the <em class="t">evidence</em>. It adds the top over all classes so that the posteriors add up to 1. In words, posterior = likelihood × prior / evidence.</p>
+<p>A small \(p\) is used for a density (continuous \(x\)) and a capital \(P\) for a probability. The vertical bar \(\mid\) is read "given".</p>
+<p><strong>Example.</strong> Two classes with priors 0.9 and 0.1. A sample has likelihoods 0.2 under class 1 and 0.6 under class 2. Tops are \(0.2\times0.9 = 0.18\) and \(0.6\times 0.1 = 0.06\). Evidence \(= 0.24\). Posteriors are \(0.18/0.24 = 0.75\) and \(0.06/0.24 = 0.25\). They add to 1, and class 1 wins although its likelihood was smaller, because its prior is much larger.</p>
+</div>
+<p>The <em class="t">Bayes decision rule</em> is to decide \(\omega_1\) if \(P(\omega_1\mid x) > P(\omega_2\mid x)\), otherwise \(\omega_2\). Since both posteriors have the same bottom \(p(x)\), the rule is the same as comparing \(p(x\mid\omega_1)P(\omega_1)\) with \(p(x\mid\omega_2)P(\omega_2)\). The "naive decision" from L09 that looks only at priors ("decide \(\omega_1\) if \(P(\omega_1) > P(\omega_2)\)") ignores \(x\) entirely. It is a near-blind guess.</p>
+
+<h3>Why the Bayes rule makes the fewest mistakes</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L09/p12.webp" alt="Slide: two class-conditional densities with the decision boundary where they cross, and a 2-D version" loading="lazy">
+<figcaption>L09, slide 12. With equal priors the boundary sits where the two density curves cross.</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the Bayes decision rule minimises the probability of error.</h4>
+<ol class="steps lines">
+<li>For a given \(x\), if we decide \(\omega_1\), the chance of being wrong is \(P(\omega_2\mid x)\). If we decide \(\omega_2\), it is \(P(\omega_1\mid x)\).</li>
+<li>The total error is \(P(\text{error}) \)<wbr>\({}= \int P(\text{error}\mid x)\,p(x)\,dx\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>This is the sum rule (total probability) with a continuous \(x\). Average the error at each \(x\), weighted by how often that \(x\) occurs.</li>
+<li>For a discrete \(x\), the integral is a sum \(\sum_x P(\text{error}\mid x)P(x)\).</li>
+</ol>
+</details></li>
+<li>\(p(x) \ge 0\) everywhere, so the integral is smallest when \(P(\text{error}\mid x)\) is smallest at every single \(x\).</li>
+<li>At each \(x\), the smaller of the two error chances is \(\min\{P(\omega_1\mid x), P(\omega_2\mid x)\}\), reached by deciding the class with the larger posterior. That is the Bayes rule.</li>
+</ol>
+</div>
+<p>This is why the course calls the Bayes classifier "optimal minimum error classification". In practice we do not know the true \(p(x\mid\omega_i)\) and must estimate it from data, which is what MLE (section 2.6) is for.</p>
+
+<h3>MAP and ML decisions, and risk</h3>
+<p>Choosing the class with the largest posterior is called <em class="t">MAP</em>, maximum a posteriori ("a posteriori" is Latin for "from what comes after", meaning after seeing \(x\)). If the priors are equal, they cancel, and the rule becomes "pick the class with the largest likelihood \(p(x\mid\omega_i)\)". That is the <em class="t">ML</em> (maximum likelihood) decision.</p>
+<p>Some mistakes cost more than others. Missing a disease is worse than a false alarm. L10 adds weights \(\lambda_1, \lambda_2\) (the cost of getting each class wrong) and the rule becomes to decide \(\omega_1\) if \(\lambda_1P(\omega_1\mid x) \ge \lambda_2 P(\omega_2\mid x)\). A large \(\lambda_1\) makes us call \(\omega_1\) more often, because missing it is expensive.</p>
+
+<h3>Gaussian classes give simple boundaries</h3>
+<p>Suppose each class is Gaussian (normal). The 1-D density with mean \(\mu\) and variance \(\sigma^2\) (sigma squared) is</p>
+<div class="eq">\[p(x\mid\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).\]</div>
+<p>Here \(\exp(a)\) means \(e^a\). The \(d\)-dimensional version with mean vector \(\mu\) and covariance matrix \(\Sigma\) (capital sigma) is</p>
+<div class="eq">\[p(x\mid\mu,\Sigma) = \frac{e^{-\Delta^2/2}}{(2\pi)^{d/2}|\Sigma|^{1/2}}\]</div>
+<div class="eq">\[\Delta^2 = (x-\mu)\T\Sigma^{-1}(x-\mu)\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(|\Sigma|\) is the determinant of \(\Sigma\). The front fraction only makes the total probability 1. All the shape is in the exponent \(-\Delta^2/2\). The quantity \(\Delta^2\) (capital delta squared) is the squared <em class="t">Mahalanobis distance</em> from \(x\) to \(\mu\). It is the ordinary squared distance when \(\Sigma = I\), and otherwise it counts distance in units of the spread along each direction.</p>
+<p>Points with equal density lie on ellipses whose axes are the eigenvectors of \(\Sigma\). A positive off-diagonal entry tilts the cloud up to the right, a negative one down to the right, and a diagonal \(\Sigma\) gives an ellipse lined up with the axes.</p>
+</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L09/p08.webp" alt="Slide: four scatter plots of 2-D Gaussian samples with different covariance matrices" loading="lazy">
+<figcaption>L09, slide 8. Covariances [[5,4],[4,6]] and [[5,−4],[−4,6]] tilt the cloud. Diagonal covariances stretch it along an axis.</figcaption></figure>
+<figure class="slide"><img src="{{ASSETS}}slides/L10/p06.webp" alt="Slide: four cases of Bayesian decision boundaries" loading="lazy">
+<figcaption>L10, slide 6. The four boundary shapes. The derivation below explains each.</figcaption></figure>
+<p>Take logs of prior × likelihood. Since log is increasing, comparing logs gives the same decision. For class \(i\) define the <em class="t">discriminant</em></p>
+<div class="eq">\[g_i(x) = -\tfrac12\Delta_i^2 - \tfrac12\ln|\Sigma_i| + \ln P(\omega_i)\]</div>
+<div class="eq">\[\Delta_i^2 = (x-\mu_i)\T\Sigma_i^{-1}(x-\mu_i)\]</div>
+<p>(dropping the \(-\tfrac d2\ln 2\pi\) that every class shares). It is the log of prior × likelihood. Decide the class with the largest \(g_i\). The four cases follow.</p>
+<ol>
+<li><strong>Same variance, 1-D, equal priors.</strong> Decide the nearer mean. The boundary is the midpoint \(\frac{\mu_1+\mu_2}{2}\), and the rule is \(\operatorname{sign}\left(x - \frac{\mu_1+\mu_2}2\right)\). This is "nearest mean" or template matching.</li>
+<li><strong>\(\Sigma_i = \sigma^2I\) for both.</strong> \(g_i\) becomes \(-\frac{\|x-\mu_i\|^2}{2\sigma^2}\) plus a constant. With equal priors that is nearest mean in ordinary distance, and the boundary is the perpendicular bisector of the segment joining the means.</li>
+<li><strong>Same \(\Sigma\) for both.</strong> Expanding \(g_i\), the term \(x\T\Sigma^{-1}x\) is the same for both classes and cancels in \(g_1 - g_2\). What is left is linear in \(x\), so the boundary is a straight line (a hyperplane). This connects Bayes with the linear classifier \(\operatorname{sign}(w\T x + b)\) of Page 1.</li>
+<li><strong>Different \(\Sigma_i\).</strong> The \(x\T\Sigma_i^{-1}x\) terms no longer cancel. The boundary is quadratic (a curve such as an ellipse or a parabola).</li>
+</ol>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Two 1-D Gaussian classes with equal variance \(\sigma^2\), means \(\mu_1 \lt \mu_2\) and priors \(P_1, P_2\). Find the decision threshold.</h4>
+<ol class="steps lines">
+<li>Decide \(\omega_1\) when \(P_1 e^{-(x-\mu_1)^2/2\sigma^2} > P_2 e^{-(x-\mu_2)^2/2\sigma^2}\). The factors \(\frac{1}{\sqrt{2\pi\sigma^2}}\) cancel.</li>
+<li>Take logs. \(\ln P_1 - \frac{(x-\mu_1)^2}{2\sigma^2} > \ln P_2 - \frac{(x-\mu_2)^2}{2\sigma^2}\).</li>
+<li>Collect the squares. \((x-\mu_2)^2 - (x-\mu_1)^2 > 2\sigma^2\ln\frac{P_2}{P_1}\).</li>
+<li>Expand. \(2x(\mu_1 - \mu_2) + \mu_2^2 - \mu_1^2 > 2\sigma^2\ln\frac{P_2}{P_1}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\((x-\mu_2)^2 \)<wbr>\({}= x^2 - 2x\mu_2 + \mu_2^2\).</li>
+<li>\((x-\mu_1)^2 \)<wbr>\({}= x^2 - 2x\mu_1 + \mu_1^2\).</li>
+<li>Subtract. The \(x^2\) terms cancel and we get \(-2x\mu_2 + 2x\mu_1 + \mu_2^2 - \mu_1^2\).</li>
+</ol>
+</details></li>
+<li>Solve for \(x\). The result is decide \(\omega_1\) when \(x \lt x^*\), with \[x^* = \frac{\mu_1+\mu_2}{2} + \frac{\sigma^2}{\mu_2-\mu_1}\ln\frac{P_1}{P_2}.\]
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Move \(\mu_2^2 - \mu_1^2\) to the right. \[2x(\mu_1-\mu_2) > 2\sigma^2\ln\frac{P_2}{P_1} - (\mu_2^2 - \mu_1^2).\]</li>
+<li>Divide by \(2(\mu_1 - \mu_2)\), which is negative, so the inequality flips. \(x \lt \frac{\mu_2^2-\mu_1^2}{2(\mu_2-\mu_1)} - \frac{\sigma^2}{\mu_2-\mu_1}\ln\frac{P_2}{P_1}\).</li>
+<li>Use \(\mu_2^2 - \mu_1^2 \)<wbr>\({}= (\mu_2-\mu_1)(\mu_2+\mu_1)\). The first fraction is \(\frac{\mu_1+\mu_2}{2}\).</li>
+<li>Use \(-\ln\frac{P_2}{P_1} \)<wbr>\({}= \ln\frac{P_1}{P_2}\). This gives the boxed formula.</li>
+</ol>
+</details></li>
+<li>With equal priors, \(\ln 1 = 0\) and \(x^* = \frac{\mu_1+\mu_2}{2}\), the midpoint. A larger \(P_1\) moves \(x^*\) towards \(\mu_2\), so class 1 gets more of the line.</li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>The Bayes rule picks the largest \(p(x\mid\omega_i)P(\omega_i)\). It has the least probability of error.</li>
+<li>MAP uses priors. ML ignores them (same as MAP with equal priors).</li>
+<li>With Gaussian classes, a shared \(\sigma^2 I\) gives the perpendicular bisector, shared \(\Sigma\) gives a line, different \(\Sigma_i\) give a quadratic curve.</li>
+<li>The equal-variance 1-D threshold is \(x^* \)<wbr>\({}= \frac{\mu_1+\mu_2}{2} + \frac{\sigma^2}{\mu_2-\mu_1}\ln\frac{P_1}{P_2}\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L09/p18.webp" alt="Slide: Hyderabad January and May temperatures as normal distributions, choose the threshold" loading="lazy">
+<figcaption>L09, slide 18 (the same question returns in the L06 review list).</figcaption></figure>
+<details class="q"><summary><span class="qt">L09 slide</span><span>January temperatures are \(N(23, 2)\) and May temperatures \(N(33, 2)\) (mean, variance), with 100 days of each. For the rule "if temperature \(\lt \theta\) then January", what is \(\theta\)? If the May variance doubles to 4, does the optimal threshold go up or down?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Equal variance and equal priors give \(\theta = \frac{\mu_1+\mu_2}{2}\). With unequal variances, solve \(\ln p(x\mid\text{Jan}) \)<wbr>\({}= \ln p(x\mid\text{May})\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, the threshold derivation, line 6.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>100 days each means equal priors, so \(\ln\frac{P_1}{P_2} = 0\).</li>
+<li>The variances are equal, so \(\theta = \frac{23+33}{2} = 28\).</li>
+<li>Now May has variance 4. Write the log densities with the \(\sqrt{2\pi}\) dropped from both. For January it is \(-\frac12\ln 2 - \frac{(x-23)^2}{4}\). For May it is \(-\frac12\ln 4 - \frac{(x-33)^2}{8}\).</li>
+<li>Set them equal and multiply by 8. \(-4\ln 2 - 2(x-23)^2 \)<wbr>\({}= -4\ln 4 - (x-33)^2\).</li>
+<li>Use \(\ln 4 = 2\ln 2\) and move terms. \((x-33)^2 - 2(x-23)^2 + 4\ln 2 \)<wbr>\({}= 0\).</li>
+<li>Expand \((x-33)^2 = x^2 - 66x + 1089\) and \(2(x-23)^2 = 2x^2 - 92x + 1058\). Also \(4\ln 2 = 2.773\).</li>
+<li>Substitute and collect. \(-x^2 + 26x + 33.77 = 0\), which is \(x^2 - 26x - 33.77 = 0\).</li>
+<li>Quadratic formula. \(x \)<wbr>\({}= \frac{26 \pm\sqrt{676 + 135.1}}{2} \)<wbr>\({}= \frac{26 \pm 28.48}{2}\). The roots are 27.24 and \(-1.24\).</li>
+<li>The root between the means is 27.24. (The other root is far in the left tail, where the wider May curve is again higher. It does not matter for real temperatures.)</li>
+<li>So the threshold decreases from 28 to about 27.2. The wider May curve claims more of the middle ground.</li>
+<li>Check: at \(x = 27.24\), January gives \(-0.347 - \frac{4.24^2}{4} \)<wbr>\({}= -0.347 - 4.49 \)<wbr>\({}= -4.84\) and May gives \(-0.693 - \frac{5.76^2}{8} \)<wbr>\({}= -0.693 - 4.15 \)<wbr>\({}= -4.84\). They match.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>A disease affects 40% of the population. A test detects it with probability 0.6 and gives a false positive with probability 0.1. A person tests positive. What is the probability they are sick? (a) 0.6 (b) 0.7 (c) 0.8 (d) 0.9 (e) 0.95</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid +) \)<wbr>\({}= \dfrac{P(+\mid S)P(S)}{P(+\mid S)P(S) + P(+\mid \bar S)P(\bar S)}\), where \(\bar S\) means "not sick".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, Bayes' theorem with the evidence written out.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P(+\mid S)P(S) \)<wbr>\({}= 0.6\times 0.4 \)<wbr>\({}= 0.24\).</li>
+<li>\(P(+\mid\bar S)P(\bar S) \)<wbr>\({}= 0.1\times 0.6 \)<wbr>\({}= 0.06\).</li>
+<li>Evidence \(P(+) = 0.24 + 0.06 = 0.30\).</li>
+<li>\(P(S\mid +) = 0.24/0.30 = 0.8\). Answer (c).</li>
+<li>Check. \(P(\bar S\mid +) \)<wbr>\({}= 0.06/0.30 \)<wbr>\({}= 0.2\), and \(0.8 + 0.2 = 1\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Half of all rainy days start cloudy. 40% of days start cloudy. Only 10% of days are rainy. The morning is cloudy. What is the chance of rain? (a) 10% (b) 12.5% (c) 15% (d) more than 20% (e) less than 20%</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(R\mid C) \)<wbr>\({}= \dfrac{P(C\mid R)P(R)}{P(C)}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, Bayes' theorem. Here the evidence \(P(C)\) is given directly.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P(C\mid R) = 0.5\), \(P(R) = 0.1\), \(P(C) = 0.4\).</li>
+<li>\(P(R\mid C) \)<wbr>\({}= \frac{0.5\times 0.1}{0.4} \)<wbr>\({}= \frac{0.05}{0.4} \)<wbr>\({}= 0.125\).</li>
+<li>That is 12.5%, so (b) is true. It is also below 20%, so (e) is true. The correct options are (b) and (e).</li>
+<li>Check: the answer is between 0 and 1, and cloudiness raised the chance of rain from 10% to 12.5%, which makes sense because cloudy mornings are a little more common on rainy days.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Monty Hall. You pick one of three doors. The host, who knows where the prize is, opens another door with no prize and offers a switch. What is the probability of winning if you switch?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(C_2\mid H_3) \)<wbr>\({}= \dfrac{P(H_3\mid C_2)P(C_2)}{\sum_j P(H_3\mid C_j)P(C_j)}\), where \(C_j\) is "prize behind door \(j\)" and \(H_3\) is "host opens door 3".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, Bayes' theorem.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Say you picked door 1 and the host opened door 3. Priors \(P(C_1) \)<wbr>\({}= P(C_2) \)<wbr>\({}= P(C_3) \)<wbr>\({}= \frac13\).</li>
+<li>If the prize is behind door 1, the host can open door 2 or 3, so \(P(H_3\mid C_1) = \frac12\).</li>
+<li>If it is behind door 2, the host must open door 3, so \(P(H_3\mid C_2) = 1\).</li>
+<li>If it is behind door 3, the host cannot open door 3, so \(P(H_3\mid C_3) = 0\).</li>
+<li>Evidence \(P(H_3) \)<wbr>\({}= \frac12\cdot\frac13 + 1\cdot\frac13 + 0 \)<wbr>\({}= \frac16 + \frac13 \)<wbr>\({}= \frac12\).</li>
+<li>\(P(C_2\mid H_3) \)<wbr>\({}= \frac{1\cdot\frac13}{\frac12} \)<wbr>\({}= \frac23\). Switching wins with probability \(\frac23\). Answer (c).</li>
+<li>Check. \(P(C_1\mid H_3) \)<wbr>\({}= \frac{\frac16}{\frac12} \)<wbr>\({}= \frac13\), and \(\frac13 + \frac23 = 1\).</li>
+</ol></div></div>
+</div></details>
+<figure class="slide"><img src="{{ASSETS}}slides/L10/p19.webp" alt="Slide: the blindfold fruit problem with the yellow glimpse, posterior calculation" loading="lazy">
+<figcaption>L10, slide 19, and Tutorial 2, section 2. The fruit basket problem.</figcaption></figure>
+<details class="q"><summary><span class="qt">L10 slide</span><span>A basket has 85 green mangoes, 5 yellow mangoes, 2 green pears and 8 yellow pears. (a) Blindfolded, what do you guess, and what is your chance? (b) You glimpse yellow. Now what? (c) You are colour-blind and see green as yellow 20% of the time, but never yellow as green. You see yellow. What is P(mango)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(\text{M}\mid\text{Y}) \)<wbr>\({}= \dfrac{P(\text{Y}\mid\text{M})P(\text{M})}{P(\text{Y}\mid\text{M})P(\text{M}) + P(\text{Y}\mid\text{P})P(\text{P})}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, Bayes' theorem. Part (c) also uses the sum rule to get an effective likelihood.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) Priors. 90 mangoes and 10 pears out of 100, so \(P(\text{M}) = 0.9\), \(P(\text{P}) = 0.1\). Guess mango. Chance of survival 90%.</li>
+<li>(b) Likelihoods. \(P(\text{Y}\mid\text{M}) \)<wbr>\({}= \frac5{90}\) and \(P(\text{Y}\mid\text{P}) \)<wbr>\({}= \frac8{10}\).</li>
+<li>Tops. \(\frac5{90}\times 0.9 = 0.05\) and \(0.8\times 0.1 = 0.08\). Evidence \(= 0.13\).</li>
+<li>\(P(\text{M}\mid\text{Y}) \)<wbr>\({}= 0.05/0.13 \)<wbr>\({}= 0.385\) and \(P(\text{P}\mid\text{Y}) \)<wbr>\({}= 0.08/0.13 \)<wbr>\({}= 0.615\). Guess pear.</li>
+<li>(c) "See yellow" now happens for every yellow fruit and for 20% of green fruit. For mangoes that is \(5 + 0.2\times 85 = 5 + 17 = 22\) of 90, so \(P(\text{see Y}\mid\text{M}) \)<wbr>\({}= \frac{22}{90}\).</li>
+<li>For pears it is \(8 + 0.2\times 2 = 8.4\) of 10, so \(P(\text{see Y}\mid\text{P}) \)<wbr>\({}= 0.84\).</li>
+<li>Tops. \(\frac{22}{90}\times 0.9 = 0.22\) and \(0.84\times 0.1 = 0.084\). Evidence \(= 0.304\).</li>
+<li>\(P(\text{M}\mid\text{see Y}) \)<wbr>\({}= 0.22/0.304 \)<wbr>\({}= 0.724\). Guess mango again.</li>
+<li>Check. \(0.084/0.304 = 0.276\) for pear, and \(0.724 + 0.276 = 1\). Unreliable evidence moves the prior less.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>In the fruit problem (b), suppose guessing pear when it is a mango costs 3 times as much as the opposite mistake. With the risk rule \(\lambda_1P(\omega_1\mid x) \ge \lambda_2P(\omega_2\mid x)\), what do you guess after seeing yellow?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Decide mango if \(\lambda_{\text M}P(\text M\mid x) \ge \lambda_{\text P}P(\text P\mid x)\), where \(\lambda\) is the cost of getting that class wrong.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.5, "MAP and ML decisions, and risk".</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Missing a mango costs 3, missing a pear costs 1. So \(\lambda_{\text M} = 3\), \(\lambda_{\text P} = 1\).</li>
+<li>Left side \(3\times 0.385 = 1.155\). Right side \(1\times 0.615 = 0.615\).</li>
+<li>\(1.155 \ge 0.615\), so guess mango.</li>
+<li>Check: without costs the answer was pear. Making one mistake costlier pushes the decision towards avoiding it, as expected.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="mle"><span class="num">2.6</span>Maximum likelihood</h2>
+<p class="slides">Lectures L09, L10 · <a href="https://youtu.be/p8XWxnBzUbk">Short video: MLE</a> · <a href="https://youtu.be/XfmZ3Ap-xHI">Short video: MSE as MLE</a></p>
+<p class="oneline">Choose the parameters under which the data you actually saw is most probable. For Gaussians this gives the sample mean and variance, and for linear regression with Gaussian noise it gives least squares.</p>
+<p>A <em class="t">model</em> here is a family of distributions with knobs, the <em class="t">parameters</em>, written \(\theta\) (theta). A coin has one parameter, its head probability \(p\). A Gaussian has two, \(\mu\) and \(\sigma^2\).</p>
+<p>The <em class="t">likelihood</em> of \(\theta\) is the probability of the observed data computed as if \(\theta\) were true, \(L(\theta) \)<wbr>\({}= P(\text{data}\mid\theta)\). It is read as a function of \(\theta\) with the data held fixed. If the samples are independent, it is a product.</p>
+<div class="eq">\[L(\theta) = \prod_{i=1}^N p(x_i\mid\theta)\]</div>
+<div class="eq">\[\hat\theta_{\text{MLE}} = \argmax_\theta L(\theta)\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\prod\) (capital pi) multiplies terms, the way \(\sum\) adds them. So \(\prod_{i=1}^3 p(x_i\mid\theta) \)<wbr>\({}= p(x_1\mid\theta)\,p(x_2\mid\theta)\,p(x_3\mid\theta)\). The \(\argmax\) returns the \(\theta\) at which the function is largest, not the largest value itself.</p>
+<p><strong>Example.</strong> A coin gives H, T, T, H, T. With head probability \(p\), \(L(p) \)<wbr>\({}= p\cdot(1-p)(1-p)\cdot p\cdot(1-p) \)<wbr>\({}= p^2(1-p)^3\). At \(p = 0.3\), \(L = 0.09\times 0.343 = 0.0309\). At \(p = 0.4\), \(L = 0.16\times 0.216 = 0.0346\). At \(p = 0.5\), \(L = 0.03125\). The best of these is 0.4, which is the fraction of heads, \(\frac25\). L10's other example is \(L(0.5\mid\text{HH}) \)<wbr>\({}= 0.5^2 \)<wbr>\({}= 0.25\).</p>
+</div>
+<p>We maximise the <em class="t">log-likelihood</em> \(\ell(\theta) \)<wbr>\({}= \ln L(\theta) \)<wbr>\({}= \sum_i\ln p(x_i\mid\theta)\) instead. Three reasons. The log turns the product into a sum, which is easier to differentiate. A product of many small probabilities underflows to 0 on a computer, and a sum of logs does not. And \(\ln\) is increasing, so the \(\theta\) that maximises \(\ln L\) also maximises \(L\). Minimising the <em class="t">negative log-likelihood</em> (NLL) is the same thing, and that is how a likelihood becomes a loss function.</p>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Coin: \(h\) heads in \(N\) tosses. Show that \(\hat p = h/N\).</h4>
+<ol class="steps lines">
+<li>\(L(p) = p^h(1-p)^{N-h}\), so \(\ell(p) \)<wbr>\({}= h\ln p + (N-h)\ln(1-p)\).</li>
+<li>\(\frac{d\ell}{dp} \)<wbr>\({}= \frac hp - \frac{N-h}{1-p} \)<wbr>\({}= 0\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(\frac{d}{dp}\ln p = \frac1p\).</li>
+<li>\(\frac{d}{dp}\ln(1-p) \)<wbr>\({}= \frac{-1}{1-p}\) by the chain rule (the inside \(1-p\) has derivative \(-1\)).</li>
+</ol>
+</details></li>
+<li>Multiply by \(p(1-p)\). \(h(1-p) = (N-h)p\), so \(h = Np\) and \(\hat p = \frac hN\).</li>
+</ol>
+</div>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Samples \(x_1,\dots,x_N\) from \(N(\mu,\sigma^2)\). Find the MLE of \(\mu\) and \(\sigma^2\).</h4>
+<ol class="steps lines">
+<li>\(\ell(\mu,\sigma^2) \)<wbr>\({}= \sum_{i=1}^N\left[-\tfrac12\ln(2\pi\sigma^2) - \frac{(x_i-\mu)^2}{2\sigma^2}\right]\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Take the log of one Gaussian density. \(\ln\frac1{\sqrt{2\pi\sigma^2}} \)<wbr>\({}= -\tfrac12\ln(2\pi\sigma^2)\).</li>
+<li>The log of \(\exp(a)\) is \(a\), so the exponent comes down as \(-\frac{(x_i-\mu)^2}{2\sigma^2}\).</li>
+<li>Add over the \(N\) samples (the log of a product is the sum of logs).</li>
+</ol>
+</details></li>
+<li>\(\frac{\partial\ell}{\partial\mu} \)<wbr>\({}= \sum_i\frac{x_i-\mu}{\sigma^2} \)<wbr>\({}= 0\) gives \(\hat\mu = \frac1N\sum_i x_i\), the sample mean.
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>The first term has no \(\mu\), so its derivative is 0.</li>
+<li>\(\frac{\partial}{\partial\mu}(x_i-\mu)^2 \)<wbr>\({}= -2(x_i-\mu)\), so \(-\frac{(x_i-\mu)^2}{2\sigma^2}\) has derivative \(\frac{x_i-\mu}{\sigma^2}\).</li>
+<li>Set the sum to 0 and multiply by \(\sigma^2\). \(\sum_i x_i - N\mu = 0\).</li>
+<li>Divide by \(N\). \(\hat\mu = \frac1N\sum_ix_i\).</li>
+</ol>
+</details></li>
+<li>Write \(v = \sigma^2\). \(\frac{\partial\ell}{\partial v} \)<wbr>\({}= -\frac{N}{2v} + \frac{1}{2v^2}\sum_i(x_i-\mu)^2 \)<wbr>\({}= 0\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(-\tfrac12\ln(2\pi v)\) has derivative \(-\frac{1}{2v}\), and there are \(N\) copies.</li>
+<li>\(-\frac{a}{2v}\) has derivative \(+\frac{a}{2v^2}\), with \(a = (x_i-\mu)^2\).</li>
+</ol>
+</details></li>
+<li>Multiply by \(2v^2\). \(-Nv + \sum_i(x_i-\mu)^2 = 0\), so \(\hat\sigma^2 \)<wbr>\({}= \frac1N\sum_i(x_i-\hat\mu)^2\).</li>
+</ol>
+</div>
+<p>The MLE variance divides by \(N\), not \(N-1\). Statistics courses often use \(N-1\) to remove a small bias. In this course the MLE answer with \(N\) is the one to write.</p>
+<p>The same steps in \(d\) dimensions give \(\hat\mu = \frac1N\sum_ix_i\) and \(\hat\Sigma \)<wbr>\({}= \frac1N\sum_i(x_i-\hat\mu)(x_i-\hat\mu)\T\) (L10). The mean also has a direct meaning from L09. It is the point \(y\) that minimises \(\sum_i\|x_i - y\|^2\), the total squared distance to all the samples.</p>
+
+<h3>Least squares is maximum likelihood</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L10/p11.webp" alt="Slide: linear regression as MLE with Gaussian noise" loading="lazy">
+<figcaption>L10, slide 11. The probabilistic reading of linear regression.</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Assume \(y_i = w\T x_i + \epsilon_i\) with \(\epsilon_i\) independent \(N(0,\sigma^2)\). Show that the MLE of \(w\) minimises the MSE.</h4>
+<ol class="steps lines">
+<li>Then \(y_i\) given \(x_i\) is \(N(w\T x_i, \sigma^2)\). So \(p(y_i\mid x_i, w) \)<wbr>\({}= \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - w\T x_i)^2}{2\sigma^2}\right)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(\epsilon_i\) (epsilon) is the noise. Adding the fixed number \(w\T x_i\) to a \(N(0,\sigma^2)\) variable shifts its mean to \(w\T x_i\) and keeps the variance.</li>
+<li>So the density of \(y_i\) is the Gaussian formula with \(\mu = w\T x_i\).</li>
+</ol>
+</details></li>
+<li>Take logs and add over samples. Write \(K = -\frac N2\ln(2\pi\sigma^2)\), which does not depend on \(w\). \[\ell(w) = K - \frac{1}{2\sigma^2}\sum_i(y_i - w\T x_i)^2.\]</li>
+<li>The factor \(\frac{1}{2\sigma^2}\) does not depend on \(w\) either. Write it as \(c > 0\), so \(\ell(w) \)<wbr>\({}= K - c\sum_i(y_i - w\T x_i)^2\).</li>
+<li>Maximising \(\ell\) is therefore minimising \(\sum_i(y_i - w\T x_i)^2\), the squared error. MSE is the NLL up to a scale and a constant.</li>
+</ol>
+</div>
+<p>So the regression of <a href="../foundations/#regression">Page 1</a> was MLE all along. The loss came from an assumption about noise. Logistic regression (2.10) and the cross-entropy loss of neural networks come from the same move with a different noise model.</p>
+
+<h3>Streaming mean and variance</h3>
+<p>Sometimes samples arrive one at a time and we cannot keep them all ("streaming data"). Keep the count \(N\), the mean \(\mu_N\) and the mean of squares \(m_N = \frac1N\sum x_i^2\). When \(x_{N+1}\) arrives,</p>
+<div class="eq">\[\mu_{N+1} = \frac{N\mu_N + x_{N+1}}{N+1}\]</div>
+<div class="eq">\[m_{N+1} = \frac{N m_N + x_{N+1}^2}{N+1}\]</div>
+<div class="eq">\[\sigma^2_{N+1} = m_{N+1} - \mu_{N+1}^2\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(N\mu_N\) is the old total. Add the new sample and divide by the new count. The variance uses the identity \(\sigma^2 \)<wbr>\({}= \text{mean of squares} - (\text{mean})^2\), which follows from expanding \(\frac1N\sum(x_i-\mu)^2\). Substitute \(m_N = \sigma_N^2 + \mu_N^2\) to update from \(\sigma^2_N\) directly.</p>
+<p><strong>Example.</strong> Samples 4, 8, 6, 10. After 4 and 8, \(\mu_2 = 6\) and \(m_2 = (16+64)/2 = 40\), so \(\sigma_2^2 = 40 - 36 = 4\). Add 6: \(\mu_3 = (12 + 6)/3 = 6\), \(m_3 = (80 + 36)/3 = 38.67\), \(\sigma_3^2 = 38.67 - 36 = 2.67\). Add 10. \(\mu_4 = (18+10)/4 = 7\), \(m_4 = (116 + 100)/4 = 54\), \(\sigma^2_4 = 54 - 49 = 5\). Check directly. The deviations from 7 are \(-3, 1, -1, 3\), squares sum to 20, and \(20/4 = 5\).</p>
+<p>This is needed in batch normalisation in neural networks, where running means and variances are kept as batches stream past.</p>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>MLE maximises \(\sum_i\ln p(x_i\mid\theta)\). Minimising the NLL is the same thing.</li>
+<li>Coin \(\hat p = h/N\). Gaussian \(\hat\mu\) = sample mean, \(\hat\sigma^2 \)<wbr>\({}= \frac1N\sum(x_i-\hat\mu)^2\). Multivariate \(\hat\Sigma \)<wbr>\({}= \frac1N\sum(x_i-\hat\mu)(x_i-\hat\mu)\T\).</li>
+<li>Gaussian noise makes MLE of linear regression the same as least squares.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Samples 2, 4, 9 come from \(N(\mu,\sigma^2)\). Find the MLE of \(\mu\) and \(\sigma^2\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\hat\mu = \frac1N\sum x_i\), \(\hat\sigma^2 \)<wbr>\({}= \frac1N\sum(x_i-\hat\mu)^2\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.6, Gaussian MLE, lines 2 and 4.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps"><li>\(\hat\mu = (2+4+9)/3 = 15/3 = 5\).</li><li>Deviations \(-3, -1, 4\). Squares \(9, 1, 16\). Sum 26.</li><li>\(\hat\sigma^2 \)<wbr>\({}= 26/3 \)<wbr>\({}\approx 8.67\).</li><li>Check by mean of squares. \((4 + 16 + 81)/3 \)<wbr>\({}= 101/3 \)<wbr>\({}= 33.67\), and \(33.67 - 25 = 8.67\).</li></ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Samples arrive one at a time. You have \(\mu_N\) and \(\sigma^2_N\). How do you get \(\mu_{N+1}\) and \(\sigma^2_{N+1}\)? Where are such updates needed?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Use the streaming formulas above. In terms of \(\sigma_N^2\) directly, \(\sigma^2_{N+1} \)<wbr>\({}= \frac{N(\sigma^2_N + \mu_N^2) + x_{N+1}^2}{N+1} - \mu_{N+1}^2\). They are needed when data is too large to store or arrives live (sensor streams, logs), and for running statistics in batch normalisation.</p></div></details>
+<details class="q"><summary><span class="qt">L09 slide</span><span>Two-class data, \(d = 100\) features in [0, 10], \(N = 1000\). You want the 10 best features. Rank feature \(j\) by (1) \(|\mu_A^j - \mu_B^j|\), (2) \((\sigma_A^j)^2 + (\sigma_B^j)^2\), (3) \(\frac{(\mu_A^j - \mu_B^j)^2}{(\sigma_A^j)^2 + (\sigma_B^j)^2}\), or (4) the entropies of the binned class histograms. Which is sensible?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(1) only looks at the gap between means. Two features with the same gap can differ a lot if one has a huge spread, so the gap alone can mislead.</li>
+<li>(2) only looks at spread. A feature with zero spread in both classes but equal means is useless, yet it would rank first if we prefer small spread.</li>
+<li>(3) is a gap divided by spread, the 1-D Fisher criterion of section 2.2. It is large exactly when the classes are far apart compared with their width. This is the sensible one.</li>
+<li>(4) as written adds the entropy of each class histogram. Entropy measures how spread out each class is, not how much the two classes overlap, so it misses the gap between them. A measure that compares the two histograms (such as information gain) would work.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="gmm-em"><span class="num">2.7</span>GMMs and EM</h2>
+<p class="slides">Lectures L10, L11, Tutorial 2 · <a href="https://mbernste.github.io/posts/em/">Read: EM explained</a> · <a href="https://mbernste.github.io/posts/gmm_em/">Read: EM for GMMs</a></p>
+<p class="oneline">A GMM models data as a weighted mix of a few Gaussians. EM fits it by repeating two steps. First guess which Gaussian each point came from, then refit each Gaussian to the points it was given.</p>
+<p>One Gaussian has one peak. Real data often has several clusters (it is <em class="t">multimodal</em>). A <em class="t">Gaussian mixture model</em> (GMM) adds \(K\) Gaussians with weights.</p>
+<div class="eq boxed">\[p(x) = \sum_{k=1}^K \pi_k\,N(x\mid\mu_k,\Sigma_k)\]</div>
+<div class="eq">\[0\le\pi_k\le 1, \quad \sum_k\pi_k = 1\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Here \(\pi_k\) (pi) is a weight, not 3.14. It is the <em class="t">mixing coefficient</em>, the fraction of data that comes from component \(k\). Think of making one sample in two stages. First pick a component \(k\) with probability \(\pi_k\). Then draw \(x\) from that component's Gaussian. The component picked is hidden from us. A hidden variable like this is called a <em class="t">latent variable</em>.</p>
+<p>The weights add to 1 so that \(p(x)\) is still a density with total probability 1.</p>
+<p><strong>Example.</strong> \(K = 2\) in 1-D with \(\pi = (0.5, 0.5)\), means 1 and 6, both variances 1. At \(x = 2\) the first component gives \(0.242\) and the second \(0.0001\) (the Gaussian formula with \(\sigma = 1\)). So \(p(2) \)<wbr>\({}= 0.5(0.242) + 0.5(0.0001) \)<wbr>\({}= 0.121\).</p>
+</div>
+<h3>Why plain MLE gets stuck</h3>
+<p>The log-likelihood is \(\sum_i\ln\sum_k\pi_kN(x_i\mid\mu_k,\Sigma_k)\). The sum inside the log does not split, so setting derivatives to zero gives equations with no closed-form answer. L10 notes the way round it. If we knew which component each point came from, fitting would be easy (the MLE of section 2.6 on each group). If we knew the components, we could work out which one each point probably came from. EM alternates between these two easy problems.</p>
+<p>The probability that component \(k\) produced point \(x\) is a posterior, by Bayes with \(\pi_k\) as the prior. It is called the <em class="t">responsibility</em>.</p>
+<div class="eq">\[\gamma_k(x) = P(k\mid x) = \frac{\pi_k\,N(x\mid\mu_k,\Sigma_k)}{\sum_{j=1}^K\pi_j\,N(x\mid\mu_j,\Sigma_j)}.\]</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L10/p16.webp" alt="Slide: GMM algorithm, initialise, E-step, M-step, check log likelihood" loading="lazy">
+<figcaption>L10, slide 16. The EM algorithm for a GMM in four steps.</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>The EM algorithm for a GMM.</h4>
+<ol class="steps lines">
+<li>Initialise \(\mu_k\), \(\Sigma_k\), \(\pi_k\) for every \(k\), and compute the log-likelihood.</li>
+<li>E-step (expectation). For every point \(x_i\) and component \(k\), compute \(\gamma_k(x_i)\) with the formula above.
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The top is prior × likelihood for component \(k\). The bottom adds this over all components.</li>
+<li>So for each point, the \(K\) responsibilities add up to 1. They are a soft assignment, so point \(i\) belongs 0.9 to one component and 0.1 to another, say.</li>
+</ol>
+</details></li>
+<li>M-step (maximisation). Let \(N_k = \sum_i\gamma_k(x_i)\). Update \(\mu_k \)<wbr>\({}= \frac1{N_k}\sum_i\gamma_k(x_i)\,x_i\), \(\Sigma_k \)<wbr>\({}= \frac1{N_k}\sum_i\gamma_k(x_i)(x_i-\mu_k)(x_i-\mu_k)\T\) and \(\pi_k = \frac{N_k}N\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\(N_k\) is the effective number of points in component \(k\), each point counted by the fraction it belongs.</li>
+<li>The new mean and covariance are the ordinary MLE formulas of section 2.6, but each point is weighted by its responsibility.</li>
+<li>The new weight is the fraction of all \(N\) points that component \(k\) is responsible for.</li>
+</ol>
+</details></li>
+<li>Recompute the log-likelihood. If it has stopped changing, stop. Otherwise go back to line 2.</li>
+</ol>
+</div>
+<p>Each EM round never decreases the log-likelihood, so EM converges. But it converges to a <em class="t">local</em> optimum, which depends on the initialisation.</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>Tutorial 2's data is \(X = \{1, 2, 8\}\) with \(K = 2\). Start with \(\mu_A = 1\), \(\mu_B = 6\), both variances 1, \(\pi_A = \pi_B = 0.5\). Since the variances are equal, the factor \(\frac1{\sqrt{2\pi}}\) cancels in every responsibility, so use \(e^{-(x-\mu)^2/2}\).</p>
+<table class="tbl">
+<tr><th>\(x\)</th><th>A term \(e^{-(x-1)^2/2}\)</th><th>B term \(e^{-(x-6)^2/2}\)</th><th>\(\gamma_A\)</th><th>\(\gamma_B\)</th></tr>
+<tr><td>1</td><td>\(e^0 = 1\)</td><td>\(e^{-12.5} \approx 0.000004\)</td><td>1.000</td><td>0.000</td></tr>
+<tr><td>2</td><td>\(e^{-0.5} = 0.6065\)</td><td>\(e^{-8} = 0.000335\)</td><td>0.9994</td><td>0.0006</td></tr>
+<tr><td>8</td><td>\(e^{-24.5}\approx 0\)</td><td>\(e^{-2} = 0.1353\)</td><td>0.000</td><td>1.000</td></tr>
+</table>
+<p>The equal weights 0.5 cancel too. For \(x = 2\), \(\gamma_A \)<wbr>\({}= \frac{0.6065}{0.6065 + 0.000335} \)<wbr>\({}= 0.9994\).</p>
+<p>M-step. \(N_A = 1 + 0.9994 + 0 = 1.9994\) and \(N_B = 0 + 0.0006 + 1 = 1.0006\).</p>
+<p>\(\mu_A \)<wbr>\({}= \frac{1(1) + 0.9994(2) + 0(8)}{1.9994} \)<wbr>\({}= \frac{2.9988}{1.9994} \)<wbr>\({}= 1.50\). \(\mu_B \)<wbr>\({}= \frac{0.0006(2) + 1(8)}{1.0006} \)<wbr>\({}= \frac{8.0012}{1.0006} \)<wbr>\({}= 8.00\).</p>
+<p>\(\sigma_A^2 \)<wbr>\({}= \frac{1(1-1.5)^2 + 0.9994(2-1.5)^2}{1.9994} \)<wbr>\({}= 0.25\). \(\sigma_B^2 \)<wbr>\({}= \frac{0.0006(2-8)^2 + 1(8-8)^2}{1.0006} \)<wbr>\({}= 0.02\). \(\pi_A = 1.9994/3 = 0.667\), \(\pi_B = 0.333\).</p>
+<p>The log-likelihood rises from \(-7.34\) to \(-2.33\). Component A now covers 1 and 2. Component B sits on the single point 8.</p>
+</div>
+<div class="card watch"><span class="tag">Common mistake</span>
+<p>Run one more round of the example and \(\sigma_B^2\) becomes exactly 0. A Gaussian with zero variance on a data point has infinite density there, so the likelihood goes to infinity. This is the known way a GMM breaks. It is a bad answer that happens to have a huge likelihood. Real implementations keep a small floor under every variance, or restart from another initialisation.</p>
+</div>
+<p>GMMs are used whenever data has several modes, for example speech and image signals where two sources are mixed, and background subtraction in video (each pixel's colour over time is modelled as a mix of "background" and "moving object").</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(p(x) \)<wbr>\({}= \sum_k\pi_kN(x\mid\mu_k,\Sigma_k)\) with \(\sum\pi_k = 1\).</li>
+<li>E-step computes responsibilities \(\gamma_k(x_i)\). M-step refits each component with responsibility-weighted MLE and sets \(\pi_k = N_k/N\).</li>
+<li>EM never lowers the likelihood and reaches a local optimum that depends on the start.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>A 1-D GMM has \(\pi = (0.3, 0.7)\), \(\mu = (0, 4)\) and both variances 4. Find the responsibilities for \(x = 2\) and for \(x = 1\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\gamma_k(x) \)<wbr>\({}= \dfrac{\pi_kN(x\mid\mu_k,\sigma^2)}{\sum_j\pi_jN(x\mid\mu_j,\sigma^2)}\). With equal variances the factor \(\frac1{\sqrt{2\pi\sigma^2}}\) cancels.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.7, line 2 of the EM box.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>At \(x = 2\), both means are 2 away. So both exponentials are \(e^{-4/8} = e^{-0.5}\), which cancel.</li>
+<li>\(\gamma_1(2) \)<wbr>\({}= \frac{0.3}{0.3+0.7} \)<wbr>\({}= 0.3\) and \(\gamma_2(2) = 0.7\). At the midpoint, only the weights decide.</li>
+<li>At \(x = 1\). Component 1 term \(0.3\,e^{-1/8} \)<wbr>\({}= 0.3\times 0.8825 \)<wbr>\({}= 0.2648\). Component 2 term \(0.7\,e^{-9/8} \)<wbr>\({}= 0.7\times 0.3247 \)<wbr>\({}= 0.2273\).</li>
+<li>\(\gamma_1(1) \)<wbr>\({}= \frac{0.2648}{0.2648 + 0.2273} \)<wbr>\({}= \frac{0.2648}{0.4921} \)<wbr>\({}= 0.538\), \(\gamma_2(1) = 0.462\).</li>
+<li>Check: each pair adds to 1, and moving \(x\) towards \(\mu_1 = 0\) raised \(\gamma_1\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L10 slide</span><span>Why does setting the derivative of the GMM log-likelihood to zero not give a closed-form answer, as it did for one Gaussian?</span><span class="chev">›</span></summary>
+<div class="ans"><p>For one Gaussian, \(\ln N(x_i\mid\mu,\sigma^2)\) is a simple quadratic in \(\mu\), and the derivatives give linear equations. For a GMM the log is taken of a sum \(\sum_k\pi_kN(\cdot)\). The derivative with respect to \(\mu_k\) contains the responsibility \(\gamma_k(x_i)\), which itself depends on all the parameters. The equations are coupled and nonlinear. EM handles this by freezing the responsibilities (E-step), solving the now simple weighted MLE (M-step), and repeating.</p></div></details>
+</section>
+
+<section>
+<h2 id="kmeans"><span class="num">2.8</span>k-means</h2>
+<p class="slides">Lectures L10, L11</p>
+<p class="oneline">k-means is EM with hard assignments. Put each point in the cluster with the nearest mean, recompute the means, repeat.</p>
+<p><em class="t">Clustering</em> splits a set into groups that do not overlap and together cover everything ("mutually exclusive and collectively exhaustive"). In set notation, \(A \)<wbr>\({}= C_1\cup C_2\cup\dots\cup C_K\) with \(C_i\cap C_j = \emptyset\) for \(i\ne j\). L11 mentions two families. <em class="t">Agglomerative</em> methods start with many small clusters and merge them (single linkage can be done with a minimum spanning tree). <em class="t">Divisive</em> methods start with one cluster and split it. k-means is neither. It fixes \(K\) and improves a partition.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L11/p06.webp" alt="Slide: k-means objective and procedure" loading="lazy">
+<figcaption>L11, slide 6. The k-means objective and its four steps.</figcaption></figure>
+<p>k-means minimises</p>
+<div class="eq">\[J = \sum_{k=1}^K\sum_{x_i\in C_k}\|x_i - \mu_k\|^2,\]</div>
+<p>the total squared distance from each point to the mean of its own cluster.</p>
+<ol>
+<li>Start with \(K\) means (or a random partition, then compute its means).</li>
+<li>Assignment step. Put each point in the cluster whose mean is nearest.</li>
+<li>Update step. Recompute each mean as the average of its cluster.</li>
+<li>Repeat 2 and 3 until nothing changes.</li>
+</ol>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that each k-means step can only lower (or keep) \(J\), so the algorithm stops.</h4>
+<ol class="steps lines">
+<li>In the assignment step the means are fixed. Moving \(x_i\) to its nearest mean replaces its term \(\|x_i-\mu_{\text{old}}\|^2\) by a value no larger. So \(J\) cannot rise.</li>
+<li>In the update step the clusters are fixed. The point that minimises \(\sum_{x\in C_k}\|x - y\|^2\) over \(y\) is the mean of \(C_k\). So replacing \(\mu_k\) by the mean cannot raise \(J\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>L09 showed this. Differentiate \(\sum_{x\in C_k}(x-y)\T(x-y)\) with respect to \(y\). You get \(\sum -2(x - y)\).</li>
+<li>Set it to zero. \(y \)<wbr>\({}= \frac{1}{|C_k|}\sum_{x\in C_k}x\), the mean.</li>
+</ol>
+</details></li>
+<li>\(J \ge 0\) and there are only finitely many ways to split \(N\) points into \(K\) groups. A sequence that never rises over finitely many states must stop changing.</li>
+</ol>
+</div>
+<p>Comparison with GMMs. k-means is what EM for a GMM becomes when every component has the same tiny variance \(\sigma^2 I\) and equal weights. As \(\sigma\to 0\), the responsibilities become 1 for the nearest mean and 0 for the others (hard assignment), and the M-step for the means becomes the plain average. So k-means is "hard EM".</p>
+<p>The answer depends on the starting means, as the second example below shows. In practice, run it from several starts and keep the lowest \(J\). Choosing \(K\) is also open. \(J\) always falls as \(K\) grows (with \(K = N\) every point is its own cluster and \(J = 0\)), so the smallest \(J\) is not a way to choose. A common method is to plot \(J\) against \(K\) and pick the "elbow" where the drop slows down.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Objective \(J \)<wbr>\({}= \sum_k\sum_{x\in C_k}\|x-\mu_k\|^2\). Assign to nearest mean, recompute means, repeat.</li>
+<li>Each step lowers \(J\) or keeps it, so it stops, but only at a local minimum that depends on the start.</li>
+<li>k-means is hard-assignment EM for a GMM with equal spherical covariances.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L11/p07.webp" alt="Slide: k-means numerical examples, ten 1-D points and six 2-D points" loading="lazy">
+<figcaption>L11, slide 7. Two numerical examples. The slide does not fix the starting means, so the answers below state theirs.</figcaption></figure>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Run k-means with \(K = 2\) on \(\{2, 15, 3, 16, 5, 1, 4, 18, 22, 20\}\), starting from means 1 and 2.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Assign to the nearer mean. New mean = average of the cluster. \(J = \sum\) squared distances.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.8, the four steps.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Means 1 and 2. The halfway point is 1.5, so only 1 goes to cluster 1. Cluster 2 is \(\{2,3,4,5,15,16,18,20,22\}\).</li>
+<li>New means. Cluster 1 is 1. Cluster 2 sums to \(105\) over 9 points, so its mean is \(11.67\).</li>
+<li>Halfway point \((1 + 11.67)/2 = 6.33\). Points below go to cluster 1, giving \(\{1,2,3,4,5\}\). The rest, \(\{15,16,18,20,22\}\), go to cluster 2.</li>
+<li>New means. \(15/5 = 3\) and \(91/5 = 18.2\).</li>
+<li>Halfway point \((3+18.2)/2 = 10.6\). No point changes cluster, so stop.</li>
+<li>Squared distances in cluster 1 to its mean 3 are \(4, 1, 0, 1, 4\). They add to 10.</li>
+<li>Cluster 2 has mean 18.2, and the distances are \(3.2, 2.2, 0.2, 1.8, 3.8\). Their squares are \(10.24, 4.84, 0.04, 3.24, 14.44\), which add to 32.8.</li>
+<li>Total \(J = 42.8\). Check: with means 2 and 15 the very first assignment already gives these clusters, so the answer does not depend on the start here.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Run k-means with \(K = 2\) on A(1,1), B(1.5,2), C(3,4), D(5,7), E(3.5,5), F(4.5,5). Start once from means A and C, and once from means A and D.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Compare squared distances \(\|x - \mu\|^2\). New mean = average of the cluster.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.8.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Start A(1,1), C(3,4). For B the squared distances are \(0.25 + 1 = 1.25\) to A and \(2.25 + 4 = 6.25\) to C, so B joins A. D, E, F are all much nearer C. Clusters \(\{A,B\}\) and \(\{C,D,E,F\}\).</li>
+<li>Means. \(\left(\frac{1+1.5}2, \frac{1+2}2\right) \)<wbr>\({}= (1.25, 1.5)\) and \(\left(\frac{3+5+3.5+4.5}4, \frac{4+7+5+5}4\right) \)<wbr>\({}= (4, 5.25)\).</li>
+<li>Reassign. For C the squared distances are \(1.75^2 + 2.5^2 = 9.31\) to the first mean and \(1^2 + 1.25^2 = 2.56\) to the second. C stays. The others clearly stay. Stop.</li>
+<li>Squared distances to the means are 0.3125 for A and for B. For C, D, E and F they are 2.5625, 4.0625, 0.3125 and 0.3125. In total \(J = 7.875\).</li>
+<li>Start A(1,1), D(5,7). For C the squared distances are \(4 + 9 = 13\) to A and \(4 + 9 = 13\) to D. It is a tie. Break it towards the first cluster. Clusters \(\{A,B,C\}\) and \(\{D,E,F\}\).</li>
+<li>Means \((1.83, 2.33)\) and \((4.33, 5.67)\). Reassign. For C the squared distances are \(1.36 + 2.78 = 4.14\) and \(1.78 + 2.78 = 4.56\). C stays. Stop.</li>
+<li>\(J = 6.83 + 3.83 = 10.67\).</li>
+<li>Check: both runs stopped, but at different \(J\). The first start found the better split. This is the dependence on initialisation that L11 asks about.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L11 slide</span><span>What happens to the k-means objective as \(K\) increases? How do we pick \(K\)?</span><span class="chev">›</span></summary>
+<div class="ans"><p>The best achievable \(J\) never increases with \(K\), because a \(K+1\) clustering can always copy a \(K\) clustering and split one cluster. At \(K = N\), \(J = 0\). So the minimum \(J\) cannot choose \(K\). Plot the best \(J\) against \(K\) and choose where extra clusters stop helping much (the elbow), or use knowledge of the problem (for example the number of topics or speakers).</p></div></details>
+</section>
+
+<div class="part">Part C<span>L11 · probability to practice</span></div>
+
+<section>
+<h2 id="naive-bayes"><span class="num">2.9</span>Naive Bayes</h2>
+<p class="slides">Lecture L11, Tutorial 2 · <a href="https://youtu.be/8FZjrckX52E">Short video: Naive Bayes</a></p>
+<p class="oneline">Assume the features are independent once the class is known. Then the class likelihood is a product of one-feature probabilities, which can be estimated from small data.</p>
+<p>The Bayes rule needs \(P(x\mid y)\) for a whole feature vector \(x = (x_1,\dots,x_d)\). With \(d\) binary features there are \(2^d\) possible vectors. With \(d = 30\) that is about a billion, far more than any dataset, so most combinations are never seen and \(P(x\mid y)\) cannot be estimated by counting.</p>
+<p>Features are <em class="t">conditionally independent given the class</em> if</p>
+<div class="eq">\[P(x_1,x_2,\dots,x_d\mid y) = \prod_{j=1}^d P(x_j\mid y).\]</div>
+<p>This is weaker than full independence. Words such as "free" and "offer" are related overall, because both are common in spam. The assumption says that once we know the email is spam, seeing "free" tells us nothing more about "offer". That is usually false, which is why the method is called <em class="t">naive</em>. But now we only need \(d\) one-feature tables per class, and it works well in practice, especially for text.</p>
+<div class="eq">\[\hat y = \argmax_y\; P(y)\prod_{j=1}^dP(x_j\mid y).\]</div>
+<p>In practice we add logs, \(\ln P(y) + \sum_j\ln P(x_j\mid y)\), to avoid underflow. If a word never appeared with a class in training, its count is 0 and the whole product becomes 0. The usual fix is to add 1 to every count (Laplace smoothing).</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Conditional independence given the class turns \(P(x\mid y)\) into \(\prod_jP(x_j\mid y)\).</li>
+<li>It reduces the data needed from about \(2^d\) combinations to \(d\) small tables.</li>
+<li>Absent features count too, with \(P(\bar x_j\mid y) \)<wbr>\({}= 1 - P(x_j\mid y)\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Tutorial 2</span><span>1000 emails, 200 spam (S) and 800 ham (H). "offer" appears in 160 spam and 80 ham, "free" in 140 spam and 40 ham, "meeting" in 20 spam and 400 ham. An email contains "offer" and "free" but not "meeting". Classify it with naive Bayes.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid e) \)<wbr>\({}= \dfrac{P(S)\prod_jP(e_j\mid S)}{P(S)\prod_jP(e_j\mid S) + P(H)\prod_jP(e_j\mid H)}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.9, conditional independence, and Bayes from section 2.5.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Priors. \(P(S) = 200/1000 = 0.2\), \(P(H) = 0.8\).</li>
+<li>Spam likelihoods. \(P(\text{offer}\mid S) \)<wbr>\({}= 160/200 \)<wbr>\({}= 0.8\), \(P(\text{free}\mid S) \)<wbr>\({}= 140/200 \)<wbr>\({}= 0.7\), \(P(\text{no meeting}\mid S) \)<wbr>\({}= 1 - 20/200 \)<wbr>\({}= 0.9\).</li>
+<li>Ham likelihoods. \(80/800 = 0.1\), \(40/800 = 0.05\), and \(1 - 400/800 = 0.5\).</li>
+<li>Products. \(P(e\mid S) \)<wbr>\({}= 0.8\times0.7\times0.9 \)<wbr>\({}= 0.504\). \(P(e\mid H) \)<wbr>\({}= 0.1\times0.05\times0.5 \)<wbr>\({}= 0.0025\).</li>
+<li>Tops. \(0.504\times 0.2 = 0.1008\) and \(0.0025\times0.8 = 0.002\). Evidence \(= 0.1028\).</li>
+<li>\(P(S\mid e) \)<wbr>\({}= 0.1008/0.1028 \)<wbr>\({}= 0.981\). Classify as spam.</li>
+<li>Check. \(P(H\mid e) \)<wbr>\({}= 0.002/0.1028 \)<wbr>\({}= 0.019\), and the two add to 1. (The tutorial rounds the evidence to 0.103 and gets 0.9806, the same to two decimals.)</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Tutorial 2</span><span>The same email also has an attachment, with \(P(\text{att}\mid S) = 0.6\) and \(P(\text{att}\mid H) = 0.3\). Update the posterior without starting again, and check against one joint computation.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Use the old posterior as the new prior. \(P(S) = 0.981\), \(P(H) = 0.019\).</li>
+<li>Tops. \(0.6\times 0.981 = 0.5886\) and \(0.3\times 0.019 = 0.0057\). Evidence \(0.5943\).</li>
+<li>New posterior \(0.5886/0.5943 = 0.990\).</li>
+<li>Joint check. Spam top \(0.504\times0.6\times0.2 \)<wbr>\({}= 0.06048\). Ham top \(0.0025\times 0.3\times 0.8 \)<wbr>\({}= 0.0006\). Posterior \(0.06048/0.06108 = 0.990\). The same.</li>
+<li>Updating one piece of evidence at a time gives the same answer as using all of it at once. This is why Bayesian updates suit streaming data.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">Tutorial 2</span><span>Only 1% of real email is spam. A filter has a 95% true positive rate and a 5% false positive rate. If it flags an email, what is the chance the email is spam?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Tops. \(0.95\times 0.01 = 0.0095\) and \(0.05\times 0.99 = 0.0495\).</li>
+<li>Evidence \(0.059\). Posterior \(0.0095/0.059 = 0.161\).</li>
+<li>Only about 16%. In 1000 emails there are 10 spam, of which 9.5 are flagged, and 990 ham, of which 49.5 are flagged. Most flags are false.</li>
+<li>Ignoring a small prior like this is the <em class="t">base-rate fallacy</em>. It is the same lesson as the 99.5% accurate terrorist detector on <a href="../foundations/#metrics">Page 1</a>. Accuracy means little when one class is rare.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="logistic"><span class="num">2.10</span>Logistic regression</h2>
+<p class="slides">Lecture L11 · <a href="https://youtu.be/ZIKVS7RKFXg">Short video: Loss functions 1</a></p>
+<p class="oneline">A linear classifier that outputs a probability. Squash \(w\T x\) through the sigmoid, and train by maximum likelihood, which gives the cross-entropy loss.</p>
+<p>Despite the name, logistic regression is a classifier. It is called regression because it fits a real-valued function (a probability) and then thresholds it. The <em class="t">logistic function</em>, also called the <em class="t">sigmoid</em> (S-shaped), is</p>
+<div class="eq">\[g(z) = \sigma(z) = \frac{1}{1+e^{-z}}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>For large positive \(z\), \(e^{-z}\) is near 0, so \(g(z)\) is near 1. For large negative \(z\), \(e^{-z}\) is huge, so \(g(z)\) is near 0. At \(z = 0\), \(g = \frac1{1+1} = 0.5\). So \(g\) maps any real number into \((0,1)\), which makes it usable as a probability.</p>
+<p><strong>Example.</strong> \(g(-2) \)<wbr>\({}= \frac1{1+e^2} \)<wbr>\({}= \frac1{8.39} \)<wbr>\({}= 0.119\). \(g(0) = 0.5\). \(g(2) \)<wbr>\({}= \frac{1}{1+0.135} \)<wbr>\({}= 0.881\). Note \(g(-2) + g(2) = 1\). In general \(g(-z) = 1 - g(z)\).</p>
+</div>
+<p>The model says \(p(y=1\mid x) = g(w\T x)\) and \(p(y \)<wbr>\({}=0\mid x) \)<wbr>\({}= 1 - g(w\T x) \)<wbr>\({}= g(-w\T x)\). These add to 1. The decision rule is to output 1 when \(g(w\T x) \ge 0.5\), which happens exactly when \(w\T x\ge 0\). So the boundary is the hyperplane \(w\T x = 0\), the same as the linear classifier of Page 1. What is new is the confidence, and the way \(w\) is trained.</p>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>With labels \(y_i\in\{0,1\}\), derive the loss of logistic regression from maximum likelihood, and its gradient.</h4>
+<ol class="steps lines">
+<li>One sample. \(p(y\mid x) \)<wbr>\({}= g(z)^y(1-g(z))^{1-y}\) with \(z = w\T x\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>If \(y = 1\), the formula is \(g(z)^1(1-g(z))^0 = g(z)\), which is \(p(y=1\mid x)\).</li>
+<li>If \(y = 0\), it is \(g(z)^0(1-g(z))^1 = 1 - g(z)\), which is \(p(y = 0\mid x)\). The powers just pick the right case.</li>
+</ol>
+</details></li>
+<li>Independent samples. \(\ln L(w) = \sum_i\ell_i\), where \[\ell_i = y_i\ln g(z_i) + (1-y_i)\ln(1-g(z_i)).\]</li>
+<li>The loss is the negative log-likelihood, \(L(w) = -\sum_i\ell_i\). It is called the <em class="t">binary cross-entropy</em>.</li>
+<li>Use \(g'(z) = g(z)(1-g(z))\). Then \(\nabla_w L \)<wbr>\({}= \sum_i (g(z_i) - y_i)\,x_i\).
+<details class="linewhy"><summary>Why <span>(6 steps)</span></summary>
+<ol class="steps">
+<li>Work on one sample and drop \(i\). Write \(g = g(z)\).</li>
+<li>\(\frac{\partial}{\partial z}\ln g \)<wbr>\({}= \frac{g'}{g} \)<wbr>\({}= \frac{g(1-g)}{g} \)<wbr>\({}= 1 - g\).</li>
+<li>\(\frac{\partial}{\partial z}\ln(1-g) \)<wbr>\({}= \frac{-g'}{1-g} \)<wbr>\({}= \frac{-g(1-g)}{1-g} \)<wbr>\({}= -g\).</li>
+<li>The loss of one sample is \(-y\ln g - (1-y)\ln(1-g)\). By steps 2 and 3, its derivative with respect to \(z\) is \(-y(1-g) + (1-y)g\).</li>
+<li>Multiply out. \(-y + yg + g - yg = g - y\).</li>
+<li>Chain rule. \(z = w\T x\) has \(\frac{\partial z}{\partial w} \)<wbr>\({}= x\), so the gradient is \((g - y)x\). Add over samples.</li>
+</ol>
+</details></li>
+<li>Gradient descent. \(w \leftarrow w - \eta\sum_i(g(w\T x_i) - y_i)x_i\), with step size \(\eta\) (eta).</li>
+</ol>
+</div>
+<p>The gradient has the same shape as for linear regression, (prediction minus target) times input. There is no closed form here, so we use gradient descent. The loss is convex in \(w\), so gradient descent reaches the global minimum.</p>
+
+<h3>The ±1 form</h3>
+<p>With labels \(y\in\{-1,+1\}\), \(p(y=+1\mid x) = g(w\T x)\) and \(p(y=-1\mid x) = g(-w\T x)\). Both are \(g(y\,w\T x)\). So \(p(y_i\mid x_i) \)<wbr>\({}= \frac{1}{1 + e^{-y_iw\T x_i}}\), and the NLL is</p>
+<div class="eq">\[L(w) = \sum_i\ln\left(1 + e^{-y_iw\T x_i}\right).\]</div>
+<p>The product \(y_i\,w\T x_i\) is called the <em class="t">margin</em> of sample \(i\). It is positive when the sample is on the correct side. This form is compared with the SVM's hinge loss in section 2.11.</p>
+
+<h3>Softmax for more than two classes</h3>
+<p>Rewrite \(p(y \)<wbr>\({}=1\mid x) \)<wbr>\({}= \frac{e^{w\T x}}{1 + e^{w\T x}}\) (multiply top and bottom of \(g\) by \(e^{w\T x}\)). The top is a positive score for the class, and the bottom adds the scores of both classes (class 0 having score \(e^0 = 1\)). With \(K\) classes, give each class its own \(w_c\).</p>
+<div class="eq">\[p(y = c\mid x) = \frac{e^{w_c\T x}}{\sum_{k=1}^Ke^{w_k\T x}}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Each class gets the score \(w_c\T x\). Exponentiating makes every score positive. Dividing by the total makes the \(K\) numbers add up to 1. This function is the <em class="t">softmax</em>, a smooth version of "pick the largest". Classify into the class with the largest probability.</p>
+<p><strong>Example.</strong> Scores \(2, 1, 0\). Exponentials \(7.39, 2.72, 1\), total \(11.11\). Probabilities \(0.665, 0.245, 0.090\), which add to 1.</p>
+<p>Softmax is the output layer of almost every modern classifier network.</p>
+</div>
+
+<h3>Why not use squared error</h3>
+<p>One could try \(J(w) \)<wbr>\({}= \frac1{2N}\sum_i(g(w\T x_i) - y_i)^2\). L11 says this is non-convex and asks for a proof. Here is a short one with a single sample \(x = 1\), \(y = 1\), so \(J(w) = (g(w) - 1)^2\). As \(w\to -\infty\), \(g\to 0\) and \(J\to 1\). As \(w\to\infty\), \(J\to 0\). So \(J\) is bounded above by 1 on the whole real line, and it is not constant. A convex function on the whole real line that is bounded above must be constant. Therefore \(J\) is not convex. In practice the flat region far to the left traps gradient descent, because the gradient there is almost zero even though the prediction is badly wrong. Cross-entropy has no such flat region for wrong predictions.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>\(p(y \)<wbr>\({}=1\mid x) \)<wbr>\({}= \frac1{1+e^{-w\T x}}\). Decide 1 when \(w\T x \ge 0\).</li>
+<li>The loss is the binary cross-entropy \(-\sum[y\ln g + (1-y)\ln(1-g)]\), and its gradient is \(\sum(g - y)x\).</li>
+<li>With ±1 labels the loss is \(\sum\ln(1 + e^{-yw\T x})\). More than two classes use softmax.</li>
+<li>\(g' = g(1-g)\), \(\tanh(z) = 2g(2z) - 1\), \(\tanh' = 1 - \tanh^2\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L11/p18.webp" alt="Slide: hinge loss, logistic loss and 0-1 loss compared" loading="lazy">
+<figcaption>L11, slide 18. The three losses plotted against the margin \(y_if(x_i)\). This slide opens the SVM lecture.</figcaption></figure>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Prove \(g'(z) = g(z)(1-g(z))\). Verify \(\tanh(z) = 2g(2z) - 1\). Express the derivative of \(\tanh\) in terms of \(\tanh\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Write \(g = (1 + e^{-z})^{-1}\). By the chain rule, \(g' \)<wbr>\({}= -(1+e^{-z})^{-2}\cdot(-e^{-z}) \)<wbr>\({}= \frac{e^{-z}}{(1+e^{-z})^2}\).</li>
+<li>Split as \(\frac{1}{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}\). The first factor is \(g\).</li>
+<li>The second is \(\frac{(1 + e^{-z}) - 1}{1+e^{-z}} \)<wbr>\({}= 1 - g\). So \(g' = g(1-g)\).</li>
+<li>Now \(2g(2z) - 1 \)<wbr>\({}= \frac{2}{1+e^{-2z}} - 1 \)<wbr>\({}= \frac{2 - 1 - e^{-2z}}{1 + e^{-2z}} \)<wbr>\({}= \frac{1 - e^{-2z}}{1+e^{-2z}}\).</li>
+<li>Multiply top and bottom by \(e^z\). \(\frac{e^z - e^{-z}}{e^z + e^{-z}} \)<wbr>\({}= \tanh z\). Verified.</li>
+<li>Differentiate \(\tanh z = 2g(2z) - 1\) with the chain rule. \(\tanh' \)<wbr>\({}= 2\cdot 2\,g'(2z) \)<wbr>\({}= 4g(2z)(1 - g(2z))\).</li>
+<li>From step 5, \(g(2z) = \frac{1+\tanh z}{2}\) and \(1 - g(2z) \)<wbr>\({}= \frac{1 - \tanh z}2\). So \(\tanh' \)<wbr>\({}= 4\cdot\frac{(1+\tanh)(1-\tanh)}{4} \)<wbr>\({}= 1 - \tanh^2 z\).</li>
+<li>Check at \(z = 0\). \(g' = 0.5\times 0.5 = 0.25\) and \(\tanh'(0) = 1 - 0 = 1\). Both match the slopes of the curves at 0.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>One sample \(x = [1, 2]\T\) (the first entry is the bias input) with \(y = 1\). Start at \(w = [0,0]\T\). Do one gradient step with \(\eta = 0.1\) on the cross-entropy, and check that the loss went down.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\nabla L = (g(w\T x) - y)x\), \(w\leftarrow w - \eta\nabla L\), loss \(= -\ln g(w\T x)\) when \(y = 1\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.10, lines 3 to 5 of the derivation.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(z = w\T x = 0\), so \(g = 0.5\). Loss \(= -\ln 0.5 = 0.693\).</li>
+<li>Gradient \((0.5 - 1)[1, 2]\T \)<wbr>\({}= [-0.5, -1]\T\).</li>
+<li>Step. \(w \)<wbr>\({}= [0,0]\T - 0.1[-0.5, -1]\T \)<wbr>\({}= [0.05, 0.1]\T\).</li>
+<li>New \(z \)<wbr>\({}= 0.05\times 1 + 0.1\times 2 \)<wbr>\({}= 0.25\). \(g(0.25) \)<wbr>\({}= \frac1{1 + e^{-0.25}} \)<wbr>\({}= \frac1{1.7788} \)<wbr>\({}= 0.562\).</li>
+<li>New loss \(= -\ln 0.562 = 0.576\).</li>
+<li>Check: 0.576 is less than 0.693, and the probability of the true class rose from 0.5 to 0.562.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L11 slide</span><span>Do \(p(y=1\mid x) = g(w\T x)\) and \(p(y=0\mid x) = g(-w\T x)\) add up to one? What is the classification rule?</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(g(z) + g(-z) \)<wbr>\({}= \frac1{1+e^{-z}} + \frac1{1+e^{z}}\). Multiply the top and bottom of the second fraction by \(e^{-z}\). It becomes \(\frac{e^{-z}}{e^{-z}+1}\). The sum is \(\frac{1 + e^{-z}}{1+e^{-z}} \)<wbr>\({}= 1\). The rule is to decide class 1 when \(g(w\T x) \ge 0.5\), which is the same as \(w\T x\ge 0\).</p></div></details>
+</section>
+
+<div class="part">Part D<span>L12, L13 · margins and generalisation</span></div>
+
+<section>
+<h2 id="svm"><span class="num">2.11</span>SVMs</h2>
+<p class="slides">Lecture L12 · <a href="https://www.youtube.com/watch?v=9_DJ4KvyYoo">Video: SVM 1 (Prof. Anoop)</a> · <a href="https://www.youtube.com/watch?v=ffF8UnbheLk">Video: SVM 2</a></p>
+<p class="oneline">Among all lines that separate two classes, pick the one with the widest empty band around it. Only the points on the edge of the band, the support vectors, decide where it goes.</p>
+<p>A perceptron (on the <a href="../neural/#perceptron">neural page</a>) stops at any separating line. Logistic regression and SVMs both pick a best one. The SVM's idea of best is the <em class="t">maximum margin</em>, the widest gap between the line and the nearest points. A wide gap tolerates small changes in new data, which is why it generalises well.</p>
+<h3>Setting up the constraints</h3>
+<p>Training points \(x_i\) have labels \(y_i = +1\) (class 1) or \(-1\) (class 2). The classifier is \(f(x) = w\T x + b\), deciding by its sign. Since \(w\) and \(b\) can be scaled freely without moving the line, we fix the scale by asking for</p>
+<div class="eq">\[w\T x_i + b \ge +1 \ \text{ if } y_i = +1\]</div>
+<div class="eq">\[w\T x_i + b\le -1 \ \text{ if } y_i = -1\]</div>
+<p>which combine into one line, \(y_i(w\T x_i + b) \ge 1\) for every \(i\). The points where equality holds lie on the two planes \(H_1\colon w\T x + b = 1\) and \(H_2\colon w\T x + b = -1\). These points are the <em class="t">support vectors</em>, so named because they "support" (hold in place) the two edge planes.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p08.webp" alt="Slide: the optimal hyperplane with the two parallel planes at plus and minus one, and their distances from the origin" loading="lazy">
+<figcaption>L12, slide 8. The hyperplane \(w\T x + b = 0\) and the two edge planes. The distances from the origin are \(\frac{|1-b|}{\|w\|}\), \(\frac{|b|}{\|w\|}\) and \(\frac{|-1-b|}{\|w\|}\).</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the margin (the distance between \(H_1\) and \(H_2\)) is \(\frac{2}{\|w\|}\), and write the SVM problem.</h4>
+<ol class="steps lines">
+<li>The distance from the origin to the plane \(w\T x + b = c\) is \(\frac{|c - b|}{\|w\|}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>The plane's normal direction is \(w\). The nearest point of the plane to the origin is \(tw\) for some number \(t\).</li>
+<li>It lies on the plane, so \(w\T(tw) + b = c\), giving \(t\|w\|^2 = c - b\) and \(t = \frac{c-b}{\|w\|^2}\).</li>
+<li>Its distance from the origin is \(|t|\,\|w\| \)<wbr>\({}= \frac{|c - b|}{\|w\|}\).</li>
+</ol>
+</details></li>
+<li>\(H_1\) has \(c = 1\) and \(H_2\) has \(c = -1\). They are parallel, so the gap between them is the difference of signed distances, \(\frac{(1 - b) - (-1-b)}{\|w\|} \)<wbr>\({}= \frac{2}{\|w\|}\).</li>
+<li>Maximising \(\frac2{\|w\|}\) is the same as minimising \(\|w\|\), and the same as minimising \(\frac12 w\T w\) (squaring and halving do not move the minimum and make the derivative tidy).</li>
+<li>Without constraints the minimum is \(w = 0\), which classifies nothing. So keep every point correctly outside the band. \[\min_{w,b}\ \tfrac12 w\T w\] subject to \(y_i(w\T x_i + b)\ge 1\) for all \(i\).</li>
+</ol>
+</div>
+<p>This is the <em class="t">primal</em> problem. It is a quadratic objective with linear constraints (a quadratic program), so it has one global minimum and no bad local minima. That is one of the advantages listed on the slides.</p>
+
+<h3>The dual, at the level the course needs</h3>
+<p>L12 marks the Lagrange-multiplier derivation as out of scope, but uses its results. Giving each constraint a multiplier \(\alpha_i\ge 0\) (alpha) and eliminating \(w\) and \(b\) gives the <em class="t">dual</em> problem.</p>
+<div class="eq boxed eqw">\[J_d(\alpha) = \sum_i\alpha_i - \frac12\sum_i\sum_j\alpha_i\alpha_jy_iy_j\,x_i\T x_j\]</div>
+<div class="eq boxed eqn">\[J_d(\alpha) = \sum_i\alpha_i - \tfrac12 Q\]
+\[Q = \sum_{i,j}\alpha_i\alpha_jy_iy_j\,x_i\T x_j\]</div>
+<p>Maximise \(J_d(\alpha)\) subject to \(\alpha_i\ge 0\) and \(\sum_i\alpha_iy_i = 0\).</p>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>There is one \(\alpha_i\) per training point. Solving the dual gives the \(\alpha\)s. Then</p>
+<div class="eq">\[w = \sum_i\alpha_iy_ix_i\]</div>
+<div class="eq">\[b = \frac{1}{|S|}\sum_{s\in S}(y_s - w\T x_s)\]</div>
+<p>where \(S\) is the set of support vectors and \(|S|\) its size. Only the support vectors have \(\alpha_i > 0\). Every other point has \(\alpha_i = 0\) and drops out of \(w\). So moving or deleting a non-support point does not change the answer.</p>
+<p>The data appears in the dual only through dot products \(x_i\T x_j\). Section 2.12 uses this.</p>
+<p>The \(b\) formula comes from \(y_s(w\T x_s + b) = 1\) for a support vector. Multiply by \(y_s\) (and \(y_s^2 = 1\)) to get \(b = y_s - w\T x_s\). Averaging over all support vectors reduces rounding error.</p>
+</div>
+<p>Training solves for \(\alpha\) (the support vectors and their weights). Testing computes \(\operatorname{sign}(w\T x + b)\), or in dual form \(\operatorname{sign}\left(\sum_i\alpha_iy_i\,x_i\T x + b\right)\).</p>
+
+<h3>Soft margin, when no line separates the classes</h3>
+<div class="slidepair">
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p15.webp" alt="Slide: a line that separates all points but passes very close to one outlier" loading="lazy"><figcaption>L12, slide 15. A separating line exists, but one stray circle forces it into a narrow, tilted position.</figcaption></figure>
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p16.webp" alt="Slide: a wider margin that leaves the outlier on the wrong side" loading="lazy"><figcaption>L12, slide 16. Accepting one mistake gives a much wider band, which is likely to do better on new data.</figcaption></figure>
+</div>
+<p>Give each point a <em class="t">slack</em> \(\xi_i\ge 0\) (xi) that lets it violate the margin. The constraint becomes \(y_i(w\T x_i + b)\ge 1 - \xi_i\). A point with \(0\lt\xi_i\lt 1\) is inside the band but on the right side. A point with \(\xi_i > 1\) is misclassified. The objective pays for slack.</p>
+<p>The L1 SVM minimises the first of these and the L2 SVM the second.</p>
+<div class="eq">\[\tfrac12w\T w + C\sum_i\xi_i\]</div>
+<div class="eq">\[\tfrac12w\T w + \tfrac C2\sum_i\xi_i^2\]</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p17.webp" alt="Slide: inseparable case with slack distances xi drawn for two points" loading="lazy">
+<figcaption>L12, slide 17. The slacks \(\xi_i\) and \(\xi_j\) measure how far each offending point is past its edge plane.</figcaption></figure>
+<p>\(C\) is a hyperparameter. A large \(C\) makes violations expensive, giving a narrow margin that fits the training data hard. A small \(C\) allows more violations and a wider margin. The L1 SVM's dual is the same as before, except that each \(\alpha_i\) is now capped, \(0\le\alpha_i\le C\).</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p35.webp" alt="Slide: the three cases for alpha in the soft-margin SVM" loading="lazy">
+<figcaption>L12, slide 35. The three cases for \(\alpha_i\).</figcaption></figure>
+<table class="tbl">
+<tr><th>\(\alpha_i\)</th><th>What it means</th></tr>
+<tr><td>\(\alpha_i = 0\)</td><td>\(\xi_i = 0\). Correctly classified, outside the band. Not a support vector.</td></tr>
+<tr><td>\(0\lt\alpha_i\lt C\)</td><td>\(\xi_i = 0\) and \(y_i(w\T x_i+b) = 1\). On the edge plane. An <em class="t">unbounded</em> support vector.</td></tr>
+<tr><td>\(\alpha_i = C\)</td><td>\(\xi_i\ge 0\). A <em class="t">bounded</em> support vector inside the band. Correct if \(\xi_i \lt 1\), misclassified if \(\xi_i > 1\).</td></tr>
+</table>
+<h3>Hinge loss compared with logistic loss</h3>
+<p>The soft-margin SVM is the same as minimising \(C\sum_i\max(0, 1 - y_if(x_i)) + \|w\|^2\) (up to the factor ½). The term \(\max(0, 1 - y_if(x_i))\) is the <em class="t">hinge loss</em>. Logistic regression minimises \(\sum_i\ln(1 + e^{-y_if(x_i)}) + \lambda\|w\|^2\). On the L11 plot both are drawn against the margin \(y_if(x_i)\), together with the 0-1 loss (1 for a mistake, 0 otherwise). Both approximate the 0-1 loss from above and behave alike for very wrong points. The differences are that the hinge has a corner at 1 and is exactly 0 beyond it, while the logistic loss is smooth and never quite 0. Because the hinge is exactly 0 for points safely outside the margin, those points get \(\alpha_i = 0\), and the SVM solution is <em class="t">sparse</em> (it depends on few points).</p>
+<p>The slides list pros and cons. On the plus side, maximising the margin aims directly at generalisation, the problem is convex (no local minima), and \(C\) controls outliers. On the minus side, more than two classes needs extra schemes (one class against the rest, or one against one), training on very large data is slow because the dual has one variable per point, and the kernel, its parameters and \(C\) must be chosen.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>The margin is \(2/\|w\|\). The primal is \(\min\frac12w\T w\) such that \(y_i(w\T x_i + b)\ge 1\).</li>
+<li>The dual is \(\max\sum\alpha_i - \frac12\sum\sum\alpha_i\alpha_jy_iy_jx_i\T x_j\), \(\alpha_i\ge 0\), \(\sum\alpha_iy_i = 0\). Then \(w = \sum\alpha_iy_ix_i\).</li>
+<li>Support vectors are the points with \(\alpha_i > 0\). Soft margin adds slack \(\xi_i\) and caps \(\alpha_i\le C\).</li>
+<li>Hinge loss \(\max(0, 1 - yf(x))\) versus logistic loss \(\ln(1 + e^{-yf(x)})\).</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Two training points, \(x_1 = (2,2)\) with \(y_1 = +1\) and \(x_2 = (0,0)\) with \(y_2 = -1\). Find the hard-margin SVM \(w\), \(b\), the margin, and the \(\alpha\)s.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Both points are support vectors, so \(y_i(w\T x_i + b) = 1\). Margin \(= 2/\|w\|\). \(w = \sum\alpha_iy_ix_i\), \(\sum\alpha_iy_i = 0\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 2.11, the margin derivation (line 2) and the dual formulas.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>By symmetry the best line is the perpendicular bisector of the two points, so \(w\) points along \(x_1 - x_2 = (2,2)\). Write \(w = (a, a)\).</li>
+<li>For \(x_2\). \(-1\cdot(0 + b) = 1\), so \(b = -1\).</li>
+<li>For \(x_1\). \(+1\cdot(2a + 2a - 1) = 1\), so \(4a = 2\) and \(a = 0.5\). \(w = (0.5, 0.5)\).</li>
+<li>\(\|w\| \)<wbr>\({}= \sqrt{0.25 + 0.25} \)<wbr>\({}= \sqrt{0.5} \)<wbr>\({}= 0.707\). Margin \(= 2/0.707 = 2.83\).</li>
+<li>Check: the distance between the points is \(\sqrt{4 + 4} = 2.83\). With only two points the band fills the whole gap, as it should.</li>
+<li>Dual. \(\sum\alpha_iy_i = 0\) gives \(\alpha_1 = \alpha_2 = \alpha\).</li>
+<li>\(w \)<wbr>\({}= \alpha(+1)(2,2) + \alpha(-1)(0,0) \)<wbr>\({}= (2\alpha, 2\alpha)\). Matching this with \((0.5, 0.5)\) gives \(\alpha = 0.25\).</li>
+<li>Check \(b\) from the formula. \(y_1 - w\T x_1 = 1 - 2 = -1\) and \(y_2 - w\T x_2 = -1 - 0 = -1\). Average \(-1\). It matches.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L12 slide</span><span>What makes a point a support vector, and why do only support vectors matter?</span><span class="chev">›</span></summary>
+<div class="ans"><p>Support vectors satisfy \(y_i(w\T x_i + b) = 1\) (on the edge planes), or in the soft-margin case lie inside the band. They are the points closest to the boundary and the hardest to classify. In the dual, only they have \(\alpha_i > 0\), and \(w = \sum\alpha_iy_ix_i\), so \(w\) and \(b\) are built from them alone. Removing any other point and retraining gives the same classifier.</p></div></details>
+<details class="q"><summary><span class="qt">L12 slide</span><span>The slides say a perceptron finds "a valid solution" but LR and SVM find "an optimal solution". What is the difference?</span><span class="chev">›</span></summary>
+<div class="ans"><p>The perceptron stops at the first line that separates the training data, and which line that is depends on the order of samples and the start. Logistic regression and the SVM each minimise a convex loss (cross-entropy, or hinge plus \(\|w\|^2\)). Each has a single best answer, the one with the most confident probabilities or the widest margin.</p></div></details>
+</section>
+
+<section>
+<h2 id="kernels"><span class="num">2.12</span>Kernels</h2>
+<p class="slides">Lecture L12</p>
+<p class="oneline">Map the data into a bigger feature space where it becomes linearly separable. Because the SVM only uses dot products, a kernel function gives those dot products without ever building the big vectors.</p>
+<p>XOR (exclusive or) is the classic data set that no line can separate. Use ±1 coding. Points \((1,1)\) and \((-1,-1)\) are class A, and \((1,-1)\) and \((-1,1)\) are class B. Any line that puts both A points on one side puts at least one B point there too.</p>
+<p>Add the feature \(x_1x_2\). For the A points it is \(+1\), and for the B points it is \(-1\). In the new feature, a threshold at 0 separates them. A <em class="t">feature map</em> \(\phi\) (phi) turns \(x\) into a longer vector \(\phi(x)\), and a linear classifier on \(\phi(x)\) is a curved classifier on \(x\).</p>
+<p>The dual SVM and its test rule use only \(x_i\T x_j\). Replace each dot product by \(\phi(x_i)\T\phi(x_j)\). A <em class="t">kernel</em> is a function that computes this directly.</p>
+<div class="eq boxed">\[K(p, q) = \phi(p)\T\phi(q)\]</div>
+<div class="eq eqw">\[J_d(\alpha) = \sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_jK(x_i,x_j)\]</div>
+<div class="eq eqn">\[J_d(\alpha) = \sum_i\alpha_i - \tfrac12 Q\]
+\[Q = \sum_{i,j}\alpha_i\alpha_jy_iy_jK(x_i,x_j)\]</div>
+<div class="eq">\[f(x) = \sum_i\alpha_iy_iK(x_i, x) + b\]</div>
+<p>This is the <em class="t">kernel trick</em>. We never write \(\phi(x)\) down. The <em class="t">kernel matrix</em> (Gram matrix) has entries \(K_{ij} = K(x_i, x_j)\), and in matrix form the dual is \(\max_\alpha\ \alpha\T\mathbf 1 - \frac12\alpha\T\operatorname{diag}(y)K\operatorname{diag}(y)\alpha\) with \(\alpha\T y = 0\), \(0\le\alpha\le C\).</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L12/p24.webp" alt="Slide: kernels and kernel matrix, examples (p.q)^2 and (p.q+1)^2" loading="lazy">
+<figcaption>L12, slide 24. Two kernels whose feature maps the slide asks for. They are worked out below.</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>In 2-D, find \(\phi\) for \(K(p,q) = (p\T q)^2\) and for \(K(p,q) = (p\T q + 1)^2\).</h4>
+<ol class="steps lines">
+<li>\((p\T q)^2 \)<wbr>\({}= (p_1q_1 + p_2q_2)^2 \)<wbr>\({}= p_1^2q_1^2 + 2p_1p_2q_1q_2 + p_2^2q_2^2\).</li>
+<li>Split each term into a \(p\) part times a \(q\) part. So \(\phi(p) \)<wbr>\({}= (p_1^2,\ \sqrt2\,p_1p_2,\ p_2^2)\), a 3-D map.
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(p_1^2q_1^2 = (p_1^2)(q_1^2)\) and \(p_2^2q_2^2 = (p_2^2)(q_2^2)\).</li>
+<li>\(2p_1p_2q_1q_2 \)<wbr>\({}= (\sqrt2p_1p_2)(\sqrt2q_1q_2)\). The \(\sqrt2\) is split evenly so both vectors use the same map.</li>
+</ol>
+</details></li>
+<li>\((p\T q + 1)^2 \)<wbr>\({}= (p\T q)^2 + 2p\T q + 1\). Expand each piece with line 1, and \(2p\T q = 2p_1q_1 + 2p_2q_2\).</li>
+<li>So \(\phi(p) \)<wbr>\({}= (1,\ \sqrt2p_1,\ \sqrt2p_2,\ p_1^2,\ \sqrt2p_1p_2,\ p_2^2)\), a 6-D map.</li>
+</ol>
+</div>
+<div class="card ex"><span class="tag">Example</span>
+<p>Take \(p = (1,2)\) and \(q = (3,1)\). Then \(p\T q = 3 + 2 = 5\).</p>
+<p>First kernel. \(K = 25\). Via the map, \(\phi(p) = (1, 2\sqrt2, 4)\) and \(\phi(q) = (9, 3\sqrt2, 1)\). Dot product \(9 + 2\sqrt2\cdot3\sqrt2 + 4 \)<wbr>\({}= 9 + 12 + 4 \)<wbr>\({}= 25\). The same.</p>
+<p>Second kernel. \(K = 36\). Via the map, \(\phi(p) \)<wbr>\({}= (1, \sqrt2, 2\sqrt2, 1, 2\sqrt2, 4)\) and \(\phi(q) \)<wbr>\({}= (1, 3\sqrt2, \sqrt2, 9, 3\sqrt2, 1)\). Dot product \(1 + 6 + 4 + 9 + 12 + 4 = 36\). The same.</p>
+<p>The kernel took one dot product and one square. The map needed 6 products. For degree-10 polynomials in 100 dimensions the map would have billions of entries, and the kernel still costs one dot product.</p>
+</div>
+<p>The second kernel's map contains \(\sqrt2p_1p_2\), the XOR feature, so an SVM with \(K(p,q) = (p\T q + 1)^2\) separates XOR.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>A kernel is \(K(p,q) = \phi(p)\T\phi(q)\). Replace every \(x_i\T x_j\) in the dual and the test rule by \(K\).</li>
+<li>\((p\T q)^2\) in 2-D gives \((p_1^2, \sqrt2p_1p_2, p_2^2)\). \((p\T q+1)^2\) gives the 6-D map with 1, linear and quadratic terms.</li>
+<li>XOR becomes separable once \(x_1x_2\) is a feature.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L12 slide</span><span>Show that XOR is not linearly separable, and give a kernel that solves it.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Suppose \(w_1x_1 + w_2x_2 + b\) is positive on A \(=\{(1,1),(-1,-1)\}\) and negative on B \(=\{(1,-1),(-1,1)\}\).</li>
+<li>The A points need \(w_1 + w_2 + b > 0\) and \(-w_1 - w_2 + b > 0\). Adding them gives \(2b > 0\).</li>
+<li>The B points need \(w_1 - w_2 + b \lt 0\) and \(-w_1 + w_2 + b \lt 0\). Adding them gives \(2b \lt 0\).</li>
+<li>Both cannot hold, so no line works.</li>
+<li>With \(K(p,q) = (p\T q+1)^2\), the feature \(\sqrt2x_1x_2\) is \(+\sqrt2\) on A and \(-\sqrt2\) on B, so \(w\) along that coordinate separates them.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Compute the kernel matrix for \(x_1 = (1, 0)\), \(x_2 = (0, 1)\), \(x_3 = (1,1)\) with \(K(p,q) = (p\T q + 1)^2\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Dot products. \(x_1\T x_1 = 1\), \(x_2\T x_2 = 1\), \(x_3\T x_3 = 2\), \(x_1\T x_2 = 0\), \(x_1\T x_3 = 1\), \(x_2\T x_3 = 1\).</li>
+<li>Add 1 and square. Diagonal \((1+1)^2 = 4\), \(4\), \((2+1)^2 = 9\). Off-diagonal \(K_{12} = 1\), \(K_{13} = 4\), \(K_{23} = 4\).</li>
+<li>\[K = \begin{bmatrix}4 & 1 & 4\\ 1 & 4 & 4\\ 4 & 4 & 9\end{bmatrix}.\]</li>
+<li>Check: it is symmetric, as every kernel matrix must be, since \(K(p,q) = K(q,p)\).</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="generalization"><span class="num">2.13</span>Principles of learning</h2>
+<p class="slides">Lecture L13 · <a href="https://youtu.be/GjSXrAurxi0">Short video: Generalisation and overfitting</a> · <a href="https://youtu.be/nwd0h8SkSAo">Short video: Occam's razor</a> · <a href="https://youtu.be/pvQNQBPCgg8">Short video: Validation</a> · <a href="https://youtu.be/IqdY9NWdhLk">Short video: Bias and variance</a></p>
+<p class="oneline">The goal is good predictions on new data, not on the training data. Overfitting, cross-validation, regularisation and the bias–variance trade-off are the tools for that.</p>
+<h3>No free lunch and the ugly duckling</h3>
+<p>The <em class="t">no free lunch</em> theorem says that, averaged over every possible problem, every learning algorithm does equally well. An algorithm only looks strong on problems that match its built-in assumptions (its bias). The name is from the saying "there is no such thing as a free lunch".</p>
+<p>The <em class="t">ugly duckling</em> theorem says that if every possible property counts equally, any two objects share the same number of properties, so all pairs are equally similar. (The name is from the fairy tale. Without a chosen set of features, an ugly duckling is as similar to a swan as two swans are.) Similarity only means something once we choose which features matter.</p>
+<p>Together, no classifier is best for everything, and no representation is best for everything. We do well in practice because we design for a specific problem.</p>
+<h3>Fitting the training data is not the goal</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L13/p05.webp" alt="Slide: six training points with a line, a smooth curve, a wiggly curve and a wildly oscillating curve" loading="lazy">
+<figcaption>L13, slide 5. All four curves fit the six points to some degree. The wiggly ones fit perfectly and predict nonsense between the points.</figcaption></figure>
+<p>With enough parameters we can make the training error zero. A lookup table or a Karnaugh map memorises every training input exactly, yet says nothing useful about an input it has not seen. That is not learning. <em class="t">Generalisation</em> is doing well on new data from the same source.</p>
+<p><em class="t">Overfitting</em> is fitting the training data so closely that the noise is fitted too, so test error is much larger than training error. <em class="t">Underfitting</em> is a model too simple to capture the real pattern, so both errors are high.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L13/p11.webp" alt="Slide: training error keeps falling with iterations while test error falls then rises" loading="lazy">
+<figcaption>L13, slide 11. Training error (green) keeps falling. Error on held-out data (red) falls, then rises. The dashed line marks where to stop.</figcaption></figure>
+<p><em class="t">Occam's razor</em> (after the 14th-century philosopher William of Ockham) says to choose the simplest hypothesis that explains the data. In learning, minimise fit error plus a measure of complexity, for example the degree of a polynomial. Regularisation (<a href="../foundations/#regularization">Page 1</a>) is exactly this. The ways to avoid overfitting listed in L13 are cross-validation, more training data, fewer features, early stopping, regularisation and ensembles (averaging several models).</p>
+<h3>Train, validation, test, and cross-validation</h3>
+<ul>
+<li><strong>Training set</strong>. Used to fit the parameters.</li>
+<li><strong>Validation set</strong>. An internal test set used to choose hyperparameters (and to stop early). We retrain with different settings and compare validation error.</li>
+<li><strong>Test set</strong>. Touched once, at the end, to report the final model's error.</li>
+</ul>
+<p><em class="t">k-fold cross-validation</em> splits the training data into \(k\) parts. Train on \(k-1\) parts, measure error on the one left out, and do this \(k\) times so each part is left out once. The cross-validation error is the average. With very little data, use \(k = N\), leaving one sample out each time. That is <em class="t">leave-one-out</em> (LOO). Another option is to split randomly into \(x\%\) train and \((100 - x)\%\) evaluation many times and average.</p>
+<p><em class="t">Early stopping</em> watches the validation error during iterative training and stops at its minimum, the dashed line on the slide above.</p>
+<h3>Bias and variance</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L13/p17.webp" alt="Slide: definitions of bias and variance and the decomposition of expected error" loading="lazy">
+<figcaption>L13, slide 17.</figcaption></figure>
+<p><em class="t">Bias</em> is error from assumptions that are too simple, such as fitting a straight line to curved data. The model cannot represent the true pattern however much data it gets. <em class="t">Variance</em> is error from sensitivity to the particular training set. Train on a slightly different sample and a high-variance model changes a lot, as a very deep decision tree does. The expected prediction error is bias (squared) plus variance plus irreducible noise.</p>
+<table class="tbl">
+<tr><th>Model</th><th>High bias when</th><th>High variance when</th></tr>
+<tr><td>Linear regression</td><td>Data is nonlinear</td><td>Rarely (low variance)</td></tr>
+<tr><td>Polynomial regression</td><td>Degree is low</td><td>Degree is high</td></tr>
+<tr><td>k-NN</td><td>\(k\) is large</td><td>\(k\) is small</td></tr>
+<tr><td>Decision tree</td><td>Tree is shallow</td><td>Tree is deep</td></tr>
+<tr><td>Neural network</td><td>Network is small</td><td>Network is huge and not regularised</td></tr>
+</table>
+<p>Learning is choosing the right complexity, between the two.</p>
+<h3>Parameters and hyperparameters</h3>
+<p><em class="t">Parameters</em> are learned from data during training. Examples are regression weights and bias, the logistic regression \(w\), neural network weights, a Gaussian's mean and variance, decision tree split thresholds. <em class="t">Hyperparameters</em> are set before training and control how learning happens. Examples are the learning rate, \(K\) in k-means, the maximum depth of a tree, the regularisation strength \(\lambda\), the number of hidden layers. Hyperparameters are chosen on the validation set.</p>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>Overfit when training error is much smaller than test error.</li>
+<li>The fixes are cross-validation, more data, fewer features, early stopping, regularisation, ensembles.</li>
+<li>k-fold CV averages \(k\) held-out errors. LOO is \(k = N\).</li>
+<li>Expected error is bias² + variance + noise. Small \(k\) in k-NN is low bias and high variance.</li>
+<li>Parameters are learned. Hyperparameters are chosen on validation data.</li>
+</ul>
+</div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L13 slide</span><span>Why does a solution optimised only on the training data, \(\min_W L(W, x)\) for \(x\in D_{\text{Tr}}\), work reasonably on test data? (1) luck (2) once trained it works on any data (3) we secretly train on the test data too (4) we only care about training performance (5) magic, unexplained.</span><span class="chev">›</span></summary>
+<div class="ans"><p>None of the five is right. The reason is an assumption. Training and test data are drawn independently from the same distribution, so a model that captures the real pattern in the training data also fits the test data. That only holds if the model does not memorise noise, which is why complexity is controlled with regularisation, validation and early stopping. Option (2) is false, because performance on data from a different distribution is not promised. Option (3) describes a mistake (test leakage), not the reason.</p></div></details>
+<details class="q"><summary><span class="qt">L13 slide</span><span>Training a neural network with gradient descent from random starts, with three possible architectures (say 1, 2 or 3 layers). Write pseudo-code to pick the best model in a principled way.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Split the data once into a training part and a test part. Put the test part away.</li>
+<li>For each architecture \(a\) in \{1, 2, 3 layers\}:</li>
+<li>For each fold \(f = 1,\dots,k\) of the training part, train on the other \(k-1\) folds from \(R\) random initialisations (say \(R = 3\)), with early stopping. Record the error on fold \(f\) of the best of the \(R\) runs (best by its own training curve).</li>
+<li>Average the \(k\) fold errors. This is the cross-validation error of architecture \(a\).</li>
+<li>Choose the architecture with the lowest cross-validation error.</li>
+<li>Retrain that architecture on the whole training part (again from a few random starts, with a validation split for early stopping).</li>
+<li>Report its error on the test part. Do not go back and change anything after looking at it.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>With 20 samples, how many models are trained in 5-fold cross-validation and in leave-one-out? How many samples does each model train on?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>5-fold. 5 models, each trained on \(20 - 20/5 = 16\) samples and tested on 4.</li>
+<li>LOO. 20 models, each trained on 19 samples and tested on 1.</li>
+<li>Check: in both cases every sample is tested exactly once (\(5\times 4 = 20\) and \(20\times 1 = 20\)).</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>For k-NN, which choice has higher variance, \(k = 1\) or \(k = 50\)? Which has higher bias? Say why.</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(k = 1\) has higher variance. Its prediction is the label of a single nearest point, so replacing one training sample can flip predictions near it. \(k = 50\) has higher bias. It averages over a large neighbourhood, which smooths away real local structure, and in the extreme of \(k = N\) it always predicts the majority class.</p></div></details>
+</section>

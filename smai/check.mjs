@@ -38,7 +38,7 @@ for (const file of pages) {
     if (bad) {
       problems++;
       console.log(`\n${file} @ ${width}px: page overflow ${r.page}px`);
-      for (const [k, v] of Object.entries(r)) if (Array.isArray(v) && v.length) console.log(`  ${k} (${v.length}):`, v.slice(0, 8));
+      for (const [k, v] of Object.entries(r)) if (Array.isArray(v) && v.length) console.log(`  ${k} (${v.length}):`, v);
     }
     if (shots && width === 390) {
       fs.mkdirSync(shots, { recursive: true });

@@ -1,0 +1,1304 @@
+<!--desc: SMAI foundations from zero, lectures L01 to L07 of the 2026 course: k-NN, linear classifiers, features and metrics, linear, ridge and lasso regression, gradient descent, rank, SVD, PCA and eigenfaces, with the 2026 Quiz 1 paper solved.-->
+<header class="hero">
+  <div class="kicker">SMAI 2026 prep · Page 1</div>
+  <h1>Foundations</h1>
+  <p class="lead">Lectures L01 to L07 of the 2026 course, which is everything Quiz 1 tested. It starts from what a data point is and ends with PCA and eigenfaces. The 2026 Quiz 1 paper is solved at the end. Budget about 8 to 10 hours with pen and paper.</p>
+</header>
+
+<section>
+<h2 id="read-first">Read this first</h2>
+<p>This page follows the lectures in order. Each section explains one idea in plain words, gives its formulas with a small worked example, shows the derivation the course expects in two levels, and ends with questions. Most questions are the problems from the slides, marked with their lecture number. A few are practice questions written for this guide, marked "Practice". The real Quiz 1 questions are marked "Quiz 1, 2026".</p>
+<p>The derivation boxes have two levels. The numbered lines are what you would write on an exam paper. Under a line, the small "Why" link opens a step-by-step explanation of that line, one action per step. Read the lines first to see the shape of the argument, then open the explanations you need.</p>
+<p>If you have not seen vectors, matrices, eigenvalues or basic probability for a while, read the <a href="../basics/">Maths basics</a> page first. This page uses <a href="../basics/#norms">norms</a>, <a href="../basics/#eigen">eigenvectors</a> and <a href="../basics/#gradient">gradients</a> constantly.</p>
+
+<table class="tbl">
+<tr><th>Section</th><th>Lecture</th><th>Time</th><th>Weight in Quiz 1 (2026)</th></tr>
+<tr><td>1.1 to 1.3 Learning setup, k-NN, linear classifier</td><td>L01</td><td>1 h</td><td>Q5 (k-NN accuracy)</td></tr>
+<tr><td>1.4 to 1.5 Features and metrics</td><td>L02</td><td>1 h</td><td>Q4 (precision, recall), Q7 (mean centring)</td></tr>
+<tr><td>1.6 to 1.8 Regression, gradient descent, regularisation</td><td>L03, L04</td><td>2 h</td><td>Q1, Q8, Q11, Q12 (22.5 of 45 points)</td></tr>
+<tr><td>1.9 to 1.11 Eigenvector solutions, rank, SVD</td><td>L04, L05</td><td>2 h</td><td>Q2, Q6</td></tr>
+<tr><td>1.12 to 1.14 PCA, eigenfaces, odds and ends</td><td>L06, L07</td><td>2 h</td><td>Q3, Q9, Q10</td></tr>
+<tr><td>1.15 Quiz 1 solved</td><td></td><td>1 to 2 h</td><td>All</td></tr>
+</table>
+<p>The times add up to 9 to 10 hours. If you are short of time, do regression (1.6 to 1.8) and PCA (1.12) first. Together they carried more than half of Quiz 1.</p>
+<div class="notice"><p><strong>How the course asks questions.</strong> Many slide questions and quiz questions say "one, none or more correct". Treat each option as a separate true or false question. In the 2026 quiz, marking any wrong option in such a question gave 0 for the whole question, so do not guess extra options.</p></div>
+<p class="small">Based on the Spring 2026 slides (L01 to L07), the Quiz 1 paper and the TAs' solution sheet. Where the slides were only figures, the explanation here is our reading of the figure. Where the official solutions look wrong, this page says so and shows why.</p>
+</section>
+
+<div class="part">Part 1<span>L01 · Data driven problem solving</span></div>
+
+<section>
+<h2 id="learning-setup"><span class="num">1.1</span>Data, representation and the learning problem</h2>
+<p class="slides">Lecture L01 · <a href="https://www.youtube.com/watch?v=8xniRSjRyCQ">Short video: How can data be useful?</a> · <a href="https://www.youtube.com/watch?v=5O3joUSYeYk">Representation</a> · <a href="https://www.youtube.com/watch?v=3WsDIkP8kMo">Representation II</a> · <a href="https://www.youtube.com/watch?v=v9DKrX-3gEA">Supervised learning formulation</a> · Read: <a href="https://mml-book.github.io/">Mathematics for Machine Learning (free book)</a></p>
+<p class="oneline">Machine learning writes a program from examples instead of by hand.</p>
+<p>In ordinary programming, a person writes the program, the computer runs it on data and produces an output. In machine learning, the computer is given data together with the outputs we want, and it produces the program. The slide below shows this swap.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L01/p06.webp" alt="Slide: traditional programming takes data and program to output, machine learning takes data and output to a program" loading="lazy">
+<figcaption>L01, slide 6. In machine learning the inputs are data and desired outputs, and the result is a program (a model).</figcaption></figure>
+
+<h3>The setup in symbols</h3>
+<p>We are given a <em class="t">dataset</em> \(D = \{(\mathbf x_i, y_i)\}\), \(i = 1, \dots, N\). Each \(\mathbf x_i\) is one example, written as a list of \(d\) numbers. Each \(y_i\) is the answer we want for it, called its <em class="t">label</em>. \(N\) is the number of examples.</p>
+<p>The learned program is a function</p>
+<div class="eq boxed">\[ y = f(\mathbf W, \mathbf x). \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mathbf x\) is the input, \(y\) is the output, and \(f\) is the form of the program we chose (for example "a straight line" or "a neural network"). \(\mathbf W\) holds the numbers inside \(f\) that are not fixed in advance. They are called the <em class="t">learnable parameters</em> or <em class="t">weights</em>. "Learning" means finding good values of \(\mathbf W\) from \(D\).</p>
+<p><strong>Example.</strong> Take \(f(\mathbf W, x) = w_1 x + w_2\), a straight line, with \(\mathbf W = [w_1, w_2]\). If the data are \((1,2), (2,3), (3,4)\), learning should find \(w_1 = 1\), \(w_2 = 1\), because then \(f\) gives \(2, 3, 4\) for \(x = 1, 2, 3\). Section 1.6 shows how to find these values.</p>
+</div>
+
+<h3>Representation, turning things into vectors</h3>
+<p>Before any learning, each object (an email, a fruit, a day, an image) must become a vector \(\mathbf x \in \R^d\). The symbol \(\R^d\) means "a list of \(d\) real numbers". Each entry is called a <em class="t">feature</em> or attribute. The slides stress that this step decides most of the outcome, hence "representation is the key".</p>
+<ul>
+<li>An orange and an apple on a conveyor belt could be described by \(\mathbf x \)<wbr>\({}= [\text{redness}, \text{diameter in cm}]\).</li>
+<li>A day for a picnic could be \(\mathbf x \)<wbr>\({}= [\text{temperature}, \text{humidity}, \text{chance of rain}]\).</li>
+<li>An email for spam filtering could be a vector of word counts, one entry per word in a fixed vocabulary (the <em class="t">bag of words</em> in section 1.10).</li>
+</ul>
+<p>Features can be hand-designed, read from a sensor (a thermometer), computed with statistics or signal processing, or learned by another model such as a neural network.</p>
+
+<h3>Kinds of output and kinds of learning</h3>
+<table class="tbl">
+<tr><th>Output \(y\)</th><th>Name</th><th>Example</th></tr>
+<tr><td>a real number</td><td><em class="t">Regression</em></td><td>predict a laptop's price</td></tr>
+<tr><td>one of a few classes</td><td><em class="t">Classification</em></td><td>spam or not spam</td></tr>
+<tr><td>a string, tree or graph</td><td>Structured prediction</td><td>a sentence's parse tree</td></tr>
+</table>
+<p>The inputs can be single vectors or sequences of vectors (speech, text).</p>
+<ul>
+<li><strong>Supervised learning</strong> has a label \(y_i\) for every example. Most of this course is supervised.</li>
+<li><strong>Unsupervised learning</strong> has no labels, for example grouping similar points (clustering).</li>
+<li><strong>Self-supervised learning</strong> makes labels out of the data itself, for example hiding a word and predicting it.</li>
+<li><strong>Semi-supervised learning</strong> has labels for only some examples.</li>
+<li><strong>Reinforcement learning</strong> acts in an environment and receives rewards instead of labels.</li>
+</ul>
+
+<h3>Training, validation and testing</h3>
+<p>The data are split. The <em class="t">training set</em> is used to compute \(\mathbf W\). The <em class="t">test set</em> is kept aside and used only to measure how well the result works on examples it has not seen. A <em class="t">validation set</em> is a third part used to choose settings (such as \(K\) in k-NN) without touching the test set. Measuring on the training set alone would be like marking a student on questions they were shown with answers.</p>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>Learning finds \(\mathbf W\) in \(y = f(\mathbf W, \mathbf x)\) from \(D \)<wbr>\({}= \{(\mathbf x_i, y_i)\}_{i=1}^N\).</li>
+<li>Each example is a vector \(\mathbf x \in \R^d\). Choosing the features is the representation problem.</li>
+<li>Regression predicts a number, classification predicts a class.</li>
+<li>Train on one part of the data, test on another part.</li>
+</ul></div>
+</section>
+
+<section>
+<h2 id="knn"><span class="num">1.2</span>Nearest neighbour and k-NN</h2>
+<p class="slides">Lecture L01 · <a href="https://www.youtube.com/watch?v=47jEgvtKHuk">Short video: Nearest neighbour</a> · <a href="https://www.youtube.com/watch?v=m46Exp1E6X8">Distances and similarities</a> · <a href="https://www.youtube.com/watch?v=w5phdIBr3Sw">Curse of dimensionality</a></p>
+<p class="oneline">To classify a new point, look at the training points closest to it and copy their label.</p>
+<p>The <em class="t">nearest neighbour</em> rule (1-NN) finds the single training example closest to the new point and gives the new point that example's label. The <em class="t">k-nearest neighbour</em> rule (k-NN) finds the \(K\) closest training examples and takes a majority vote of their labels. Nothing is computed in advance. The "training" is just storing the data, and all the work happens at test time.</p>
+<p>Three questions decide how k-NN behaves. What value of \(K\)? Which distance? Do the features need rescaling first (section 1.4)?</p>
+
+<h3>Distances</h3>
+<p>For two points \(\mathbf p, \mathbf q \in \R^d\), the two distances used in the course are</p>
+<div class="eq">\[d_2(\mathbf p, \mathbf q) = \sqrt{\textstyle\sum_{j=1}^d (p_j - q_j)^2},\]
+\[d_1(\mathbf p, \mathbf q) = \textstyle\sum_{j=1}^d |p_j - q_j|.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(p_j\) is the \(j\)-th entry of \(\mathbf p\). The symbol \(\sum_{j=1}^d\) means "add the following term for \(j = 1, 2, \dots, d\)". \(|a|\) is the absolute value of \(a\) (drop the minus sign).</p>
+<p>\(d_2\) is the <em class="t">Euclidean distance</em>, the straight-line length from school geometry (Pythagoras). \(d_1\) is the <em class="t">Manhattan distance</em>, named after walking on a grid of city streets where you can only go along the blocks, so you add the horizontal and vertical distances. They are the \(L_2\) and \(L_1\) norms of \(\mathbf p - \mathbf q\) (see section 1.8).</p>
+<p><strong>Example.</strong> \(\mathbf p = [0, 0]\), \(\mathbf q = [2, 0.5]\). Then \(d_1 = |0-2| + |0-0.5| = 2.5\) and \(d_2 \)<wbr>\({}= \sqrt{4 + 0.25}\)<wbr>\({}= \sqrt{4.25} \approx 2.06\). Quiz 1 Q5 uses exactly this pair.</p>
+</div>
+<p>L02 lists the four properties a function must have to be called a distance (a <em class="t">metric</em>). For all points \(\mathbf p, \mathbf q, \mathbf r\):</p>
+<ol>
+<li><strong>Identity.</strong> \(d(\mathbf p, \mathbf q) = 0\) if and only if \(\mathbf p = \mathbf q\).</li>
+<li><strong>Non-negativity.</strong> \(d(\mathbf p, \mathbf q) \ge 0\).</li>
+<li><strong>Symmetry.</strong> \(d(\mathbf p, \mathbf q) \)<wbr>\({}= d(\mathbf q, \mathbf p)\).</li>
+<li><strong>Triangle inequality.</strong> \(d(\mathbf p, \mathbf r) \le d(\mathbf p, \mathbf q) + d(\mathbf q, \mathbf r)\). Going via a third point is never shorter.</li>
+</ol>
+
+<h3>Choosing K</h3>
+<p>With \(K = 1\) the rule follows every training point, including noisy or mislabelled ones. A larger \(K\) averages over more neighbours, so single bad points matter less, but the rule becomes blunter near the boundary between classes. With two classes, use an odd \(K\) so the vote cannot tie. In practice \(K\) is chosen by trying several values on a validation set. Section 2 of the next page (bias and variance) comes back to this.</p>
+
+<div class="card watch"><span class="tag">Common mistake</span>
+<p>Ties. If two training points are at exactly the same distance, 1-NN has no unique answer. On a quiz, say that there is a tie and say how you broke it (for example "pick the smaller index" or "move to 3-NN"). The L01 problem below has such a tie on purpose.</p></div>
+
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L01/p15.webp" alt="Slide: Problem 1, positive points (1,1),(2,2),(3,2), negative points (1,-1),(2,-2),(3,-2), classify (4,1)" loading="lazy">
+<figcaption>L01, slide 15. The last line asks about the point \([4, 0]\).</figcaption></figure>
+<details class="q"><summary><span class="qt">L01 slide</span><span>Positives \([1,1], [2,2], [3,2]\), negatives \([1,-1], [2,-2], [3,-2]\). Classify \([4,1]\) with \(K = 1\) and \(K = 3\) (Euclidean). What about \([4,0]\)?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(d_2(\mathbf p, \mathbf q) \)<wbr>\({}= \sqrt{(p_1-q_1)^2 + (p_2-q_2)^2}\), then a majority vote among the \(K\) smallest.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.2, the k-NN rule.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Distances from \([4,1]\). To \([3,2]\) it is \(\sqrt{1+1} \)<wbr>\({}= \sqrt2 \approx 1.41\). To \([2,2]\) it is \(\sqrt{4+1} \)<wbr>\({}= \sqrt5 \approx 2.24\). To \([1,1]\) it is \(\sqrt{9+0} = 3\).</li>
+<li>To \([3,-2]\) it is \(\sqrt{1+9} \)<wbr>\({}= \sqrt{10} \approx 3.16\). To \([1,-1]\) it is \(\sqrt{9+4} \)<wbr>\({}= \sqrt{13} \approx 3.61\). To \([2,-2]\) it is \(\sqrt{4+9} \)<wbr>\({}= \sqrt{13} \approx 3.61\).</li>
+<li>Sorted, the nearest are \([3,2]\) (+), \([2,2]\) (+), \([1,1]\) (+), then \([3,-2]\) (−).</li>
+<li>\(K = 1\). The nearest is \([3,2]\), so the prediction is <strong>+</strong>.</li>
+<li>\(K = 3\). The three nearest are all +, so the prediction is <strong>+</strong>.</li>
+<li>Now \([4,0]\). To \([3,2]\) and to \([3,-2]\) the distance is \(\sqrt{1+4} = \sqrt5\) for both. Next come \([2,2]\) and \([2,-2]\), both at \(\sqrt{4+4} = \sqrt8\).</li>
+<li>So 1-NN is a tie between + and −, and the 3 nearest cannot be picked uniquely either. The point lies on the line \(x_2 = 0\), which is exactly halfway between the two classes. Say that it is a tie. The example is symmetric, so no rule can prefer one side without an extra tie-breaking convention.</li>
+<li>Check: the two classes are mirror images across the \(x_1\) axis, and \([4,0]\) lies on that axis, so a tie is what symmetry predicts.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="linear-classifier"><span class="num">1.3</span>The linear classifier</h2>
+<p class="slides">Lecture L01 · <a href="https://www.youtube.com/watch?v=P92mkhzt6Hg">Short video: Linear classifier</a></p>
+<p class="oneline">Decide the class by which side of a line (or plane) the point is on.</p>
+<p>A <em class="t">linear classifier</em> for two classes computes one number from the input and looks at its sign:</p>
+<div class="eq boxed">\[ \hat y = \operatorname{sign}(\mathbf w\T \mathbf x). \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mathbf w\) is a weight vector with the same number of entries as \(\mathbf x\). The small \(\mathsf T\) means <em class="t">transpose</em>, which turns a column into a row, so \(\mathbf w\T\mathbf x\) is the <em class="t">dot product</em> \(w_1x_1 + w_2x_2 + \dots + w_dx_d\). The function \(\operatorname{sign}(z)\) is \(+1\) when \(z \gt 0\) and \(-1\) when \(z \lt 0\). The hat on \(\hat y\) marks a prediction, as opposed to a true label \(y\).</p>
+<p><strong>Example.</strong> \(\mathbf w = [1, 1]\). For \(\mathbf x = [2, -1]\), \(\mathbf w\T\mathbf x \)<wbr>\({}= 2 - 1\)<wbr>\({}= 1 \gt 0\), so the class is +. For \(\mathbf x = [-3, 1]\), \(\mathbf w\T\mathbf x \)<wbr>\({}= -2 \lt 0\), so the class is −.</p>
+<p>Geometrically, the points with \(\mathbf w\T\mathbf x = 0\) form a line through the origin (a plane in 3-D, a <em class="t">hyperplane</em> in higher dimensions). \(\mathbf w\) points at right angles to that line, towards the + side. The classifier cuts the input space into two halves.</p>
+</div>
+
+<h3>Adding a bias, and the augmented vector</h3>
+<p>The set \(\mathbf w\T\mathbf x = 0\) always passes through the origin, because \(\mathbf x = \mathbf 0\) gives 0. A general line needs an extra constant \(b\), called the <em class="t">bias</em>: \(\mathbf w\T\mathbf x + b = 0\). The slides give two equivalent ways to write this.</p>
+<ol>
+<li>Keep \(b\) separate. \(\operatorname{sign}(\mathbf w\T\mathbf x + b)\).</li>
+<li>Append a 1 to every input, \(\tilde{\mathbf x} \)<wbr>\({}= [x_1, \dots, x_d, 1]\), and append \(b\) to the weights, \(\tilde{\mathbf w} \)<wbr>\({}= [w_1, \dots, w_d, b]\). Then \(\tilde{\mathbf w}\T\tilde{\mathbf x} \)<wbr>\({}= \mathbf w\T\mathbf x + b\). This is the <em class="t">augmented vector</em>.</li>
+</ol>
+<p>From now on, when the course writes \(\mathbf w\T\mathbf x\), the 1 has usually been appended and the bias is "absorbed" into \(\mathbf w\). Regression in section 1.6 uses the same trick, which is why its data matrix has a column of ones.</p>
+
+<h3>More than two classes</h3>
+<p>The L01 discussion asks how to extend a sign-based rule to 3 or 4 classes. There are three standard answers.</p>
+<ul>
+<li><strong>One against the rest.</strong> Learn one weight vector \(\mathbf w_k\) per class \(k\). Each says "class \(k\) or not". Predict the class whose score is largest, \(\hat y \)<wbr>\({}= \argmax_k \mathbf w_k\T\mathbf x\). The notation \(\argmax_k\) means "the value of \(k\) that makes the expression largest". This uses \(K\) classifiers for \(K\) classes and is the rule behind softmax later in the course.</li>
+<li><strong>One against one.</strong> Learn one classifier for every pair of classes, \(\frac{K(K-1)}2\) of them (6 for 4 classes), and let them vote.</li>
+<li><strong>Binary code.</strong> For 4 classes, two binary classifiers give two signs, and the 4 sign patterns \((+,+), (+,-), (-,+), (-,-)\) name the 4 classes. This uses the fewest classifiers but each must split the classes into two groups that are actually separable.</li>
+</ul>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>\(\hat y \)<wbr>\({}= \operatorname{sign}(\mathbf w\T\mathbf x)\). The boundary \(\mathbf w\T\mathbf x = 0\) is a hyperplane at right angles to \(\mathbf w\).</li>
+<li>A bias is handled by appending 1 to \(\mathbf x\) and \(b\) to \(\mathbf w\).</li>
+<li>For \(K\) classes, the usual rule is \(\argmax_k \mathbf w_k\T\mathbf x\).</li>
+</ul></div>
+
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L01/p12.webp" alt="Slide: linear binary classifier sign of w transpose x, geometric intuition of which side of a hyperplane" loading="lazy">
+<figcaption>L01, slide 12. The two problems below are slides 16 and 17.</figcaption></figure>
+<details class="q"><summary><span class="qt">L01 slide</span><span>Rule: "class A if \(\mathbf w\T\mathbf x \ge 0\), else class B", with \(\mathbf w = [1,1,1,1]\). Classify \([1,1,1,1]\), \([0,1,2,3]\) and \([-1,1,-1,1]\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w\T\mathbf x \)<wbr>\({}= w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4\), compared with 0.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.3, the linear classifier.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>With all weights 1, \(\mathbf w\T\mathbf x\) is just the sum of the entries.</li>
+<li>\([1,1,1,1]\): sum 4, and \(4 \ge 0\), so <strong>A</strong>.</li>
+<li>\([0,1,2,3]\): sum 6, so <strong>A</strong>.</li>
+<li>\([-1,1,-1,1]\): sum 0. The rule says \(\ge 0\), so 0 counts as <strong>A</strong>. This point lies exactly on the boundary.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L01 slide</span><span>What is the angle between the lines described by \(\mathbf w_1 = [1,1]\) and \(\mathbf w_2 = [1,-1]\)? (a) 0 (b) 45 (c) 90 (d) 120</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\cos\theta \)<wbr>\({}= \dfrac{\mathbf w_1\T\mathbf w_2}{\|\mathbf w_1\|\,\|\mathbf w_2\|}\), where \(\|\mathbf w\| \)<wbr>\({}= \sqrt{\mathbf w\T\mathbf w}\) is the length.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Dot product and angle, <a href="../basics/#vectors">Maths basics</a>. Each line \(\mathbf w\T\mathbf x = 0\) is at right angles to its \(\mathbf w\), so the angle between the lines equals the angle between the \(\mathbf w\)s.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\mathbf w_1\T\mathbf w_2 \)<wbr>\({}= 1\cdot1 + 1\cdot(-1)\)<wbr>\({}= 0\).</li>
+<li>So \(\cos\theta = 0\), and \(\theta = 90^\circ\). Answer <strong>(c)</strong>.</li>
+<li>Check: the line for \(\mathbf w_1\) is \(x_1 + x_2 = 0\) (slope −1) and for \(\mathbf w_2\) is \(x_1 - x_2 = 0\) (slope 1). Slopes multiplying to −1 means perpendicular.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Write a rule that puts a point into one of 4 classes using linear scores, and say how many weight vectors it needs.</span><span class="chev">›</span></summary>
+<div class="ans"><p>One against the rest learns \(\mathbf w_1, \mathbf w_2, \mathbf w_3, \mathbf w_4\) (4 vectors), computes the 4 scores \(s_k = \mathbf w_k\T\mathbf x\) and outputs \(\argmax_k s_k\). For example with scores \(s = [0.2, 1.5, -0.3, 0.9]\) the answer is class 2. A pairwise vote needs \(\frac{4\cdot3}2 = 6\) classifiers, and a two-bit code needs only 2.</p></div></details>
+</section>
+
+<div class="part">Part 2<span>L02 · Representation and feature engineering</span></div>
+
+<section>
+<h2 id="features"><span class="num">1.4</span>Feature transformation and normalisation</h2>
+<p class="slides">Lecture L02 · <a href="https://www.youtube.com/watch?v=DpXBPHnAmZw">Short video: Feature selection and extraction</a> · <a href="https://www.youtube.com/watch?v=AsQORY4_H9Q">Data from a multivariate distribution</a></p>
+<p class="oneline">Change the raw features into better ones before learning, often with a matrix.</p>
+<p>A <em class="t">feature transformation</em> is any function \(\phi\) that maps a feature vector \(\mathbf x\) to a new vector \(\mathbf x' = \phi(\mathbf x)\). The symbol \(\phi\) is the Greek letter phi. The most important kind is linear:</p>
+<div class="eq boxed">\[ \mathbf x' = \mathbf W\mathbf x. \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mathbf x\) has \(d\) entries. \(\mathbf W\) is a matrix with \(d'\) rows and \(d\) columns, so \(\mathbf x'\) has \(d'\) entries. Each new feature \(x'_r\) is row \(r\) of \(\mathbf W\) dotted with \(\mathbf x\), a weighted sum of the old features.</p>
+<p>When \(\mathbf W\) has fewer rows than columns (\(d' \lt d\)), the new vector is shorter. This is <em class="t">dimensionality reduction</em>. PCA in section 1.12 is the best-known way to choose such a \(\mathbf W\).</p>
+<p><strong>Example.</strong> \(\mathbf W = [1, 0]\) (one row, two columns) maps \([3, 7]\) to \(3\). It keeps the first feature and drops the second. \(\mathbf W = [1, 1]\) maps \([3, 7]\) to \(10\), the sum.</p>
+</div>
+<p>The slides give three reasons to transform features.</p>
+<ul>
+<li><strong>Richer features.</strong> Combine features into new ones that make the task easier. The hidden layers of a neural network do this (page 3).</li>
+<li><strong>Dimensionality reduction.</strong> Fewer numbers per example, so less computation and less data needed. PCA is the example.</li>
+<li><strong>Numerical convenience.</strong> Rescale every feature to a common range, so no single feature dominates distances or gradients. This is <em class="t">normalisation</em>.</li>
+</ul>
+
+<h3>Three ways to normalise</h3>
+<p>Write \(x_j\) for feature \(j\) of one example, and compute \(\min_j\), \(\max_j\), the mean \(\mu_j\) and the standard deviation \(\sigma_j\) of feature \(j\) over the training set. \(\mu\) is the Greek letter mu, \(\sigma\) is sigma.</p>
+<table class="tbl">
+<tr><th>Name</th><th>Formula</th><th>Result</th></tr>
+<tr><td>Min-max to \([0,1]\)</td><td>\(x_j' \)<wbr>\({}= \dfrac{x_j - \min_j}{\max_j - \min_j}\)</td><td>each feature lies in \([0,1]\)</td></tr>
+<tr><td>Min-max to \([-1,1]\)</td><td>\(x_j' \)<wbr>\({}= 2\,\dfrac{x_j - \min_j}{\max_j - \min_j} - 1\)</td><td>each feature lies in \([-1,1]\)</td></tr>
+<tr><td>Standardise (z-score)</td><td>\(x_j' \)<wbr>\({}= \dfrac{x_j - \mu_j}{\sigma_j}\)</td><td>each feature has mean 0 and variance 1</td></tr>
+<tr><td>Unit length</td><td>\(\mathbf x' \)<wbr>\({}= \dfrac{\mathbf x}{\|\mathbf x\|_2}\)</td><td>each example has length 1</td></tr>
+<tr><td>Mean centring</td><td>\(\mathbf x' \)<wbr>\({}= \mathbf x - \boldsymbol\mu\)</td><td>the set has mean \(\mathbf 0\) (Quiz 1 Q7)</td></tr>
+</table>
+<div class="card ex"><span class="tag">Example</span>
+<p>Heights in a class are 150, 160, 170 cm. Min 150, max 170. Min-max to \([0,1]\) gives \(\frac{0}{20}, \frac{10}{20}, \frac{20}{20} \)<wbr>\({}= 0, 0.5, 1\). The mean is 160 and the standard deviation (dividing by \(N = 3\)) is \(\sqrt{\frac{100 + 0 + 100}3} \)<wbr>\({}= \sqrt{66.7} \approx 8.16\), so the z-scores are \(-1.22, 0, 1.22\).</p>
+</div>
+<p>The first three act on each feature (column) separately. Unit length acts on each example (row). They fix different problems. The slides also ask how to normalise "online", meaning one example at a time as data arrive. Section 1.14 gives the running mean and variance formulas that do this, and batch normalisation in neural networks (page 3) is the same idea applied to a mini-batch.</p>
+
+<h3>Weighted distance and the Mahalanobis distance</h3>
+<p>Scaling feature \(j\) by a factor \(a_j\) before taking Euclidean distance is the same as using a <em class="t">weighted Euclidean distance</em> on the raw features:</p>
+<div class="eq">\[ d_{\mathbf a}(\mathbf p, \mathbf q) = \sqrt{\textstyle\sum_j a_j^2\,(p_j - q_j)^2}. \]</div>
+<p>If instead the data have a full covariance matrix \(\Sigma\) (section 1.12 and <a href="../basics/#gaussian">Maths basics</a>), the natural distance is the <em class="t">Mahalanobis distance</em> \(\sqrt{(\mathbf p - \mathbf q)\T\Sigma^{-1}(\mathbf p - \mathbf q)}\). It measures distance in units of the spread of the data in each direction. When \(\Sigma\) is diagonal with entries \(\sigma_1^2, \sigma_2^2\), it is the weighted distance with \(a_j = 1/\sigma_j\), which is the same as z-scoring each feature and then using Euclidean distance. Section 1.14 has the L06 question on this.</p>
+
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L02/p06.webp" alt="Slide: Problem 1, choose a 1 by 2 matrix W to reduce 2D points from two classes to 1D, options (a) [1,0] to (g) [1,0] transpose" loading="lazy">
+<figcaption>L02, slide 6. The figure it refers to is not in the uploaded slides, so the answer below explains the reasoning for each possible layout.</figcaption></figure>
+<details class="q"><summary><span class="qt">L02 slide</span><span>Reduce 2-D points from two classes to 1-D with a \(1\times2\) matrix \(\mathbf W\), \(x' = \mathbf W\mathbf x\), keeping the classes separable. Which \(\mathbf W\)? (a) \([1,0]\) (b) \([-1,0]\) (c) \([2,0]\) (d) \([1,1]\) (e) \([0,1]\) (f) \([0,-1]\) (g) \([1,0]\T\)</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>The figure is missing from the uploaded slide, so here is how to answer for any layout.</p>
+<ol class="steps">
+<li>\(\mathbf W = [a, b]\) gives \(x' = a x_1 + b x_2\), the projection of the point onto the direction \([a, b]\) (times its length).</li>
+<li>If the two classes differ only in \(x_1\) (one class on the left, the other on the right), any \(\mathbf W\) that keeps \(x_1\) works, namely (a) \([1,0]\), (b) \([-1,0]\) and (c) \([2,0]\). Flipping the sign or doubling only relabels or stretches the axis, so the classes stay apart.</li>
+<li>If the classes differ only in \(x_2\), the answer is (e) and (f).</li>
+<li>If the classes are separated along the diagonal, (d) \([1,1]\) is the one that works.</li>
+<li>(g) is never correct. \([1,0]\T\) is a \(2\times1\) column, and a column times \(\mathbf x\) (also \(2\times1\)) is not defined. The question asks for a \(1\times2\) matrix.</li>
+<li>The lesson is that several \(\mathbf W\) can be equally good, because scaling or flipping the axis does not change which side each point is on. This is a "one, none or more correct" question.</li>
+</ol>
+</div></details>
+<details class="q"><summary><span class="qt">L02 slide</span><span>k-NN with Euclidean distance in 2-D. Does it matter if the features have very different magnitudes? Does normalising each vector to \(\|\mathbf x\| = 1\) help? Does scaling each feature to \([-1,+1]\) help? Show with an example.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Yes, it matters. Euclidean distance adds squared differences, so a feature measured in large numbers swamps one measured in small numbers.</li>
+<li>Example. Features are [salary in rupees, age in years]. Points \(A = [50000, 25]\), \(B = [50100, 60]\), \(C = [51000, 26]\). \(d(A,B) \)<wbr>\({}= \sqrt{100^2 + 35^2} \approx 106\). \(d(A,C) \)<wbr>\({}= \sqrt{1000^2 + 1^2} \approx 1000\). So \(B\) is "nearer" to \(A\), although \(B\) is 35 years older. The age feature is almost ignored.</li>
+<li>Unit length divides by the length, \(\mathbf x' \)<wbr>\({}= \mathbf x / \|\mathbf x\|\). This rescales each example, not each feature. Here every vector is dominated by salary, so after dividing, all three points become almost \([1, 0.0005]\) and the problem stays. Unit length helps when only the direction of a vector matters, for example word-count vectors of documents of different lengths.</li>
+<li>Per-feature scaling to \([-1, 1]\) uses \(x_j' \)<wbr>\({}= 2\frac{x_j - \min_j}{\max_j - \min_j} - 1\). Using the three points, salary has min 50000 and max 51000, age has min 25 and max 60.</li>
+<li>Then \(A' = [-1, -1]\), \(B' = [-0.8, 1]\), \(C' = [1, -0.94]\). Now \(d(A', B') \)<wbr>\({}= \sqrt{0.04 + 4} \approx 2.01\) and \(d(A', C') \)<wbr>\({}= \sqrt{4 + 0.0033} \approx 2.00\). Both features count, and the answer depends on both.</li>
+<li>In conclusion, per-feature scaling (min-max or z-score) is what fixes differing units. Unit length fixes differing overall sizes of examples.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L02 slide</span><span>Cricket ball vs tennis ball. Features are radius in micrometres and weight in tons. A student wants radius in cm (1 cm = \(10^4\) micrometres) and weight in kg (1 ton = \(10^3\) kg). Give the \(2\times2\) matrix \(\mathbf W\) with \(\mathbf x' \)<wbr>\({}= \mathbf W\mathbf x\). Then get the same effect by changing the distance.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">A diagonal \(\mathbf W\) scales each feature on its own. \(\mathbf x' \)<wbr>\({}= \begin{bmatrix} a_1 & 0 \\ 0 & a_2 \end{bmatrix}\mathbf x\) gives \(x_1' = a_1x_1\), \(x_2' = a_2x_2\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.4, linear transformation and weighted distance.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Radius. \(r\) micrometres is \(r / 10^4\) cm, so \(a_1 = 10^{-4}\).</li>
+<li>Weight. \(m\) tons is \(m \times 10^3\) kg, so \(a_2 = 10^3\).</li>
+<li>So \[\mathbf W = \begin{bmatrix} 10^{-4} & 0 \\ 0 & 10^{3} \end{bmatrix}.\]</li>
+<li>Check with a cricket ball of radius 3.6 cm \(= 36000\) micrometres and weight 0.16 kg \(= 0.00016\) tons. \(\mathbf W\mathbf x \)<wbr>\({}= [36000 \times 10^{-4}, 0.00016 \times 10^3]\)<wbr>\({}= [3.6, 0.16]\). Correct units.</li>
+<li>Same effect by the distance. \(\|\mathbf W\mathbf p - \mathbf W\mathbf q\|^2 \)<wbr>\({}= a_1^2(p_1 - q_1)^2 + a_2^2(p_2 - q_2)^2\). So use the weighted Euclidean distance \(\sqrt{10^{-8}(p_1-q_1)^2 + 10^{6}(p_2-q_2)^2}\) on the raw features.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="metrics"><span class="num">1.5</span>Performance metrics</h2>
+<p class="slides">Lecture L02 · <a href="https://www.youtube.com/watch?v=_eKO3j5W2nQ">Short video: Performance metrics I</a> · <a href="https://www.youtube.com/watch?v=dG0A2U8B8zQ">Performance metrics II</a> · Read: <a href="https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall">Google crash course on accuracy, precision and recall</a></p>
+<p class="oneline">Count the four kinds of right and wrong answers, then combine the counts in the way the task needs.</p>
+<p>Take a two-class problem with a "positive" class (spam, sick, terrorist) and a "negative" class. Every prediction falls into one of four boxes.</p>
+<table class="tbl">
+<tr><th></th><th>Predicted positive</th><th>Predicted negative</th></tr>
+<tr><th>Actually positive</th><td><strong>TP</strong> true positive</td><td><strong>FN</strong> false negative (a miss)</td></tr>
+<tr><th>Actually negative</th><td><strong>FP</strong> false positive (a false alarm)</td><td><strong>TN</strong> true negative</td></tr>
+</table>
+<p>This table of counts is the <em class="t">confusion matrix</em>. With \(K\) classes it is \(K \times K\). Row \(i\), column \(j\) counts examples of true class \(i\) predicted as class \(j\). The correct predictions sit on the diagonal. The name comes from showing which classes the classifier confuses with which.</p>
+<div class="eq">\[\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN},\]
+\[\text{Precision} = \frac{TP}{TP + FP}, \qquad \text{Recall}\]
+\[{}= \frac{TP}{TP + FN}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p><strong>Accuracy</strong> is the fraction of all predictions that are right.</p>
+<p><strong>Precision</strong> looks only at what the classifier called positive (the bottom counts TP + FP), and asks what fraction of those really are positive. "When it raises an alarm, how often is it right?"</p>
+<p><strong>Recall</strong> looks only at the truly positive examples (TP + FN), and asks what fraction were found. "Of all the real cases, how many did it catch?" Recall is also called the true positive rate or sensitivity. Since TP + FN is the number of actual positives \(P\), recall is \(TP/P\).</p>
+<p><strong>Example.</strong> 100 emails, 20 are spam. The filter flags 25. Of those, 15 are spam. So TP = 15, FP = 10, FN = 20 − 15 = 5, TN = 80 − 10 = 70. Accuracy \(= \frac{85}{100} = 0.85\). Precision \(= \frac{15}{25} = 0.6\). Recall \(= \frac{15}{20} = 0.75\).</p>
+</div>
+<p>The <em class="t">F-score</em> (F1) combines the two into one number, their harmonic mean:</p>
+<div class="eq">\[ F_1 = \frac{2\cdot\text{Precision}\cdot\text{Recall}}{\text{Precision} + \text{Recall}}. \]</div>
+<p>In the example, \(F_1 \)<wbr>\({}= \frac{2 \times 0.6 \times 0.75}{1.35}\)<wbr>\({}= \frac{0.9}{1.35} \approx 0.67\). The harmonic mean is small whenever either input is small, so a classifier cannot get a high F1 by being good at only one of the two.</p>
+
+<h3>Thresholds and ranking</h3>
+<p>Many classifiers output a score, such as \(\mathbf w\T\mathbf x\), and call an example positive when the score is at least a threshold \(\theta\) (theta). Lowering \(\theta\) flags more examples. Recall can only go up (more true cases caught), and precision usually goes down (more false alarms). Quiz 1 Q4 asked exactly this with four different thresholds.</p>
+<p>In retrieval (a search engine returning a ranked list), precision and recall are computed for the top \(k\) results. <em class="t">Average precision (AP)</em> averages the precision at each rank where a relevant item appears.</p>
+<div class="card ex"><span class="tag">Example</span>
+<p>A ranked list of 5 results is relevant, not, relevant, not, relevant (3 relevant items in total). Precision at rank 1 is \(\frac11\), at rank 3 is \(\frac23\), at rank 5 is \(\frac35\). AP \(= \frac13\left(1 + \frac23 + \frac35\right) \)<wbr>\({}= \frac13(2.267) \approx 0.76\).</p>
+</div>
+<div class="card watch"><span class="tag">Common mistake</span>
+<p>Accuracy is misleading when one class is rare. If 1 email in 1000 is spam, a filter that never flags anything has 99.9% accuracy and catches nothing. Look at recall and precision for the rare class.</p></div>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>Precision \(= \frac{TP}{TP+FP}\) (of the flagged, how many are real). Recall \(= \frac{TP}{TP+FN}\) (of the real, how many are flagged).</li>
+<li>The confusion matrix is square, with correct counts on the diagonal.</li>
+<li>For rare classes, accuracy is not enough.</li>
+</ul></div>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L02 slide</span><span>A supplier says their sensor separates normal people from terrorists with 99.5% accuracy. Is this a good product? Which metrics would you ask for?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Terrorists are extremely rare. Suppose 1 in a million travellers is one.</li>
+<li>A "classifier" that always says "normal" is right for 999,999 out of 1,000,000 people, so its accuracy is 99.9999%, better than the product, while catching nobody.</li>
+<li>So 99.5% accuracy says almost nothing. It even means about 5 in every 1000 travellers are misclassified, which at a busy airport is thousands of people a day, nearly all of them false alarms.</li>
+<li>Ask for recall on the terrorist class (what fraction of real threats are caught, which must be near 1) and precision or the false positive rate (how many innocent people are stopped per real threat), measured on a test set with realistic proportions.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>\(\frac{TP}{P}\) is known as (a) Accuracy (b) Precision (c) Recall (d) None of the above.</span><span class="chev">›</span></summary>
+<div class="ans"><p>\(P\) is the number of actual positives, which is \(TP + FN\). So \(\frac{TP}{P} \)<wbr>\({}= \frac{TP}{TP + FN}\), which is <strong>(c) recall</strong>. Precision divides by the number predicted positive, not by \(P\).</p></div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>A confusion matrix is (a) square (b) always diagonal (c) can never be diagonal (d) can be diagonal (e) always symmetric (f) can never be symmetric (g) can be symmetric. One, none or more correct.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(a) True. Rows and columns are both indexed by the \(K\) classes.</li>
+<li>(b) False. Any mistake puts a count off the diagonal.</li>
+<li>(c) False and (d) true. A perfect classifier has a diagonal confusion matrix.</li>
+<li>(e) False. If 3 cats are called dogs but no dog is called a cat, entry (cat, dog) is 3 and (dog, cat) is 0.</li>
+<li>(f) False and (g) true. A diagonal matrix is symmetric, and so is one where the errors happen to balance.</li>
+<li>Answer: <strong>(a), (d), (g)</strong>.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>A disease test has a true positive rate of 0.6 and a false positive rate of 0.1. 100 people are tested, 60 of them infected. What is the confusion matrix (as rates, rows are the true class)?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Row "infected": 60% are detected (TP rate 0.6) and 40% are missed, so the row is \([0.6, 0.4]\).</li>
+<li>Row "healthy": 10% are wrongly flagged (FP rate 0.1) and 90% correctly cleared, so the row is \([0.1, 0.9]\).</li>
+<li>So the matrix is \(\begin{bmatrix} 0.6 & 0.4 \\ 0.1 & 0.9 \end{bmatrix}\), option (a) on the slide. Each row of a rate matrix adds up to 1.</li>
+<li>In counts: 36 infected detected, 24 missed, 4 healthy flagged, 36 healthy cleared. Check: 36 + 24 = 60 and 4 + 36 = 40.</li>
+</ol></div></details>
+</section>
+
+<div class="part">Part 3<span>L03, L04 · Regression, optimisation and regularisation</span></div>
+
+<section>
+<h2 id="regression"><span class="num">1.6</span>Linear regression and its closed-form solution</h2>
+<p class="slides">Lecture L03 · <a href="https://www.youtube.com/watch?v=SSuYxDOxANI">Short video: Linear regression</a> · Read: <a href="https://tminka.github.io/papers/matrix/minka-matrix.pdf">Minka, matrix algebra for statistics</a> · <a href="https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf">The Matrix Cookbook</a></p>
+<p class="oneline">Fit a straight line (or plane) to data by making the average squared error as small as possible.</p>
+<p><em class="t">Regression</em> predicts a real number. The slides give two examples. One is to predict a student's weight from their height, and the other is to predict a laptop's price from its processor speed, memory and disk size. <em class="t">Linear regression</em> uses the simplest form, a weighted sum of the features:</p>
+<div class="eq">\[ \hat y_i = \mathbf w\T\mathbf x_i. \]</div>
+<p>With one feature and the bias absorbed (\(\mathbf x_i = [x_i, 1]\), \(\mathbf w = [w_1, w_2]\)), this is \(\hat y_i = w_1x_i + w_2\), the school line \(y = mx + c\) with \(m = w_1\) and \(c = w_2\).</p>
+<h3>The loss</h3>
+<p>To say how bad a choice of \(\mathbf w\) is, the course uses the <em class="t">mean squared error</em> (MSE):</p>
+<div class="eq boxed">\[ J(\mathbf w) = \frac1N\sum_{i=1}^N\left(y_i - \mathbf w\T\mathbf x_i\right)^2. \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>For example \(i\), \(y_i - \mathbf w\T\mathbf x_i\) is the error, called the <em class="t">residual</em>, which is actual minus predicted. Squaring makes every error positive and punishes big errors more than small ones. The sum adds this up over all \(N\) examples, and \(\frac1N\) turns the total into an average. A function like \(J\) that scores how wrong the model is, is called a <em class="t">loss function</em> or objective. Learning means finding \(\mathbf w^* \)<wbr>\({}= \argmin_{\mathbf w} J(\mathbf w)\), the \(\mathbf w\) that makes \(J\) smallest.</p>
+<p><strong>Example.</strong> Data \((1,2), (2,3), (3,5)\) and the line \(\hat y = x + 1\). Predictions are 2, 3, 4. Residuals are 0, 0, 1. \(J = \frac13(0 + 0 + 1) = 0.33\).</p>
+<p>Quiz 1 Q8 asked you to write exactly this formula. The rubric took off 0.5 for leaving out the \(\frac1N\).</p>
+</div>
+
+<h3>Matrix form</h3>
+<p>Stack the inputs as the rows of a <em class="t">data matrix</em> \(\mathbf X\) (\(N\) rows, \(d\) columns), and the targets into a column \(\mathbf y\) (\(N\) entries). Then all the predictions at once are \(\hat{\mathbf y} \)<wbr>\({}= \mathbf X\mathbf w\), and the sum of squared residuals is the squared length of the residual vector:</p>
+<div class="eq">\[J(\mathbf w) = \frac1N(\mathbf y - \mathbf X\mathbf w)\T(\mathbf y - \mathbf X\mathbf w)\]
+\[{}= \frac1N\|\mathbf y - \mathbf X\mathbf w\|_2^2.\]</div>
+<div class="card ex"><span class="tag">Example</span>
+<p>Data \((1,2), (2,3), (3,4)\) with \(\mathbf x_i = [1, x_i]\) (the 1 first this time, so \(\mathbf w = [c, m]\)). Then
+\[\mathbf X = \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}, \qquad \mathbf y\]
+\[{}= \begin{bmatrix} 2 \\ 3 \\ 4 \end{bmatrix}.\]
+The column of ones is the augmented 1 from section 1.3. It is what lets the line have an intercept.</p>
+</div>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the \(\mathbf w\) minimising \(J(\mathbf w) \)<wbr>\({}= \frac1N\|\mathbf y - \mathbf X\mathbf w\|^2\) is \(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\).</h4>
+<ol class="steps lines">
+<li>\(J(\mathbf w) \)<wbr>\({}= \frac1N(\mathbf y - \mathbf X\mathbf w)\T(\mathbf y - \mathbf X\mathbf w)\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Row \(i\) of \(\mathbf X\mathbf w\) is \(\mathbf x_i\T\mathbf w\), the prediction for example \(i\).</li>
+<li>So entry \(i\) of \(\mathbf y - \mathbf X\mathbf w\) is the residual \(y_i - \mathbf w\T\mathbf x_i\).</li>
+<li>For any vector \(\mathbf r\), \(\mathbf r\T\mathbf r \)<wbr>\({}= r_1^2 + \dots + r_N^2\). So \((\mathbf y - \mathbf X\mathbf w)\T(\mathbf y - \mathbf X\mathbf w)\) is the sum of squared residuals, and dividing by \(N\) gives \(J\).</li>
+</ol></details></li>
+<li>Expand. \(J \)<wbr>\({}= \frac1N\left(\mathbf y\T\mathbf y - 2\mathbf w\T\mathbf X\T\mathbf y + \mathbf w\T\mathbf X\T\mathbf X\mathbf w\right)\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Transpose the first bracket using \((\mathbf A - \mathbf B)\T \)<wbr>\({}= \mathbf A\T - \mathbf B\T\) and \((\mathbf X\mathbf w)\T \)<wbr>\({}= \mathbf w\T\mathbf X\T\). It becomes \(\mathbf y\T - \mathbf w\T\mathbf X\T\).</li>
+<li>Multiply out \((\mathbf y\T - \mathbf w\T\mathbf X\T)(\mathbf y - \mathbf X\mathbf w)\) into four terms. \[\mathbf y\T\mathbf y - \mathbf y\T\mathbf X\mathbf w - \mathbf w\T\mathbf X\T\mathbf y + \mathbf w\T\mathbf X\T\mathbf X\mathbf w.\]</li>
+<li>\(\mathbf y\T\mathbf X\mathbf w\) is a single number, and a number equals its own transpose, so \(\mathbf y\T\mathbf X\mathbf w \)<wbr>\({}= (\mathbf y\T\mathbf X\mathbf w)\T\)<wbr>\({}= \mathbf w\T\mathbf X\T\mathbf y\).</li>
+<li>So the two middle terms are equal and combine into \(-2\mathbf w\T\mathbf X\T\mathbf y\).</li>
+</ol></details></li>
+<li>Take the gradient. \(\nabla_{\mathbf w}J \)<wbr>\({}= \frac1N\left(-2\mathbf X\T\mathbf y + 2\mathbf X\T\mathbf X\mathbf w\right)\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>The gradient \(\nabla_{\mathbf w}J\) is the vector of partial derivatives \(\frac{\partial J}{\partial w_1}, \dots, \frac{\partial J}{\partial w_d}\). At a minimum of a smooth function it is the zero vector. See <a href="../basics/#gradient">Maths basics</a>.</li>
+<li>\(\mathbf y\T\mathbf y\) does not contain \(\mathbf w\), so its gradient is \(\mathbf 0\).</li>
+<li>For a fixed vector \(\mathbf a\), \(\nabla_{\mathbf w}(\mathbf w\T\mathbf a) \)<wbr>\({}= \mathbf a\). With \(\mathbf a \)<wbr>\({}= \mathbf X\T\mathbf y\) this gives \(\nabla(-2\mathbf w\T\mathbf X\T\mathbf y) \)<wbr>\({}= -2\mathbf X\T\mathbf y\).</li>
+<li>For a symmetric matrix \(\mathbf A\), \(\nabla_{\mathbf w}(\mathbf w\T\mathbf A\mathbf w) \)<wbr>\({}= 2\mathbf A\mathbf w\). \(\mathbf X\T\mathbf X\) is symmetric because \((\mathbf X\T\mathbf X)\T \)<wbr>\({}= \mathbf X\T\mathbf X\). So this term gives \(2\mathbf X\T\mathbf X\mathbf w\).</li>
+</ol></details></li>
+<li>Set the gradient to zero. \(\mathbf X\T\mathbf X\mathbf w \)<wbr>\({}= \mathbf X\T\mathbf y\). These are the <em class="t">normal equations</em>.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Set line 3 equal to \(\mathbf 0\). \(\frac1N(-2\mathbf X\T\mathbf y + 2\mathbf X\T\mathbf X\mathbf w) \)<wbr>\({}= \mathbf 0\).</li>
+<li>Multiply both sides by \(\frac N2\). \(-\mathbf X\T\mathbf y + \mathbf X\T\mathbf X\mathbf w \)<wbr>\({}= \mathbf 0\).</li>
+<li>Add \(\mathbf X\T\mathbf y\) to both sides.</li>
+</ol></details></li>
+<li>If \(\mathbf X\T\mathbf X\) is invertible, \[\mathbf w^* = (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y.\]
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Multiply both sides of line 4 on the left by \((\mathbf X\T\mathbf X)^{-1}\).</li>
+<li>On the left, \((\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf X \)<wbr>\({}= \mathbf I\), the identity matrix, and \(\mathbf I\mathbf w = \mathbf w\).</li>
+<li>This is a minimum, not a maximum, because \(J\) is a sum of squares, a bowl-shaped (<em class="t">convex</em>) function of \(\mathbf w\). A convex function has only one bottom, so the zero-gradient point is the global minimum.</li>
+</ol></details></li>
+</ol>
+</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mathbf X\T\mathbf X\) is a \(d\times d\) matrix of sums of products of features. \(\mathbf X\T\mathbf y\) is a \(d\)-vector of sums of feature times target. For one feature with an intercept,</p>
+<div class="eq">\[\mathbf X\T\mathbf X = \begin{bmatrix} N & \sum x_i \\ \sum x_i & \sum x_i^2 \end{bmatrix}, \qquad \mathbf X\T\mathbf y\]
+\[{}= \begin{bmatrix} \sum y_i \\ \sum x_iy_i \end{bmatrix}.\]</div>
+<p>To invert a \(2\times2\) matrix, swap the diagonal, negate the off-diagonal and divide by the determinant, so \(\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} \)<wbr>\({}= \frac1{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}\). Quiz 1 Q12 is this calculation, worked in section 1.15.</p>
+<p>The inverse fails to exist when two features are copies of each other (or one is a combination of others), because then \(\mathbf X\T\mathbf X\) has determinant 0. Ridge regression in section 1.8 fixes this.</p>
+</div>
+
+<h3>Things the slides ask you to discuss</h3>
+<ul>
+<li><strong>Is the solution unique?</strong> \(J\) is convex. If \(\mathbf X\T\mathbf X\) is invertible there is exactly one minimiser. If not, there are infinitely many \(\mathbf w\) with the same smallest \(J\).</li>
+<li><strong>Why squared error?</strong> It is smooth, so it can be differentiated, and it gives a closed form. Page 2 shows it is also what you get by assuming Gaussian noise and maximising the likelihood (<a href="../probabilistic/#mle">MSE as MLE</a>). Its weakness is that squaring makes one huge error dominate. The mean absolute error \(\frac1N\sum|y_i - \hat y_i|\) is less affected by outliers but has no closed form.</li>
+<li><strong>Noisy or wrong data.</strong> If 10% of the samples are corrupted, their large residuals get squared and pull the line towards them. See the outlier problem below and the weighted version in the next questions.</li>
+</ul>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>\(J(\mathbf w) \)<wbr>\({}= \frac1N\sum(y_i - \mathbf w\T\mathbf x_i)^2\)<wbr>\({}= \frac1N\|\mathbf y - \mathbf X\mathbf w\|^2\).</li>
+<li>\(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\). Add a column of ones to \(\mathbf X\) for the intercept.</li>
+<li>Two gradient facts are \(\nabla(\mathbf w\T\mathbf a) \)<wbr>\({}= \mathbf a\) and \(\nabla(\mathbf w\T\mathbf A\mathbf w) \)<wbr>\({}= 2\mathbf A\mathbf w\) for symmetric \(\mathbf A\).</li>
+</ul></div>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L03 slide</span><span>The minimum value of \(f(x) = x^2 - 2x + 4\) is (a) 1 (b) 2 (c) 3 (d) 4 (e) −2 (f) none of these.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">At a minimum, \(f'(x) = 0\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, line 4 (set the derivative to zero), in one dimension.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(f'(x) = 2x - 2\).</li>
+<li>\(2x - 2 = 0\) gives \(x = 1\).</li>
+<li>\(f(1) = 1 - 2 + 4 = 3\). Answer <strong>(c)</strong>. Note the question asks for the value of \(f\), not the \(x\) where it happens (1 is a trap).</li>
+<li>Check by completing the square. \(x^2 - 2x + 4 \)<wbr>\({}= (x-1)^2 + 3 \ge 3\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L03 slide</span><span>Fit \(y_i = w_1x_i + w_2\) to \((1,2), (2,3), (3,4), (4,5)\) using the closed form. Write the matrices.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, line 5.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Here \(\mathbf w = [w_1, w_2]\) with \(w_1\) the slope, so each row is \([x_i, 1]\). \[\mathbf X = \begin{bmatrix} 1 & 1 \\ 2 & 1 \\ 3 & 1 \\ 4 & 1 \end{bmatrix}, \quad \mathbf y\]
+\[{}= \begin{bmatrix} 2 \\ 3 \\ 4 \\ 5 \end{bmatrix}.\]</li>
+<li>\(\mathbf X\T\mathbf X \)<wbr>\({}= \begin{bmatrix} \sum x_i^2 & \sum x_i \\ \sum x_i & N \end{bmatrix}\)<wbr>\({}= \begin{bmatrix} 30 & 10 \\ 10 & 4 \end{bmatrix}\), since \(1 + 4 + 9 + 16 = 30\) and \(1 + 2 + 3 + 4 = 10\).</li>
+<li>\(\mathbf X\T\mathbf y \)<wbr>\({}= \begin{bmatrix} \sum x_iy_i \\ \sum y_i \end{bmatrix}\)<wbr>\({}= \begin{bmatrix} 40 \\ 14 \end{bmatrix}\), since \(2 + 6 + 12 + 20 = 40\) and \(2 + 3 + 4 + 5 = 14\).</li>
+<li>The determinant is \(30 \times 4 - 10 \times 10 \)<wbr>\({}= 20\). The inverse is \(\frac1{20}\begin{bmatrix} 4 & -10 \\ -10 & 30 \end{bmatrix}\).</li>
+<li>\(w_1 \)<wbr>\({}= \frac1{20}(4 \times 40 - 10 \times 14)\)<wbr>\({}= \frac{160 - 140}{20}\)<wbr>\({}= 1\).</li>
+<li>\(w_2 \)<wbr>\({}= \frac1{20}(-10 \times 40 + 30 \times 14)\)<wbr>\({}= \frac{-400 + 420}{20}\)<wbr>\({}= 1\).</li>
+<li>So \(y = x + 1\). Check: \(1 + 1 = 2\), \(2 + 1 = 3\), \(3 + 1 = 4\), \(4 + 1 = 5\). Every point fits exactly, so \(J = 0\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L03 slide</span><span>(Outliers) A student fits a line, removes every sample with \(|y_i - \mathbf w\T\mathbf x_i| \gt \epsilon\), and refits. With \(\epsilon\) near 0 and \(\epsilon\) very large it fails. Why, and how should \(\epsilon\) be chosen?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>\(\epsilon\) (epsilon) is the largest residual a sample may have and still be kept.</li>
+<li>\(\epsilon \approx 0\): almost every real point has some small residual, so almost everything is thrown away, and the refit uses too little data (or none).</li>
+<li>With \(\epsilon\) very large, nothing is removed, so the refit is the same as the first fit, outliers included.</li>
+<li>A sensible \(\epsilon\) is tied to the typical size of the residuals. For example compute the residuals of the first fit, take their standard deviation \(s\) (or the median of their absolute values, which outliers barely move), and set \(\epsilon = 2.5s\). Points further than that are unusual compared with the rest.</li>
+<li>The idea can be repeated, and the RANSAC algorithm does a randomised version of it. A smoother alternative is to give each point a weight instead of keeping or dropping it, which the next two questions set up.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L03 slide</span><span>Each sample has a confidence \(\lambda_i \in [0,1]\). Minimise \(L \)<wbr>\({}= \frac1N\sum\lambda_i(y_i - \mathbf w\T\mathbf x_i)^2\). Derive the closed form.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\Lambda\mathbf X)^{-1}\mathbf X\T\Lambda\mathbf y\), with \(\Lambda \)<wbr>\({}= \operatorname{diag}(\lambda_1, \dots, \lambda_N)\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, lines 1 to 5, with \(\Lambda\) inserted in the middle.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\Lambda\) (capital lambda) is the \(N\times N\) diagonal matrix with \(\lambda_1, \dots, \lambda_N\) on its diagonal and zeros elsewhere.</li>
+<li>For a residual vector \(\mathbf r\), \(\mathbf r\T\Lambda\mathbf r \)<wbr>\({}= \sum_i\lambda_ir_i^2\). So \(L \)<wbr>\({}= \frac1N(\mathbf y - \mathbf X\mathbf w)\T\Lambda(\mathbf y - \mathbf X\mathbf w)\).</li>
+<li>Expand as in line 2. \(\Lambda\) is symmetric, so the two cross terms are equal. \[L = \tfrac1N\big(\mathbf y\T\Lambda\mathbf y - 2\mathbf w\T\mathbf X\T\Lambda\mathbf y + \mathbf w\T\mathbf X\T\Lambda\mathbf X\mathbf w\big).\]</li>
+<li>Using the two facts from line 3, the gradient is \(\nabla L \)<wbr>\({}= \frac1N(-2\mathbf X\T\Lambda\mathbf y + 2\mathbf X\T\Lambda\mathbf X\mathbf w)\).</li>
+<li>Set it to zero and multiply by \(\frac N2\). \(\mathbf X\T\Lambda\mathbf X\mathbf w \)<wbr>\({}= \mathbf X\T\Lambda\mathbf y\).</li>
+<li>Invert. \(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\Lambda\mathbf X)^{-1}\mathbf X\T\Lambda\mathbf y\). This is <em class="t">weighted least squares</em>.</li>
+<li>Check: with all \(\lambda_i = 1\), \(\Lambda = \mathbf I\) and the formula becomes the ordinary one. A sample with \(\lambda_i = 0\) has no effect at all.</li>
+<li>L04 adds an iterative version. Fit, set each \(\lambda_i\) smaller for points far from the line, refit, and repeat. This is iteratively reweighted least squares. It usually converges in a few rounds and reduces the pull of outliers, though like any local method it can settle on a poor answer if the first fit is very bad.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="gradient-descent"><span class="num">1.7</span>Gradient descent</h2>
+<p class="slides">Lectures L03, L04 · <a href="https://youtu.be/i08JdWDc1MY">Short video: MSE using gradient descent</a></p>
+<p class="oneline">Walk downhill on the loss in small steps, each step in the direction where the loss falls fastest.</p>
+<p>The closed form needs \((\mathbf X\T\mathbf X)^{-1}\), which is expensive when \(d\) is large (inverting a \(d\times d\) matrix takes about \(d^3\) operations) and impossible for losses that have no closed form, such as those of neural networks. <em class="t">Gradient descent</em> finds the minimum by repeated small improvements.</p>
+<p>The gradient \(\nabla J\) points in the direction in which \(J\) increases fastest. So a small step in the opposite direction decreases \(J\). Start from some \(\mathbf w_0\) and repeat:</p>
+<div class="eq boxed">\[ \mathbf w_{k+1} = \mathbf w_k - \eta\,\nabla J(\mathbf w_k). \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(k\) counts the iterations. \(\eta\) (eta) is the <em class="t">learning rate</em>, a small positive number that sets the step size. The arrow "\(\leftarrow\)" on the slides means the same as this equation. It says to replace the old value by the new one.</p>
+<p>If \(\eta\) is too small, progress is slow. If it is too big, each step overshoots the bottom and the values can grow without limit.</p>
+<p><strong>Example.</strong> \(J(w) = (w-3)^2\), so \(J'(w) = 2(w-3)\). Start at \(w_0 = 0\) with \(\eta = 0.25\). \(w_1 \)<wbr>\({}= 0 - 0.25 \times 2(0-3)\)<wbr>\({}= 1.5\). \(w_2 \)<wbr>\({}= 1.5 - 0.25 \times 2(1.5 - 3)\)<wbr>\({}= 2.25\). \(w_3 = 2.625\). Each step halves the distance to 3. With \(\eta = 1.1\), \(w_1 = 6.6\), \(w_2 = -1.32\) and it swings further away each time.</p>
+</div>
+
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the gradient descent update for linear regression with MSE, and for \(y = mx + c\).</h4>
+<ol class="steps lines">
+<li>\(J(\mathbf w) \)<wbr>\({}= \frac1N\sum_i(y_i - \mathbf w\T\mathbf x_i)^2\).</li>
+<li>\(\nabla J \)<wbr>\({}= \frac1N\sum_i 2(y_i - \mathbf w\T\mathbf x_i)(-\mathbf x_i)\)<wbr>\({}= -\frac2N\sum_i(y_i - \mathbf w\T\mathbf x_i)\,\mathbf x_i\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>The gradient of a sum is the sum of the gradients, so differentiate one term \((y_i - \mathbf w\T\mathbf x_i)^2\).</li>
+<li>By the chain rule, the derivative of \(u^2\) is \(2u\) times the derivative of \(u\). Here \(u \)<wbr>\({}= y_i - \mathbf w\T\mathbf x_i\).</li>
+<li>\(\nabla_{\mathbf w}(y_i - \mathbf w\T\mathbf x_i) \)<wbr>\({}= -\mathbf x_i\), since \(y_i\) does not depend on \(\mathbf w\) and \(\nabla(\mathbf w\T\mathbf x_i) \)<wbr>\({}= \mathbf x_i\).</li>
+<li>So one term gives \(2(y_i - \mathbf w\T\mathbf x_i)(-\mathbf x_i)\). Put the \(\frac1N\) and the sum back, and pull out \(-2\).</li>
+</ol></details></li>
+<li>Update. \(\mathbf w_{k+1} \)<wbr>\({}= \mathbf w_k + \frac{2\eta}N\sum_i(y_i - \mathbf w_k\T\mathbf x_i)\,\mathbf x_i\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Substitute line 2 into \(\mathbf w_{k+1} \)<wbr>\({}= \mathbf w_k - \eta\nabla J(\mathbf w_k)\).</li>
+<li>Minus times minus is plus. Each sample pushes \(\mathbf w\) in the direction of \(\mathbf x_i\), by an amount proportional to its residual.</li>
+</ol></details></li>
+<li>For \(y = mx + c\), \(\frac{\partial J}{\partial m} \)<wbr>\({}= -\frac2N\sum_i(y_i - mx_i - c)\,x_i\) and \(\frac{\partial J}{\partial c} \)<wbr>\({}= -\frac2N\sum_i(y_i - mx_i - c)\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Here \(\mathbf w = [m, c]\) and \(\mathbf x_i = [x_i, 1]\), so \(\mathbf w\T\mathbf x_i \)<wbr>\({}= mx_i + c\).</li>
+<li>The first entry of line 2 multiplies by the first entry of \(\mathbf x_i\), which is \(x_i\). That is \(\frac{\partial J}{\partial m}\).</li>
+<li>The second entry multiplies by the second entry of \(\mathbf x_i\), which is 1. That is \(\frac{\partial J}{\partial c}\).</li>
+</ol></details></li>
+<li>So \(m \leftarrow m + \frac{2\eta}N\sum_i(y_i - mx_i - c)x_i\) and \(c \leftarrow c + \frac{2\eta}N\sum_i(y_i - mx_i - c)\), both computed from the old \(m, c\).</li>
+</ol>
+</div>
+<h3>Closed form or gradient descent?</h3>
+<table class="tbl">
+<tr><th></th><th>Closed form</th><th>Gradient descent</th></tr>
+<tr><td>Cost</td><td>one \(d\times d\) inversion, about \(d^3\)</td><td>about \(Nd\) per iteration, many iterations</td></tr>
+<tr><td>Exact?</td><td>yes, in one shot</td><td>approaches the answer</td></tr>
+<tr><td>Settings</td><td>none</td><td>\(\eta\), starting point, when to stop</td></tr>
+<tr><td>Works for other losses?</td><td>only special ones</td><td>any differentiable loss</td></tr>
+<tr><td>Data that does not fit in memory</td><td>hard</td><td>easy, use one batch at a time</td></tr>
+</table>
+<p>For a convex loss such as MSE, gradient descent with a small enough \(\eta\) reaches the single global minimum. For a non-convex loss (one with several valleys, like a neural network's), it reaches a minimum near where it started, a <em class="t">local minimum</em>, which may not be the best one.</p>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>\(\mathbf w_{k+1} \)<wbr>\({}= \mathbf w_k - \eta\nabla J(\mathbf w_k)\).</li>
+<li>For MSE, \(\nabla J \)<wbr>\({}= -\frac2N\sum(y_i - \mathbf w\T\mathbf x_i)\mathbf x_i\).</li>
+<li>For gradient ascent (maximising), the minus becomes a plus. Quiz 1 Q9 used this for PCA.</li>
+</ul></div>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L03 slide</span><span>Same data \((1,2), (2,3), (3,4), (4,5)\) and model \(y = w_1x + w_2\). Do one iteration of gradient descent from (a) \(\mathbf w = [1, 0]\) and (b) \(\mathbf w = [1, 1]\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial J}{\partial w_1} \)<wbr>\({}= -\frac2N\sum e_ix_i\), \(\frac{\partial J}{\partial w_2} \)<wbr>\({}= -\frac2N\sum e_i\), with residual \(e_i = y_i - w_1x_i - w_2\). Then \(\mathbf w \leftarrow \mathbf w - \eta\nabla J\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.7, line 4.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The slide gives no learning rate. Take \(\eta = 0.05\) and say so in your answer.</li>
+<li>(a) \(\mathbf w = [1, 0]\) predicts \(x\), that is 1, 2, 3, 4. Residuals \(e_i = 1, 1, 1, 1\).</li>
+<li>\(\sum e_ix_i \)<wbr>\({}= 1 + 2 + 3 + 4\)<wbr>\({}= 10\), so \(\frac{\partial J}{\partial w_1} \)<wbr>\({}= -\frac24 \times 10\)<wbr>\({}= -5\).</li>
+<li>\(\sum e_i = 4\), so \(\frac{\partial J}{\partial w_2} \)<wbr>\({}= -\frac24 \times 4\)<wbr>\({}= -2\).</li>
+<li>\(w_1 \)<wbr>\({}= 1 - 0.05 \times (-5)\)<wbr>\({}= 1.25\) and \(w_2 \)<wbr>\({}= 0 - 0.05 \times (-2)\)<wbr>\({}= 0.1\). New \(\mathbf w = [1.25, 0.1]\).</li>
+<li>Check that \(J\) went down. Before the step all residuals are 1, so \(J = 1\). After it the predictions are \(1.35, 2.6, 3.85, 5.1\) and the residuals are \(0.65\), \(0.4\), \(0.15\), \(-0.1\). Their squares are \(0.4225\), \(0.16\), \(0.0225\), \(0.01\), which add to \(0.615\), so \(J = 0.615/4 \approx 0.154\).</li>
+<li>(b) \(\mathbf w = [1, 1]\) predicts \(x + 1\), which fits every point. All residuals are 0, so the gradient is \([0, 0]\) and \(\mathbf w\) does not change. It is already the minimum, as found by the closed form.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">L03 slide</span><span>With confidences \(\lambda_i\), minimise \(L \)<wbr>\({}= \frac1N\sum\lambda_i(y_i - (mx_i + c))^2\) by gradient descent. Give the updates.</span><span class="chev">›</span></summary>
+<div class="ans">
+<ol class="steps">
+<li>Differentiate one term as in line 2. The constant \(\lambda_i\) just rides along. \(\frac{\partial}{\partial m}\lambda_i(y_i - mx_i - c)^2 \)<wbr>\({}= -2\lambda_i(y_i - mx_i - c)x_i\).</li>
+<li>Similarly \(\frac{\partial}{\partial c}\lambda_i(y_i - mx_i - c)^2 \)<wbr>\({}= -2\lambda_i(y_i - mx_i - c)\).</li>
+<li>So \(m \leftarrow m + \frac{2\eta}N\sum_i\lambda_i(y_i - mx_i - c)x_i\) and \(c \leftarrow c + \frac{2\eta}N\sum_i\lambda_i(y_i - mx_i - c)\).</li>
+<li>Check: a sample with \(\lambda_i = 0\) contributes nothing to either update, as it should.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="regularization"><span class="num">1.8</span>Norms, ridge and lasso</h2>
+<p class="slides">Lecture L04 · <a href="https://youtu.be/DnRWPq1UGyA">Short video: Regularization in regression</a></p>
+<p class="oneline">Add a penalty on the size of \(\mathbf w\) to the loss, to prefer simpler and more stable solutions.</p>
+<h3>Norms</h3>
+<p>A <em class="t">norm</em> measures the size of a vector. The \(L_p\) norm is</p>
+<div class="eq">\[ \|\mathbf x\|_p = \Big(\textstyle\sum_{i=1}^d|x_i|^p\Big)^{1/p}. \]</div>
+<table class="tbl">
+<tr><th>Norm</th><th>Definition</th><th>For \(\mathbf x = [-4, 3, 0, 0]\)</th></tr>
+<tr><td>\(L_1\)</td><td>\(\sum|x_i|\)</td><td>\(4 + 3 = 7\)</td></tr>
+<tr><td>\(L_2\)</td><td>\(\sqrt{\sum x_i^2}\), the ordinary length</td><td>\(\sqrt{16 + 9} = 5\)</td></tr>
+<tr><td>\(L_\infty\)</td><td>\(\max_i|x_i|\), the largest entry in size</td><td>4</td></tr>
+<tr><td>\(L_0\)</td><td>number of non-zero entries</td><td>2</td></tr>
+</table>
+<p>The column on the right is Quiz 1 Q1, Set 1. \(L_\infty\) is the limit of \(L_p\) as \(p\) grows, because the largest entry raised to a huge power swamps all the others. \(L_0\) is not a true norm (doubling \(\mathbf x\) does not double it), but the course uses the name. It counts how many features a weight vector actually uses. A vector with many zeros is called <em class="t">sparse</em>.</p>
+
+<h3>Regularisation</h3>
+<p><em class="t">Regularisation</em> means adding a second term \(g(\mathbf w)\) to the loss, giving \(J \)<wbr>\({}= f(\mathbf w) + \lambda g(\mathbf w)\). The slides give three reasons.</p>
+<ul>
+<li>It prefers some kinds of solution over others, for example sparse ones.</li>
+<li>It fixes <em class="t">ill-posed</em> problems, such as inverting a matrix that is nearly singular.</li>
+<li>It reduces <em class="t">overfitting</em>, where a model fits the training data's noise and does badly on new data (page 2, <a href="../probabilistic/#generalization">generalisation</a>).</li>
+</ul>
+<p>\(\lambda \ge 0\) (lambda) sets how much the penalty counts. \(\lambda = 0\) is plain regression. A very large \(\lambda\) forces \(\mathbf w\) towards \(\mathbf 0\). \(\lambda\) is chosen by trying values on a validation set. It is a <em class="t">hyperparameter</em>, set before training rather than learned.</p>
+
+<h3>Ridge regression (L2 penalty)</h3>
+<div class="eq">\[J(\mathbf w) = \sum_{i=1}^N(y_i - \mathbf w\T\mathbf x_i)^2 + \lambda\|\mathbf w\|_2^2\]
+\[{}= \|\mathbf y - \mathbf X\mathbf w\|^2 + \lambda\,\mathbf w\T\mathbf w.\]</div>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that ridge regression gives \(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\mathbf X + \lambda\mathbf I)^{-1}\mathbf X\T\mathbf y\).</h4>
+<ol class="steps lines">
+<li>Expand. \[J = \mathbf y\T\mathbf y - 2\mathbf w\T\mathbf X\T\mathbf y + \mathbf w\T\mathbf X\T\mathbf X\mathbf w + \lambda\mathbf w\T\mathbf w.\]
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The first part expands exactly as in line 2 of section 1.6 (without the \(\frac1N\), as the L04 slide writes it).</li>
+<li>\(\|\mathbf w\|_2^2 \)<wbr>\({}= w_1^2 + \dots + w_d^2\)<wbr>\({}= \mathbf w\T\mathbf w\).</li>
+</ol></details></li>
+<li>\(\nabla J \)<wbr>\({}= -2\mathbf X\T\mathbf y + 2\mathbf X\T\mathbf X\mathbf w + 2\lambda\mathbf w\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The first three terms differentiate as in line 3 of section 1.6.</li>
+<li>\(\mathbf w\T\mathbf w \)<wbr>\({}= \mathbf w\T\mathbf I\mathbf w\), and \(\mathbf I\) is symmetric, so its gradient is \(2\mathbf I\mathbf w \)<wbr>\({}= 2\mathbf w\). Times \(\lambda\) gives \(2\lambda\mathbf w\).</li>
+</ol></details></li>
+<li>Set to zero. \((\mathbf X\T\mathbf X + \lambda\mathbf I)\mathbf w \)<wbr>\({}= \mathbf X\T\mathbf y\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Divide line 2 by 2 and set it to \(\mathbf 0\). \(-\mathbf X\T\mathbf y + \mathbf X\T\mathbf X\mathbf w + \lambda\mathbf w \)<wbr>\({}= \mathbf 0\).</li>
+<li>Write \(\lambda\mathbf w \)<wbr>\({}= \lambda\mathbf I\mathbf w\) so both \(\mathbf w\) terms have a matrix in front, and factor to get \((\mathbf X\T\mathbf X + \lambda\mathbf I)\mathbf w\).</li>
+<li>Move \(\mathbf X\T\mathbf y\) to the right side.</li>
+</ol></details></li>
+<li>\(\mathbf w^* \)<wbr>\({}= (\mathbf X\T\mathbf X + \lambda\mathbf I)^{-1}\mathbf X\T\mathbf y\). For \(\lambda \gt 0\) this inverse always exists.
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>\(\mathbf X\T\mathbf X\) is positive semi-definite (section 1.11), so its eigenvalues \(\mu_j\) are all \(\ge 0\). Some may be 0, which is when the plain inverse fails.</li>
+<li>Adding \(\lambda\mathbf I\) adds \(\lambda\) to every eigenvalue, because \((\mathbf X\T\mathbf X + \lambda\mathbf I)\mathbf v \)<wbr>\({}= \mu\mathbf v + \lambda\mathbf v\)<wbr>\({}= (\mu + \lambda)\mathbf v\) for each eigenvector \(\mathbf v\).</li>
+<li>So every eigenvalue is now at least \(\lambda \gt 0\). A matrix with no zero eigenvalue has non-zero determinant (the determinant is the product of the eigenvalues) and is invertible.</li>
+<li>This answers the slide's question on numerical stability. Tiny eigenvalues make the inverse huge and sensitive to noise. Ridge lifts them away from zero.</li>
+</ol></details></li>
+</ol>
+</div>
+<p><strong>Gradient descent for ridge.</strong> Using line 2 (and dividing by \(N\) if you prefer the average), the update is \(\mathbf w \leftarrow \mathbf w - \eta(-2\mathbf X\T(\mathbf y - \mathbf X\mathbf w) + 2\lambda\mathbf w)\), which rearranges to \(\mathbf w \leftarrow (1 - 2\eta\lambda)\mathbf w + 2\eta\mathbf X\T(\mathbf y - \mathbf X\mathbf w)\). Each step first shrinks \(\mathbf w\) by the factor \(1 - 2\eta\lambda\), then takes the usual step. In neural networks this shrinking is called <em class="t">weight decay</em>.</p>
+
+<h3>Lasso (L1 penalty)</h3>
+<div class="eq">\[J(\mathbf w) = \|\mathbf y - \mathbf X\mathbf w\|^2 + \lambda\|\mathbf w\|_1\]
+\[{}= \|\mathbf y - \mathbf X\mathbf w\|^2 + \lambda\sum_j|w_j|.\]</div>
+<p>Lasso stands for "least absolute shrinkage and selection operator". It also shrinks the weights, but it sets the weights of unhelpful features exactly to zero, so it selects features. \(|w_j|\) has a corner at 0 and no derivative there, so there is no closed form. The slides say solving lasso is outside the course. What you need is the picture of why it gives zeros.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L04/p07.webp" alt="Slide: L1 constraint region is a diamond, L2 is a circle, the error contours touch the diamond at a corner where one weight is zero" loading="lazy">
+<figcaption>L04, slide 7. The blue circles are contours of the squared error. The coloured region is where the penalty is small. The best \(\mathbf w^*\) is where a contour first touches the region.</figcaption></figure>
+<p>Read the lower pictures. Penalised regression is the same as minimising the error while keeping \(\mathbf w\) inside a region. The region is a disc for L2 (\(w_1^2 + w_2^2 \le t\)) or a diamond for L1 (\(|w_1| + |w_2| \le t\)). The error contours grow outward from the unpenalised best point until they first touch the region. A disc is round, so the touching point is usually somewhere on the curve with both weights non-zero. A diamond has sharp corners on the axes, and the contours usually hit a corner first. At a corner one weight is exactly 0. In many dimensions, a corner means many zeros. That is why L1 gives sparse solutions and L2 does not.</p>
+<p>The slides ask why L0 would be "ideal". \(\lambda\|\mathbf w\|_0\) directly penalises the number of features used. But it is not continuous, and minimising it means trying every subset of features, which is far too slow. L1 is the closest convex penalty to L0, which is why it is used instead.</p>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>Ridge: \(+\lambda\|\mathbf w\|_2^2\), closed form \((\mathbf X\T\mathbf X + \lambda\mathbf I)^{-1}\mathbf X\T\mathbf y\), shrinks all weights, always invertible.</li>
+<li>Lasso: \(+\lambda\|\mathbf w\|_1\), no closed form, sets some weights to exactly 0.</li>
+<li>\(L_0\) counts non-zeros, \(L_\infty\) is the largest entry in absolute value.</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Compute the \(L_0\), \(L_1\), \(L_2\) and \(L_\infty\) norms of \([2, -2, 1, 0]\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps"><li>\(L_0\) is 3, since three entries are non-zero.</li><li>\(L_1\) is \(2 + 2 + 1 + 0 = 5\).</li><li>\(L_2\) is \(\sqrt{4 + 4 + 1 + 0} \)<wbr>\({}= \sqrt9\)<wbr>\({}= 3\).</li><li>\(L_\infty\) is 2, the largest absolute value.</li><li>Check the usual ordering \(L_\infty \le L_2 \le L_1\). \(2 \le 3 \le 5\).</li></ol></div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>One feature, no intercept, data \((1, 1), (2, 2)\). Find the plain least-squares slope and the ridge slope with \(\lambda = 5\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>With one feature, \(\mathbf X\T\mathbf X \)<wbr>\({}= \sum x_i^2\)<wbr>\({}= 1 + 4\)<wbr>\({}= 5\) and \(\mathbf X\T\mathbf y \)<wbr>\({}= \sum x_iy_i\)<wbr>\({}= 1 + 4\)<wbr>\({}= 5\).</li>
+<li>Plain: \(w = 5/5 = 1\).</li>
+<li>Ridge: \(w = 5/(5 + 5) = 0.5\). The penalty halves the slope here.</li>
+<li>Check: as \(\lambda \to 0\) the ridge answer \(5/(5+\lambda)\) goes to 1, and as \(\lambda \to \infty\) it goes to 0.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="eigen-opt"><span class="num">1.9</span>Problems whose answer is an eigenvector</h2>
+<p class="slides">Lecture L04 · <a href="https://youtu.be/GvvRuEypvfw">Short video: Optimization and eigenvectors</a> · Read: <a href="../basics/#eigen">Maths basics, eigenvectors</a> and <a href="../basics/#lagrange">Lagrange multipliers</a></p>
+<p class="oneline">Maximising \(\mathbf w\T\mathbf A\mathbf w\) over unit vectors gives the top eigenvector of \(\mathbf A\).</p>
+<p>The course has three ways to solve an optimisation problem. They are a closed form, gradient descent, and "the answer is an eigenvector". The third is the one behind PCA, Fisher's discriminant and several quiz questions.</p>
+<p>Recall that \(\mathbf v\) is an <em class="t">eigenvector</em> of a square matrix \(\mathbf A\), with <em class="t">eigenvalue</em> \(\lambda\), when \(\mathbf A\mathbf v \)<wbr>\({}= \lambda\mathbf v\). Multiplying by \(\mathbf A\) only stretches \(\mathbf v\), it does not turn it.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Maximise \(\mathbf w\T\mathbf A\mathbf w\) subject to \(\mathbf w\T\mathbf w = 1\), for symmetric \(\mathbf A\).</h4>
+<ol class="steps lines">
+<li>Lagrangian: \(L(\mathbf w, \lambda) \)<wbr>\({}= \mathbf w\T\mathbf A\mathbf w - \lambda(\mathbf w\T\mathbf w - 1)\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Without the constraint, \(\mathbf w\T\mathbf A\mathbf w\) could be made as large as we like by making \(\mathbf w\) longer. So the length is fixed at 1.</li>
+<li>A <em class="t">Lagrange multiplier</em> \(\lambda\) turns "maximise \(f\) subject to \(g = 0\)" into "find where the gradient of \(f - \lambda g\) is zero". See <a href="../basics/#lagrange">Maths basics</a>.</li>
+<li>Here \(f \)<wbr>\({}= \mathbf w\T\mathbf A\mathbf w\) and \(g = \mathbf w\T\mathbf w - 1\).</li>
+</ol></details></li>
+<li>\(\nabla_{\mathbf w}L \)<wbr>\({}= 2\mathbf A\mathbf w - 2\lambda\mathbf w\)<wbr>\({}= \mathbf 0\), so \(\mathbf A\mathbf w \)<wbr>\({}= \lambda\mathbf w\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\(\nabla(\mathbf w\T\mathbf A\mathbf w) \)<wbr>\({}= 2\mathbf A\mathbf w\) because \(\mathbf A\) is symmetric.</li>
+<li>\(\nabla(\lambda\mathbf w\T\mathbf w) \)<wbr>\({}= 2\lambda\mathbf w\), and the constant \(-\lambda \cdot (-1)\) has zero gradient.</li>
+<li>Divide by 2. The equation says \(\mathbf w\) must be an eigenvector of \(\mathbf A\), and \(\lambda\) its eigenvalue.</li>
+</ol></details></li>
+<li>At such a \(\mathbf w\), \(\mathbf w\T\mathbf A\mathbf w \)<wbr>\({}= \lambda\). So the maximum is the largest eigenvalue, reached at its eigenvector.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Multiply \(\mathbf A\mathbf w \)<wbr>\({}= \lambda\mathbf w\) on the left by \(\mathbf w\T\) to get \(\mathbf w\T\mathbf A\mathbf w \)<wbr>\({}= \lambda\mathbf w\T\mathbf w\).</li>
+<li>\(\mathbf w\T\mathbf w = 1\), so the objective equals \(\lambda\).</li>
+<li>Every candidate is an eigenvector and its objective value is its eigenvalue. The largest value comes from the largest eigenvalue. For the minimum, take the smallest.</li>
+</ol></details></li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>max \(\mathbf w\T\mathbf A\mathbf w\) with \(\|\mathbf w\| = 1\) is at the eigenvector of the <strong>largest</strong> eigenvalue of \(\mathbf A\).</li>
+<li>The min is at the eigenvector of the <strong>smallest</strong> eigenvalue.</li>
+<li>Read the matrix carefully. \(\mathbf w\T\mathbf X\T\mathbf X\mathbf w\) uses \(\mathbf X\T\mathbf X\). \(\mathbf w\T\mathbf X\mathbf X\T\mathbf w\) uses \(\mathbf X\mathbf X\T\). Quiz 1 Q2 tested exactly this.</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L04 slide</span><span>Solve the over-determined homogeneous system \(\mathbf A\mathbf x = \mathbf 0\) (\(\mathbf A\) is \(m\times n\)) by minimising \(\|\mathbf A\mathbf x\|\) subject to \(\|\mathbf x\| = 1\). The solution is the eigenvector of (a) largest eigenvalue of \(\mathbf A\mathbf A\T\) (b) largest of \(\mathbf A\T\mathbf A\) (c) smallest of \(\mathbf A\mathbf A\T\) (d) smallest of \(\mathbf A\T\mathbf A\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Minimising \(\|\mathbf A\mathbf x\|\) is the same as minimising its square, \(\|\mathbf A\mathbf x\|^2 \)<wbr>\({}= (\mathbf A\mathbf x)\T(\mathbf A\mathbf x)\)<wbr>\({}= \mathbf x\T\mathbf A\T\mathbf A\mathbf x\).</li>
+<li>This is \(\mathbf x\T\mathbf B\mathbf x\) with \(\mathbf B \)<wbr>\({}= \mathbf A\T\mathbf A\), an \(n\times n\) symmetric matrix, and \(\mathbf x\) has \(n\) entries.</li>
+<li>By section 1.9, the minimum over unit vectors is at the eigenvector of the smallest eigenvalue of \(\mathbf B\). Answer <strong>(d)</strong>.</li>
+<li>\(\mathbf A\mathbf A\T\) is \(m\times m\), the wrong size for \(\mathbf x\), which rules out (a) and (c).</li>
+</ol></div></details>
+<figure class="slide"><img src="{{ASSETS}}slides/L04/p14.webp" alt="Slide: Problem 2, eigenvalues of A transpose and of alpha times A" loading="lazy">
+<figcaption>L04, slide 14.</figcaption></figure>
+<details class="q"><summary><span class="qt">L04 slide</span><span>\(\mathbf A\) has eigenvalues \(\lambda_i\) and eigenvectors \(\mathbf v_i\). What about \(\mathbf A\T\)? And what are the eigenvalues of \(\alpha\mathbf A\)?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Eigenvalues are the roots of \(\det(\mathbf A - \lambda\mathbf I) \)<wbr>\({}= 0\). A matrix and its transpose have the same determinant, and \((\mathbf A - \lambda\mathbf I)\T \)<wbr>\({}= \mathbf A\T - \lambda\mathbf I\). So \(\mathbf A\T\) has <strong>the same eigenvalues</strong>.</li>
+<li>The eigenvectors are in general different. For example, \(\mathbf A \)<wbr>\({}= \begin{bmatrix} 1 & 1 \\ 0 & 2 \end{bmatrix}\) has eigenvector \([1, 0]\) for \(\lambda = 1\). \(\mathbf A\T \)<wbr>\({}= \begin{bmatrix} 1 & 0 \\ 1 & 2 \end{bmatrix}\) sends \([1,0]\) to \([1,1]\), not a multiple of \([1,0]\).</li>
+<li>Option by option. (a) false in general (true only if \(\mathbf A\) is symmetric). (b) false, "\(\mathbf v\T\)" is just the same vector written as a row, and the eigenvectors really change. (c) false. (d) is close, since for symmetric \(\mathbf A\) we can say everything is the same, but we can still say the eigenvalues agree for any square \(\mathbf A\). So strictly the best answer is (e) none of the above, with the explanation above. Write the explanation in the exam, since the intended answer is not clear-cut.</li>
+<li>\(\alpha\mathbf A\): from \(\mathbf A\mathbf v \)<wbr>\({}= \lambda\mathbf v\), multiply by \(\alpha\) to get \((\alpha\mathbf A)\mathbf v \)<wbr>\({}= (\alpha\lambda)\mathbf v\). The eigenvalues are \(\alpha\lambda_i\), option <strong>(c)</strong>, and the eigenvectors are unchanged.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L04 slide</span><span>\(\mathbf X\) holds mean-subtracted samples as its columns (\(d\times N\)). \(\mathbf A \)<wbr>\({}= \mathbf X\mathbf X\T\). Is \(\mathbf A\) (a) \(d\times d\) (b) \(N\times N\) (c) symmetric (d) a scaled covariance matrix?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>\((d\times N)(N\times d) \)<wbr>\({}= d\times d\). (a) true, (b) false.</li>
+<li>\(\mathbf A\T \)<wbr>\({}= (\mathbf X\mathbf X\T)\T\)<wbr>\({}= \mathbf X\mathbf X\T\)<wbr>\({}= \mathbf A\). (c) true.</li>
+<li>\(\mathbf X\mathbf X\T \)<wbr>\({}= \sum_i\mathbf x_i\mathbf x_i\T\) (one outer product per column). With mean-subtracted columns, the covariance is \(\Sigma \)<wbr>\({}= \frac1N\sum_i\mathbf x_i\mathbf x_i\T\), so \(\mathbf A = N\Sigma\). (d) true.</li>
+<li>Answer: <strong>(a), (c), (d)</strong>. Watch the layout. L05 stores samples as rows (\(N\times d\)), and then \(\mathbf X\T\mathbf X\) is the \(d\times d\) one.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L04 slide</span><span>The inverse of an upper triangular matrix is (a) upper triangular (b) lower triangular (c) need not be triangular (d) will not exist.</span><span class="chev">›</span></summary>
+<div class="ans"><p><strong>(a)</strong>, when the inverse exists (all diagonal entries non-zero). For example, \(\begin{bmatrix} 2 & 1 \\ 0 & 4 \end{bmatrix}^{-1} \)<wbr>\({}= \frac18\begin{bmatrix} 4 & -1 \\ 0 & 2 \end{bmatrix}\), still upper triangular. Solving \(\mathbf U\mathbf x \)<wbr>\({}= \mathbf e_j\) by back-substitution from the bottom never puts anything below the diagonal. (d) is wrong in general, but if a diagonal entry is 0 the determinant (the product of the diagonal) is 0 and no inverse exists.</p></div></details>
+</section>
+
+<div class="part">Part 4<span>L05 · Rank of the data matrix</span></div>
+
+<section>
+<h2 id="data-matrix"><span class="num">1.10</span>The data matrix and its rank</h2>
+<p class="slides">Lecture L05 · <a href="https://www.youtube.com/watch?v=VBfo4L-Y_ug">Short video: Data as matrix</a> · Read: <a href="https://mml-book.github.io/">MML book</a>, chapters 2 and 4 · <a href="../basics/#rank">Maths basics, rank</a></p>
+<p class="oneline">Real data matrices are usually close to low rank, and that is what makes compression and PCA work.</p>
+<p>Put \(N\) examples, each a vector in \(\R^d\), as the rows of an \(N\times d\) matrix \(\mathbf X\). The <em class="t">rank</em> of \(\mathbf X\) is the number of linearly independent rows, which always equals the number of linearly independent columns. "Linearly independent" means no row can be written as a weighted sum of the others. The rank is at most \(\min(N, d)\).</p>
+<p>The rank counts how many genuinely different directions the data use. If every row is a multiple of one vector, the rank is 1, however large \(N\) and \(d\) are.</p>
+
+<h3>Bag of words</h3>
+<p>The L05 example represents a document by counting words. Fix a vocabulary of \(d\) words. A document becomes \(\mathbf x \in \R^d\) where \(x_j\) is how many times word \(j\) appears. This is a <em class="t">bag of words</em> histogram, named because word order is thrown away, as if the words were shaken in a bag. A <em class="t">one-hot</em> vector is the special case for a single word. It is all zeros except for a 1 in that word's position.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p06.webp" alt="Slide: word cloud of a 2007 State of the Union address, larger font for more frequent words" loading="lazy">
+<figcaption>L05, slide 6. A bag-of-words histogram drawn as a word cloud. Bigger words appear more often. The slides ask you to guess the president from such clouds.</figcaption></figure>
+<p>Histograms of different lengths are usually divided by their total (so each sums to 1) or by their length, so that a long document and a short one on the same topic look alike.</p>
+<h3>Low rank in practice</h3>
+<p>Mathematically, almost any matrix of real measurements has full rank, \(\min(N,d)\), because noise makes every row slightly different. What matters in practice is the <em class="t">effective rank</em>, meaning how many eigenvalues (or singular values, section 1.11) are large, as opposed to tiny. Data generated from \(p\) underlying "concepts" plus small noise has about \(p\) large eigenvalues and many tiny ones.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p09.webp" alt="Slide: discussion on the rank of a bag of words data matrix of 300 documents from sports, politics and finance" loading="lazy">
+<figcaption>L05, slide 9. The questions are answered below.</figcaption></figure>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>rank \(\le \min(N, d)\). Copies and multiples of rows add nothing to the rank.</li>
+<li>With noise, the exact rank is full but the effective rank (number of large eigenvalues) reflects the number of underlying concepts.</li>
+<li>The eigenvalue facts from L05 are these. Eigenvectors of a symmetric matrix are orthogonal, the product of the eigenvalues is the determinant, the number of non-zero eigenvalues is the rank (for symmetric matrices), and \(\mathbf A\) is positive semi-definite (PSD) if and only if \(\mathbf z\T\mathbf A\mathbf z \ge 0\) for every \(\mathbf z\).</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L05 slide</span><span>100 documents each from sports, politics and finance, bag of words of size 300, one document per row. (1) Size of \(\mathbf D\)? (2) Its rank if one sports article was copied 100 times by mistake (and the same for the other two)? (3) If one article was rewritten by 100 journalists instead?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(1) 300 documents, each a 300-long vector, so \(\mathbf D\) is \(300\times300\). Normalising each row (dividing by its total) is wise, so long articles do not look different from short ones on the same topic.</li>
+<li>(2) There are only 3 distinct rows, each repeated 100 times. Copies are not independent, so the rank is at most 3. It is exactly 3 as long as the three articles' histograms are not combinations of each other, which for different topics they are not.</li>
+<li>(3) Rearranging the words of an article does not change its bag of words at all (order is ignored). So 100 rearranged copies give 100 identical rows, rank 1 for that topic.</li>
+<li>Small rewrites change a few counts. Then the rows differ slightly and the exact rank goes up, possibly to 100 for that topic. But the differences are small, so there is one large eigenvalue and many small ones. The effective rank stays about 1 per topic, about 3 overall.</li>
+<li>Back to the original question, 300 genuinely different articles, the exact rank is likely close to 300, but the effective rank reflects the number of topics and sub-topics, far smaller than 300.</li>
+</ol></div></details>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p10.webp" alt="Slide: a TA makes a two-class dataset from two distinct vectors plus small noise, what is the rank and eigenvalue spectrum" loading="lazy">
+<figcaption>L05, slide 10.</figcaption></figure>
+<details class="q"><summary><span class="qt">L05 slide</span><span>A TA takes two very different \(d\)-dimensional vectors, adds small noise in every dimension, and makes \(N\) samples in two classes. What is the rank of the data matrix? What does the eigenvalue spectrum look like? What about \(N\) samples from \(p\) concepts?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Because the noise is independent in every dimension, no row is exactly a combination of the others. The exact rank is \(\min(N, d)\).</li>
+<li>The eigenvalues of \(\mathbf X\T\mathbf X\) show the real structure. Two are large, coming from the two base vectors. All the rest are small, of the size of the noise. So the effective rank is 2. (If the data are mean-centred first, the two class centres differ along one direction, leaving one large eigenvalue.)</li>
+<li>With \(p\) concepts, the same reasoning gives \(p\) large eigenvalues followed by a floor of small ones. The exact rank is still \(\min(N, d)\).</li>
+</ol></div></details>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p11.webp" alt="Slide: rank of the 3 by 3 matrix 1 to 9 without computing, hint rows are row one plus 3 and plus 6" loading="lazy">
+<figcaption>L05, slide 11.</figcaption></figure>
+<details class="q"><summary><span class="qt">L05 slide</span><span>Without computing, what is the rank of \(\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}\)? And of the \(5\times5\) matrix of 1 to 25 in order?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Write \(\mathbf r = [1, 2, 3]\) and \(\mathbf 1 = [1, 1, 1]\). The rows are \(\mathbf r\), \(\mathbf r + 3\cdot\mathbf 1\) and \(\mathbf r + 6\cdot\mathbf 1\), as the slide's hint shows.</li>
+<li>So every row is a combination of just two vectors, \(\mathbf r\) and \(\mathbf 1\). The rank is at most 2.</li>
+<li>\(\mathbf r\) and \(\mathbf 1\) are not multiples of each other, and rows 1 and 2 are not multiples of each other, so the rank is exactly <strong>2</strong>.</li>
+<li>For 1 to 25 in a \(5\times5\) grid, row \(k\) is \([1,2,3,4,5] + 5(k-1)\cdot\mathbf 1\). Again every row is a combination of \([1,2,3,4,5]\) and \(\mathbf 1\), so the rank is also <strong>2</strong>. The same holds for any \(n\times n\) grid of consecutive numbers with \(n \ge 2\).</li>
+<li>Check for the \(3\times3\) case. Row 3 − row 2 = row 2 − row 1 = \([3,3,3]\). So row 1 − 2·row 2 + row 3 = \(\mathbf 0\), a dependency, which means the rank is below 3.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>\(\mathbf A \)<wbr>\({}= \begin{bmatrix} 1&2&3\\4&5&6\\7&8&9 \end{bmatrix} + \epsilon\mathbf B\) with \(\mathbf B\) full rank (say \(\mathbf I\)). Rank of \(\mathbf A\) when \(\epsilon = 1\) and when \(\epsilon = 10^{-100}\)? How many non-zero eigenvalues, and how big?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>The first matrix \(\mathbf M\) has rank 2, so it has an eigenvalue 0. Its eigenvalues are about 16.1, −1.1 and 0.</li>
+<li>With \(\mathbf B = \mathbf I\), \(\mathbf A \)<wbr>\({}= \mathbf M + \epsilon\mathbf I\) has eigenvalues 16.1 + \(\epsilon\), −1.1 + \(\epsilon\) and \(\epsilon\) (adding \(\epsilon\mathbf I\) shifts every eigenvalue by \(\epsilon\), as in the ridge argument of section 1.8).</li>
+<li>\(\epsilon = 1\): eigenvalues about 17.1, −0.1 and 1, none zero, so rank 3.</li>
+<li>\(\epsilon = 10^{-100}\): mathematically still rank 3, since \(10^{-100} \ne 0\). But one eigenvalue is \(10^{-100}\), far below the precision of any computer (about \(10^{-16}\) relative). Numerically the matrix has rank 2.</li>
+<li>The lesson is that in practice "rank" means "number of eigenvalues that are not tiny". This is the effective rank used throughout the course.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="svd"><span class="num">1.11</span>Eigen decomposition, SVD and low-rank approximation</h2>
+<p class="slides">Lectures L05, L07 · <a href="https://youtu.be/__EBdS7pvo0">Short video: Eigen decomposition</a> · <a href="https://youtu.be/oN7ddIkzcic">SVD</a> · <a href="../basics/#svd-basics">Maths basics, SVD</a></p>
+<p class="oneline">Every matrix can be written as a sum of rank-1 pieces in order of importance. Keep the first few pieces to approximate it.</p>
+<h3>Eigen decomposition of a symmetric matrix</h3>
+<p>A symmetric \(d\times d\) matrix \(\mathbf S\) has \(d\) real eigenvalues \(\lambda_1 \ge \dots \ge \lambda_d\) and orthonormal eigenvectors \(\mathbf q_1, \dots, \mathbf q_d\) (each of length 1 and at right angles to each other). Then</p>
+<div class="eq boxed">\[\mathbf S = \mathbf Q\Lambda\mathbf Q\T\]
+\[{}= \sum_{i=1}^d\lambda_i\,\mathbf q_i\mathbf q_i\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mathbf Q\) has the eigenvectors as its columns. \(\Lambda\) is diagonal with the eigenvalues. \(\mathbf Q\T\mathbf Q \)<wbr>\({}= \mathbf I\) because the columns are orthonormal, so \(\mathbf Q^{-1} = \mathbf Q\T\).</p>
+<p>Each \(\mathbf q_i\mathbf q_i\T\) is a \(d\times d\) matrix of rank 1 (an <em class="t">outer product</em>, a column times a row). So \(\mathbf S\) is a weighted sum of rank-1 pieces, weighted by the eigenvalues. Dropping the pieces with small \(\lambda_i\) changes \(\mathbf S\) only a little.</p>
+<p><strong>Example.</strong> \(\mathbf S \)<wbr>\({}= \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}\) has \(\lambda_1 = 3\), \(\mathbf q_1 \)<wbr>\({}= \frac1{\sqrt2}[1, 1]\) and \(\lambda_2 = 1\), \(\mathbf q_2 \)<wbr>\({}= \frac1{\sqrt2}[-1, 1]\). Then \(3\cdot\frac12\begin{bmatrix} 1&1\\1&1 \end{bmatrix} + 1\cdot\frac12\begin{bmatrix} 1&-1\\-1&1 \end{bmatrix} \)<wbr>\({}= \begin{bmatrix} 1.5+0.5 & 1.5-0.5 \\ 1.5-0.5 & 1.5+0.5 \end{bmatrix}\)<wbr>\({}= \mathbf S\).</p>
+<p>Inverting is easy in this form, since \(\mathbf S^{-1} \)<wbr>\({}= \mathbf Q\Lambda^{-1}\mathbf Q\T\), with \(\Lambda^{-1}\) holding \(1/\lambda_i\). (L05 Problem 2.) And \(\mathbf Q\T\mathbf S\mathbf Q \)<wbr>\({}= \Lambda\), which is called <em class="t">diagonalising</em> \(\mathbf S\) (L06 Problem 3).</p>
+</div>
+<h3>Singular value decomposition</h3>
+<p>Any \(m\times n\) matrix \(\mathbf A\), square or not, symmetric or not, can be written</p>
+<div class="eq boxed">\[\mathbf A = \mathbf U\mathbf D\mathbf V\T\]
+\[{}= \sum_i d_i\,\mathbf u_i\mathbf v_i\T.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>This is the <em class="t">singular value decomposition</em> (SVD). \(\mathbf D\) is diagonal with the <em class="t">singular values</em> \(d_1 \ge d_2 \ge \dots \ge 0\). The columns \(\mathbf u_i\) of \(\mathbf U\) are the left singular vectors, and the columns \(\mathbf v_i\) of \(\mathbf V\) are the right singular vectors. Both sets are orthonormal.</p>
+<p>Here is the link to eigenvectors. \(\mathbf A\T\mathbf A \)<wbr>\({}= \mathbf V\mathbf D\T\mathbf U\T\mathbf U\mathbf D\mathbf V\T\)<wbr>\({}= \mathbf V\mathbf D^2\mathbf V\T\), and similarly \(\mathbf A\mathbf A\T \)<wbr>\({}= \mathbf U\mathbf D^2\mathbf U\T\). So the \(\mathbf v_i\) are eigenvectors of \(\mathbf A\T\mathbf A\), the \(\mathbf u_i\) are eigenvectors of \(\mathbf A\mathbf A\T\), and the non-zero singular values are the square roots of the non-zero eigenvalues of both.</p>
+<p>The number of non-zero singular values is the rank of \(\mathbf A\).</p>
+</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p17.webp" alt="Slide: shapes of U, Sigma and V transpose for a tall matrix and for a wide matrix, with the unused parts shaded" loading="lazy">
+<figcaption>L05, slide 17. The top row shows a tall matrix (\(m \gt n\)) and the bottom row a wide one. The shaded parts multiply zeros and can be dropped, giving the "thin" SVD.</figcaption></figure>
+<p>Shapes matter for Quiz 1 Q6. In the thin SVD of a tall \(m\times n\) matrix (\(m \gt n\)), \(\mathbf U\) is \(m\times n\), \(\mathbf D\) is \(n\times n\) and \(\mathbf V\) is \(n\times n\). \(\mathbf U\T\mathbf U \)<wbr>\({}= \mathbf I_n\), so the <strong>columns</strong> of \(\mathbf U\) are orthonormal, but \(\mathbf U\) is not square, so its rows are not. \(\mathbf V\) is square with \(\mathbf V\T\mathbf V \)<wbr>\({}= \mathbf V\mathbf V\T\)<wbr>\({}= \mathbf I\), so both its <strong>rows and columns</strong> are orthonormal.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L05/p18.webp" alt="Slide: SVD numerical examples, A equals 3 0 4 5 with its U, Sigma, V and the sum of two rank-one terms" loading="lazy">
+<figcaption>L05, slide 18. Example 1 is worked by hand below.</figcaption></figure>
+<div class="card ex"><span class="tag">Example</span>
+<p>Find the SVD of \(\mathbf A \)<wbr>\({}= \begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix}\).</p>
+<ol class="steps">
+<li>\(\mathbf A\T\mathbf A \)<wbr>\({}= \begin{bmatrix} 3 & 4 \\ 0 & 5 \end{bmatrix}\begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix}\)<wbr>\({}= \begin{bmatrix} 25 & 20 \\ 20 & 25 \end{bmatrix}\).</li>
+<li>Its eigenvalues are \(25 + 20 = 45\) with eigenvector \(\frac1{\sqrt2}[1, 1]\), and \(25 - 20 = 5\) with eigenvector \(\frac1{\sqrt2}[-1, 1]\). (For \(\begin{bmatrix} a & b \\ b & a \end{bmatrix}\) the eigenvalues are always \(a \pm b\).)</li>
+<li>The singular values are the square roots, \(d_1 = \sqrt{45}\), \(d_2 = \sqrt5\). The \(\mathbf v_i\) are those eigenvectors.</li>
+<li>Get each \(\mathbf u_i\) from \(\mathbf u_i \)<wbr>\({}= \mathbf A\mathbf v_i / d_i\). \(\mathbf A\mathbf v_1 \)<wbr>\({}= \frac1{\sqrt2}[3, 9]\), divided by \(\sqrt{45}\) gives \(\frac1{\sqrt{90}}[3, 9] \)<wbr>\({}= \frac1{\sqrt{10}}[1, 3]\).</li>
+<li>\(\mathbf A\mathbf v_2 \)<wbr>\({}= \frac1{\sqrt2}[-3, 1]\), divided by \(\sqrt5\) gives \(\frac1{\sqrt{10}}[-3, 1]\).</li>
+<li>Check. \(d_1\mathbf u_1\mathbf v_1\T + d_2\mathbf u_2\mathbf v_2\T \)<wbr>\({}= \frac{\sqrt{45}}{\sqrt{20}}\begin{bmatrix} 1&1\\3&3 \end{bmatrix} + \frac{\sqrt5}{\sqrt{20}}\begin{bmatrix} 3&-3\\-1&1 \end{bmatrix}\)<wbr>\({}= 1.5\begin{bmatrix} 1&1\\3&3 \end{bmatrix} + 0.5\begin{bmatrix} 3&-3\\-1&1 \end{bmatrix}\)<wbr>\({}= \begin{bmatrix} 3&0\\4&5 \end{bmatrix}\). Correct.</li>
+</ol>
+</div>
+
+<h3>Low-rank approximation</h3>
+<p>To find the closest matrix of rank \(p\) to \(\mathbf A\), keep the first \(p\) terms of the SVD:</p>
+<ol>
+<li>Compute \(\mathbf A \)<wbr>\({}= \mathbf U\mathbf D\mathbf V\T\).</li>
+<li>Set every singular value after the \(p\)-th to zero.</li>
+<li>Multiply back. \(\hat{\mathbf A} \)<wbr>\({}= \sum_{i=1}^p d_i\mathbf u_i\mathbf v_i\T\).</li>
+</ol>
+<p>"Closest" means the sum of squared differences of the entries, \(\sum_{i,j}(A_{ij} - \hat A_{ij})^2\), is as small as possible, and that smallest error equals \(\sum_{i \gt p}d_i^2\), the squares of the dropped singular values. In the example above, the best rank-1 approximation is \(1.5\begin{bmatrix} 1&1\\3&3 \end{bmatrix} \)<wbr>\({}= \begin{bmatrix} 1.5&1.5\\4.5&4.5 \end{bmatrix}\), with squared error \(d_2^2 = 5\). Check. \((1.5)^2 + (1.5)^2 + (0.5)^2 + (0.5)^2 \)<wbr>\({}= 2.25 + 2.25 + 0.25 + 0.25\)<wbr>\({}= 5\).</p>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>\(\mathbf A \)<wbr>\({}= \mathbf U\mathbf D\mathbf V\T\). \(\mathbf v_i\) are eigenvectors of \(\mathbf A\T\mathbf A\), \(\mathbf u_i\) of \(\mathbf A\mathbf A\T\), and \(d_i^2\) are their eigenvalues.</li>
+<li>In the thin SVD of a tall matrix, the columns of \(\mathbf U\) are orthonormal, and the rows and columns of \(\mathbf V\) are orthonormal.</li>
+<li>For the best rank-\(p\) approximation, keep the top \(p\) singular values.</li>
+<li>\(\mathbf A^{-1} \)<wbr>\({}= \mathbf V\mathbf D^{-1}\mathbf U\T\) for square invertible \(\mathbf A\).</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L05 slide</span><span>\(\mathbf X\) is \(N\times d\) with samples as rows. Show \(\mathbf A \)<wbr>\({}= \mathbf X\T\mathbf X\) is symmetric and positive semi-definite.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Symmetric: \(\mathbf A\T \)<wbr>\({}= (\mathbf X\T\mathbf X)\T\)<wbr>\({}= \mathbf X\T(\mathbf X\T)\T\)<wbr>\({}= \mathbf X\T\mathbf X\)<wbr>\({}= \mathbf A\), using \((\mathbf B\mathbf C)\T \)<wbr>\({}= \mathbf C\T\mathbf B\T\).</li>
+<li>PSD means \(\mathbf z\T\mathbf A\mathbf z \ge 0\) for every \(\mathbf z \in \R^d\).</li>
+<li>\(\mathbf z\T\mathbf X\T\mathbf X\mathbf z \)<wbr>\({}= (\mathbf X\mathbf z)\T(\mathbf X\mathbf z)\)<wbr>\({}= \|\mathbf X\mathbf z\|^2\).</li>
+<li>A squared length is never negative, so \(\mathbf z\T\mathbf A\mathbf z \ge 0\). Done. As a consequence, all eigenvalues of \(\mathbf A\) are \(\ge 0\), since for an eigenvector \(\mathbf z\T\mathbf A\mathbf z \)<wbr>\({}= \lambda\|\mathbf z\|^2\).</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>If \(\mathbf A \)<wbr>\({}= \mathbf p\mathbf q\T\) is \(3\times3\) (\(\mathbf p, \mathbf q\) non-zero vectors), what is its SVD? And how do you get \(\mathbf A^{-1}\) from an SVD?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Write \(\mathbf p \)<wbr>\({}= \|\mathbf p\|\,\hat{\mathbf p}\) and \(\mathbf q \)<wbr>\({}= \|\mathbf q\|\,\hat{\mathbf q}\), where hats are unit vectors.</li>
+<li>Then \(\mathbf A \)<wbr>\({}= (\|\mathbf p\|\,\|\mathbf q\|)\,\hat{\mathbf p}\hat{\mathbf q}\T\). This is already one SVD term, with \(d_1 \)<wbr>\({}= \|\mathbf p\|\|\mathbf q\|\), \(\mathbf u_1 = \hat{\mathbf p}\), \(\mathbf v_1 = \hat{\mathbf q}\).</li>
+<li>The other two singular values are 0 (the rank is 1). Their \(\mathbf u\) and \(\mathbf v\) are any unit vectors completing orthonormal sets.</li>
+<li>Such an \(\mathbf A\) has no inverse. In general, for square \(\mathbf A \)<wbr>\({}= \mathbf U\mathbf D\mathbf V\T\) with all \(d_i \gt 0\), \(\mathbf A^{-1} \)<wbr>\({}= \mathbf V\mathbf D^{-1}\mathbf U\T\). Check. \(\mathbf U\mathbf D\mathbf V\T\mathbf V\mathbf D^{-1}\mathbf U\T \)<wbr>\({}= \mathbf U\mathbf D\mathbf D^{-1}\mathbf U\T\)<wbr>\({}= \mathbf U\mathbf U\T\)<wbr>\({}= \mathbf I\).</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>A covariance matrix (a) can never be diagonal (b) can be diagonal (c) is always PSD (d) is always full rank (e) is never full rank (f) is always symmetric (g) is not guaranteed to be symmetric.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>\(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\) is \(\frac1N\mathbf X_c\T\mathbf X_c\) for the centred data matrix \(\mathbf X_c\).</li>
+<li>(b) is true, because features that do not vary together give zero off-diagonal entries. So (a) is false.</li>
+<li>(c) true and (f) true, by the previous question. So (g) false.</li>
+<li>(d) is false, because if all points lie on a line (Quiz 1 Q10), the rank is 1. (e) is false, because random data in 2-D with many points has full rank 2.</li>
+<li>Answer: <strong>(b), (c), (f)</strong>.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L05 slide</span><span>\(\boldsymbol\mu \)<wbr>\({}= \frac1N\sum\mathbf x_i\), with \(\mathbf x_i \in \R^d\). Which are true? (a) \(\boldsymbol\mu \in \R^d\) (b) \(\boldsymbol\mu\) is always one of the samples (c) it can never be one (d) it can be one (e) it is equidistant from all samples (f) it minimises \(\sum\|\mathbf x_i - \mathbf y\|^2\) over \(\mathbf y\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(a) true, an average of \(d\)-vectors is a \(d\)-vector.</li>
+<li>(b) is false, because the mean of \(0\) and \(2\) is \(1\). (c) is false and (d) is true, because the mean of \(0, 1, 2\) is \(1\), a sample.</li>
+<li>(e) is false. For \(0, 1, 5\) the mean is 2, at distances 2, 1, 3.</li>
+<li>(f) true. Differentiate \(\sum_i\|\mathbf x_i - \mathbf y\|^2\) with respect to \(\mathbf y\). \(-2\sum_i(\mathbf x_i - \mathbf y) \)<wbr>\({}= \mathbf 0\) gives \(N\mathbf y = \sum\mathbf x_i\), so \(\mathbf y = \boldsymbol\mu\). This is the L06 answer to "what is the best single point to represent a set".</li>
+<li>Answer: <strong>(a), (d), (f)</strong>.</li>
+</ol></div></details>
+</section>
+
+<div class="part">Part 5<span>L06, L07 · PCA</span></div>
+
+<section>
+<h2 id="pca"><span class="num">1.12</span>Principal component analysis (PCA)</h2>
+<p class="slides">Lectures L06, L07 · <a href="https://youtu.be/likh0NUdvnc">Short video: Orthogonal line fitting</a> · <a href="https://youtu.be/YpLantxHNJ8">PCA</a> · <a href="https://youtu.be/EQfxYZiE0tg">PCA as compression</a></p>
+<p class="oneline">Find the directions in which the data spread out most, and describe each point by its coordinates along just those directions.</p>
+<p>PCA is a linear, unsupervised way to reduce dimension, \(\mathbf x' \)<wbr>\({}= \mathbf W\mathbf x\) with \(\mathbf W\) having fewer rows than columns. "Unsupervised" because it never looks at labels. The rows of \(\mathbf W\) are the <em class="t">principal components</em>, the main directions of the data. The course gives three views that all lead to the same answer.</p>
+<ol>
+<li>The direction of maximum variance.</li>
+<li>The line (or plane) closest to the data, measured by perpendicular distance.</li>
+<li>The compression with the smallest reconstruction error.</li>
+</ol>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p07.webp" alt="Slide: maximum variance direction and minimum reconstruction error, blue squared plus green squared equals black squared" loading="lazy">
+<figcaption>L06, slide 7. For each point, the projection onto \(\mathbf v\) (blue) and the perpendicular error (green) form a right-angled triangle with the point (black). Black is fixed, so maximising blue is the same as minimising green.</figcaption></figure>
+<p>The covariance matrix of centred data (mean subtracted, so \(\boldsymbol\mu = \mathbf 0\)) is</p>
+<div class="eq boxed">\[\Sigma = \frac1N\sum_{i=1}^N(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\]
+\[{}= \frac1N\mathbf X\T\mathbf X \quad(\text{rows of }\mathbf X\text{ centred}).\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\Sigma\) (capital sigma, not a sum here) is \(d\times d\). Entry \((j, j)\) is the variance of feature \(j\). Entry \((j, k)\) is the covariance of features \(j\) and \(k\). It is positive if they tend to rise together, negative if one rises as the other falls.</p>
+<p><strong>Example.</strong> Points \((1, 1), (-1, -1), (2, 2), (-2, -2)\), mean \((0, 0)\). \(\Sigma_{11} \)<wbr>\({}= \frac14(1 + 1 + 4 + 4)\)<wbr>\({}= 2.5\), \(\Sigma_{22} = 2.5\), \(\Sigma_{12} \)<wbr>\({}= \frac14(1 + 1 + 4 + 4)\)<wbr>\({}= 2.5\). So \(\Sigma \)<wbr>\({}= \begin{bmatrix} 2.5 & 2.5 \\ 2.5 & 2.5 \end{bmatrix}\). Its eigenvalues are \(5\) and \(0\) (the \(a \pm b\) rule), with eigenvectors along \([1,1]\) and \([-1,1]\). All the spread is along \([1,1]\), the line the points lie on.</p>
+<p>The variance of the data projected onto a unit vector \(\mathbf v\) is \(\frac1N\sum(\mathbf v\T\mathbf x_i)^2 \)<wbr>\({}= \mathbf v\T\Sigma\mathbf v\). That is why PCA becomes the eigenvector problem of section 1.9.</p>
+</div>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the line through the mean that minimises the sum of squared perpendicular distances points along the top eigenvector of \(\Sigma\).</h4>
+<ol class="steps lines">
+<li>Centre the data. The line is \(\{t\mathbf w\}\) with \(\|\mathbf w\| = 1\). The projection of \(\mathbf x_i\) is \((\mathbf w\T\mathbf x_i)\mathbf w\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Subtract the mean from every point, so the best line passes through the origin. (The mean is the best single point, by the L05 question above.)</li>
+<li>A line through the origin is all multiples of a unit direction \(\mathbf w\).</li>
+<li>The closest point on the line to \(\mathbf x_i\) is its projection, which is the component \(\mathbf w\T\mathbf x_i\) along \(\mathbf w\), times \(\mathbf w\).</li>
+</ol></details></li>
+<li>The squared perpendicular distance is \(\|\mathbf x_i\|^2 - (\mathbf w\T\mathbf x_i)^2\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The point, its projection and the origin form a right-angled triangle. The hypotenuse is \(\|\mathbf x_i\|\), one side is \(|\mathbf w\T\mathbf x_i|\), and the other side is the perpendicular distance.</li>
+<li>By Pythagoras, distance² = hypotenuse² − side² \(= \mathbf x_i\T\mathbf x_i - (\mathbf w\T\mathbf x_i)^2\).</li>
+</ol></details></li>
+<li>\(\min_{\mathbf w}\sum_i\left(\|\mathbf x_i\|^2 - (\mathbf w\T\mathbf x_i)^2\right)\) is the same as \(\max_{\mathbf w}\sum_i(\mathbf w\T\mathbf x_i)^2\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(\sum\|\mathbf x_i\|^2\) does not depend on \(\mathbf w\).</li>
+<li>So making the total smaller means making the subtracted part larger.</li>
+</ol></details></li>
+<li>\(\sum_i(\mathbf w\T\mathbf x_i)^2 \)<wbr>\({}= \mathbf w\T\mathbf X\T\mathbf X\mathbf w\)<wbr>\({}= N\,\mathbf w\T\Sigma\mathbf w\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\((\mathbf w\T\mathbf x_i)^2 \)<wbr>\({}= (\mathbf w\T\mathbf x_i)(\mathbf x_i\T\mathbf w)\)<wbr>\({}= \mathbf w\T\mathbf x_i\mathbf x_i\T\mathbf w\).</li>
+<li>Sum over \(i\) and take \(\mathbf w\) outside. \(\mathbf w\T\left(\sum_i\mathbf x_i\mathbf x_i\T\right)\mathbf w\).</li>
+<li>\(\sum_i\mathbf x_i\mathbf x_i\T \)<wbr>\({}= \mathbf X\T\mathbf X\)<wbr>\({}= N\Sigma\) for centred rows.</li>
+</ol></details></li>
+<li>Maximise \(\mathbf w\T\Sigma\mathbf w\) with \(\mathbf w\T\mathbf w = 1\). Then \(\mathbf w\) is the eigenvector of \(\Sigma\) (equally of \(\mathbf X\T\mathbf X\)) with the largest eigenvalue.
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The factor \(N\) does not change where the maximum is.</li>
+<li>Section 1.9 shows the maximiser is the top eigenvector, and the maximum value \(\mathbf w\T\Sigma\mathbf w \)<wbr>\({}= \lambda_1\) is the variance along it.</li>
+</ol></details></li>
+</ol>
+</div>
+<p>Page 2 does the same with the reconstruction error written out in full (<a href="../probabilistic/#pca-recon">PCA as minimising reconstruction loss</a>). The second, third and further components are the next eigenvectors. Each is at right angles to the earlier ones and captures the most remaining variance.</p>
+
+<h3>The algorithm</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p11.webp" alt="Slide: PCA algorithm in six steps, compute covariance, eigenvectors, pick d largest, arrange as rows of A, x prime equals A x" loading="lazy">
+<figcaption>L06, slide 11. Step 6 assumes \(\mathbf x\) has already had the mean subtracted.</figcaption></figure>
+<ol class="steps">
+<li>Input: \(N\) samples of dimension \(D\).</li>
+<li>Compute the mean \(\boldsymbol\mu\) and the covariance \(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\).</li>
+<li>Compute the eigenvalues and eigenvectors of \(\Sigma\).</li>
+<li>Keep the \(d\) eigenvectors with the largest eigenvalues.</li>
+<li>Put them as the rows of \(\mathbf A\), a \(d\times D\) matrix.</li>
+<li>Represent each point as \(\mathbf x' \)<wbr>\({}= \mathbf A(\mathbf x - \boldsymbol\mu)\). Reconstruct with \(\hat{\mathbf x} \)<wbr>\({}= \boldsymbol\mu + \mathbf A\T\mathbf x'\).</li>
+</ol>
+
+<h3>Reconstruction</h3>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p08.webp" alt="Slide: reconstruction numerical example, point (3.3, 3) in basis u1 = [1,1]/root 2 and u2 = [-1,1]/root 2, reconstructed with one dimension as (3.15, 3.15)" loading="lazy">
+<figcaption>L06, slide 8. With both basis vectors the point is rebuilt exactly. Keeping only \(\mathbf u_1\) gives \((3.15, 3.15)\).</figcaption></figure>
+<p>In any orthonormal basis \(\mathbf u_1, \dots, \mathbf u_d\), a vector is the sum of its components, \(\mathbf x \)<wbr>\({}= \sum_j(\mathbf x\T\mathbf u_j)\mathbf u_j\). Keeping only some of the terms gives an approximation. On the slide, \(\alpha_1 \)<wbr>\({}= \mathbf x\T\mathbf u_1\)<wbr>\({}= \frac{3.3 + 3}{\sqrt2}\)<wbr>\({}= \frac{6.3}{\sqrt2}\) and \(\alpha_2 \)<wbr>\({}= \frac{-3.3 + 3}{\sqrt2}\)<wbr>\({}= \frac{-0.3}{\sqrt2}\). Keeping \(\alpha_1\) only, \(\hat{\mathbf x} \)<wbr>\({}= \alpha_1\mathbf u_1\)<wbr>\({}= \frac{6.3}{\sqrt2}\cdot\frac1{\sqrt2}[1, 1]\)<wbr>\({}= [3.15, 3.15]\). The error is \(\|\mathbf x - \hat{\mathbf x}\| \)<wbr>\({}= \|[0.15, -0.15]\|\)<wbr>\({}= |\alpha_2| \approx 0.21\), exactly the dropped component.</p>
+
+<h3>Two class examples</h3>
+<div class="slidepair">
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p09.webp" alt="Slide: worked example I, nine points, covariance one ninth of 12 10 10 12, eigenvalues 22 and 2" loading="lazy">
+<figcaption>L06, slide 9. Nine points spread around the diagonal.</figcaption></figure>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p10.webp" alt="Slide: worked example II, points exactly on the diagonal, covariance one ninth of 60 60 60 60, eigenvalues 120 and 0" loading="lazy">
+<figcaption>L06, slide 10. When the points lie on a line, the second eigenvalue is 0.</figcaption></figure>
+</div>
+<p>In example I the points already have mean \((0, 0)\). \(\sum x^2 \)<wbr>\({}= 4 + 1 + 1 + 0 + 0 + 1 + 0 + 1 + 4\)<wbr>\({}= 12\), the same for \(y\), and \(\sum xy \)<wbr>\({}= 4 + 1 + 0 + 0 + 0 + 0 + 0 + 1 + 4\)<wbr>\({}= 10\). So \(\Sigma \)<wbr>\({}= \frac19\begin{bmatrix} 12 & 10 \\ 10 & 12 \end{bmatrix}\). By the \(a \pm b\) rule the bracketed matrix has eigenvalues 22 and 2, which the slide reports. The eigenvalues of \(\Sigma\) itself are \(\frac{22}9\) and \(\frac29\). The first component \([1,1]\) keeps \(\frac{22}{24} \approx 92\%\) of the variance.</p>
+<p>Example II has every point on the line \(y = x\), so there is no spread at all along \([-1, 1]\) and \(\lambda_2 = 0\). One number per point loses nothing. (The slide lists 10 points but says nine, and the second \([1, 1]\) looks like a typo for \([0,0]\) or a repeat. The conclusion \(\lambda_2 = 0\) holds either way, since every point is on the line.)</p>
+
+<h3>How many components to keep?</h3>
+<p>Each eigenvalue is the variance along its eigenvector, and the eigenvalues add up to the total variance. So keep the smallest \(d\) for which</p>
+<div class="eq">\[ \frac{\sum_{i=1}^d\lambda_i}{\sum_{i=1}^D\lambda_i} \ge 0.95. \]</div>
+<p>That keeps 95% of the variance. Real eigenvalue spectra drop steeply, so \(d\) is often far smaller than \(D\).</p>
+<div class="card ex"><span class="tag">Example</span><p>Eigenvalues 50, 30, 10, 6, 3, 1 (total 100). Cumulative fractions: 0.50, 0.80, 0.90, 0.96, 0.99, 1.00. The first to reach 0.95 is at \(d = 4\).</p></div>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p12.webp" alt="Slide: how many eigenvalues, typical eigenvalue spectrum falling steeply, choose d as smallest p with ratio at least 0.95" loading="lazy">
+<figcaption>L06, slide 12.</figcaption></figure>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>PCA directions are the eigenvectors of the covariance matrix, in order of decreasing eigenvalue.</li>
+<li>Max variance, min perpendicular distance and min reconstruction error all give the same directions.</li>
+<li>Always subtract the mean first. \(\mathbf x' \)<wbr>\({}= \mathbf A(\mathbf x - \boldsymbol\mu)\), \(\hat{\mathbf x} \)<wbr>\({}= \boldsymbol\mu + \mathbf A\T\mathbf x'\).</li>
+<li>Sum of squared reconstruction errors \(= N\times\) (sum of the dropped eigenvalues).</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p21.webp" alt="Slide: Problem 5, three points (5,5), (3,3.3), (3,0), find the one-dimensional representation, W, the reconstructions and errors" loading="lazy">
+<figcaption>L06, slide 21.</figcaption></figure>
+<details class="q"><summary><span class="qt">L06 slide</span><span>Points \(\mathbf x_1 = [5, 5]\), \(\mathbf x_2 = [3, 3.3]\), \(\mathbf x_3 = [3, 0]\). Find the 1-D PCA representation \(x' = \mathbf W\mathbf x\), the reconstructions and the errors.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\). For \(\begin{bmatrix} a & b \\ b & c \end{bmatrix}\), \(\lambda \)<wbr>\({}= \frac{a + c}2 \pm \sqrt{\left(\frac{a - c}2\right)^2 + b^2}\), and \([b, \lambda - a]\) is an eigenvector. Then \(x' \)<wbr>\({}= \mathbf v_1\T(\mathbf x - \boldsymbol\mu)\), \(\hat{\mathbf x} \)<wbr>\({}= \boldsymbol\mu + x'\mathbf v_1\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.12, the algorithm, steps 2 to 6. The \(2\times2\) eigenvalue formula is in <a href="../basics/#eigen">Maths basics</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Mean: \(\mu_1 \)<wbr>\({}= \frac{5 + 3 + 3}3\)<wbr>\({}= \frac{11}3 \approx 3.667\), \(\mu_2 \)<wbr>\({}= \frac{5 + 3.3 + 0}3 \approx 2.767\).</li>
+<li>The centred points are \([1.333, 2.233]\), \([-0.667, 0.533]\), \([-0.667, -2.767]\). Check: each coordinate sums to 0.</li>
+<li>\(\Sigma_{11} \)<wbr>\({}= \frac13(1.778 + 0.444 + 0.444)\)<wbr>\({}= 0.889\).</li>
+<li>\(\Sigma_{12}\) averages the products of the two coordinates. The products are \(1.333 \times 2.233 = 2.978\), \((-0.667)(0.533) = -0.356\) and \((-0.667)(-2.767) = 1.844\). So \(\Sigma_{12} \)<wbr>\({}= \frac13(2.978 - 0.356 + 1.844)\)<wbr>\({}= \frac{4.467}3\)<wbr>\({}= 1.489\).</li>
+<li>\(\Sigma_{22} \)<wbr>\({}= \frac13(4.988 + 0.284 + 7.654)\)<wbr>\({}= 4.309\).</li>
+<li>Eigenvalues: \(\frac{a + c}2 = 2.599\), \(\sqrt{(\frac{0.889 - 4.309}2)^2 + 1.489^2} \)<wbr>\({}= \sqrt{2.924 + 2.217}\)<wbr>\({}= \sqrt{5.141}\)<wbr>\({}= 2.267\). So \(\lambda_1 = 4.866\), \(\lambda_2 = 0.332\).</li>
+<li>An eigenvector for \(\lambda_1\) is \([b, \lambda_1 - a] \)<wbr>\({}= [1.489, 3.977]\). Its length is \(\sqrt{2.217 + 15.817} = 4.247\), so \(\mathbf v_1 = [0.351, 0.937]\).</li>
+<li>So \(\mathbf W \)<wbr>\({}= \mathbf v_1\T\)<wbr>\({}= [0.351, 0.937]\), applied to centred points. It keeps \(\frac{4.866}{5.198} \approx 94\%\) of the variance.</li>
+<li>1-D values \(x'_i = 0.351\,c_1 + 0.937\,c_2\) for each centred point \((c_1, c_2)\). They are \(x'_1 = 0.468 + 2.092 = 2.559\), \(x'_2 = -0.234 + 0.500 = 0.266\), \(x'_3 = -0.234 - 2.591 = -2.825\).</li>
+<li>Reconstruct \(\hat{\mathbf x}_i \)<wbr>\({}= \boldsymbol\mu + x'_i\mathbf v_1\). This gives \(\hat{\mathbf x}_1 \)<wbr>\({}= [4.564, 5.163]\), \(\hat{\mathbf x}_2 \)<wbr>\({}= [3.760, 3.016]\), \(\hat{\mathbf x}_3 \)<wbr>\({}= [2.676, 0.121]\).</li>
+<li>Errors \(\|\mathbf x_i - \hat{\mathbf x}_i\|\): 0.466, 0.811 and 0.346.</li>
+<li>Check: the squared errors add to \(0.217 + 0.658 + 0.119 = 0.995\), and \(N\lambda_2 \)<wbr>\({}= 3 \times 0.332\)<wbr>\({}= 0.995\). They agree, as the Remember box says they must.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>Points \((2, 0), (0, 2), (-2, 0), (0, -2)\). What does PCA give?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>The mean is \((0, 0)\). \(\Sigma_{11} \)<wbr>\({}= \frac14(4 + 0 + 4 + 0)\)<wbr>\({}= 2\), \(\Sigma_{22} = 2\), \(\Sigma_{12} = 0\).</li>
+<li>\(\Sigma = 2\mathbf I\). Every unit vector is an eigenvector with eigenvalue 2.</li>
+<li>There is no preferred direction, and any 1-D projection keeps exactly half the variance. PCA cannot compress data that spread equally in all directions. It helps only when the eigenvalues are unequal.</li>
+</ol></div></details>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p20.webp" alt="Slide: matrix completion problem, a 5 by 5 matrix with missing entries known to be rank 1" loading="lazy">
+<figcaption>L06, slide 20.</figcaption></figure>
+<details class="q"><summary><span class="qt">L06 slide</span><span>Fill in the missing entries, given the matrix has rank 1. Row 1: ? 1 7 ? ?. Row 2: ? ? ? 8 ?. Row 3: 18 ? ? 12 6. Row 4: ? ? ? ? 2. Row 5: ? ? 21 6 ?. Also explain \(\min\sum_i\sum_j(A_{ij} - B_{ij})^2\) subject to rank\((\mathbf B) = 1\).</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Rank 1 means \(\mathbf A \)<wbr>\({}= \mathbf u\mathbf v\T\), so entry \((i, j)\) is \(u_iv_j\). Every row is a multiple of one row pattern \(\mathbf v\), and every column a multiple of one column pattern \(\mathbf u\).</li>
+<li>Row 3 gives the ratios of columns 1, 4, 5 as \(18 : 12 : 6 = 3 : 2 : 1\).</li>
+<li>Row 5 gives columns 3 and 4 as \(21 : 6 = 7 : 2\). Combined with the above, columns 1, 3, 4, 5 are \(3 : 7 : 2 : 1\).</li>
+<li>Row 1 gives columns 2 and 3 as \(1 : 7\). So the full pattern is \(\mathbf v = [3, 1, 7, 2, 1]\).</li>
+<li>Row 1 has column 2 = 1, so row 1 = \(1\cdot\mathbf v \)<wbr>\({}= [3, 1, 7, 2, 1]\).</li>
+<li>Row 2 has column 4 = 8 = \(4 \times 2\), so row 2 = \(4\mathbf v = [12, 4, 28, 8, 4]\).</li>
+<li>Row 3 has column 5 = 6, so row 3 = \(6\mathbf v \)<wbr>\({}= [18, 6, 42, 12, 6]\). Check: 18 and 12 match the given entries.</li>
+<li>Row 4 has column 5 = 2, so row 4 = \(2\mathbf v = [6, 2, 14, 4, 2]\).</li>
+<li>Row 5 has column 4 = 6 = \(3 \times 2\), so row 5 = \(3\mathbf v = [9, 3, 21, 6, 3]\). Check: 21 matches.</li>
+<li>In the formula, \(\mathbf A\) holds the known entries and \(\mathbf B\) is the completed matrix we are looking for. The double sum runs over the known positions \((i, j)\) only. The minimum is over all matrices \(\mathbf B\) of rank 1. So it asks for the rank-1 matrix that agrees best with the entries we can see. With noisy real data (movie ratings), there is no exact fit and this least-squares version is what is solved. L08 continues this with recommendation systems.</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="eigenfaces"><span class="num">1.13</span>Eigenfaces and the small-matrix trick</h2>
+<p class="slides">Lectures L06, L07 · <a href="https://youtu.be/X1cEIkXjewI">Short video: Eigen faces</a></p>
+<p class="oneline">Treat every face image as one long vector and run PCA. The eigenvectors look like ghostly faces.</p>
+<p>A \(100\times100\) grey image has \(10^4\) pixels. Reading the pixels row after row gives a vector in \(\R^{10^4}\). Frontal, aligned faces are all quite similar, so these vectors lie close to a low-dimensional subspace. PCA on a set of face images gives eigenvectors that, reshaped back into \(100\times100\), look like faces. They are called <em class="t">eigenfaces</em>. Any face is then approximately the mean face plus a weighted sum of a few dozen eigenfaces, and the weights (a short vector) can be used to recognise the person.</p>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p15.webp" alt="Slide: a face and its reconstructions using more and more eigenvectors, up to 16" loading="lazy">
+<figcaption>L06, slide 15. Reconstructions using 1, 2, 3, … up to 16 eigenfaces. The face becomes recognisable well before 16.</figcaption></figure>
+<h3>The problem with the covariance matrix</h3>
+<p>With \(d = 10^4\) pixels, \(\Sigma\) is \(10^4\times10^4\), which has \(10^8\) entries. Finding its eigenvectors is very slow. But with only \(N = 200\) images, the centred data have rank at most 199 (the centred rows add up to zero, which removes one more dimension). So at most 199 eigenvalues are non-zero, and only those eigenvectors matter.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Get the eigenvectors of \(\mathbf X\mathbf X\T\) (\(d\times d\), large) from those of \(\mathbf X\T\mathbf X\) (\(N\times N\), small). Here \(\mathbf X\) is \(d\times N\) with centred images as columns.</h4>
+<ol class="steps lines">
+<li>Solve the small problem \(\mathbf X\T\mathbf X\mathbf v \)<wbr>\({}= \lambda\mathbf v\) (\(N\times N\)).</li>
+<li>Multiply on the left by \(\mathbf X\). \(\mathbf X\mathbf X\T(\mathbf X\mathbf v) \)<wbr>\({}= \lambda(\mathbf X\mathbf v)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(\mathbf X(\mathbf X\T\mathbf X\mathbf v) \)<wbr>\({}= \mathbf X(\lambda\mathbf v)\). Regroup the left side as \((\mathbf X\mathbf X\T)(\mathbf X\mathbf v)\), and pull the number \(\lambda\) out on the right.</li>
+<li>This says \(\mathbf u = \mathbf X\mathbf v\) is an eigenvector of \(\mathbf X\mathbf X\T\) with the same eigenvalue \(\lambda\).</li>
+</ol></details></li>
+<li>Normalise. \(\mathbf u \)<wbr>\({}= \mathbf X\mathbf v / \|\mathbf X\mathbf v\|\), and \(\|\mathbf X\mathbf v\| \)<wbr>\({}= \sqrt\lambda\) when \(\|\mathbf v\| = 1\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>\(\|\mathbf X\mathbf v\|^2 \)<wbr>\({}= \mathbf v\T\mathbf X\T\mathbf X\mathbf v\)<wbr>\({}= \mathbf v\T(\lambda\mathbf v)\)<wbr>\({}= \lambda\).</li>
+<li>So divide by \(\sqrt\lambda\) to get a unit eigenvector. This is the SVD relation \(\mathbf u_i \)<wbr>\({}= \mathbf X\mathbf v_i / d_i\) from section 1.11.</li>
+</ol></details></li>
+<li>So both matrices have the same non-zero eigenvalues, and the large problem's eigenvectors are \(\mathbf X\) times the small problem's. The cost is a \(200\times200\) eigenproblem instead of \(10^4\times10^4\).</li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span><ul>
+<li>For \(N\) images of \(d\) pixels, \(\Sigma\) is \(d\times d\) but its rank is at most \(N - 1\).</li>
+<li>\(\mathbf X\mathbf X\T\) and \(\mathbf X\T\mathbf X\) share their non-zero eigenvalues. Eigenvectors are linked by \(\mathbf u \)<wbr>\({}= \mathbf X\mathbf v / \sqrt\lambda\).</li>
+<li>For effective rank, images of only a few people, or near-duplicates, give few large eigenvalues.</li>
+</ul></div>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">L06 slide</span><span>200 face images of \(100\times100\), means subtracted. (1) Size of the covariance matrix? (2) Its rank? (3) Sizes and ranks of \(\mathbf X\mathbf X\T\) and \(\mathbf X\T\mathbf X\)? (4) How are their eigenvalues related? (5) Their eigenvectors?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>(1) \(d = 10^4\), so \(10^4\times10^4\).</li>
+<li>(2) At most \(N - 1 = 199\). The 200 centred columns add to zero, so at most 199 are independent. In practice the effective rank is smaller still, since faces are similar.</li>
+<li>(3) With \(\mathbf X\) as \(10^4\times200\), \(\mathbf X\mathbf X\T\) is \(10^4\times10^4\) and \(\mathbf X\T\mathbf X\) is \(200\times200\). Both have the rank of \(\mathbf X\), at most 199.</li>
+<li>(4) Their non-zero eigenvalues are identical. \(\mathbf X\mathbf X\T\) has about 9801 extra zero eigenvalues.</li>
+<li>(5) If \(\mathbf X\T\mathbf X\mathbf v \)<wbr>\({}= \lambda\mathbf v\) then \(\mathbf u \)<wbr>\({}= \mathbf X\mathbf v / \sqrt\lambda\) is a unit eigenvector of \(\mathbf X\mathbf X\T\). Going the other way, \(\mathbf v \)<wbr>\({}= \mathbf X\T\mathbf u / \sqrt\lambda\).</li>
+</ol></div></details>
+</section>
+
+<section>
+<h2 id="odds-and-ends"><span class="num">1.14</span>Odds and ends from L06</h2>
+<p class="slides">Lecture L06</p>
+<p>L06 ends with a set of shorter discussion points and review questions. Several of them come back in the probability lectures, but they appeared here first.</p>
+<h3>Streaming mean and variance</h3>
+<p>When samples arrive one at a time, keep the running mean \(\mu_N\) and variance \(\sigma_N^2\) (dividing by \(N\)) instead of the whole data set. When \(x_{N+1}\) arrives:</p>
+<div class="eq">\[\mu_{N+1} = \frac{N\mu_N + x_{N+1}}{N + 1}, \qquad \sigma_{N+1}^2\]
+\[{}= \frac{N\sigma_N^2 + (x_{N+1} - \mu_N)(x_{N+1} - \mu_{N+1})}{N + 1}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(N\mu_N\) is the old total. Adding the new value and dividing by the new count gives the new mean. For the variance, \(N\sigma_N^2\) is the old sum of squared deviations. The new point adds roughly its squared deviation, but measured once from the old mean and once from the new one, which corrects for the mean having moved. This is Welford's method.</p>
+<p><strong>Example.</strong> Data 2, 4, 4 have \(\mu_3 \)<wbr>\({}= \frac{10}3 \approx 3.333\) and \(\sigma_3^2 \)<wbr>\({}= \frac13(1.778 + 0.444 + 0.444)\)<wbr>\({}= 0.889\). Now 5 arrives. \(\mu_4 = \frac{10 + 5}4 = 3.75\). \(\sigma_4^2 \)<wbr>\({}= \frac{3 \times 0.889 + (5 - 3.333)(5 - 3.75)}4\)<wbr>\({}= \frac{2.667 + 2.083}4\)<wbr>\({}= 1.1875\). Computed directly, \(\frac14(1.75^2 + 0.25^2 + 0.25^2 + 1.25^2) \)<wbr>\({}= \frac{4.75}4\)<wbr>\({}= 1.1875\). They match.</p>
+<p>This is used for data too large to store, sensor streams, and batch normalisation's running statistics in neural networks.</p>
+</div>
+<h3>Linear maps and k-NN</h3>
+<details class="q"><summary><span class="qt">L06 slide</span><span>\(\mathbf x' \)<wbr>\({}= \mathbf W\mathbf x\) with square \(\mathbf W\). Is k-NN (same \(K\), Euclidean distance) equally accurate on \(\mathbf x\) and \(\mathbf x'\) for every \(\mathbf W\)? If not, when is it guaranteed? What if \(\mathbf W = \mathbf 0\) or \(|\mathbf W| = 0\)?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>k-NN only uses the order of distances. Distances in the new space are \(\|\mathbf W(\mathbf p - \mathbf q)\|\).</li>
+<li>Not for every \(\mathbf W\). For example, \(\mathbf W \)<wbr>\({}= \operatorname{diag}(1, 1000)\) blows up feature 2, which changes which points are nearest (the units problem of section 1.4).</li>
+<li>It is guaranteed when \(\mathbf W\) preserves all distances up to one common factor, that is \(\mathbf W = c\mathbf R\) with \(\mathbf R\) orthogonal (\(\mathbf R\T\mathbf R \)<wbr>\({}= \mathbf I\), a rotation or reflection) and \(c \ne 0\). Then \(\|\mathbf W(\mathbf p - \mathbf q)\| \)<wbr>\({}= |c|\,\|\mathbf p - \mathbf q\|\) and the order of distances is unchanged.</li>
+<li>\(\mathbf W = \mathbf 0\) maps every point to \(\mathbf 0\). All distances are 0, every point is a tie, and the classifier is useless.</li>
+<li>\(|\mathbf W| = 0\) (determinant zero, singular) collapses some direction to zero. Points that differed only in that direction become identical, so information is lost and accuracy usually drops. PCA is a deliberate, controlled version of this, dropping only low-variance directions.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>Raju and Sheela use the same data but list the features in different orders. Which are true? (a) same k-NN accuracy (b) different k-NN accuracy (c) confusion matrix cells swapped (d) same covariance matrix (e) covariance matrices of the same rank (f) covariance matrices with cells swapped.</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Reordering features is \(\mathbf x' \)<wbr>\({}= \mathbf P\mathbf x\) with a permutation matrix \(\mathbf P\), which is orthogonal. Distances do not change, so (a) true and (b) false.</li>
+<li>The predictions are identical, so the confusion matrix is identical. The confusion matrix is indexed by classes, not features. (c) false.</li>
+<li>\(\Sigma' \)<wbr>\({}= \mathbf P\Sigma\mathbf P\T\): the same numbers with rows and columns reordered. So (d) false in general (unless the reordering happens to leave it unchanged), (f) true, and (e) true because reordering does not change rank.</li>
+<li>Answer: <strong>(a), (e), (f)</strong>.</li>
+</ol></div></details>
+<h3>Mahalanobis distance as a transformation</h3>
+<details class="q"><summary><span class="qt">L06 slide</span><span>For \(\mathbf x = [x_1, x_2]\), write the z-score normalisation as \(\mathbf x' \)<wbr>\({}= \mathbf L(\mathbf x - \boldsymbol\mu)\). What should a matrix be so that Euclidean distance after transforming equals the Mahalanobis distance before?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>z-score: \(x_j' = (x_j - \mu_j)/\sigma_j\). In matrix form \(\mathbf L \)<wbr>\({}= \begin{bmatrix} 1/\sigma_1 & 0 \\ 0 & 1/\sigma_2 \end{bmatrix}\)<wbr>\({}= \Sigma^{-1/2}\) for a diagonal \(\Sigma \)<wbr>\({}= \operatorname{diag}(\sigma_1^2, \sigma_2^2)\).</li>
+<li>The squared Euclidean distance after the map is \(\|\mathbf L\mathbf x - \mathbf L\mathbf y\|^2 \)<wbr>\({}= (\mathbf x - \mathbf y)\T\mathbf L\T\mathbf L(\mathbf x - \mathbf y)\).</li>
+<li>The squared Mahalanobis distance is \((\mathbf x - \mathbf y)\T\Sigma^{-1}(\mathbf x - \mathbf y)\).</li>
+<li>They are equal for all \(\mathbf x, \mathbf y\) when \(\mathbf L\T\mathbf L \)<wbr>\({}= \Sigma^{-1}\). For a general (non-diagonal) \(\Sigma \)<wbr>\({}= \mathbf Q\Lambda\mathbf Q\T\), one choice is \(\mathbf L \)<wbr>\({}= \Lambda^{-1/2}\mathbf Q\T\). It rotates onto the eigenvectors, then divides each coordinate by its standard deviation \(\sqrt{\lambda_i}\). This is called <em class="t">whitening</em>.</li>
+</ol></div></details>
+<h3>Other L06 discussion points</h3>
+<ul>
+<li><strong>Why is PCA (the KL transform) not used in JPEG?</strong> The PCA basis depends on the data, so it would have to be computed for every image and sent along with it, and computing it is expensive. The DCT basis is fixed and known in advance, fast to compute, and for natural images it is almost as good as the PCA basis.</li>
+<li><strong>Why does a model trained only on training data work on test data?</strong> None of the five options on the slide (luck, magic and so on) is the reason. It works because we assume the training and test data are drawn from the same distribution, and because the model is kept simple enough not to memorise noise. Page 2 covers this as <a href="../probabilistic/#generalization">generalisation</a>.</li>
+</ul>
+<figure class="slide"><img src="{{ASSETS}}slides/L06/p31.webp" alt="Slide: five review questions, rank of a 3 by 3 matrix, solutions of Ax=b, disease test Bayes, threshold between two Gaussians, man who speaks the truth" loading="lazy">
+<figcaption>L06, slide 31. A ten-minute in-class review. The probability ones are previewed here and taught properly on page 2.</figcaption></figure>
+<details class="q"><summary><span class="qt">L06 slide</span><span>A disease affects 1% of people. The test is 90% accurate both ways. Given a positive test, what is the chance the person has the disease?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Bayes' rule, \(P(D \mid +) \)<wbr>\({}= \dfrac{P(+ \mid D)P(D)}{P(+ \mid D)P(D) + P(+ \mid \bar D)P(\bar D)}\). \(\bar D\) means "not diseased".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#bayes">Maths basics, Bayes' rule</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P(D) = 0.01\), \(P(\bar D) = 0.99\), \(P(+ \mid D) = 0.9\), \(P(+ \mid \bar D) = 0.1\).</li>
+<li>Top: \(0.9 \times 0.01 = 0.009\).</li>
+<li>Bottom: \(0.009 + 0.1 \times 0.99 \)<wbr>\({}= 0.009 + 0.099\)<wbr>\({}= 0.108\).</li>
+<li>\(P(D \mid +) \)<wbr>\({}= 0.009 / 0.108 \approx 0.083\), about <strong>8%</strong>.</li>
+<li>Check with counts. Of 1000 people, 10 are sick and 9 test positive. Of 990 healthy, 99 test positive. So 9 of 108 positives are sick, \(\frac9{108} \approx 8\%\).</li>
+</ol></div></div></div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>Two equally likely classes \(N(23, 2)\) and \(N(33, 2)\) (mean, variance) have the best threshold 28. If the variance of the second class doubles, does the threshold go up or down?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>The best threshold is where the two class densities are equal (page 2, <a href="../probabilistic/#bayes-decision">Bayes decision</a>). With equal variances that is the midpoint, 28.</li>
+<li>If class 2's variance becomes 4, its density is spread out, so its height near its own mean, and between the two means, is lower relative to its tails. Near 28, class 1's density now wins slightly.</li>
+<li>So the crossing point moves towards class 1, so the threshold <strong>decreases</strong>. Solving \(\frac1{\sqrt{2\pi\cdot2}}e^{-(x-23)^2/4} \)<wbr>\({}= \frac1{\sqrt{2\pi\cdot4}}e^{-(x-33)^2/8}\) numerically gives \(x \approx 27.24\).</li>
+<li>With unequal variances there is also a second crossing far to the left of 23, where the wider class-2 curve overtakes again. For days in this range it does not matter.</li>
+</ol></div></details>
+<details class="q"><summary><span class="qt">L06 slide</span><span>A man tells the truth 2 times out of 3. He throws a die and reports a four. What is the probability it really was a four?</span><span class="chev">›</span></summary>
+<div class="ans"><ol class="steps">
+<li>Let \(F\) be "the die shows four". \(P(F) = \frac16\), \(P(\bar F) = \frac56\).</li>
+<li>If it was a four, he reports four when he tells the truth, so \(P(\text{says }4 \mid F) \)<wbr>\({}= \frac23\).</li>
+<li>If it was not a four, he reports four only if he lies. The usual textbook assumption is that a lie means saying "four" when it was not, so \(P(\text{says }4 \mid \bar F) \)<wbr>\({}= \frac13\).</li>
+<li>Bayes: \(\frac{\frac16\cdot\frac23}{\frac16\cdot\frac23 + \frac56\cdot\frac13} \)<wbr>\({}= \frac{\frac2{18}}{\frac2{18} + \frac5{18}}\)<wbr>\({}= \frac27\).</li>
+<li>If instead a lie picks one of the 5 wrong faces at random, \(P(\text{says }4 \mid \bar F) \)<wbr>\({}= \frac13\cdot\frac15\)<wbr>\({}= \frac1{15}\), and the answer becomes \(\frac{\frac19}{\frac19 + \frac1{18}} \)<wbr>\({}= \frac23\). State your assumption in the exam. The slide does not specify it.</li>
+</ol></div></details>
+</section>
+
+<div class="part">Past paper<span>Quiz 1, 2026</span></div>
+
+<section>
+<h2 id="quiz1"><span class="num">1.15</span>Quiz 1, 2026, solved</h2>
+<p class="oneline">12 questions, 45 points. Questions 1 to 10 are worth 3 points each and questions 11 and 12 are worth 7.5 each. Four sets with different numbers.</p>
+<p>The quiz covered L01 to L07. The class average was 29.67 out of 45. Below is Set 1 in full with the TAs' marking rubric, followed by a table of how the other three sets differ. The answers were checked against the official solution sheet. In two places the sheet has a slip, and the answer here says so.</p>
+<div class="notice"><p><strong>What the rubric rewards.</strong> For multiple-correct questions (Q3, Q10), marking any wrong option scored 0, half the correct options scored half, all of them scored full. For the regression question (Q12) most marks were for setting up \(\mathbf X\) and \(\mathbf y\), not the final number. Write the setup even if you are unsure of the arithmetic.</p></div>
+<figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p01.webp" alt="Quiz 1 Set 1, page 1, questions 1 to 5" loading="lazy">
+<figcaption>Quiz 1, Set 1, page 1 (questions 1 to 5).</figcaption></figure>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q1 (3 points). For \(\mathbf x = [-4, 3, 0, 0]\), find the \(L_0\), \(L_1\), \(L_2\) and \(L_\infty\) norms.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(L_0\) = number of non-zeros, \(L_1 = \sum|x_i|\), \(L_2 = \sqrt{\sum x_i^2}\), \(L_\infty = \max|x_i|\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.8, the table of norms.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(L_0\): −4 and 3 are non-zero, so <strong>2</strong>.</li>
+<li>\(L_1\): \(4 + 3 + 0 + 0 = \) <strong>7</strong>.</li>
+<li>\(L_2\): \(\sqrt{16 + 9} = \sqrt{25} = \) <strong>5</strong>.</li>
+<li>\(L_\infty\): the largest absolute value is <strong>4</strong>.</li>
+<li>Check. \(L_\infty \le L_2 \le L_1\), \(4 \le 5 \le 7\). Rubric: 0.75 per norm.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q2 (3 points). The solution of "minimise \(\mathbf w\T\mathbf X\T\mathbf X\mathbf w\) such that \(\|\mathbf w\|_2^2 = 1\)" is the (A) ___ eigenvector of (B) ___. (A) largest, second largest, smallest, second smallest. (B) \(\mathbf X\T\mathbf X\), \(\mathbf X\mathbf X\T\), \(\mathbf X\), \(\mathbf X\T\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">min of \(\mathbf w\T\mathbf A\mathbf w\) over unit \(\mathbf w\) is at the eigenvector of the smallest eigenvalue of \(\mathbf A\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.9, line 3.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The matrix sandwiched between \(\mathbf w\T\) and \(\mathbf w\) is \(\mathbf A \)<wbr>\({}= \mathbf X\T\mathbf X\).</li>
+<li>It is a minimisation, so take the smallest eigenvalue.</li>
+<li>Answer: (A) <strong>smallest</strong>, (B) <strong>\(\mathbf X\T\mathbf X\)</strong>. Rubric: 1.5 per blank.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q3 (3 points). 1000 aligned face images of \(100\times100\), for eigenfaces. Which are true? (a) covariance is \(100\times100\) (b) covariance is \(10000\times10000\) (c) covariance is \(1000\times1000\) (d) practical rank strictly less than 100 (e) practical rank far less than \(\min(N, d)\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Covariance is \(d\times d\), \(d\) = number of pixels. Rank \(\le N - 1\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.13, the eigenfaces question.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Each image is a vector of \(100 \times 100 = 10^4\) pixels. So \(\Sigma\) is \(10^4\times10^4\). (b) true, (a) and (c) false.</li>
+<li>The exact rank is at most \(N - 1 = 999\). Faces are similar, so the effective rank is much smaller than \(\min(N, d) = 1000\). (e) true.</li>
+<li>(d) says strictly less than 100. Nothing in the question guarantees such a specific bound, and 1000 different faces will usually need more than 100 components. False.</li>
+<li>Answer: <strong>(b), (e)</strong>. Under the rubric, any wrong option gives 0.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q4 (3 points). Spam scores \(0.7, 0.65, 0.92, 0.75, 0.45, 0.8, 0.3, 0.8, 0.1, 0.1\) with true labels \(+, -, +, +, -, +, +, +, -, -\). Predict spam when score \(\ge \theta = 0.5\). Find precision and recall.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Precision \(= \frac{TP}{TP + FP}\), recall \(= \frac{TP}{TP + FN}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.5.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Scores \(\ge 0.5\) are emails 1, 2, 3, 4, 6, 8 (scores 0.7, 0.65, 0.92, 0.75, 0.8, 0.8). These are predicted +.</li>
+<li>Their labels are \(+, -, +, +, +, +\). So TP = 5 and FP = 1 (email 2).</li>
+<li>The predicted − are emails 5, 7, 9, 10. Email 7 (score 0.3) is actually +, so FN = 1.</li>
+<li>Precision \(= \frac5{5 + 1} \)<wbr>\({}= \frac56 \approx\) <strong>0.83</strong>. Recall \(= \frac5{5 + 1} \)<wbr>\({}= \frac56 \approx\) <strong>0.83</strong>.</li>
+<li>Check: total actual + is 6 (emails 1, 3, 4, 6, 7, 8), and TP + FN = 6. Rubric: 1.5 each.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q5 (3 points). The training set is \(([2, 0.5], +)\), \(([-3, 0.5], -)\), \(([0, 3], +)\), \(([0, -3], -)\). The test set is \(([0,0], +)\), \(([1,1], +)\), \(([-1,1], +)\), \(([-1,-1], -)\), \(([1,-1], -)\). Accuracy of 1-NN with Manhattan distance?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(d_1(\mathbf p, \mathbf q) \)<wbr>\({}= |p_1 - q_1| + |p_2 - q_2|\). Accuracy = correct / total.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.2. Name the training points A \((2, 0.5, +)\), B \((-3, 0.5, -)\), C \((0, 3, +)\), D \((0, -3, -)\).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\([0,0]\): A = 2 + 0.5 = 2.5, B = 3.5, C = 3, D = 3. Nearest A (+). True +, <strong>correct</strong>.</li>
+<li>\([1,1]\): A = 1 + 0.5 = 1.5, B = 4.5, C = 1 + 2 = 3, D = 1 + 4 = 5. Nearest A (+). <strong>Correct</strong>.</li>
+<li>\([-1,1]\): A = 3 + 0.5 = 3.5, B = 2 + 0.5 = 2.5, C = 1 + 2 = 3, D = 1 + 4 = 5. Nearest B (−). True +, <strong>wrong</strong>.</li>
+<li>\([-1,-1]\): A = 3 + 1.5 = 4.5, B = 2 + 1.5 = 3.5, C = 1 + 4 = 5, D = 1 + 2 = 3. Nearest D (−). <strong>Correct</strong>.</li>
+<li>\([1,-1]\): A = 1 + 1.5 = 2.5, B = 4 + 1.5 = 5.5, C = 1 + 4 = 5, D = 1 + 2 = 3. Nearest A (+). True −, <strong>wrong</strong>.</li>
+<li>Accuracy \(= \frac35 = \) <strong>60%</strong>. Rubric: 3 points, no partial credit, so check each distance twice.</li>
+</ol></div></div></div></details>
+
+<figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p02.webp" alt="Quiz 1 Set 1, page 2, questions 6 to 10" loading="lazy">
+<figcaption>Quiz 1, Set 1, page 2 (questions 6 to 10). In Q9 the symbol in \(\max_{\mathbf v}\mathbf v\T\Sigma\mathbf v\) is the covariance \(\Sigma\).</figcaption></figure>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q6 (3 points). SVD of an \(m\times n\) matrix, \(m \gt n\), \(\mathbf A \)<wbr>\({}= \mathbf U\mathbf D\mathbf V\T\). "(a) ___ of \(\mathbf U\) are orthogonal, (b) ___ of \(\mathbf V\) are orthogonal, and \(D_{ii}\) are eigenvalues of (c) ___". The options are rows, columns, \(\mathbf A\mathbf A\T\), \(\mathbf A\T\mathbf A\), both.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">In the thin SVD, \(\mathbf U\) is \(m\times n\) with \(\mathbf U\T\mathbf U \)<wbr>\({}= \mathbf I\), \(\mathbf V\) is \(n\times n\) with \(\mathbf V\T\mathbf V \)<wbr>\({}= \mathbf V\mathbf V\T\)<wbr>\({}= \mathbf I\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.11, the paragraph on shapes and the L05 slide 17 figure.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) \(\mathbf U\) is tall, so only its <strong>columns</strong> are orthonormal.</li>
+<li>(b) \(\mathbf V\) is square and orthogonal, so its <strong>rows and columns</strong> are both orthonormal.</li>
+<li>(c) The official answer is "both \(\mathbf A\mathbf A\T\) and \(\mathbf A\T\mathbf A\)" (either was accepted). Strictly, \(D_{ii}\) are the square roots of those eigenvalues, and \(D_{ii}^2\) are the eigenvalues. If you write "both", add "\(D_{ii}^2\)" to be safe.</li>
+<li>Rubric: 1 point per blank, 0.5 for (b) if only one of rows or columns is given.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q7 (3 points). \(D \)<wbr>\({}= \{[2,3], [3,2], [2,-3], [0,3], [0,0], [1,1], [-1,1]\}\). Normalise to a set \(D'\) with mean \([0,0]\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf x' \)<wbr>\({}= \mathbf x - \boldsymbol\mu\), \(\boldsymbol\mu \)<wbr>\({}= \frac1N\sum\mathbf x_i\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.4, mean centring.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Sum of first coordinates. \(2 + 3 + 2 + 0 + 0 + 1 - 1 = 7\). Mean \(7/7 = 1\).</li>
+<li>Sum of second coordinates. \(3 + 2 - 3 + 3 + 0 + 1 + 1 = 7\). Mean 1. So \(\boldsymbol\mu = [1, 1]\).</li>
+<li>Subtract \([1,1]\) from each point. \(D' \)<wbr>\({}= \{[1,2], [2,1], [1,-4], [-1,2],\)<wbr>\(\ [-1,-1], [0,0], [-2,0]\}\).</li>
+<li>Check: first coordinates \(1 + 2 + 1 - 1 - 1 + 0 - 2 = 0\), second \(2 + 1 - 4 + 2 - 1 + 0 + 0 = 0\).</li>
+<li><strong>The official sheet has a slip.</strong> It lists \([-1, -1]\) twice and has no \([0, 0]\). The point \([1, 1]\) minus the mean \([1, 1]\) is \([0, 0]\). With the official list the first coordinates add to −1, not 0. Rubric: 1 point for the mean, 2 for the set, up to 2 slips allowed at −0.5 each.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q8 (3 points). Linear regression with \(N\) samples and \(\hat y = \mathbf w\T\mathbf x\). Write the MSE loss.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(J(\mathbf w) \)<wbr>\({}= \frac1N\sum_{i=1}^N(y_i - \mathbf w\T\mathbf x_i)^2\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, the loss.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><p>Write exactly the formula above. Rubric: 3 points, minus 0.5 if the \(\frac1N\) is missing. Sets 2 and 3 asked for the ridge loss \(\frac1N\sum(y_i - \mathbf w\T\mathbf x_i)^2 + \lambda\|\mathbf w\|_2^2\) and the lasso loss \(\frac1N\sum(y_i - \mathbf w\T\mathbf x_i)^2 + \lambda\|\mathbf w\|_1\) (section 1.8).</p></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q9 (3 points). PCA maximises \(\mathbf v\T\Sigma\mathbf v\). Using gradient ascent, give \(\mathbf v_{k+1}\) from \(\mathbf v_k\). (a) \(\mathbf v_{k+1} \)<wbr>\({}= \Sigma\mathbf v_k\) (b) \((\mathbf I + \eta\Sigma)\mathbf v_k\) (c) \((\mathbf I - \eta\Sigma)\mathbf v_k\) (d) none. (The unit length is restored separately each step.)</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Ascent: \(\mathbf v_{k+1} \)<wbr>\({}= \mathbf v_k + \eta\nabla f(\mathbf v_k)\). For symmetric \(\Sigma\), \(\nabla(\mathbf v\T\Sigma\mathbf v) \)<wbr>\({}= 2\Sigma\mathbf v\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.7 (update rule, with + for ascent) and section 1.6, line 3 (the gradient of a quadratic form).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(\mathbf v_{k+1} \)<wbr>\({}= \mathbf v_k + \eta\cdot2\Sigma\mathbf v_k\).</li>
+<li>Absorb the 2 into the learning rate (call \(2\eta\) just \(\eta\)) to get \(\mathbf v_{k+1} \)<wbr>\({}= \mathbf v_k + \eta\Sigma\mathbf v_k\).</li>
+<li>Factor \(\mathbf v_k\) on the right. \(\mathbf v_{k+1} \)<wbr>\({}= (\mathbf I + \eta\Sigma)\mathbf v_k\). Answer <strong>(b)</strong>.</li>
+<li>(c) is descent, which would head towards the smallest eigenvector. (a) is the "power method", which also finds the top eigenvector after normalising, but it is not a gradient ascent step. Rubric: 3 points for (b).</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q10 (3 points). Points \([-2,2], [-3,3], [-4,4], [-5,5], [-6,6]\) on a line. Which follow from the covariance matrix? (a) \(\lambda_2 = 0\) (b) \(\lambda_1 = 2\) (c) \(\lambda_1 = -1\) (d) \(\Sigma\) is singular (e) none.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\). For \(\begin{bmatrix} a & b \\ b & a \end{bmatrix}\), \(\lambda = a \pm b\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.12, PCA example II (points on a line give \(\lambda_2 = 0\)).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The mean is \([-4, 4]\). The centred points are \([2,-2], [1,-1], [0,0], [-1,1], [-2,2]\).</li>
+<li>\(\Sigma_{11} \)<wbr>\({}= \frac15(4 + 1 + 0 + 1 + 4)\)<wbr>\({}= 2\). \(\Sigma_{22} = 2\). \(\Sigma_{12} \)<wbr>\({}= \frac15(-4 - 1 + 0 - 1 - 4)\)<wbr>\({}= -2\).</li>
+<li>\(\Sigma \)<wbr>\({}= \begin{bmatrix} 2 & -2 \\ -2 & 2 \end{bmatrix}\), eigenvalues \(2 - (-2) = 4\) and \(2 + (-2) = 0\).</li>
+<li>(a) true. (d) true, a zero eigenvalue means determinant 0. (b) false, \(\lambda_1 = 4\) (or 5 if you divide by \(N - 1\)). (c) false, a covariance matrix is PSD so no eigenvalue is negative.</li>
+<li>Answer: <strong>(a), (d)</strong>. The rubric gave 2 points for (a) and 1 for (d).</li>
+<li>Note that these points lie on \(y = -x\), which makes 135° with the x axis, not 45° as the paper says. The answer does not change, since any set of points on one line has \(\lambda_2 = 0\).</li>
+</ol></div></div></div></details>
+
+<figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p03.webp" alt="Quiz 1 Set 1, page 3, questions 11 and 12" loading="lazy">
+<figcaption>Quiz 1, Set 1, page 3 (questions 11 and 12).</figcaption></figure>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q11 (7.5 points). \(L(w) = 2w^2 - 4w + 7\). (i) Gradient descent update. (ii) \(w_1\) and \(w_2\) from \(w_0 = 2\) with \(\eta = 0.2\). (iii) \(L\) at the optimum.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(w_{k+1} = w_k - \eta L'(w_k)\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.7.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(L'(w) = 4w - 4\). (i) \(w_{k+1} = w_k - \eta(4w_k - 4)\).</li>
+<li>(ii) \(w_1 \)<wbr>\({}= 2 - 0.2(4 \times 2 - 4)\)<wbr>\({}= 2 - 0.2 \times 4\)<wbr>\({}= 2 - 0.8\)<wbr>\({}= \) <strong>1.2</strong>.</li>
+<li>\(w_2 \)<wbr>\({}= 1.2 - 0.2(4 \times 1.2 - 4)\)<wbr>\({}= 1.2 - 0.2 \times 0.8\)<wbr>\({}= 1.2 - 0.16\)<wbr>\({}= \) <strong>1.04</strong>.</li>
+<li>(iii) \(L'(w) = 0\) gives \(w^* = 1\). \(L(1) = 2 - 4 + 7 = \) <strong>5</strong>.</li>
+<li>Check: the iterates 2, 1.2, 1.04 approach 1, each time a fifth of the previous distance (\(1 - 4\eta = 0.2\)).</li>
+<li>On marks, the solution sheet gives 2.5 points to each part. The paper itself printed "[1.5 + 3.0 + 3.0 = 7.5]". Either way, all three parts carry marks, so write the update rule even if you get stuck on the numbers.</li>
+</ol></div></div></div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q12 (7.5 points). Raju's data \((1, 2), (2, 3), (3, 4)\). Using \(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\), construct \(\mathbf X\) and \(\mathbf y\) and compute \(\mathbf w\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\), with a column of ones in \(\mathbf X\) for the intercept.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, line 5, and the 2×2 inverse rule in the "Reading the formula" box after it.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Model \(y = w_0 + w_1x\), so each row of \(\mathbf X\) is \([1, x_i]\). \[\mathbf X = \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}, \quad \mathbf y\]
+\[{}= \begin{bmatrix} 2 \\ 3 \\ 4 \end{bmatrix}.\]</li>
+<li>\(\mathbf X\T\mathbf X \)<wbr>\({}= \begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix}\) (\(N = 3\), \(\sum x = 6\), \(\sum x^2 = 14\)).</li>
+<li>\(\mathbf X\T\mathbf y \)<wbr>\({}= \begin{bmatrix} 9 \\ 20 \end{bmatrix}\) (\(\sum y = 9\), \(\sum xy = 2 + 6 + 12 = 20\)).</li>
+<li>Determinant \(3 \times 14 - 6 \times 6 \)<wbr>\({}= 42 - 36\)<wbr>\({}= 6\). Inverse \(\frac16\begin{bmatrix} 14 & -6 \\ -6 & 3 \end{bmatrix}\).</li>
+<li>\(w_0 \)<wbr>\({}= \frac16(14 \times 9 - 6 \times 20)\)<wbr>\({}= \frac{126 - 120}6\)<wbr>\({}= 1\).</li>
+<li>\(w_1 \)<wbr>\({}= \frac16(-6 \times 9 + 3 \times 20)\)<wbr>\({}= \frac{-54 + 60}6\)<wbr>\({}= 1\).</li>
+<li>So \(\mathbf w = [1, 1]\), the line <strong>\(y = 1 + x\)</strong>. Check. \(1 + 1 = 2\), \(1 + 2 = 3\), \(1 + 3 = 4\).</li>
+<li>Rubric: \(\mathbf X\) 2.5, \(\mathbf y\) 1, substituting into the formula 1, the inverse 1.5, the final answer 1.5.</li>
+</ol></div></div></div></details>
+
+<h3>Sets 2, 3 and 4</h3>
+<p>The other sets changed the numbers and some wording. Their answers, all re-checked:</p>
+<table class="tbl">
+<tr><th>Q</th><th>Set 2</th><th>Set 3</th><th>Set 4</th></tr>
+<tr><td>1</td><td>\([-6,3,2,0]\): 3, 11, 7, 6</td><td>\([-4,2,0,4]\): 3, 10, 6, 4</td><td>\([-8,6,0,0]\): 2, 14, 10, 8</td></tr>
+<tr><td>2</td><td>maximise \(\mathbf w\T\mathbf X\T\mathbf X\mathbf w\) gives largest, \(\mathbf X\T\mathbf X\)</td><td>minimise \(\mathbf w\T\mathbf X\mathbf X\T\mathbf w\) gives smallest, \(\mathbf X\mathbf X\T\)</td><td>maximise \(\mathbf w\T\mathbf X\mathbf X\T\mathbf w\) gives largest, \(\mathbf X\mathbf X\T\)</td></tr>
+<tr><td>3</td><td>With one photo copied 1000 times, the mean equals that photo and every covariance entry is 0</td><td>With 1000 images, only a couple of hundred eigenvalues matter, 5 students give rank near 5, and one fixed rotation of all images keeps the rank</td><td>With 800 images of \(120\times120\), there are at most 799 non-zero eigenvalues, a few hundred eigenfaces explain most variance, 10 people give rank near 10, a fixed transformation keeps the rank and random transformations raise it</td></tr>
+<tr><td>4</td><td>\(\theta = 0.2\) gives TP 6, FP 2, FN 0. Precision 0.75, recall 1</td><td>\(\theta = 0.6\) gives the same as \(\theta = 0.5\), 5/6 and 5/6</td><td>\(\theta = 0.7\) gives TP 5, FP 0, FN 1. Precision 1, recall 5/6</td></tr>
+<tr><td>5</td><td>3-NN Manhattan: 80% (only \([1,-1]\) wrong)</td><td>1-NN Euclidean: 60%</td><td>3-NN Euclidean: 80%</td></tr>
+<tr><td>6, 7, 9, 10</td><td colspan="3">Same as Set 1. (Sets 3 and 4 say \(m \lt n\) in Q6 but the official answer is unchanged.)</td></tr>
+<tr><td>8</td><td>ridge loss</td><td>lasso loss</td><td>MSE loss</td></tr>
+<tr><td>11</td><td>\(w_0 = 0\), \(\eta = 0.2\): 0.8, 0.96, \(L = 5\)</td><td>\(L = 4w^2 - 8w + 7\), \(w_0 = 2\), \(\eta = 0.1\): 1.2, 1.04, \(L = 3\)</td><td>same \(L\), \(w_0 = 0\): 0.8, 0.96, \(L = 3\)</td></tr>
+<tr><td>12</td><td>\((1,-1), (2,0), (3,1)\) gives \(y = x - 2\)</td><td>\((1,0), (2,1), (3,2)\) gives \(y = x - 1\)</td><td>\((1,3), (2,4), (3,5)\) gives \(y = x + 2\)</td></tr>
+</table>
+<p class="small">Set 3's printed paper skips a question number, so its questions 5 to 11 are Set 1's 6 to 12. In Set 4, Q6 says \(m \lt n\). For a wide matrix the thin SVD has square \(\mathbf U\) and wide \(\mathbf V\T\), so strictly it is \(\mathbf U\) that has orthonormal rows and columns and \(\mathbf V\) that has orthonormal columns only. The official sheet gave the \(m \gt n\) answer for all sets. If this comes up again, check which way round the matrix is.</p>
+<div class="card remember"><span class="tag">Before Quiz 1, make sure you can</span><ul>
+<li>compute all four norms of a vector, and precision, recall and k-NN accuracy by hand</li>
+<li>write the MSE, ridge and lasso losses with the \(\frac1N\)</li>
+<li>derive \(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\) and use it on 3 points, including the \(2\times2\) inverse</li>
+<li>do two gradient descent steps on a quadratic and find its minimum</li>
+<li>say which eigenvector solves a max or min of \(\mathbf w\T\mathbf A\mathbf w\), and of which matrix</li>
+<li>find the covariance matrix and its eigenvalues for a handful of 2-D points, and run PCA on them</li>
+<li>reason about the rank and size of covariance matrices for image data</li>
+</ul></div>
+</section>
