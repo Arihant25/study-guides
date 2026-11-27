@@ -20,6 +20,7 @@
 <tr><td>3.7 Training in practice</td><td>L17, L18</td><td>50 min</td></tr>
 <tr><td>3.8 Why gradient descent works, Newton and Adam</td><td>L18</td><td>60 min</td></tr>
 <tr><td>3.9 Quiz 2, 2026, solved, and 3.10 extra practice</td><td>all</td><td>50 min</td></tr>
+<tr><td>3.11 In the exam hall</td><td>all</td><td>10 min</td></tr>
 <tr><td><strong>Total</strong></td><td></td><td><strong>8 hours</strong></td></tr>
 </table>
 <p>If you are short of time, do 3.2, 3.4 and 3.6 first. The perceptron update and a backpropagation pass by hand are the two calculations most likely to come up as numerical questions.</p>
@@ -31,7 +32,7 @@
 
 <section>
 <h2 id="neuron"><span class="num">3.1</span>Neurons and neuron models</h2>
-<p class="slides">Lecture L14 · <a href="https://www.youtube.com/watch?v=xnJuNxURtik">Short video: Neural networks basics</a></p>
+<p class="slides">Lecture L14 · <a href="https://www.youtube.com/watch?v=xnJuNxURtik">Short video "Neural networks basics"</a></p>
 <p class="oneline">An artificial neuron multiplies each input by a weight, adds the results, and passes the sum through a fixed function called the activation.</p>
 <p>The name comes from biology. A nerve cell in the brain (a <em class="t">neuron</em>) receives signals from other cells through branches called dendrites. The strength of each connection (a <em class="t">synapse</em>) differs. When the combined incoming signal is strong enough, the cell sends its own signal out along its axon. The slides quote the human brain as having about 10 billion neurons and 60 trillion connections.</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L14/p03.webp" alt="Slide: a biological neuron next to an artificial neuron with weighted inputs, a summing node and an activation" loading="lazy">
@@ -47,6 +48,7 @@
 <p>\(\mathbf w\T\mathbf x\) is the dot product. It multiplies matching entries and adds them, so \(\mathbf w\T\mathbf x \)<wbr>\({}= b\cdot 1 + w_1x_1 + \dots + w_mx_m\). The \(\T\) (transpose) turns the column \(\mathbf w\) into a row so the product is a single number.</p>
 <p>The leading 1 in \(\mathbf x\) is what makes the bias appear. This is called the <em class="t">augmented</em> input. Page 1 used the same trick for the linear classifier.</p>
 <p><strong>Example.</strong> Take \(\mathbf w = [1, 2, -1]\T\) and the input \((x_1, x_2) = (3, 4)\). The augmented input is \(\mathbf x = [1, 3, 4]\T\). Then \(v \)<wbr>\({}= 1\cdot1 + 2\cdot3 + (-1)\cdot4 \)<wbr>\({}= 1 + 6 - 4 \)<wbr>\({}= 3\). If the activation is the sign function, the output is \(+1\) because \(3 > 0\).</p>
+<p>Every section below starts from this sum. The perceptron in 3.2 takes its sign, the linear unit in 3.3 uses it as it is, and each neuron of an MLP in 3.4 applies an activation to it.</p>
 </div>
 <p>L14 lists when a neural network is a sensible choice. The input has many attributes. The output may be a class, a real number or a vector. The training data may be noisy. You can afford a long training time but need fast predictions. You do not need a person to be able to read the learned function. The slides also contrast a network with a normal computer. A network does many simple operations in parallel, while a CPU does complicated instructions one after another. And instead of writing a model by hand and checking it against data, a network finds the model from the data.</p>
 <div class="card remember"><span class="tag">Remember</span>
@@ -59,7 +61,7 @@
 
 <section>
 <h2 id="perceptron"><span class="num">3.2</span>The perceptron</h2>
-<p class="slides">Lecture L14 · Reading for the convergence proofs: Duda, Hart and Stork, Pattern Classification, page 229 (cited on L14 slide 19)</p>
+<p class="slides">Lecture L14 · The convergence proofs are in Duda, Hart and Stork, Pattern Classification, page 229 (cited on L14 slide 19)</p>
 <p class="oneline">A perceptron is one neuron with the sign function as its activation. It labels an input \(+1\) or \(-1\) by which side of a line (or plane) the input is on, and it learns the line by nudging the weights after each mistake.</p>
 <p>The word comes from "perception". Frank Rosenblatt built the first one in 1958 as a model of how a machine might perceive patterns. It is also called a <em class="t">single layer perceptron</em> (SLP), because there is one layer of weights between the input and the output.</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L14/p07.webp" alt="Slide: single layer perceptron diagram, augmented input and weights, sign activation, and the update rule for misclassified samples" loading="lazy">
@@ -79,6 +81,7 @@
 <p>In both error cases the change is \(2\eta\,t\,\mathbf x\). L14 slide 7 writes it as \(\eta\,t\,\mathbf x\), which is the same rule with the 2 absorbed into \(\eta\). Use the \((t - o)\) form unless a question says otherwise, and say which form you are using.</p>
 <p><strong>Why it helps.</strong> After the update, the new sum for the same sample is \((\mathbf w + 2\eta t\mathbf x)\T\mathbf x \)<wbr>\({}= \mathbf w\T\mathbf x + 2\eta\,t\,\|\mathbf x\|^2\). The added part \(2\eta t\|\mathbf x\|^2\) has the sign of \(t\), because \(\|\mathbf x\|^2\) (the squared length of \(\mathbf x\)) is positive. So the sum moves towards the correct side.</p>
 <p><strong>Example.</strong> With \(\mathbf w = [0, 1]\T\), \(\mathbf x = [1, -2]\T\), \(t = +1\) and \(\eta = 0.5\), the sum is \(0 - 2 = -2\), so \(o = -1\), which is wrong. The change is \(0.5\cdot 2\cdot[1,-2]\T \)<wbr>\({}= [1, -2]\T\). The new weights are \([1, -1]\T\) and the new sum is \(1 + 2 = 3 > 0\), now correct.</p>
+<p>The worked L14 table below applies this rule 7 times, and Quiz 2 Q3 in <a href="#quiz2">3.9</a> uses its \(\eta\,t\,\mathbf x\) form.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L14/p08.webp" alt="Slide: the perceptron learning algorithm as pseudocode" loading="lazy">
 <figcaption>L14, slide 8. The algorithm. Start from random weights and sweep through the training set again and again, updating on every mistake, until a full sweep makes no mistakes.</figcaption></figure>
@@ -185,20 +188,22 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Design a perceptron for OR with \(\pm1\) logic. Give \(b, w_1, w_2\) and check all four rows.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(o \)<wbr>\({}= \operatorname{sgn}(b + w_1x_1 + w_2x_2)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.2, "AND, OR and XOR".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, the AND table in "AND, OR and XOR", with the threshold moved as for OR.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>OR is false only at \((-1,-1)\). Take \(w_1 = w_2 = 1\), so \(x_1 + x_2\) is \(-2\), \(0\) or \(2\).</li>
 <li>The output must be \(-1\) at sum \(-2\) and \(+1\) at sums 0 and 2. A bias of \(+1\) gives \(v = -1, 1, 1, 3\).</li>
 <li>So \(b = 1\), \(w_1 = 1\), \(w_2 = 1\).</li>
-<li>Check. \((-1,-1)\) gives \(v = -1\), output \(-1\). \((-1,1)\) and \((1,-1)\) give \(v = 1\), output \(+1\). \((1,1)\) gives \(v = 3\), output \(+1\). All four match OR.</li>
+<li>Check the false row. \((-1,-1)\) gives \(v = -1\), output \(-1\).</li>
+<li>Check the true rows. \((-1,1)\) and \((1,-1)\) give \(v = 1\), and \((1,1)\) gives \(v = 3\). All three outputs are \(+1\), so all four rows match OR.</li>
 </ol></div></div>
 </div></details>
 <details class="q"><summary><span class="qt">Practice</span><span>Start the L14 problem again with \(\mathbf w = [0,0,0]\T\) and \(\eta = 0.1\), and treat \(v = 0\) as output \(-1\). Give the weights after the first epoch.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\Delta\mathbf w \)<wbr>\({}= \eta(t - o)\mathbf x\), so \(\pm0.2\,\mathbf x\) on a mistake.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.2, the learning rule and the worked table.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, Reading the formula for the learning rule, and the worked L14 table.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
-<li>\(\mathbf a_1 = [1,1,2]\T\). \(v = 0\), so \(o = -1\) but \(t = +1\). Add \(0.2\,\mathbf a_1\). \(\mathbf w = [0.2, 0.2, 0.4]\T\).</li>
+<li>\(\mathbf a_1 = [1,1,2]\T\). \(v = 0\), so \(o = -1\) but \(t = +1\), a mistake.</li>
+<li>Add \(0.2\,\mathbf a_1\). \(\mathbf w = [0.2, 0.2, 0.4]\T\).</li>
 <li>\(\mathbf a_2 = [1,4,2]\T\). \(v = 0.2 + 0.8 + 0.8 = 1.8 > 0\). Correct, no change.</li>
 <li>\(\mathbf b_1 = [1,3,0]\T\). \(v = 0.2 + 0.6 + 0 = 0.8 > 0\), so \(o = +1\) but \(t = -1\). Subtract \(0.2\,\mathbf b_1 \)<wbr>\({}= [0.2, 0.6, 0]\T\). \(\mathbf w = [0, -0.4, 0.4]\T\).</li>
 <li>Check the new weights on \(\mathbf b_1\). \(v = 0 - 1.2 + 0 = -1.2\), output \(-1\), now correct.</li>
@@ -217,7 +222,7 @@
 
 <section>
 <h2 id="delta-rule"><span class="num">3.3</span>The delta rule and gradient descent</h2>
-<p class="slides">Lecture L14 · <a href="https://youtu.be/i08JdWDc1MY">Short video: MSE using GD</a></p>
+<p class="slides">Lecture L14 · <a href="https://youtu.be/i08JdWDc1MY">Short video "MSE using GD"</a></p>
 <p class="oneline">Drop the sign function, keep the plain sum \(o = \mathbf w\T\mathbf x\), and minimise the squared error by gradient descent. The update you get is the delta rule.</p>
 <p>A neuron with no activation (or the identity activation) is called a <em class="t">linear unit</em>. Its output \(o = \mathbf w\T\mathbf x\) can be any real number, and the slides call it "unthresholded". Over the training samples \(d = 1, 2, \dots\), each with target \(t_d\) and output \(o_d\), the error is</p>
 <div class="eq boxed">\[E(\mathbf w) = \frac12\sum_d (t_d - o_d)^2\]\[{}= \frac12\sum_d \Big(t_d - \sum_i w_ix_{i,d}\Big)^2.\]</div>
@@ -226,6 +231,7 @@
 <p>The \(\frac12\) is there only so that it cancels the 2 that comes down when you differentiate the square. It does not move the minimum.</p>
 <p><strong>Example.</strong> One feature, no bias, two samples \((x, t) = (1, 2)\) and \((2, 3)\), and \(w = 1\). The outputs are 1 and 2, the errors are 1 and 1, and \(E = \frac12(1 + 1) = 1\).</p>
 <p>As a function of \(\mathbf w\), \(E\) is a sum of squares of linear functions, so it is a bowl (a quadratic with a single lowest point region and no other dips). L14 slide 11 asks you to plot it for one sample. With \(x = 2\), \(t = 4\) it is \(E(w) \)<wbr>\({}= \frac12(4 - 2w)^2 \)<wbr>\({}= 2(w - 2)^2\), a parabola with its minimum at \(w = 2\). This shape is called <em class="t">convex</em>, so gradient descent cannot get stuck in a wrong dip.</p>
+<p>The box below differentiates this \(E\) to get the delta rule, and the backpropagation loss \(L = (o - y)^2\) in 3.6 is the same squared error for one sample.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L14/p12.webp" alt="Slide: derivation of the gradient of the squared error for a linear unit" loading="lazy">
 <figcaption>L14, slide 12. The derivation below, as it appears on the slide.</figcaption></figure>
@@ -286,7 +292,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A linear unit has \(\mathbf w = [0, 1]\T\) (bias first). One sample has \(x = 2\) (so \(\mathbf x = [1, 2]\T\)) and target \(t = 3\). With \(\eta = 0.1\), give the delta rule update and the new error for this sample.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\Delta w_i = \eta(t - o)x_i\), \(E = \frac12(t - o)^2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.3, line 5 of the derivation, one sample.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#delta-rule">3.3</a>, box "Derive the delta rule", line 5, for one sample (drop the sum).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Output \(o = 0\cdot1 + 1\cdot2 = 2\). Error \(t - o = 1\). Old \(E = \frac12\).</li>
 <li>\(\Delta\mathbf w \)<wbr>\({}= 0.1\cdot1\cdot[1, 2]\T \)<wbr>\({}= [0.1, 0.2]\T\).</li>
@@ -306,7 +312,7 @@
 
 <section>
 <h2 id="mlp"><span class="num">3.4</span>Multi-layer perceptrons</h2>
-<p class="slides">Lecture L15 · <a href="https://www.youtube.com/watch?v=xnJuNxURtik">Short video: Neural networks basics</a></p>
+<p class="slides">Lecture L15 · <a href="https://www.youtube.com/watch?v=xnJuNxURtik">Short video "Neural networks basics"</a></p>
 <p class="oneline">Stack layers of neurons, each feeding the next, with a nonlinear activation after each layer. The hidden layers build new features, and the last layer makes the prediction from them.</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L15/p05.webp" alt="Slide: a multi-layer perceptron with an input layer, hidden layers and an output layer, fully connected" loading="lazy">
 <figcaption>L15, slide 5. An MLP. Every neuron in one layer connects to every neuron in the next.</figcaption></figure>
@@ -320,6 +326,30 @@
 <li><strong>Why nonlinear activations?</strong> Without them, two layers collapse into one. \(W_2(W_1\mathbf x) \)<wbr>\({}= (W_2W_1)\mathbf x\), and \(W_2W_1\) is just another matrix. However many linear layers you stack, the whole network is still one linear map.</li>
 <li><strong>What do hidden layers do?</strong> They compute new features (a new representation) of the input, chosen by training so that the final layer's job becomes easy. This is the same idea as the feature transformation \(\mathbf x' = f(W, \mathbf x)\) on page 1, now learned instead of designed.</li>
 </ul>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that an MLP with linear activations is a single layer network.</h4>
+<ol class="steps lines">
+<li>With \(\varphi(p) = p\), the hidden layer outputs \(\mathbf q = W\mathbf x\).</li>
+<li>The output is \(o \)<wbr>\({}= \mathbf u\T\mathbf q \)<wbr>\({}= \mathbf u\T W\mathbf x\).</li>
+<li>\(\mathbf u\T W \)<wbr>\({}= (W\T\mathbf u)\T\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>The transpose of a product reverses the order, \((AB)\T = B\T A\T\).</li>
+<li>Apply it with \(A = W\T\) and \(B = \mathbf u\). \((W\T\mathbf u)\T \)<wbr>\({}= \mathbf u\T(W\T)\T\).</li>
+<li>Transposing twice gives back the original, \((W\T)\T = W\). So \((W\T\mathbf u)\T \)<wbr>\({}= \mathbf u\T W\).</li>
+</ol>
+</details></li>
+<li>So \(o = \mathbf v\T\mathbf x\) with \(\mathbf v = W\T\mathbf u\), one neuron with weights \(\mathbf v\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Substitute line 3 into line 2. \(o = (W\T\mathbf u)\T\mathbf x\).</li>
+<li>Name the vector \(\mathbf v = W\T\mathbf u\). It has one entry per input, because \(W\T\) has one row per input.</li>
+<li>\(o = \mathbf v\T\mathbf x\) is the weighted sum computed by a single neuron with weights \(\mathbf v\). The hidden layer has added nothing.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<p>With biases the same steps give \(o = \mathbf v\T\mathbf x + c'\), still one neuron. Quiz 2 in 2026 asked for exactly this, in <a href="#quiz2">3.9</a> Q2(d).</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L15/p13.webp" alt="Slide: decision regions formed by networks with one, two and three layers" loading="lazy">
 <figcaption>L15, slide 13. Decision regions that networks of increasing depth can form. A single layer gives a half-plane. A hidden layer can give a convex region (the intersection of half-planes). A second hidden layer can give regions of any shape, built from unions of convex ones.</figcaption></figure>
 
@@ -361,6 +391,7 @@
 <p>\(z_1, \dots, z_K\) are the raw outputs of the last layer, one per class, often called logits. \(e^{z_i}\) makes each one positive. Dividing by the total \(\sum_j e^{z_j}\) makes the \(K\) values add up to 1. So \(\mathbf o\) can be read as a probability for each class. The largest \(z_i\) still gets the largest \(o_i\), which is where the name "soft" max comes from.</p>
 <p>\(\mathbf t\) is the target written as a probability vector. For a sample of class \(c\) it is 1 at position \(c\) and 0 elsewhere (one-hot). Then the sum has one surviving term and \(L = -\log o_c\). The loss is small when the network gives the true class a probability near 1, and large when it gives it a probability near 0. The minus sign makes the loss positive, since \(\log o_c \le 0\). L15 slide 16 drops the minus sign, which is a typo.</p>
 <p><strong>Example.</strong> \(\mathbf z = [2, 1, 0]\). \(e^2 = 7.389\), \(e^1 = 2.718\), \(e^0 = 1\), total \(11.107\). So \(\mathbf o \)<wbr>\({}= [0.665, 0.245, 0.090]\), which adds to 1. If the true class is the first, \(L = -\ln 0.665 = 0.408\). If it were the third, \(L = -\ln 0.090 = 2.408\), much larger.</p>
+<p>This is the output layer of every classifier on <a href="../deep/">page 4</a> (CNNs, RNNs and transformers all end with softmax and cross-entropy).</p>
 </div>
 <p><strong>Link to KL divergence.</strong> The <em class="t">Kullback–Leibler (KL) divergence</em> measures how different a distribution \(\mathbf o\) is from a distribution \(\mathbf t\). It is \(\mathrm{KL}(\mathbf t\,\|\,\mathbf o) \)<wbr>\({}= \sum_i t_i\log\frac{t_i}{o_i}\). Split the log of the fraction into a difference.</p>
 <div class="eq">\[\mathrm{KL}(\mathbf t\,\|\,\mathbf o) = \sum_i t_i\log t_i - \sum_i t_i\log o_i\]\[{}= -H(\mathbf t) + L(\mathbf o, \mathbf t).\]</div>
@@ -381,7 +412,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>An MLP has 4 inputs, a hidden layer of 5 ReLU neurons and 3 softmax outputs, all with bias. How many learnable parameters?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(n_{\text{out}}(n_{\text{in}} + 1)\) per dense layer.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.4, lines 1 to 3 of the counting box.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", lines 1 to 3, one line per layer.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Hidden layer \(5\times(4 + 1) = 25\).</li>
 <li>Output layer \(3\times(5 + 1) = 18\).</li>
@@ -467,6 +498,7 @@
 <p>\(W = \begin{bmatrix}w_{11} & w_{12}\\ w_{21} & w_{22}\end{bmatrix}\), so \(p_1 = w_{11}x_1 + w_{12}x_2\) and \(p_2 = w_{21}x_1 + w_{22}x_2\). The weight \(w_{jk}\) goes from input \(k\) to hidden neuron \(j\).</p>
 <p>\(\mathbf q \)<wbr>\({}= [\sigma(p_1), \sigma(p_2)]\T\) are the hidden outputs. \(\mathbf u = [u_1, u_2]\T\) are the output weights, so \(s = u_1q_1 + u_2q_2\). The learnable parameters are \(W\) and \(\mathbf u\), six numbers. The steps \(\sigma\) and the loss have no parameters.</p>
 <p>Seeing the network as a chain of blocks, each taking the previous block's output, is the <em class="t">computational graph</em> view (L16 slide 5). Softmax, activations and the loss are all just blocks.</p>
+<p>The box below uses exactly these names, and Quiz 2 Q2 in <a href="#quiz2">3.9</a> used the same network with ReLU hidden units.</p>
 </div>
 
 <h3>The chain rule, one weight at a time</h3>
@@ -575,7 +607,7 @@
 <details class="q"><summary><span class="qt">L15 slide</span><span>For the 3-input, 2-hidden-sigmoid, 1-linear-output network of 3.4 with squared-error loss \(L = (y - t)^2\), find \(\frac{\partial L}{\partial v_1}\), \(\frac{\partial L}{\partial c}\), \(\frac{\partial L}{\partial w_{13}}\) and \(\frac{\partial L}{\partial b_1}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Chain rule along the path from \(L\) to the weight.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.6, lines 1 to 5, with a linear output (its derivative is 1 instead of \(o(1 - o)\)) and with biases.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 1 to 5. The output is linear, so line 2 has 1 in place of \(o(1 - o)\), and each bias is a weight on a constant input of 1.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\frac{\partial L}{\partial y} \)<wbr>\({}= 2(y - t)\). The output is linear, so \(\delta_{\text{out}} \)<wbr>\({}= 2(y - t)\cdot1 \)<wbr>\({}= 2(y - t)\).</li>
 <li>\(y = v_1h_1 + v_2h_2 + c\). So \(\frac{\partial L}{\partial v_1} \)<wbr>\({}= 2(y - t)\,h_1\) and \(\frac{\partial L}{\partial c} \)<wbr>\({}= 2(y - t)\).</li>
@@ -587,7 +619,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>In the numeric pass of 3.6, change the target to \(y = 0\) and keep everything else. Find \(\frac{\partial L}{\partial u_1}\) and \(\frac{\partial L}{\partial w_{12}}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\delta_s = 2(o - y)o(1 - o)\), \(\frac{\partial L}{\partial u_1} \)<wbr>\({}= \delta_sq_1\), \(\frac{\partial L}{\partial w_{12}} \)<wbr>\({}= \delta_s u_1 q_1(1 - q_1)x_2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.6, lines 2 to 5.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 2 to 5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The forward pass does not use \(y\), so \(o = 0.5\) and \(q_1 = q_2 = 0.5\) as before.</li>
 <li>\(\delta_s \)<wbr>\({}= 2(0.5 - 0)\cdot0.5\cdot0.5 \)<wbr>\({}= 0.25\).</li>
@@ -604,7 +636,7 @@
 
 <section>
 <h2 id="training-practice"><span class="num">3.7</span>Training in practice</h2>
-<p class="slides">Lectures L17 and L18 · <a href="https://www.youtube.com/watch?v=u3rUkkh-Rac">Short video: Introduction to PyTorch</a></p>
+<p class="slides">Lectures L17 and L18 · <a href="https://www.youtube.com/watch?v=u3rUkkh-Rac">Short video "Introduction to PyTorch"</a></p>
 <p class="oneline">Plain backpropagation with full-batch gradient descent works on paper but is slow and fragile. L17 and L18 list the changes that make it practical.</p>
 <p>L17 slide 6 frames it as four places where the simple algorithm can change. The initialisation can be smarter, because the loss is non-convex and the starting point matters. The gradient can be estimated from part of the data instead of all of it. The loss can include extra terms that reduce overfitting. And the update rule itself can change.</p>
 
@@ -649,6 +681,7 @@
 <li>Gradient 0.92. \(\Delta \)<wbr>\({}= 0.092 + 0.9\cdot0.34 \)<wbr>\({}= 0.398\). \(w = 0.062\).</li>
 </ol>
 <p>Plain gradient descent with the same \(\eta\) multiplies \(w\) by 0.8 each step, giving 0.8, 0.64 and 0.512. Momentum is much further along after three steps. (It will overshoot past 0 next, which is the price of the speed.)</p>
+<p>Quiz 2 Q1(b) asked for this update, and Adam in 3.8 keeps a smoothed version of the same running step.</p>
 </div>
 
 <h3>Regularisation, batch normalisation, dropout and early stopping</h3>
@@ -658,9 +691,10 @@
 <p><strong>Batch normalisation.</strong> We normalise the input data before training. But the inputs to each hidden layer keep changing their distribution as the earlier layers' weights change. The slides call this the <em class="t">internal covariate shift</em>. Batch normalisation normalises each hidden neuron's input over the current mini-batch.</p>
 <div class="eq">\[\mu_B = \frac1m\sum_{i=1}^m x_i,\]\[\sigma_B^2 = \frac1m\sum_{i=1}^m (x_i - \mu_B)^2,\]\[\hat x_i = \frac{x_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},\]\[y_i = \gamma\hat x_i + \beta.\]</div>
 <div class="card goal"><span class="tag">Reading the formula</span>
-<p>\(m\) is the batch size and \(x_1, \dots, x_m\) are one neuron's inputs over the batch. \(\mu_B\) and \(\sigma_B^2\) are their mean and variance. \(\hat x_i\) has mean 0 and variance 1. \(\epsilon\) is a tiny number such as \(10^{-5}\) that avoids dividing by zero. \(\gamma\) and \(\beta\) are learned, so the network can rescale and shift the result, or even undo the normalisation if that helps.</p>
+<p>\(m\) is the batch size and \(x_1, \dots, x_m\) are one neuron's inputs over the batch. \(\mu_B\) and \(\sigma_B^2\) are their mean and variance. \(\hat x_i\) has mean 0 and variance 1. \(\epsilon\) is a tiny number such as \(10^{-5}\) that avoids dividing by zero. \(\gamma\) and \(\beta\) are learned (this \(\gamma\) is not the momentum coefficient above), so the network can rescale and shift the result, or even undo the normalisation if that helps.</p>
 <p><strong>Example.</strong> Batch \(1, 2, 3, 6\). Mean \(\mu_B = 12/4 = 3\). Variance \(\frac{4 + 1 + 0 + 9}4 = 3.5\), standard deviation \(1.871\). Normalised values \(-1.069, -0.535, 0, 1.604\), which have mean 0. With \(\gamma = 1\), \(\beta = 0\) these are the outputs.</p>
 <p><strong>At test time</strong> (the L18 question) there may be only one sample, so there is no batch to average over. The network uses a running average of \(\mu_B\) and \(\sigma_B^2\) collected during training.</p>
+<p>The first three formulas are the z-score of page 1, which Quiz 2 Q1(c) asked for on a list of six numbers.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L17/p16.webp" alt="Slide: a standard network next to the same network after dropout with crossed-out neurons" loading="lazy">
 <figcaption>L17, slide 16. Dropout. In each training step a random set of neurons is removed.</figcaption></figure>
@@ -708,6 +742,7 @@
 <p>\(J\) here is the loss (the L18 slides call it \(J\)). Do not confuse it with the Jacobian matrix. \(\nabla J\) and \(H\) are evaluated at the current \(\mathbf w\).</p>
 <p>\(\mathbf s\T\nabla J\) is the first-order change, the slope times the step, added up over the directions. \(\frac12\mathbf s\T H\mathbf s\) is the second-order correction for curvature, like \(\frac{h^2}2f''\).</p>
 <p><strong>Example.</strong> \(J(w) = w^2\) at \(w = 1\), step \(s = -0.2\). Here \(\nabla J = 2\) and \(H = 2\). The formula gives \(1 + (-0.2)(2) + \frac12(0.04)(2) \)<wbr>\({}= 1 - 0.4 + 0.04 \)<wbr>\({}= 0.64\), which is exactly \(0.8^2\), because \(J\) is quadratic and the higher terms are zero.</p>
+<p>Lines 2 and 4 of the box below use this expansion with the step \(\mathbf s = -\eta\nabla J\), and Newton's method chooses \(\mathbf s\) to minimise it.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L18/p13.webp" alt="Slide: argument that the gradient descent update never increases the objective" loading="lazy">
 <figcaption>L18, slide 13. The argument that each gradient descent step lowers the loss.</figcaption></figure>
@@ -782,6 +817,7 @@
 <li>Step size \(\eta\cdot\frac{0.5}{\sqrt{0.25}} \)<wbr>\({}= \eta\cdot\frac{0.5}{0.5} \)<wbr>\({}= \eta\), ignoring \(\epsilon\).</li>
 </ol>
 <p>So the first step moves the weight by exactly \(\eta\) against the sign of the gradient, whatever the gradient's size. Without the bias correction it would be \(\eta\cdot\frac{0.05}{0.0158} \)<wbr>\({}\approx 3.16\eta\).</p>
+<p>Practice question 8 in 3.10 and end-sem 2026 Part I Q8(a) use this card.</p>
 </div>
 <div class="card remember"><span class="tag">Remember</span>
 <ul>
@@ -795,7 +831,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>\(J(\mathbf w) = w_1^2 + 4w_2^2\). At \(\mathbf w = (1, 1)\), find the optimal learning rate \(\eta^*\) and the point after one gradient step with it.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\eta^* \)<wbr>\({}= \frac{\|\nabla J\|^2}{\nabla J\T H\nabla J}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.8, line 6 of the gradient descent box.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#optimizers">3.8</a>, box "Show that a small gradient descent step does not increase \(J\)", line 6.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\nabla J \)<wbr>\({}= [2w_1, 8w_2]\T \)<wbr>\({}= [2, 8]\T\) at \((1,1)\).</li>
 <li>\(H = \begin{bmatrix}2 & 0\\ 0 & 8\end{bmatrix}\).</li>
@@ -826,10 +862,11 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(a), 3 points. True or false, with a reason. (i) Backpropagation, implemented properly, always reaches the global minimum. (ii) Backpropagation works well when all weights start at zero. (iii) Residual (skip) connections reduce the vanishing gradient problem in deep networks.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">No formula. Check each statement on its own.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6 Backpropagation</a> (vanishing gradients, zero initialisation) and <a href="#training-practice">3.7 Training in practice</a>. Skip connections are taught in <a href="../deep/#resnet">4, ResNet</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(i) <a href="#training-practice">3.7</a>, the last paragraph (gradient descent on a non-convex loss can stop at a local minimum). (ii) <a href="#backprop">3.6</a>, the Remember box, which follows from line 4 of box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)". (iii) <a href="../deep/#resnet">4.6</a>, box "Show why a skip connection helps the gradient reach early layers", lines 1 to 4.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(i) False. Backpropagation only computes gradients, and gradient descent follows them downhill. The loss of a network with hidden layers is not convex, so the descent can stop at a local minimum or a saddle point.</li>
-<li>(ii) False. With equal (for example zero) weights every hidden unit computes the same thing and receives the same gradient, so they stay identical for ever. This is the symmetry problem of 3.6. With all weights zero the hidden-layer gradients are exactly zero.</li>
+<li>(ii) False. With equal (for example zero) weights every hidden unit computes the same thing and receives the same gradient, so they stay identical for ever.</li>
+<li>This is the symmetry problem of 3.6. With all weights zero the hidden-layer gradients are exactly zero.</li>
 <li>(iii) True. A skip connection adds the input of a block to its output, \(y = x + F(x)\). Then \(\frac{\partial y}{\partial x} \)<wbr>\({}= 1 + F'(x)\), so the gradient always has a direct path of factor 1 back through the block and does not shrink layer after layer.</li>
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">1 point per statement. The other variants asked the same kind of statements (backpropagation is useful only for convex problems, it never reaches a global minimum, XOR needs more than one layer, an L1 penalty gives sparse weights, cross-entropy is for regression, dropout compresses the model). See the table at the end.</div></div>
@@ -844,7 +881,7 @@
 <p>(ii) Momentum.</p><div class="eq">\[\mathbf v^{k+1} = \beta\,\mathbf v^k - \eta\,\nabla L(\mathbf w^k),\]\[\mathbf w^{k+1} = \mathbf w^k + \mathbf v^{k+1}\]</div>
 <p>(iii) Newton's method.</p><div class="eq">\[\mathbf w^{k+1} = \mathbf w^k - \big(H^k\big)^{-1}\nabla L(\mathbf w^k)\]</div>
 </div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#delta-rule">3.3</a> for plain gradient descent, <a href="#training-practice">3.7, momentum</a>, and <a href="#optimizers">3.8, Newton's method</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(i) <a href="#optimizers">3.8</a>, box "Show that a small gradient descent step does not increase \(J\)", line 1. (ii) <a href="#training-practice">3.7</a>, Reading the formula for momentum. (iii) <a href="#optimizers">3.8</a>, box "Derive Newton's update", line 4.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Symbols. \(\mathbf w^k\) is the weight vector after \(k\) updates. \(\eta > 0\) is the learning rate. \(\nabla_{\mathbf w}L(\mathbf w^k)\) is the gradient of the loss at \(\mathbf w^k\).</li>
 <li>For momentum, \(\mathbf v^k\) is the velocity, the running step, which starts at \(\mathbf 0\). \(\beta\) is the momentum coefficient, between 0 and 1 (usually 0.9).</li>
@@ -859,7 +896,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(c), 3 points. Normalise the data \(D = \{7, 8, 10, 11, 11, 13\}\) to zero mean and unit standard deviation (z-scores).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(z_i = \frac{x_i - \mu}{\sigma}\), with \(\mu = \frac1N\sum_i x_i\) and \(\sigma^2 \)<wbr>\({}= \frac1N\sum_i(x_i - \mu)^2\) (population) or \(s^2 \)<wbr>\({}= \frac1{N-1}\sum_i(x_i - \mu)^2\) (sample).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">1, features and normalisation</a>. The same calculation is inside batch normalisation in <a href="#training-practice">3.7</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">1.4</a>, the z-score row of the normalisation table and its Example card. The same calculation is in <a href="#training-practice">3.7</a>, Reading the formula for batch normalisation.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Sum \(7 + 8 + 10 + 11 + 11 + 13 = 60\). Mean \(\mu = 60/6 = 10\).</li>
 <li>Deviations \(x_i - \mu\) are \(-3, -2, 0, 1, 1, 3\). They add to 0, as they must.</li>
@@ -887,7 +924,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(e), 3 points. An MLP has 3 inputs, one hidden layer of 5 neurons and 1 output, with no biases. How many learnable parameters does it have?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Without biases, a dense layer has \(n_{\text{in}}\times n_{\text{out}}\) weights.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4, counting parameters</a> (drop the "+1" for the bias).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", lines 1 to 3, without the "+1" for each bias.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Input to hidden \(3\times5 = 15\).</li>
 <li>Hidden to output \(5\times1 = 5\).</li>
@@ -907,7 +944,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(a), 3 points. Do the forward pass and find the output \(o\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf p = W\mathbf x\), \(\mathbf q \)<wbr>\({}= \operatorname{ReLU}(\mathbf p)\), \(o = s = \mathbf u\T\mathbf q\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6, the forward pass</a>, with ReLU from <a href="#activations">3.5</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, the five-step forward chain and its Reading the formula card, with ReLU from the table in <a href="#activations">3.5</a>.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(p_1 = 1\cdot1 + 1\cdot1 = 2\). \(p_2 = 1\cdot1 + 1\cdot1 = 2\).</li>
 <li>Both are positive, so ReLU leaves them unchanged. \(q_1 = 2\), \(q_2 = 2\).</li>
@@ -921,7 +958,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(b), 3 points. Write \(\frac{\partial L}{\partial w_{22}}\) by the chain rule.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\[\frac{\partial L}{\partial w_{22}} = \frac{\partial L}{\partial o}\cdot\frac{\partial o}{\partial s}\cdot\frac{\partial s}{\partial q_2}\cdot\frac{\partial q_2}{\partial p_2}\cdot\frac{\partial p_2}{\partial w_{22}}\]</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6, the chain rule box</a>, lines 1 to 5, with the derivatives of this network's blocks.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 1 to 5. Line 2 has 1 in place of \(o(1 - o)\) (linear output) and line 4 has the ReLU slope \(\mathbf 1[p_2 > 0]\) in place of \(q_2(1 - q_2)\).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(w_{22}\) reaches the loss only along the path \(w_{22} \to p_2 \to q_2 \to s \to o \to L\), so the chain has these five factors.</li>
 <li>\(L = \frac12(y - o)^2\), so \(\frac{\partial L}{\partial o} \)<wbr>\({}= \frac12\cdot2(y - o)\cdot(-1) \)<wbr>\({}= o - y\).</li>
@@ -937,7 +974,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(c), 4 points. Evaluate \(\frac{\partial L}{\partial w_{22}}\) for Variant 1.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial L}{\partial w_{22}} \)<wbr>\({}= (o - y)\,u_2\,\mathbf 1[p_2 > 0]\,x_2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Q2(b), line 7, with the numbers from Q2(a).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 2 to 5 as adapted in Q2(b), with the numbers from Q2(a).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(o - y = 6 - 2 = 4\).</li>
 <li>\(p_2 = 2 > 0\), so the ReLU factor is 1.</li>
@@ -951,7 +988,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(d), 5 points. Now let the hidden activation be linear, \(\varphi(p) = p\). Show that the network is then a single layer perceptron, find its weights, and draw it.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(o \)<wbr>\({}= \mathbf u\T W\mathbf x \)<wbr>\({}= (W\T\mathbf u)\T\mathbf x\), so the single layer weights are \(\mathbf v = W\T\mathbf u\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4, "Why hidden layers, and why nonlinear activations"</a>. Without a nonlinearity two layers collapse into one.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4</a>, box "Show that an MLP with linear activations is a single layer network", lines 1 to 4.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>With \(\varphi(p) = p\), the hidden outputs are \(\mathbf q \)<wbr>\({}= \mathbf p \)<wbr>\({}= W\mathbf x\).</li>
 <li>The output is \(o \)<wbr>\({}= \mathbf u\T\mathbf q \)<wbr>\({}= \mathbf u\T W\mathbf x\).</li>
@@ -971,7 +1008,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(a), 3 points. State the perceptron's classification rule and count the training errors of the starting weights.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\hat y \)<wbr>\({}= \operatorname{sign}(w_0 + w_1x_1 + w_2x_2)\), with \(\operatorname{sign}(a) = +1\) if \(a \ge 0\) and \(-1\) if \(a \lt 0\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2, the perceptron</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, the definition of \(\operatorname{sgn}\) and the output \(o \)<wbr>\({}= \operatorname{sgn}(\mathbf w\T\mathbf x)\), with <a href="#neuron">3.1</a>, Reading the formula for \(v = \mathbf w\T\mathbf x\).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <table class="tbl"><tr><th>\(\mathbf x\)</th><th>\(y\)</th><th>\(a = w_0 + w_1x_1 + w_2x_2\)</th><th>\(\hat y\)</th><th>Error?</th></tr>
 <tr><td>\([1, 1]\)</td><td>\(+1\)</td><td>\(0 - 0.5 - 0.5 = -1\)</td><td>\(-1\)</td><td>yes</td></tr>
@@ -985,7 +1022,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(b), 4 points. Write the perceptron training algorithm.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">On a mistake, \(w_j \leftarrow w_j + \eta\,y_i\,x_{ij}\) for \(j = 1, 2\), and \(w_0 \leftarrow w_0 + \eta\,y_i\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2, the learning rule and L14 slide 8</a>. This is the \(\eta\,t\,\mathbf x\) form of the rule.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, Reading the formula for the learning rule (its \(\eta\,t\,\mathbf x\) form) and the algorithm on L14 slide 8.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Initialise \(\mathbf w = [w_0, w_1, w_2]\T\) and choose \(\eta > 0\).</li>
 <li>Repeat until a full pass makes no mistakes (or for a fixed number of passes).</li>
@@ -998,7 +1035,7 @@
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(c), 8 points. Run two iterations (passes over the data) of the algorithm with \(\eta = 0.5\), in the order given.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">On a mistake, \(\Delta w_0 = 0.5\,y\) and \(\Delta w_j = 0.5\,y\,x_j\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Q3(b), line 4, and the worked table in <a href="#perceptron">3.2</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, Reading the formula for the learning rule, in the \(\eta\,y\,\mathbf x\) form, and the worked L14 table.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <p><strong>Iteration 1</strong>, starting from \((w_0, w_1, w_2) \)<wbr>\({}= (0, -0.5, -0.5)\).</p>
 <table class="tbl"><tr><th>Sample</th><th>\(a\)</th><th>\(\hat y\)</th><th>Update</th><th>New \((w_0, w_1, w_2)\)</th></tr>
@@ -1054,7 +1091,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>1 (3 points). Find \(\sigma(0)\), \(\sigma'(0)\), \(\tanh'(0)\), and the derivative of ReLU at \(x = -2\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\sigma' = \sigma(1 - \sigma)\), \(\tanh' = 1 - \tanh^2\), ReLU' = 0 for negative inputs.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.5, the activation table and the sigmoid derivative box.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#activations">3.5</a>, box "Show that \(\sigma'(z) \)<wbr>\({}= \sigma(z)(1 - \sigma(z))\)", line 4, and the activation table in 3.5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\sigma(0) \)<wbr>\({}= \frac1{1 + e^0} \)<wbr>\({}= \frac12\).</li>
 <li>\(\sigma'(0) \)<wbr>\({}= \frac12\cdot\frac12 \)<wbr>\({}= 0.25\).</li>
@@ -1066,7 +1103,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>2 (3 points). A perceptron has \(\mathbf w = [0.5, -1, 1]\T\) (bias first). The sample \((2, 1)\) has target \(+1\). With \(\eta = 0.1\) and \(\Delta\mathbf w \)<wbr>\({}= \eta(t - o)\mathbf x\), give the new weights.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(o \)<wbr>\({}= \operatorname{sgn}(\mathbf w\T\mathbf x)\), \(\Delta\mathbf w \)<wbr>\({}= \eta(t - o)\mathbf x\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.2, the learning rule.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2</a>, Reading the formula for the learning rule.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Augmented \(\mathbf x = [1, 2, 1]\T\).</li>
 <li>\(v = 0.5 - 2 + 1 = -0.5\), so \(o = -1\). Wrong, since \(t = +1\).</li>
@@ -1079,7 +1116,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>3 (3 points). An MLP has 10 inputs, hidden layers of 8 and 6 neurons, and 2 outputs, all dense with bias. How many learnable parameters?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\sum_\text{layers} n_{\text{out}}(n_{\text{in}} + 1)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.4, the counting box.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", lines 1 to 3, one line per layer.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>First hidden layer \(8\times11 = 88\).</li>
 <li>Second hidden layer \(6\times9 = 54\).</li>
@@ -1091,7 +1128,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>4 (3 points). A training set has 60,000 samples and the batch size is 100. How many iterations are in one epoch, and how many weight updates in 5 epochs?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Iterations per epoch = samples / batch size. One iteration is one update.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.7, "Batches, epochs and iterations".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#training-practice">3.7</a>, the Remember box (iterations per epoch).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(60{,}000/100 = 600\) iterations per epoch.</li>
 <li>5 epochs give \(5\times600 = 3{,}000\) updates.</li>
@@ -1106,7 +1143,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>6 (3 points). \(L(w) = w^2\), \(w_0 = 1\), \(\eta = 0.1\), momentum \(\gamma = 0.9\), \(\Delta_0 = 0\). Give \(w\) after two momentum steps and after two plain gradient steps.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\Delta^k \)<wbr>\({}= \eta L'(w) + \gamma\Delta^{k-1}\), \(w \leftarrow w - \Delta^k\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.7, momentum.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#training-practice">3.7</a>, Reading the formula for momentum.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Step 1. \(L'(1) = 2\). \(\Delta = 0.2\). \(w = 0.8\).</li>
 <li>Step 2. \(L'(0.8) = 1.6\). \(\Delta = 0.16 + 0.18 = 0.34\). \(w = 0.46\).</li>
@@ -1118,7 +1155,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>7 (3 points). Apply one Newton step to \(L(w) = 2w^2 - 4w + 7\) (the Quiz 1 function) from \(w_0 = 3\). Compare with one gradient step with \(\eta = 0.2\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Newton \(w \leftarrow w - L'(w)/L''(w)\). Gradient \(w \leftarrow w - \eta L'(w)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.8, Newton's update in one variable (\(H = L''\)).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#optimizers">3.8</a>, box "Derive Newton's update", line 4, with \(H = L''\) in one variable.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(L'(w) = 4w - 4\), so \(L'(3) = 8\). \(L''(w) = 4\).</li>
 <li>Newton. \(w_1 = 3 - 8/4 = 1\).</li>
@@ -1130,7 +1167,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>8 (3 points). Adam with defaults \(\beta_1 = 0.9\), \(\beta_2 = 0.999\), \(\eta = 0.001\), \(\epsilon\) ignored. The first gradient of a weight is \(g_1 = -4\). By how much does the weight change in step 1?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(m_1 = (1 - \beta_1)g_1\), \(v_1 = (1 - \beta_2)g_1^2\), \(\hat m_1 = m_1/(1 - \beta_1)\), \(\hat v_1 = v_1/(1 - \beta_2)\), \(\Delta w \)<wbr>\({}= -\eta\,\hat m_1/\sqrt{\hat v_1}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.8, Adam and its first-step example.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#optimizers">3.8</a>, Reading the formula for Adam.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(m_1 = 0.1\cdot(-4) = -0.4\). \(v_1 = 0.001\cdot16 = 0.016\).</li>
 <li>\(\hat m_1 = -0.4/0.1 = -4\). \(\hat v_1 = 0.016/0.001 = 16\).</li>
@@ -1142,7 +1179,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>9 (7.5 points). For \(L = (o - y)^2\), \(o = \sigma(s)\), \(s = \mathbf u\T\mathbf q\), \(\mathbf q = \sigma(W\mathbf x)\), take \(\mathbf x = [1, 0]\T\), \(y = 1\), \(W = \begin{bmatrix}0 & 1\\ 0 & -1\end{bmatrix}\), \(\mathbf u = [2, 2]\T\). Do the forward pass, find \(\frac{\partial L}{\partial u_1}\) and \(\frac{\partial L}{\partial w_{11}}\), and give \(w_{11}\) after one step with \(\eta = 1\). Use \(\sigma(2) = 0.881\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\delta_s = 2(o - y)o(1 - o)\), \(\frac{\partial L}{\partial u_j} \)<wbr>\({}= \delta_sq_j\), \(\delta_j \)<wbr>\({}= \delta_su_jq_j(1 - q_j)\), \(\frac{\partial L}{\partial w_{jk}} \)<wbr>\({}= \delta_jx_k\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.6, lines 2 to 5 of the backpropagation box.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 2 to 5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(p_1 = 0\cdot1 + 1\cdot0 = 0\). \(p_2 = 0\cdot1 + (-1)\cdot0 = 0\).</li>
 <li>\(q_1 = q_2 = \sigma(0) = 0.5\).</li>
@@ -1160,7 +1197,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>10 (7.5 points). Derive the delta rule for a linear unit, then show that for the perceptron criterion \(J \)<wbr>\({}= \sum_{\mathbf x_i\in E} -t_i\mathbf w\T\mathbf x_i\) gradient descent gives the perceptron rule. State one situation where the delta rule converges and the perceptron rule does not.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\Delta w_i \)<wbr>\({}= \eta\sum_d(t_d - o_d)x_{i,d}\) and \(\mathbf w \leftarrow \mathbf w + \eta\sum_E t_i\mathbf x_i\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3.3, the delta rule box (lines 1 to 5), and 3.2, the perceptron-as-gradient-descent box (lines 1 to 4).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#delta-rule">3.3</a>, box "Derive the delta rule", lines 1 to 5, and <a href="#perceptron">3.2</a>, box "Show that the perceptron rule is gradient descent on a loss", lines 1 to 4.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Write the 3.3 box, lines 1 to 5. This is 4 points in a rubric like Quiz 1's (one per correct line after the first).</li>
 <li>Write the 3.2 box, lines 1 to 4.</li>
@@ -1171,11 +1208,49 @@
 </section>
 
 <section>
-<h2 id="in-the-exam">In the exam hall</h2>
+<h2 id="in-the-exam"><span class="num">3.11</span>In the exam hall</h2>
+<p class="oneline">Match the question to a box on this page, write that box's first line, then follow its lines with the question's numbers.</p>
+
+<h3>Which box to use</h3>
+<table class="tbl">
+<tr><th>The question says</th><th>Use</th><th>Write first</th></tr>
+<tr><td>"Run the perceptron algorithm", "show one iteration", "iterate until convergence"</td><td><a href="#perceptron">3.2</a>, Reading the formula for the learning rule, laid out like the worked L14 table</td><td>The augmented inputs \([1, x_1, x_2]\), the rule \(\Delta\mathbf w \)<wbr>\({}= \eta(t - o)\mathbf x\) (or \(\eta t\mathbf x\)), and your choice of \(\operatorname{sign}(0)\)</td></tr>
+<tr><td>"Count the training errors" of given weights</td><td><a href="#perceptron">3.2</a>, the output \(o \)<wbr>\({}= \operatorname{sgn}(\mathbf w\T\mathbf x)\)</td><td>A table with columns \(\mathbf x\), \(y\), \(a\), \(\hat y\), error</td></tr>
+<tr><td>"Can a single layer perceptron solve XOR?", "design a network for AND, OR, XOR"</td><td><a href="#perceptron">3.2</a>, "AND, OR and XOR"</td><td>The truth table, then one threshold per unit</td></tr>
+<tr><td>"Show that the perceptron rule is gradient descent"</td><td><a href="#perceptron">3.2</a>, box "Show that the perceptron rule is gradient descent on a loss", lines 1 to 4</td><td>The perceptron criterion \(J \)<wbr>\({}= \sum_E -t_i\mathbf w\T\mathbf x_i\)</td></tr>
+<tr><td>"Derive the delta rule", "linear unit", "LMS"</td><td><a href="#delta-rule">3.3</a>, box "Derive the delta rule", lines 1 to 5</td><td>\(E = \frac12\sum_d(t_d - o_d)^2\) and \(\Delta w_i \)<wbr>\({}= -\eta\frac{\partial E}{\partial w_i}\)</td></tr>
+<tr><td>"How many learnable parameters", "weights and biases"</td><td><a href="#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", lines 1 to 3</td><td>One line per layer, \(n_{\text{out}}(n_{\text{in}} + 1)\), and say whether biases are included</td></tr>
+<tr><td>"Write \(y = f(\mathbf w, \mathbf x)\) explicitly"</td><td><a href="#mlp">3.4</a>, the same box, lines 4 and 5</td><td>Names for every weight, then the hidden sums</td></tr>
+<tr><td>"Show that a linear MLP is equivalent to an SLP", "why do we need nonlinear activations"</td><td><a href="#mlp">3.4</a>, box "Show that an MLP with linear activations is a single layer network", lines 1 to 4</td><td>\(\mathbf q = W\mathbf x\), then \(\mathbf v = W\T\mathbf u\)</td></tr>
+<tr><td>"Show that \(\sigma' = \sigma(1 - \sigma)\)", "derivative of tanh"</td><td><a href="#activations">3.5</a>, box "Show that \(\sigma'(z) \)<wbr>\({}= \sigma(z)(1 - \sigma(z))\)", lines 1 to 4</td><td>\(\sigma(z) = (1 + e^{-z})^{-1}\)</td></tr>
+<tr><td>"Forward pass", "find \(\frac{\partial L}{\partial w}\)", "chain rule", "one gradient step"</td><td><a href="#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 1 to 5</td><td>The forward chain with numbers, then the path from \(L\) back to the weight</td></tr>
+<tr><td>"Why does zero initialisation fail", "vanishing gradients", "ReLU vs sigmoid"</td><td><a href="#backprop">3.6</a>, the Remember box, and <a href="#activations">3.5</a>, "Why ReLU helps with vanishing gradients"</td><td>The product of one factor per layer</td></tr>
+<tr><td>"Iterations per epoch", "momentum", "batch normalisation", "dropout"</td><td><a href="#training-practice">3.7</a>, its Reading the formula cards and Remember box</td><td>The formula, then a two or three item example</td></tr>
+<tr><td>"Why does gradient descent decrease the loss", "optimal learning rate"</td><td><a href="#optimizers">3.8</a>, box "Show that a small gradient descent step does not increase \(J\)", lines 1 to 6</td><td>The Taylor expansion \(J(\mathbf w + \mathbf s) \)<wbr>\({}\approx J + \mathbf s\T\nabla J + \frac12\mathbf s\T H\mathbf s\)</td></tr>
+<tr><td>"Newton's method", "second order", "update equations for GD, momentum and Newton"</td><td><a href="#optimizers">3.8</a>, box "Derive Newton's update", lines 1 to 4, and <a href="#quiz2">3.9</a> Q1(b)</td><td>Each update with every symbol defined</td></tr>
+<tr><td>"Adam", "first and second moments"</td><td><a href="#optimizers">3.8</a>, Reading the formula for Adam</td><td>\(m_t\), \(v_t\), the two bias corrections, the update</td></tr>
+</table>
+
+<h3>What lost marks in 2026</h3>
+<p>These come from the Quiz 2 and end-sem rubrics.</p>
 <ul>
-<li><strong>A perceptron question.</strong> Augment every input with a leading 1 first. Write a table with columns sample, \(\mathbf w\), \(v\), \(o\), \(t\), change. Say whether you use \(\eta(t - o)\) or \(\eta t\).</li>
-<li><strong>A backpropagation question.</strong> Write the forward chain (\(\mathbf p\), \(\mathbf q\), \(s\), \(o\), \(L\)) with numbers first. Then go backwards one line at a time, naming each \(\delta\). Check the sign of the final gradient. If the output is below the target, increasing a weight that raises the output should lower the loss, so that gradient should be negative.</li>
-<li><strong>A parameter count.</strong> One line per layer, \(n_{\text{out}}(n_{\text{in}} + 1)\), then add.</li>
-<li><strong>Quick checks.</strong> A sigmoid output lies in \((0, 1)\). Softmax outputs are positive and add to 1. \(\sigma'\) is at most 0.25. A gradient step with a small \(\eta\) must lower the loss. A Newton step on a quadratic lands exactly on the minimum.</li>
+<li><strong>Symbols not defined.</strong> An update equation without "\(\eta\) is the learning rate" or "\(H\) is the Hessian" got half marks in Quiz 2 Q1(b). Define every symbol on the line where you first write it.</li>
+<li><strong>A missing factor in the chain rule.</strong> Leaving out \(\frac{\partial o}{\partial s} \)<wbr>\({}= 1\) cost 0.5 in Quiz 2 Q2(b), even though it equals 1. Write all the factors in order first, then put in the values.</li>
+<li><strong>Ignoring a dead ReLU.</strong> When a hidden pre-activation is negative, its ReLU slope is 0 and every gradient through it is 0. Missing this cost 2 of 4 points in Quiz 2 Q2(c). At exactly 0 the slope is a convention, so state the one you use.</li>
+<li><strong>Perceptron mistakes.</strong> Updating samples that were already correct, using the wrong sign, or using the wrong learning rate each cost 1 point in Quiz 2 Q3(c). Update only on mistakes, and carry the new weights into the next sample.</li>
+<li><strong>Bias counting.</strong> In parameter counts a forgotten bias cost 1 point (end-sem Part I Q7 and Quiz 2 Q1(e)). Say in words whether biases are included.</li>
+<li><strong>The \(\frac12\) in the loss.</strong> With \(L = \frac12(o - y)^2\) the first factor is \(o - y\), and with \(L = (o - y)^2\) it is \(2(o - y)\). Check which loss the question uses before line 1 of the backpropagation box.</li>
+</ul>
+
+<h3>Quick checks on the answer</h3>
+<ul>
+<li>A sigmoid output lies strictly between 0 and 1, and \(\sigma'\) is at most 0.25. A tanh output lies between \(-1\) and 1.</li>
+<li>Softmax outputs are positive and add up to 1. Cross-entropy is never negative.</li>
+<li>A perceptron's final weights must classify every training sample correctly. Recompute \(a\) for each sample with the final weights.</li>
+<li>After a gradient step with a small \(\eta\), the loss must be lower. Redo the forward pass with the new weights if there is time, as in the numeric example of 3.6.</li>
+<li>The sign of a gradient should make sense. If the output is above the target and raising a weight raises the output, that gradient is positive.</li>
+<li>A weight on an input that is 0 gets a gradient of 0.</li>
+<li>One Newton step on a quadratic loss lands exactly on the minimum. The bias-corrected first Adam step has size \(\eta\).</li>
+<li>Iterations per epoch is samples divided by batch size, rounded up if the last partial batch is kept.</li>
 </ul>
 </section>

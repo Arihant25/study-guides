@@ -19,7 +19,7 @@
 <tr><td><a href="#embeddings">Word embeddings</a> and <a href="#attention">self-attention</a></td><td>L23</td><td>1 h 15 min</td></tr>
 <tr><td><a href="#transformer">The transformer</a> and <a href="#vit">vision transformer</a></td><td>L24</td><td>1 h</td></tr>
 <tr><td><a href="#ssl">Self-supervised</a> and <a href="#contrastive">contrastive learning</a></td><td>L25</td><td>45 min</td></tr>
-<tr><td><a href="#final-format">The final exam</a> and <a href="#page-formulas">formulas</a></td><td>L26</td><td>15 min</td></tr>
+<tr><td><a href="#final-format">The final exam</a>, <a href="#exam-hall">in the exam hall</a> and <a href="#page-formulas">formulas</a></td><td>L26</td><td>15 min</td></tr>
 <tr><td><strong>Total</strong></td><td></td><td><strong>8 h</strong></td></tr>
 </table>
 <p><strong>If time is short</strong>, do these first, because they turn into numerical questions. They are the output-size formula, parameter counts for conv and fully connected layers, the RNN and LSTM equations, and the attention formula \(\operatorname{softmax}(QK\T/\sqrt{d_k})V\) with its shapes. The rest (ResNet, self-supervised learning) is mostly asked as short conceptual questions.</p>
@@ -51,12 +51,18 @@
 <li>\(y[3] = x[2]h[1] = 3\).</li>
 </ul>
 <p>So \(y = [1, 3, 5, 3]\). The filter \([1,1]\) adds each value to its neighbour, a simple smoothing.</p>
+<p>The next paragraph drops the flip, and that unflipped version (correlation) is what a CNN layer computes.</p>
 </div>
 
 <h3>Matched filter, and why CNNs actually use correlation</h3>
 <p>If you want to find where a known pattern occurs in a long signal, slide the pattern along the signal and compute the dot product (multiply matching entries and add) at each position. Where the signal looks like the pattern, the dot product is large. This is called a <em class="t">matched filter</em>, and the output has a peak where the pattern is. With the convolution formula you get this by convolving with the pattern written backwards, because the formula flips the filter again.</p>
 <p>Sliding without flipping is called <em class="t">correlation</em>.</p>
 <div class="eq">\[ y[n] = \sum_{m} x[n+m]\,h[m] \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Here \(m\) runs over the positions of the filter, \(m = 0, 1, \dots, k-1\) for a filter of width \(k\). Output \(n\) multiplies the filter with the \(k\) inputs that start at position \(n\) and adds the products. The filter is not flipped, so \(h[0]\) always meets the leftmost input under it.</p>
+<p><strong>Example.</strong> Take \(x = [1, 2, 3, 4]\) and \(h = [1, 0, -1]\). Then \(y[0] \)<wbr>\({}= 1\cdot1 + 2\cdot0 + 3\cdot(-1) \)<wbr>\({}= -2\) and \(y[1] \)<wbr>\({}= 2\cdot1 + 3\cdot0 + 4\cdot(-1) \)<wbr>\({}= -2\). This filter measures how fast the signal is falling, and the signal rises by 1 per step, so both outputs are \(-2\).</p>
+<p>Every convolution on the rest of this page is this formula, extended to 2-D in 4.2. The output-size box in 4.3 counts how many positions \(n\) there are.</p>
+</div>
 <p>Deep learning libraries compute correlation and still call it convolution. It makes no difference to learning. The weights are learned, so if the flipped version is better, gradient descent simply learns the flipped weights. From now on "convolution" means this sliding dot product with no flip, as on the slides.</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L20/p05.webp" alt="Slide: a 3-weight filter 1, 0, 1 slides over a padded 1-D input to give 8 outputs" loading="lazy">
 <figcaption>L20, slide 5. A filter of 3 weights slides along 8 inputs. The yellow zeros at both ends are padding, so there are still 8 outputs. The 3 weights are the only parameters, and they are learned by backpropagation.</figcaption></figure>
@@ -88,7 +94,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>The input is 1, 2, 1, 3, 2, 1, 1, 2, padded with one zero at each end. Apply the filter [1, 0, 1] as a sliding dot product. Then do the same with Filter 2 = [2, 0, 1].</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(y[n] \)<wbr>\({}= h[0]\,x[n-1] + h[1]\,x[n] + h[2]\,x[n+1]\), with the filter centred on position \(n\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.1, the correlation formula with a filter of width 3.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#conv-1d">4.1</a>, Reading the formula for correlation, with \(k = 3\) and the filter centred on position \(n\)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The padded input is 0, 1, 2, 1, 3, 2, 1, 1, 2, 0.</li>
 <li>With [1, 0, 1] the middle weight is 0, so each output is the left neighbour plus the right neighbour.</li>
@@ -103,7 +109,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Convolve \(x = [2, 1]\) (at \(n = 0, 1\)) with \(h = [1, -1]\) (at \(n = 0, 1\)) using the flipping formula. Then compute the sliding dot product (no flip) of \(x\) with \(h\) on the single position where they overlap fully. Why do the answers differ?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Convolution \(y[n] = \sum_m x[m]h[n-m]\). Correlation \(y[n] = \sum_m x[n+m]h[m]\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.1, both formulas.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#conv-1d">4.1</a>, Reading the formula for convolution and Reading the formula for correlation</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Convolution, \(n = 0\): \(x[0]h[0] = 2\cdot1 = 2\).</li>
 <li>\(n = 1\): \(x[0]h[1] + x[1]h[0] \)<wbr>\({}= 2\cdot(-1) + 1\cdot1 \)<wbr>\({}= -1\).</li>
@@ -138,6 +144,7 @@
 <p>The two sums run over the rows \(a\) and columns \(b\) of the filter. So the output is "multiply each filter weight with the pixel under it, then add all \(k^2\) products".</p>
 <p>The slide writes the flipped version, \(\sum_j\sum_i x[i,j]\,h[m-i,n-j]\), as in signal processing. As in 4.1, CNNs use the version above.</p>
 <p><strong>Example.</strong> The patch \(\begin{bmatrix}1&0\\0&1\end{bmatrix}\) and the filter \(\begin{bmatrix}1&-1\\-1&1\end{bmatrix}\) give \(1\cdot1 + 0\cdot(-1) + 0\cdot(-1) + 1\cdot1 \)<wbr>\({}= 2\).</p>
+<p>The \(6\times6\) image question at the end of this section uses this formula at each position, and 4.3 counts the positions.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L20/p16.webp" alt="Slide: a 6 by 6 binary image, a 3 by 3 diagonal filter, and the 4 by 4 output map" loading="lazy">
 <figcaption>L20, slide 16. Filter 1 has 1s on its diagonal and −1 elsewhere, so it fires on a diagonal line. The output is 3 (the largest possible) exactly where the image has a full diagonal of three 1s.</figcaption></figure>
@@ -164,7 +171,7 @@
 <ol>
 <li>Convolution, then a non-linearity such as ReLU (\(\max(0, z)\), from the neural networks page), then pooling. Repeat this block several times. Each time the maps get smaller and the number of channels usually grows.</li>
 <li><em class="t">Flatten</em> the last set of maps, which means writing all its numbers in one long vector.</li>
-<li>Feed that vector to fully connected (MLP) layers, ending in a softmax over the classes (cat, dog, and so on).</li>
+<li>Feed that vector to fully connected (MLP) layers, ending in a softmax over the classes (cat, dog, and so on). A softmax turns a list of scores into probabilities that are positive and add up to 1, and 4.8 gives its formula.</li>
 </ol>
 <p>The convolution part is often called the <em class="t">backbone</em> or feature extractor, and the MLP at the end is the <em class="t">head</em>. The whole thing is trained end to end with backpropagation. The gradient of a convolution with respect to a filter weight is the sum, over all positions, of the input pixel that weight touched times the gradient arriving at that output, because the same weight was used at every position.</p>
 
@@ -183,7 +190,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>The 6×6 image has rows 100001, 010010, 001100, 100010, 010010, 001010. Filter 1 is \(\begin{bmatrix}1&-1&-1\\-1&1&-1\\-1&-1&1\end{bmatrix}\). Compute the output at the top-left position and the one to its right (stride 1). Then give the full output for stride 2.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(y[m,n] \)<wbr>\({}= \sum_{a,b} x[m+a, n+b]\,h[a,b]\), with \(m, n\) stepping by the stride.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.2, the 2-D convolution formula, and the stride rule.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn">4.2</a>, Reading the formula for 2-D convolution. For stride 2, <a href="#conv-size">4.3</a>, box "Show that a filter of width \(k\) with stride \(s\) … gives \(\lfloor (n+2p-k)/s \rfloor + 1\) outputs", line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Top-left patch (rows 1 to 3, columns 1 to 3) is \(\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}\).</li>
 <li>Its 1s sit exactly on the filter's diagonal, which holds +1. All other patch entries are 0. So the output is \(1+1+1 = 3\).</li>
@@ -229,6 +236,7 @@
 <p>The top, \(n + 2p - k\), is how far the filter's left edge can travel. The division by \(s\) counts how many steps of size \(s\) fit in that distance. The \(+1\) counts the starting position, which is not a step.</p>
 <p><strong>Example.</strong> A \(32\times32\) image with a \(5\times5\) filter, \(p = 2\) and \(s = 1\) gives \((32 + 4 - 5)/1 + 1 = 32\). The size is kept. With \(p = 0\) instead it gives \((32 - 5)/1 + 1 = 28\).</p>
 <p>The slide writes the same formula as \(W_2 = (W_1 - F + 2P)/S + 1\), with \(F\) for the filter size.</p>
+<p>The box below derives it. Pooling layers (4.2), AlexNet (4.4) and the ViT patch count (4.13) all use it.</p>
 </div>
 
 <div class="card exam"><span class="tag">Write this in the exam</span>
@@ -253,11 +261,19 @@
 <li>The whole numbers from 0 up to \(\lfloor (n+2p-k)/s \rfloor\) are that number plus 1 in count, because the list starts at 0.</li>
 </ol>
 </details></li>
+<li>With \(s = 1\), the output width equals \(n\) when \(p = (k-1)/2\). This is "same" padding.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Put \(s = 1\) into line 4. Dividing by 1 changes nothing and the top is a whole number, so \(n_{\text{out}} \)<wbr>\({}= n + 2p - k + 1\).</li>
+<li>Ask for \(n_{\text{out}} = n\). That is \(n + 2p - k + 1 = n\).</li>
+<li>Subtract \(n\) from both sides, so \(2p = k - 1\). Divide by 2. \(p = (k-1)/2\).</li>
+</ol>
+</details></li>
 </ol>
 </div>
 <p>Two consequences are used all the time.</p>
 <ul>
-<li><strong>"Same" padding.</strong> With \(s = 1\), the output equals the input when \(2p - k + 1 = 0\), that is \(p = (k-1)/2\). So a \(3\times3\) filter uses \(p = 1\) and a \(5\times5\) filter uses \(p = 2\). L20 slide 18 shows the \(3\times3\), \(p = 1\) case.</li>
+<li><strong>"Same" padding.</strong> By line 5 of the box, \(p = (k-1)/2\). So a \(3\times3\) filter uses \(p = 1\) and a \(5\times5\) filter uses \(p = 2\). L20 slide 18 shows the \(3\times3\), \(p = 1\) case.</li>
 <li><strong>Stride shrinks.</strong> With \(s = 2\) the output is roughly half the input, as L20 slide 19 says.</li>
 </ul>
 <div class="card watch"><span class="tag">Common mistake</span>
@@ -275,7 +291,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>AlexNet's first layer takes a \(227\times227\times3\) image and applies 96 filters of size \(11\times11\) with stride 4 and no padding. What is the output shape?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(n_{\text{out}} \)<wbr>\({}= \lfloor (n + 2p - k)/s\rfloor + 1\), and output channels = number of filters.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.3, line 4 of the derivation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#conv-size">4.3</a>, box "Show that a filter of width \(k\) with stride \(s\) … gives \(\lfloor (n+2p-k)/s \rfloor + 1\) outputs", line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(n = 227\), \(k = 11\), \(p = 0\), \(s = 4\).</li>
 <li>\(n + 2p - k \)<wbr>\({}= 227 + 0 - 11 \)<wbr>\({}= 216\).</li>
@@ -288,7 +304,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A \(7\times7\) input, a \(3\times3\) filter, stride 2, no padding. What is the output size? What if the input were \(8\times8\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(n_{\text{out}} \)<wbr>\({}= \lfloor (n + 2p - k)/s\rfloor + 1\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.3, line 4.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#conv-size">4.3</a>, box "Show that a filter of width \(k\) with stride \(s\) … gives \(\lfloor (n+2p-k)/s \rfloor + 1\) outputs", line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(n = 7\): \((7 - 3)/2 = 2\), so \(n_{\text{out}} = 2 + 1 = 3\). Output \(3\times3\).</li>
 <li>Check by listing starts: 0, 2, 4. The filter at 4 covers 4, 5, 6, the last column. Three starts.</li>
@@ -299,7 +315,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>An input of \(64\times64\times3\) goes through (a) 16 filters of \(5\times5\), stride 1, "same" padding, (b) \(2\times2\) max pooling with stride 2, (c) 32 filters of \(3\times3\), stride 1, no padding. Give the shape after each step.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(n_{\text{out}} \)<wbr>\({}= \lfloor (n + 2p - k)/s\rfloor + 1\). "Same" padding is \(p = (k-1)/2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.3, line 4 and the "same padding" consequence.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#conv-size">4.3</a>, box "Show that a filter of width \(k\) with stride \(s\) … gives \(\lfloor (n+2p-k)/s \rfloor + 1\) outputs", line 5 for the padding in (a) and line 4 for every size</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) \(k = 5\), so \(p = 2\). \((64 + 4 - 5)/1 + 1 = 64\). 16 filters give \(64\times64\times16\).</li>
 <li>(b) Pooling uses the same formula with \(k = 2\), \(s = 2\), \(p = 0\). \((64 - 2)/2 + 1 = 32\). Pooling keeps the channels. \(32\times32\times16\).</li>
@@ -323,8 +339,9 @@
 <ol class="steps lines">
 <li>Each filter spans all \(D\) input channels, so it has \(F\cdot F\cdot D\) weights.</li>
 <li>Each filter has one bias, so it has \(F\cdot F\cdot D + 1\) parameters.</li>
-<li>There are \(K\) filters, and weights are shared across positions, so the layer has \((F\cdot F\cdot D + 1)\cdot K\) parameters, whatever the image size.
-<details class="linewhy"><summary>Why <span>(covers lines 1 to 3, 4 steps)</span></summary>
+<li>The same filter is used at every position of the output map, so the size of the image adds no parameters.</li>
+<li>There are \(K\) filters, so the layer has \((F\cdot F\cdot D + 1)\cdot K\) parameters.
+<details class="linewhy"><summary>Why <span>(covers lines 1 to 4, 4 steps)</span></summary>
 <ol class="steps">
 <li>One output value is the dot product of the filter with an \(F\times F\) patch in each of the \(D\) channels, so it uses \(F\cdot F\cdot D\) weights.</li>
 <li>A bias \(b\) is added to the dot product, as in a single neuron \(w\T x + b\). That is one more number per filter.</li>
@@ -371,7 +388,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>Verify the 35 K parameters of AlexNet layer 1 (96 filters of \(11\times11\) on a 3-channel image).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\((F\cdot F\cdot D + 1)\cdot K\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.4, line 3 of the derivation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn-params">4.4</a>, box "Count the parameters of a conv layer", line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(F = 11\), \(D = 3\), \(K = 96\).</li>
 <li>Weights per filter: \(11\times11\times3 \)<wbr>\({}= 121\times3 \)<wbr>\({}= 363\).</li>
@@ -383,7 +400,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>Why is layer 6 of AlexNet so much larger than every conv layer? Compute it from the \(6\times6\times256\) map that comes out of layer 5.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Fully connected: \(a\cdot b\) weights.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.4, the fully connected count.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn-params">4.4</a>, the Remember box (fully connected count)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Flattening the \(6\times6\times256\) map gives \(a = 36\times256 = 9216\) inputs.</li>
 <li>\(b = 4096\) outputs.</li>
@@ -395,7 +412,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A layer takes \(32\times32\times64\) and gives \(32\times32\times128\) using \(3\times3\) filters. How many parameters does it have? How many would a fully connected layer between the same two shapes have (ignore biases)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">A conv layer has \((F\cdot F\cdot D + 1)\cdot K\) parameters. A fully connected layer has \(a\cdot b\) weights.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.4, line 3 and the fully connected count.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn-params">4.4</a>, box "Count the parameters of a conv layer", line 4, and the Remember box (fully connected count)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The output has 128 channels, so \(K = 128\). \(F = 3\), \(D = 64\).</li>
 <li>Per filter: \(3\cdot3\cdot64 + 1 = 577\).</li>
@@ -471,7 +488,7 @@
 <details class="q"><summary><span class="qt">L20 slide</span><span>Verify the 120 M and 12.4 M operation counts on L20 slides 34 and 35.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Multiplications = (output values) × (\(k\cdot k\cdot D\)).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.5, "the bottleneck, with numbers".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn-design">4.5</a>, the Remember box (multiplications of a conv layer)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Output values of the direct layer: \(28\cdot28\cdot32 \)<wbr>\({}= 784\cdot32 \)<wbr>\({}= 25{,}088\).</li>
 <li>Multiplications per value: \(5\cdot5\cdot192 = 4800\).</li>
@@ -485,7 +502,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Three stacked \(3\times3\) layers versus one \(7\times7\) layer, with 64 channels in and out. Compare receptive field, weights (no biases) and number of ReLUs.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(L\) stacked \(3\times3\) layers have receptive field \(1 + 2L\). A layer has \(k\cdot k\cdot C\cdot C\) weights.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.5, lines 1 to 3 of the derivation, applied once more.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#cnn-design">4.5</a>, box "Compare one \(5\times5\) conv layer with two stacked \(3\times3\) layers", lines 1 to 3, with one more layer</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Each extra \(3\times3\) layer widens the receptive field by 2. One layer: 3. Two: 5. Three: 7. So both options see \(7\times7\).</li>
 <li>Three \(3\times3\) layers: \(3\times9\times64\times64 \)<wbr>\({}= 27\times4096 \)<wbr>\({}= 110{,}592\).</li>
@@ -572,7 +589,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Ten layers each have local derivative \(\partial F/\partial x = 0.5\) (a scalar, for simplicity). Compare the factor by which \(\partial L/\partial y\) at the top is multiplied by the time it reaches the bottom, in a plain network and in a residual one.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">A plain network multiplies \(\prod \frac{\partial F}{\partial x}\). A residual network multiplies \(\prod\left(1 + \frac{\partial F}{\partial x}\right)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.6, lines 2 and 4 of the derivation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#resnet">4.6</a>, box "Show why a skip connection helps the gradient reach early layers", lines 2 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Plain: \(0.5^{10} \)<wbr>\({}= 1/1024 \)<wbr>\({}\approx 0.00098\).</li>
 <li>Residual: \(1.5^{10}\). Square repeatedly. \(1.5^2 = 2.25\), \(1.5^4 = 5.0625\), \(1.5^8 \approx 25.63\).</li>
@@ -641,6 +658,8 @@
 </ul>
 <p>The new memory is a mix of the new input (\(Ux_t\)) and the old memory (\(Wh_{t-1}\)). Because \(h_{t-1}\) depends on \(h_{t-2}\), and so on, \(h_t\) depends on every input so far.</p>
 <p>The number of parameters is \(hd + h^2 + kh\) (plus biases), whatever the length of the sequence. This is weight sharing across time, just as a CNN shares weights across space.</p>
+<p><strong>Example.</strong> With \(d = 3\), \(h = 2\) and \(k = 3\), \(U\) has \(2\cdot3 = 6\) entries, \(W\) has 4 and \(V\) has 6, so 16 weights in all, for a sequence of any length.</p>
+<p>The BPTT box below differentiates this equation, and the LSTM in 4.9 replaces it.</p>
 </div>
 <figure class="slide"><img src="{{ASSETS}}slides/L22/p07.webp" alt="Slide: one RNN step with 2 by 2 matrices U and W, x_t = (0.4, 0.2), h_{t-1} = (0.3, 0.8), giving h_t = (0.66, 0.64)" loading="lazy">
 <figcaption>L22, slide 7. One step of an RNN with numbers. The final answer (0.66, 0.64) is right, but two intermediate numbers on the slide are misprinted. The first question below works it out.</figcaption></figure>
@@ -698,7 +717,7 @@
 <details class="q"><summary><span class="qt">L22 slide</span><span>With \(U = \begin{bmatrix}0.5&0.4\\0.4&0.6\end{bmatrix}\), \(W = \begin{bmatrix}0.4&0.5\\0.3&0.5\end{bmatrix}\), \(x_t = (0.4, 0.2)\) and \(h_{t-1} = (0.3, 0.8)\), compute \(h_t = \tanh(Ux_t + Wh_{t-1})\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(h_t = \tanh(Ux_t + Wh_{t-1})\), with tanh applied to each entry.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.8, the RNN equation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#rnn">4.8</a>, Reading the formula for the RNN</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(Ux_t\), first entry: \(0.5\cdot0.4 + 0.4\cdot0.2 \)<wbr>\({}= 0.20 + 0.08 \)<wbr>\({}= 0.28\).</li>
 <li>\(Ux_t\), second entry: \(0.4\cdot0.4 + 0.6\cdot0.2 \)<wbr>\({}= 0.16 + 0.12 \)<wbr>\({}= 0.28\).</li>
@@ -712,7 +731,7 @@
 <details class="q"><summary><span class="qt">L23 slide</span><span>An RNN reads \(N = 1000\) vectors of size \(d = 300\), with hidden size \(h = 100\) and output size 300. How many weights does it have (no biases)? How does that change if \(N = 10{,}000\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(U: h\times d\), \(W: h\times h\), \(V: k\times h\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.8, the shapes in "Reading the formula".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#rnn">4.8</a>, Reading the formula for the RNN (shapes and parameter count)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(U\): \(100\times300 = 30{,}000\).</li>
 <li>\(W\): \(100\times100 = 10{,}000\).</li>
@@ -724,7 +743,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A scalar RNN has \(w = 0.8\), and every hidden state has \(h_j^2 \approx 0.5\). By roughly what factor is the gradient from step 20 multiplied by the time it reaches step 1?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial h_j}{\partial h_{j-1}} \)<wbr>\({}= w(1 - h_j^2)\), and \(\frac{\partial h_{20}}{\partial h_1} \)<wbr>\({}= \prod_{j=2}^{20}\frac{\partial h_j}{\partial h_{j-1}}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.8, lines 3 and 4 of the derivation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#rnn">4.8</a>, box "Write \(\partial E_4/\partial W\) for an RNN and explain the vanishing gradient", lines 3 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Each factor is \(0.8\times(1 - 0.5) = 0.4\).</li>
 <li>From step 1 to step 20 there are 19 factors.</li>
@@ -765,6 +784,7 @@
 <li>\(C_t \)<wbr>\({}= 0.881\times0.5 + 0.5\times0.762\)<wbr>\({}= 0.440 + 0.381 = 0.821\).</li>
 <li>\(h_t = 0.731\times\tanh(0.821) \)<wbr>\({}= 0.731\times0.676 \)<wbr>\({}\approx 0.494\).</li>
 </ol>
+<p>Line 1 of the box below starts from the cell update, and the questions at the end of this section use all five equations.</p>
 </div>
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Explain why the LSTM cell state helps with the vanishing gradient.</h4>
@@ -794,7 +814,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>One LSTM cell has \(C_{t-1} = 1.0\). The gates come out as \(f_t = 0\), \(i_t = 1\), \(o_t = 1\), and the candidate is \(\tilde C_t = -0.5\). Compute \(C_t\) and \(h_t\), and say in words what happened.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(C_t \)<wbr>\({}= f_t C_{t-1} + i_t\tilde C_t\), \(h_t = o_t\tanh(C_t)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.9, the cell update and output equations.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#lstm">4.9</a>, Reading the formulas (cell update and output gate)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(f_tC_{t-1} = 0\times1.0 = 0\). The old memory is erased completely.</li>
 <li>\(i_t\tilde C_t \)<wbr>\({}= 1\times(-0.5) \)<wbr>\({}= -0.5\). The new content is written in full.</li>
@@ -806,7 +826,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>An LSTM layer has input size \(d = 300\) and hidden size \(h = 100\). How many parameters does it have, with biases? Compare with a plain RNN layer of the same sizes (just \(U\), \(W\) and a bias).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">An LSTM layer has \(4(h(h+d) + h)\) parameters. An RNN layer has \(hd + h^2 + h\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.9, "Reading the formulas", and section 4.8.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#lstm">4.9</a>, Reading the formulas (parameter count), and <a href="#rnn">4.8</a>, Reading the formula for the RNN</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(h + d = 400\). One gate matrix is \(100\times400 = 40{,}000\), plus 100 biases, so \(40{,}100\).</li>
 <li>Four of them: \(4\times40{,}100 = 160{,}400\).</li>
@@ -836,7 +856,12 @@
 <p><strong>Word2vec</strong> (2013) learns these vectors with a fill-in-the-blank task on raw text. In "the cat sat on the mat", hide "sat" and train a small network to predict it from "cat" and "on" (CBOW, continuous bag of words), or train it to predict "cat" and "on" from "sat" (skip-gram). No human labels are needed, because the text itself supplies the answers. This is an early example of the self-supervised learning in 4.14. Words that appear in similar contexts must produce similar predictions, so they end up with similar vectors.</p>
 <p>Similarity between two embeddings is measured by the <em class="t">cosine similarity</em>, the cosine of the angle between them.</p>
 <div class="eq">\[ \cos(a, b) = \frac{a\T b}{\|a\|\,\|b\|} \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The top, \(a\T b\), is the dot product (multiply matching entries and add). The bottom divides by the two lengths, \(\|a\| = \sqrt{a\T a}\), so the answer does not change if a vector is made longer. Only the direction counts.</p>
 <p>It is 1 for vectors pointing the same way, 0 for perpendicular ones and −1 for opposite ones.</p>
+<p><strong>Example.</strong> \(a = (1, 1)\) and \(b = (2, 0)\). \(a\T b = 2\), \(\|a\| = \sqrt2\), \(\|b\| = 2\). So \(\cos = 2/(2\sqrt2) \)<wbr>\({}= 1/\sqrt2 \approx 0.707\), an angle of 45 degrees.</p>
+<p>The analogy question below finds the answer word by the largest cosine, and contrastive learning in 4.15 also measures closeness between embeddings.</p>
+</div>
 <h3>Word arithmetic</h3>
 <figure class="slide"><img src="{{ASSETS}}slides/L23/p10.webp" alt="Slide: word vectors where king minus queen equals man minus woman" loading="lazy">
 <figcaption>L23, slide 10. The offset from "queen" to "king" is about the same as the offset from "woman" to "man".</figcaption></figure>
@@ -853,7 +878,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Toy embeddings use the dimensions (person, royal, female). They are man = (1, 0, 0), woman = (1, 0, 1), king = (1, 1, 0), queen = (1, 1, 1). Compute king − man + woman and its cosine similarity with queen and with king.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\cos(a, b) \)<wbr>\({}= a\T b/(\|a\|\,\|b\|)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.10, word arithmetic and cosine similarity.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#embeddings">4.10</a>, Reading the formula for cosine similarity</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>king − man = (1−1, 1−0, 0−0) = (0, 1, 0).</li>
 <li>Add woman: (0+1, 1+0, 0+1) = (1, 1, 1). Call it \(a\).</li>
@@ -894,6 +919,7 @@
 </ul>
 <p>The slide makes three observations (L23 slide 16). There are as many outputs as inputs, of the same size. Every output depends on every input. And the weights \(w_{ij}\) are not learned parameters. They are computed from the data. This layer has no parameters at all, and it treats the input as a <strong>set</strong>, since shuffling the inputs just shuffles the outputs. Order must be added separately (positional encoding, 4.12).</p>
 <p><strong>Example.</strong> \(x_1 = (1, 0)\), \(x_2 = (0, 1)\). The scores for \(i = 1\) are \(x_1\T x_1 = 1\) and \(x_1\T x_2 = 0\). The softmax gives \(e^1/(e^1 + e^0) \)<wbr>\({}= 2.718/3.718 \)<wbr>\({}\approx 0.73\) and \(0.27\). So \(y_1 \)<wbr>\({}= 0.73(1,0) + 0.27(0,1) \)<wbr>\({}= (0.73, 0.27)\).</p>
+<p>The next part gives each role of \(x\) its own learned matrix, which turns this formula into the full attention formula.</p>
 </div>
 
 <h3>Queries, keys and values</h3>
@@ -914,6 +940,8 @@
 <li>Multiplying by \(V\) replaces each row by the weighted average of the value vectors.</li>
 </ul>
 <p>Counting work, \(QK\T\) has \(n^2\) entries. So attention costs grow with the square of the sequence length. The slide notes that \(n\) is typically about 4096 tokens in current models.</p>
+<p><strong>Example.</strong> Two tokens with \(Q = K = V = I\) (the \(2\times2\) identity) and \(d_k = 1\). Then \(QK\T = I\). Row 1 is \((1, 0)\), whose softmax is \((e, 1)/(e + 1) \)<wbr>\({}\approx (0.73, 0.27)\). So output 1 is \(0.73(1, 0) + 0.27(0, 1) \)<wbr>\({}= (0.73, 0.27)\), the same as the simple example above.</p>
+<p>The first practice question below works a 3-token example in full, and every transformer block in 4.12 starts with this formula.</p>
 </div>
 
 <div class="card exam"><span class="tag">Write this in the exam</span>
@@ -956,8 +984,26 @@
 <h3>Multi-head attention</h3>
 <figure class="slide"><img src="{{ASSETS}}slides/L23/p27.webp" alt="Slide: input X is multiplied by 8 sets of W_Q, W_K, W_V, giving 8 outputs Z_0 to Z_7 which are concatenated and multiplied by W_O" loading="lazy">
 <figcaption>L23, slide 27. Eight heads, each with its own \(W_Q, W_K, W_V\). Their outputs are concatenated and multiplied by \(W_O\).</figcaption></figure>
-<p>One attention computation gives each position one weighted average, so it can follow one kind of relationship at a time (for example "which noun does this pronoun refer to"). <em class="t">Multi-head attention</em> runs \(h\) attention computations, called heads, side by side, each with its own smaller matrices of size \(d\times d_k\) where \(d_k = d/h\). Each head gives an \(n\times d_k\) output. These are concatenated into \(n\times d\) and multiplied by an output matrix \(W_O\) (size \(d\times d\)). The original transformer used \(d = 512\), \(h = 8\) heads and \(d_k = 64\).</p>
-<p>To count parameters, note that the heads together have \(3\times h\times d\times d_k \)<wbr>\({}= 3d^2\) weights in their \(W_Q, W_K, W_V\), and \(W_O\) has \(d^2\). So a multi-head attention layer has \(4d^2\) weights, the same as a single head with full-size matrices.</p>
+<p>One attention computation gives each position one weighted average, so it can follow one kind of relationship at a time (for example "which noun does this pronoun refer to"). <em class="t">Multi-head attention</em> runs \(h\) attention computations, called heads, side by side, each with its own smaller matrices of size \(d\times d_k\). Each head gives an \(n\times d_k\) output. These are concatenated into \(n\times hd_k\) and multiplied by an output matrix \(W_O\) of size \(hd_k\times d\), which brings each row back to length \(d\). The usual choice is \(d_k = d/h\), so the concatenation has length \(d\). The original transformer used \(d = 512\), \(h = 8\) heads and \(d_k = 64\). An exam may choose another \(d_k\) (the 2026 end-sem used \(d = 100\) with 8 heads of size 50), so learn the general count.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Count the weights of multi-head attention with \(h\) heads of size \(d_k\) on inputs of size \(d\) (no biases).</h4>
+<ol class="steps lines">
+<li>Each head has three matrices \(W_Q, W_K, W_V\), each \(d\times d_k\), so \(3dd_k\) weights per head.</li>
+<li>The \(h\) heads together have \(3hdd_k\) weights in \(3h\) matrices.</li>
+<li>The concatenated output has length \(hd_k\), so \(W_O\) is \(hd_k\times d\), with \(hd_kd\) weights. That makes \(3h + 1\) matrices in all.</li>
+<li>Total \(3hdd_k + hd_kd = 4hdd_k\). With \(d_k = d/h\) this is \(4d^2\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 to 4, 6 steps)</span></summary>
+<ol class="steps">
+<li>A query is \(q = W_Q\T x\). It turns \(x\) (length \(d\)) into a vector of length \(d_k\), so \(W_Q\) has \(d\) rows and \(d_k\) columns.</li>
+<li>\(W_K\) and \(W_V\) do the same job for keys and values, so each also has \(dd_k\) entries.</li>
+<li>Each head has its own three, so multiply by \(h\).</li>
+<li>Each head outputs \(d_k\) numbers per token. Placing the \(h\) outputs side by side gives \(hd_k\) numbers.</li>
+<li>\(W_O\) maps those \(hd_k\) numbers back to \(d\), so it has \(hd_k\cdot d\) entries.</li>
+<li>Add the two parts. \(3hdd_k + hdd_k = 4hdd_k\). Substituting \(hd_k = d\) gives \(4d\cdot d = 4d^2\). The number of tokens \(n\) appears nowhere, because the same matrices are used for every token.</li>
+</ol>
+</details></li>
+</ol>
+</div>
 
 <h3>Comparing layers for a sequence</h3>
 <figure class="slide"><img src="{{ASSETS}}slides/L23/p29.webp" alt="Slide: parameter counts for N = 1000 vectors of size 300, MLP 9 times 10 to the 10, CNN 27 times 10 to the 4, RNN 7 times 10 to the 4, self-attention 12 times 10 to the 4" loading="lazy">
@@ -977,7 +1023,7 @@
 <li>\(X\) is \(n\times d\), \(Q\) and \(K\) are \(n\times d_k\), \(QK\T\) is \(n\times n\), and \(V\) and the output are \(n\times d_v\).</li>
 <li>Divide by \(\sqrt{d_k}\) because the dot product's variance is \(d_k\), and a saturated softmax has almost no gradient.</li>
 <li>The causal mask puts \(-\infty\) above the diagonal. Cross-attention takes the queries from the decoder and the keys and values from the encoder.</li>
-<li>Multi-head: \(h\) heads of size \(d/h\), concatenated, then \(W_O\). \(4d^2\) weights.</li>
+<li>Multi-head: \(h\) heads of size \(d_k\), concatenated, then \(W_O\). \(4hdd_k\) weights in \(3h + 1\) matrices, which is \(4d^2\) when \(d_k = d/h\).</li>
 </ul>
 </div>
 
@@ -985,7 +1031,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Three tokens \(x_1 = (1, 0)\), \(x_2 = (0, 1)\), \(x_3 = (1, 1)\). Take \(W_Q = W_K = I\) and \(W_V = \begin{bmatrix}1&0\\0&2\end{bmatrix}\), so \(d_k = 2\). Compute the attention output for all three tokens.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\operatorname{softmax}(QK\T/\sqrt{d_k})V\), with \(Q = XW_Q\), \(K = XW_K\), \(V = XW_V\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.11, the boxed attention formula.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#attention">4.11</a>, Reading the formula for attention</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(X = \begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix}\). With identity matrices, \(Q = K = X\).</li>
 <li>\(V = XW_V\). Each row's second entry is doubled. \(V = \begin{bmatrix}1&0\\0&2\\1&2\end{bmatrix}\).</li>
@@ -1004,7 +1050,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A sentence of \(n = 10\) tokens with \(d = 512\) goes through 8-head attention. Give the shapes of \(X\), of one head's \(Q\), of one head's attention matrix, of the concatenated heads and of the final output. How many weights does the layer have?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(d_k = d/h\). In one head \(Q\) is \(n\times d_k\) and \(QK\T\) is \(n\times n\). The layer has \(4d^2\) weights.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.11, the shapes slide and "Multi-head attention".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#attention">4.11</a>, box "Count the weights of multi-head attention", lines 1, 3 and 4, and Reading the formula for attention (shapes)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(X\) is \(10\times512\).</li>
 <li>\(d_k = 512/8 = 64\). One head's \(Q\) is \(10\times64\) (and so are its \(K\) and \(V\)).</li>
@@ -1063,6 +1109,7 @@
 <li>\(pos = 2\): \((\sin2, \cos2, \sin0.02, \cos0.02) \)<wbr>\({}\approx (0.909, -0.416, 0.020, 1.000)\).</li>
 </ul>
 <p>The first pair changes a lot from one position to the next. The second pair barely moves.</p>
+<p>These vectors are added to the token embeddings before the first block, as L24 slide 14 shows.</p>
 </div>
 
 <h3>The block</h3>
@@ -1077,6 +1124,11 @@
 <p>where \(\mu\) is the mean and \(s\) the standard deviation of the \(D\) entries of \(x\).</p>
 <div class="eq">\[ \mu = \frac1D\sum_{m=1}^D x_m \]</div>
 <div class="eq">\[ s = \sqrt{\frac1D\sum_{m=1}^D (x_m - \mu)^2} \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\mu\) (mu) is the average of the \(D\) entries of one token's vector, and \(s\) is their standard deviation. Subtracting \(\mu\) centres the entries on 0, and dividing by \(s\) makes their spread 1. \(\gamma\) (gamma) and \(\beta\) (beta) are learned vectors of length \(D\), so the network can undo the scaling if that helps. \(\odot\) multiplies entry by entry.</p>
+<p><strong>Example</strong> with \(\gamma = 1\), \(\beta = 0\). For \(x = (2, 4, 6)\), \(\mu = 4\). The centred entries are \((-2, 0, 2)\), with mean square \(8/3\), so \(s = \sqrt{8/3} \approx 1.633\). The output is \((-1.225, 0, 1.225)\).</p>
+<p>Lines 3 and 6 of the block below apply it, and the first practice question works a four-entry example.</p>
+</div>
 <p>It is like the batch normalisation of the neural networks page, but the mean and standard deviation are taken over the \(D\) features of one token, not over the batch. So it works the same for any batch size and any sequence length.</p>
 <p>With these pieces, one block (as in the 2017 paper, called <em class="t">post-norm</em>) is</p>
 <ol class="steps">
@@ -1130,7 +1182,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Apply layer normalisation (with \(\gamma = 1\), \(\beta = 0\)) to the vector \(x = (1, 2, 3, 6)\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\operatorname{LN}(x) \)<wbr>\({}= (x - \mu)/s\), with \(\mu\) the mean and \(s\) the standard deviation of the entries.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.12, the LayerNorm formula.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#transformer">4.12</a>, Reading the formula for layer normalisation</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\mu \)<wbr>\({}= (1 + 2 + 3 + 6)/4 \)<wbr>\({}= 12/4 \)<wbr>\({}= 3\).</li>
 <li>Subtract the mean. \((-2, -1, 0, 3)\).</li>
@@ -1143,7 +1195,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>How many weights (ignore biases and normalisation) are in one transformer block with \(D = 512\) and an MLP hidden size of \(4D\)? How many in a 6-block encoder?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Attention \(4D^2\). MLP \(D\cdot4D + 4D\cdot D = 8D^2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.11 (multi-head count) and 4.12 (MLP shapes).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#attention">4.11</a>, box "Count the weights of multi-head attention", line 4, and <a href="#transformer">4.12</a>, the Remember box (MLP \(8D^2\))</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(D^2 = 512^2 = 262{,}144\).</li>
 <li>Attention: \(4\times262{,}144 \)<wbr>\({}= 1{,}048{,}576\).</li>
@@ -1200,7 +1252,7 @@
 <details class="q"><summary><span class="qt">L24 slide</span><span>A \(224\times224\) RGB image is split into \(16\times16\) patches and projected to \(D = 768\). How many tokens enter the transformer, how long is each flattened patch, how many weights does the projection have (with bias), and how big is one head's attention matrix?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Patches \((H/P)(W/P)\). Patch length \(C\cdot P\cdot P\). Projection \(a\cdot b + b\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.13, steps 1 to 5, and the fully connected count of 4.4.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#vit">4.13</a>, steps 1 to 5 of the list, and <a href="#cnn-params">4.4</a>, the Remember box (fully connected count)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(224/16 = 14\), so \(14\times14 = 196\) patches.</li>
 <li>Add the [CLS] token: 197 tokens.</li>
@@ -1266,6 +1318,11 @@
 <h3>Pretrain, then fine-tune</h3>
 <p>The resulting paradigm (L25 slides 29 and 45) has two stages. <strong>Pretraining</strong> learns general features from a large, general, often unlabelled dataset. This is expensive and done once, and the result is called a <em class="t">foundation model</em>. <strong>Fine-tuning</strong> continues training on a small labelled dataset for the specific task, starting from the pretrained weights. It is cheap and needs little data.</p>
 <p>Fine-tuning every weight of a billion-parameter model is still costly, and each task would need its own full copy. <em class="t">Parameter-efficient fine-tuning</em> freezes the pretrained weights and trains only a few new ones. In <strong>LoRA</strong> (low-rank adaptation), a frozen weight matrix \(W\) of size \(d\times k\) is used as \(W + BA\), where \(B\) is \(d\times r\) and \(A\) is \(r\times k\) with a small rank \(r\) (this is the low-rank idea from the SVD part of the course). Only \(A\) and \(B\) are trained. <strong>BitFit</strong> trains only the biases.</p>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The layer computes \((W + BA)x\). \(W\) has \(d\cdot k\) entries and stays fixed. \(B\) has \(d\cdot r\) and \(A\) has \(r\cdot k\), so LoRA trains \(dr + rk\) numbers. The product \(BA\) has the same shape as \(W\), so it can be added to it, but its rank is at most \(r\).</p>
+<p><strong>Example.</strong> \(d = k = 10\) and \(r = 1\). \(W\) has 100 entries. \(B\) is \(10\times1\) and \(A\) is \(1\times10\), so LoRA trains 20 numbers, a fifth of the full count.</p>
+<p>The first practice question below uses this count with \(d = k = 4096\).</p>
+</div>
 <div class="card remember"><span class="tag">Remember</span>
 <ul>
 <li>SSL = supervised learning on labels made from the data itself. Pretext task (made up) then downstream task (real).</li>
@@ -1278,7 +1335,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>A layer has a \(4096\times4096\) weight matrix. How many weights does full fine-tuning update? How many does LoRA with rank \(r = 8\) train? What fraction is that?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Full fine-tuning updates \(d\cdot k\) weights. LoRA trains \(d\cdot r + r\cdot k\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.14, "Pretrain, then fine-tune".</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#ssl">4.14</a>, Reading the formula for LoRA</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Full: \(4096\times4096 \)<wbr>\({}= 16{,}777{,}216\).</li>
 <li>LoRA: \(B\) is \(4096\times8 = 32{,}768\) and \(A\) is \(8\times4096 = 32{,}768\). Total \(65{,}536\).</li>
@@ -1331,10 +1388,16 @@
 <li>The margin is needed because, without it, the loss would reward pushing dissimilar pairs infinitely far, and that term could dominate training. With it, "far enough" is enough.</li>
 </ul>
 <p><strong>Example</strong> with \(m = 2\). A similar pair at \(D_W = 0.5\) gives \(\frac12(0.25) = 0.125\). A dissimilar pair at \(D_W = 0.5\) gives \(\frac12(2 - 0.5)^2 \)<wbr>\({}= \frac12(2.25) \)<wbr>\({}= 1.125\). A dissimilar pair at \(D_W = 3\) gives \(\max(0, -1) = 0\), so no loss.</p>
+<p>The triplet loss below uses the same margin idea with three items, and the second practice question uses this formula.</p>
 </div>
 <p>A closely related loss uses three items at once, an anchor \(a\), a positive \(p\) and a negative \(n\). The <em class="t">triplet loss</em> asks the negative to be farther than the positive by at least a margin \(\alpha\).</p>
 <p>Write \(d_p = \|f(a) - f(p)\|^2\) for the squared distance to the positive and \(d_n = \|f(a) - f(n)\|^2\) for the negative. Then</p>
 <div class="eq">\[ L = \max(0,\; d_p - d_n + \alpha) \]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(f\) is the embedding network. The loss is 0 once the negative is farther than the positive by at least \(\alpha\) (alpha), that is when \(d_n \ge d_p + \alpha\). Otherwise it is the amount by which that condition fails, and the gradient pulls \(p\) towards \(a\) and pushes \(n\) away.</p>
+<p><strong>Example</strong> with \(\alpha = 0.5\). If \(d_p = 1\) and \(d_n = 3\), then \(1 - 3 + 0.5 = -1.5\), so \(L = 0\). If \(d_p = 1\) and \(d_n = 1.2\), then \(L = 1 - 1.2 + 0.5 = 0.3\).</p>
+<p>The first practice question below uses it, and person identification (next paragraph) is trained with it.</p>
+</div>
 <p>Slide 64 applies this to <strong>person identification</strong>. Two photos of the same person from different cameras should embed close together, so a new photo can be matched by nearest neighbour.</p>
 
 <h3>LMNN</h3>
@@ -1354,7 +1417,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Embeddings: anchor \(a = (0, 0)\), positive \(p = (1, 0)\), and two candidate negatives \(n_1 = (0, 2)\) and \(n_2 = (0.5, 0.5)\). With margin \(\alpha = 1\), compute the triplet loss for each negative.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(L \)<wbr>\({}= \max(0, \|a - p\|^2 - \|a - n\|^2 + \alpha)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.15, the triplet loss.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#contrastive">4.15</a>, Reading the formula for the triplet loss</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\|a - p\|^2 = 1^2 + 0^2 = 1\).</li>
 <li>\(\|a - n_1\|^2 = 0^2 + 2^2 = 4\). \(L \)<wbr>\({}= \max(0, 1 - 4 + 1) \)<wbr>\({}= \max(0, -2) \)<wbr>\({}= 0\).</li>
@@ -1366,7 +1429,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>With the contrastive loss and margin \(m = 1\), compute the loss for (a) a similar pair at distance 0.8, (b) a dissimilar pair at distance 0.8, (c) a dissimilar pair at distance 1.5.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(L \)<wbr>\({}= (1 - Y)\frac12D^2 + Y\frac12\max(0, m - D)^2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 4.15, the boxed contrastive loss.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#contrastive">4.15</a>, Reading the formula for the contrastive loss</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) \(Y = 0\). \(L \)<wbr>\({}= \frac12(0.8)^2 \)<wbr>\({}= \frac12(0.64) \)<wbr>\({}= 0.32\).</li>
 <li>(b) \(Y = 1\). \(m - D = 0.2\). \(L \)<wbr>\({}= \frac12(0.2)^2 \)<wbr>\({}= \frac12(0.04) \)<wbr>\({}= 0.02\).</li>
@@ -1398,12 +1461,63 @@
 <ul>
 <li><strong>For Q1</strong>, learn the Remember boxes on every page. Multiple-correct questions in this course are often "one, none or more correct", so check each option on its own and do not stop at the first true one. A typical Q1 item from this page is "Which of these layers have no learnable parameters, max pooling, \(1\times1\) convolution, softmax or layer normalisation?" (The answer is max pooling and softmax. A \(1\times1\) convolution has weights, and layer normalisation has \(\gamma\) and \(\beta\).)</li>
 <li><strong>For Q2</strong>, practise the numerical patterns until they are automatic. These are the output size and parameter count of a conv layer, an RNN or LSTM step, an attention computation with three tokens, the number of ViT tokens, and from earlier pages closed-form regression, PCA on small data, Bayes' rule, gradient descent steps, the perceptron update and a backpropagation pass. Write the formula first, then substitute, then check.</li>
-<li><strong>For Q3</strong>, be able to write the derivations in the "Write this in the exam" boxes from memory. On this page they are the output-size formula, the conv parameter count, the ResNet gradient, the RNN vanishing gradient, the LSTM cell gradient and the \(\sqrt{d_k}\) scaling. Conceptual questions ask "why": why convolution instead of fully connected, why skip connections, why attention instead of an RNN, why self-supervised pretraining.</li>
+<li><strong>For Q3</strong>, be able to write the derivations in the "Write this in the exam" boxes from memory. On this page they are the output-size formula, the conv parameter count, the ResNet gradient, the RNN vanishing gradient, the LSTM cell gradient, the \(\sqrt{d_k}\) scaling and the multi-head weight count. Conceptual questions ask "why": why convolution instead of fully connected, why skip connections, why attention instead of an RNN, why self-supervised pretraining.</li>
 </ul>
 </section>
 
 <section>
-<h2 id="page-formulas"><span class="num">4.17</span>Formulas on this page</h2>
+<h2 id="exam-hall"><span class="num">4.17</span>In the exam hall</h2>
+<p class="oneline">Match the question to a box or card on this page, write its formula line first, then substitute, then run the quick checks below.</p>
+<h3>Which part of the page a question needs</h3>
+<table class="tbl">
+<tr><th>If the question</th><th>Use</th></tr>
+<tr><td>asks for the output size of a conv or pooling layer</td><td><a href="#conv-size">4.3</a>, box, line 4 (line 5 if it says "same" padding)</td></tr>
+<tr><td>asks how many parameters a conv layer has</td><td><a href="#cnn-params">4.4</a>, box, line 4</td></tr>
+<tr><td>flattens a map into a fully connected layer</td><td><a href="#cnn-params">4.4</a>, the Remember box</td></tr>
+<tr><td>compares a \(5\times5\) or \(7\times7\) filter with stacked \(3\times3\) filters</td><td><a href="#cnn-design">4.5</a>, box, lines 1 to 3</td></tr>
+<tr><td>asks for multiplications, FLOPs or the saving from a bottleneck</td><td><a href="#cnn-design">4.5</a>, the Remember box</td></tr>
+<tr><td>asks for the gradient through a residual block, or why skips help</td><td><a href="#resnet">4.6</a>, box, lines 1 to 4</td></tr>
+<tr><td>gives \(U\), \(W\), \(x_t\), \(h_{t-1}\) and asks for \(h_t\)</td><td><a href="#rnn">4.8</a>, Reading the formula for the RNN</td></tr>
+<tr><td>asks why RNN gradients vanish or explode</td><td><a href="#rnn">4.8</a>, box, lines 3 to 5</td></tr>
+<tr><td>asks what an LSTM gate does, or for \(C_t\) and \(h_t\)</td><td><a href="#lstm">4.9</a>, Reading the formulas, and the box</td></tr>
+<tr><td>asks for a word analogy or a similarity</td><td><a href="#embeddings">4.10</a>, Reading the formula for cosine similarity</td></tr>
+<tr><td>gives a few token vectors and asks for the attention output</td><td><a href="#attention">4.11</a>, Reading the formula for attention</td></tr>
+<tr><td>asks why scores are divided by \(\sqrt{d_k}\)</td><td><a href="#attention">4.11</a>, the \(\sqrt{d_k}\) box</td></tr>
+<tr><td>asks how many matrices or weights a multi-head layer has</td><td><a href="#attention">4.11</a>, the multi-head box, lines 1 to 4</td></tr>
+<tr><td>asks what the decoder sees in training, or about the mask</td><td><a href="#attention">4.11</a>, masked attention, and <a href="#transformer">4.12</a>, autoregressive decoding</td></tr>
+<tr><td>asks for the number of tokens in a vision transformer</td><td><a href="#vit">4.13</a>, the Remember box</td></tr>
+<tr><td>gives distances and asks for a contrastive or triplet loss</td><td><a href="#contrastive">4.15</a>, the two Reading cards</td></tr>
+</table>
+<h3>What to write first</h3>
+<ul>
+<li><strong>A size or count question.</strong> Write the formula with its symbols, for example \(n_{\text{out}} \)<wbr>\({}= \lfloor(n + 2p - k)/s\rfloor + 1\). Then write what each symbol is in this question (\(n = 224\), \(k = 7\), and so on) before any arithmetic. In 2026 the method earned marks even when the arithmetic slipped.</li>
+<li><strong>A derivation.</strong> Write the definition line of the box first (\(y = x + F(x)\), \(h_t = \tanh(Ux_t + Wh_{t-1})\), \(C_t \)<wbr>\({}= f_t\odot C_{t-1} + i_t\odot\tilde C_t\)). Every later line follows from it by one rule.</li>
+<li><strong>A "why" question.</strong> Name the mechanism in one sentence (the "+1" in the residual gradient, a product of many factors below 1, the variance \(d_k\) of a dot product), then add one line of maths that shows it.</li>
+</ul>
+<h3>What lost marks in the 2026 end-sem</h3>
+<ul>
+<li>Leaving out the padding in an output size (109 instead of 112) kept only half a mark for method.</li>
+<li>Forgetting the biases in a conv layer (1568 instead of 1600) cost half a mark.</li>
+<li>Giving only \(112\times112\) without the 32 channels cost half a mark. Always write the full shape \(H\times W\times C\).</li>
+<li>Forgetting \(W_O\) in multi-head attention (24 matrices, 120,000 weights) lost a mark in each part.</li>
+<li>Leaving the "+1" out of the residual gradient cost 4 or 5 of 12 marks. "A shortcut" without the "+1" got 3 of 4.</li>
+</ul>
+<h3>Quick checks on the answer</h3>
+<ul>
+<li>An output size is a whole number. With stride 1 and "same" padding it equals the input size.</li>
+<li>The number of output channels equals the number of filters. Pooling keeps the channels and adds no parameters.</li>
+<li>A conv layer's parameter count does not depend on the image size. A multi-head layer's count does not depend on the number of tokens.</li>
+<li>Each row of attention weights lies between 0 and 1 and adds up to 1. With a causal mask, every weight above the diagonal is 0.</li>
+<li>The attention output has one row per token, so its shape is \(n\times d_v\).</li>
+<li>LSTM gates lie between 0 and 1, the candidate lies between −1 and 1, and \(|h_t| \lt 1\).</li>
+<li>A cosine similarity lies between −1 and 1. A layer-normalised vector has mean 0.</li>
+<li>Contrastive and triplet losses are never negative.</li>
+<li>For a vision transformer, patches times patch length equals height times width times channels.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="page-formulas"><span class="num">4.18</span>Formulas on this page</h2>
 <table class="tbl sheet">
 <tr><th>What</th><th>Formula</th><th>Section</th></tr>
 <tr><td>1-D convolution</td><td>\(y[n] = \sum_m x[m]h[n-m]\)</td><td>4.1</td></tr>

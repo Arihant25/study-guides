@@ -53,7 +53,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q1 · confusion matrix, precision and recall for the wicket predictor</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\text{precision} = \frac{TP}{TP+FP}\), \(\text{recall} = \frac{TP}{TP+FN}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#metrics">1.5 Performance metrics</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../foundations/#metrics">1.5</a>, box "Find precision and recall from scores and a threshold", line 2. (b) the same box, lines 3 and 4. (c) <a href="../foundations/#metrics">1.5</a>, the Common mistake card on accuracy with a rare class.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>A true positive is a flagged ball that was a wicket. \(TP = 12\).</li>
 <li>A false positive is a flagged ball that was not a wicket. \(FP = 20 - 12 = 8\).</li>
@@ -78,7 +78,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q2 · when the closed form fails, the MSE gradient, ridge versus lasso</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\nabla J = \frac2N X\T(Xw - y)\). Ridge gives \(w = (X\T X + \lambda I)^{-1}X\T y\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#regression">1.6 Closed-form regression</a> for (a) and (b). <a href="../foundations/#regularization">1.8 Ridge and lasso</a> for (c).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../foundations/#regression">1.6</a>, box "Show that \(\mathbf w^* = (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\)", line 5, and the Reading the formula card after the box (when the inverse fails). (b) the same box, line 3. (c) <a href="../foundations/#regularization">1.8</a>, box "Show that ridge regression gives \(\mathbf w^* = (\mathbf X\T\mathbf X + \lambda\mathbf I)^{-1}\mathbf X\T\mathbf y\)", line 4, and the lasso paragraph after it.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) False. The formula needs \(X\T X\) to be invertible. It is singular when two features are copies or combinations of each other, or when there are fewer samples than features. Then there are many least-squares solutions, and you would use the pseudo-inverse or ridge.</li>
 <li>(b) Expand \(J = \frac1N(w\T X\T Xw - 2w\T X\T y + y\T y)\).</li>
@@ -101,7 +101,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q3 · covariance size and rank, the small-matrix trick, facts about PCA</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\operatorname{rank}(X\T X) = \operatorname{rank}(X)\). If \(XX\T u = \lambda u\) then \(X\T X(X\T u) = \lambda(X\T u)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#pca">1.12 PCA</a> and <a href="../foundations/#eigenfaces">1.13 Eigenfaces and the small-matrix trick</a>. For (c)(ii) see <a href="../probabilistic/#pca-recon">2.1 PCA as reconstruction</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../foundations/#eigenfaces">1.13</a>, box "Get the eigenvectors of \(\mathbf X\mathbf X\T\) from those of \(\mathbf X\T\mathbf X\)", line 4, and the Remember box in 1.13. (b) the same box, lines 1 to 4. (c) (i) and (iii) <a href="../foundations/#pca">1.12</a>, the opening paragraph (linear and unsupervised). (ii) <a href="../foundations/#pca">1.12</a>, box "Show that the line through the mean that minimises the sum of squared perpendicular distances points along the top eigenvector", lines 2 and 3. (iv) <a href="../basics/#matrices">B.3</a>, box "Show that \(A = X\T X\) is symmetric and positive semi-definite".</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Each image has \(100\cdot100 = 10000\) pixels, so \(X\) is \(400\times10000\).</li>
 <li>\(\Sigma = \frac1N X\T X\) is \((10000\times400)(400\times10000)\), which is \(10000\times10000\).</li>
@@ -123,7 +123,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q4 · one posterior with Bayes' rule</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(\omega_1\mid x) = \frac{p(x\mid\omega_1)P(\omega_1)}{p(x\mid\omega_1)P(\omega_1) + p(x\mid\omega_2)P(\omega_2)}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#bayes">B.8 Bayes' theorem</a> and <a href="../probabilistic/#bayes-decision">2.5 Bayesian decision</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#bayes-decision">2.5</a>, Reading the formula for Bayes' theorem. (b) <a href="../probabilistic/#bayes-decision">2.5</a>, box "Show that the Bayes decision rule minimises the probability of error", lines 3 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The top is \(0.4\times0.7 = 0.28\).</li>
 <li>The second term of the bottom is \(0.6\times0.3 = 0.18\).</li>
@@ -145,7 +145,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q5 · the naive assumption, the logistic model and its loss</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(p(y = 1\mid x) = \sigma(w\T x) = \frac{1}{1 + e^{-w\T x}}\). \(L = -\frac1N\sum_i[y_i\ln\sigma(w\T x_i) + (1 - y_i)\ln(1 - \sigma(w\T x_i))]\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#naive-bayes">2.9 Naive Bayes</a> and <a href="../probabilistic/#logistic">2.10 Logistic regression</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#naive-bayes">2.9</a>, the conditional independence equation. (b) <a href="../probabilistic/#logistic">2.10</a>, box "With labels \(y_i\in\{0,1\}\), derive the loss of logistic regression …", lines 1 to 3. (c) (i) and (ii) <a href="../probabilistic/#logistic">2.10</a>, "Why not use squared error". (iii) the same box, lines 2 and 3</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) True. That one assumption is what makes the method "naive".</li>
 <li>(b) The model is the sigmoid of a linear score, as in the formula row. The loss is the binary cross-entropy, also called the log-loss or the negative log-likelihood.</li>
@@ -163,7 +163,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q6 · support vectors, margin, kernels, the effect of C</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">The soft-margin SVM solves \(\min\frac12\|w\|^2 + C\sum_i\xi_i\) such that \(y_i(w\T x_i + b) \ge 1 - \xi_i\), \(\xi_i \ge 0\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#svm">2.11 SVMs</a> and <a href="../probabilistic/#kernels">2.12 Kernels</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) (i) <a href="../probabilistic/#svm">2.11</a>, Reading the formula for the dual. (ii) <a href="../probabilistic/#svm">2.11</a>, box "Show that the margin … is \(\frac{2}{\|w\|}\) …", line 2. (iii) <a href="../probabilistic/#kernels">2.12</a>, the boxed kernel formulas. (iv) <a href="../probabilistic/#svm">2.11</a>, "Hinge loss compared with logistic loss". (b) <a href="../probabilistic/#svm">2.11</a>, the soft-margin paragraph on \(C\)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(i) True. A point strictly outside the margin has \(\alpha_i = 0\), so it does not affect \(w = \sum_i\alpha_iy_ix_i\).</li>
 <li>(ii) True. The two planes \(w\T x + b = \pm1\) are \(\frac{2}{\|w\|}\) apart.</li>
@@ -183,7 +183,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q7 · perceptron facts and a parameter count</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">A dense layer has (inputs + 1) × outputs parameters.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../neural/#perceptron">3.2 The perceptron</a>, <a href="../neural/#delta-rule">3.3 The delta rule</a> and <a href="../neural/#mlp">3.4 MLPs</a>. This is the L15 slide problem.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../neural/#perceptron">3.2</a>, "Does it always stop?", claims 1 and 2 for (i) and (ii), <a href="../neural/#delta-rule">3.3</a>, the Remember box and the comparison table for (iii), and <a href="../neural/#mlp">3.4</a>, "The universal approximation theorem" for (iv). (b) <a href="../neural/#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", lines 1 to 3</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(i) true, this is the perceptron convergence theorem. (ii) false, XOR is not linearly separable. (iii) true, the delta rule is gradient descent on a convex squared error, so it settles at the least-squares weights. (iv) false, it is an MLP with a hidden layer that is a universal approximator. The answer is (i), (iii).</li>
 <li>(b) Input to hidden. Each of the 2 hidden neurons has 3 weights and 1 bias, so \(2\times(3 + 1) = 8\).</li>
@@ -203,7 +203,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q8 · Adam, fixes for vanishing gradients, why BatchNorm</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Adam keeps \(m_t = \beta_1m_{t-1} + (1-\beta_1)g_t\) and \(v_t = \beta_2v_{t-1} + (1-\beta_2)g_t^2\), corrects them by \(1 - \beta^t\), and steps by \(\eta\,\hat m_t/(\sqrt{\hat v_t} + \epsilon)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../neural/#optimizers">3.8 Optimisers</a>, <a href="../neural/#training-practice">3.7 Training in practice</a>, <a href="../neural/#activations">3.5 Activations</a> and <a href="../deep/#resnet">4.6 ResNet</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../neural/#optimizers">3.8</a>, Reading the formula for Adam. (b) <a href="../neural/#activations">3.5</a>, the card "Why ReLU helps with vanishing gradients", <a href="../deep/#resnet">4.6</a>, box "Show why a skip connection helps the gradient reach early layers", lines 1 to 4, <a href="../neural/#backprop">3.6</a>, "Vanishing and exploding gradients, and zero initialisation", and its Remember box for (iv). (c) <a href="../neural/#training-practice">3.7</a>, Reading the formula for batch normalisation</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) True. \(m_t\) is the momentum part and \(v_t\) scales the step for each weight separately.</li>
 <li>(b) (i) helps, because ReLU's slope is 1 wherever it is active. (ii) helps, because the skip adds a path with derivative 1. (iii) helps, because it keeps pre-activations in the range where sigmoid and tanh are not flat. (iv) does not, zero weights make every hidden unit get the same gradient so they never become different. The answer is (i), (ii), (iii).</li>
@@ -223,7 +223,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q9 · output size, parameters and pooling for a 7×7 conv layer</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Output side \(\lfloor(n + 2p - k)/s\rfloor + 1\). Parameters \((k\cdot k\cdot D + 1)\cdot K\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#conv-size">4.3 Output size</a> and <a href="../deep/#cnn-params">4.4 Counting parameters</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../deep/#conv-size">4.3</a>, box "Show that a filter of width k with stride s ... gives floor((n+2p-k)/s) + 1 outputs", line 4 (line 5 for the same-padding check). (b) <a href="../deep/#cnn-params">4.4</a>, box "Count the parameters of a conv layer", line 4. (c) <a href="../deep/#conv-size">4.3</a>, the same box, line 4 with k = s = 2</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Put in \(n = 224\), \(p = 3\), \(k = 7\), \(s = 2\). The top is \(224 + 6 - 7 = 223\).</li>
 <li>\(223/2 = 111.5\), and the floor is 111.</li>
@@ -247,7 +247,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q10 · counting the matrices and parameters of multi-head attention</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Each head \(i\) has \(W_Q^{(i)}, W_K^{(i)}, W_V^{(i)}\) of size \(d\times d_k\). The output projection \(W_O\) is \((h\cdot d_k)\times d\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#attention">4.11 Self-attention</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../deep/#attention">4.11</a>, box "Count the weights of multi-head attention", lines 2 and 3. (b) the same box, lines 1 and 3. (c) the same box, line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) Each head has 3 matrices, so the heads have \(8\times3 = 24\). The output projection adds 1. The total is 25.</li>
 <li>(b) Each query, key and value matrix maps 100 numbers to 50, so it is \(100\times50\).</li>
@@ -299,7 +299,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part II Q1 (b) and (c) · forward pass, three gradients and one update</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial L}{\partial w_i} = (o - y)\,\sigma'(z)\,x_i\) and \(\frac{\partial L}{\partial b} = (o - y)\,\sigma'(z)\). Update \(w \leftarrow w - \eta\nabla L\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../neural/#backprop">3.6 Backpropagation</a> and <a href="../basics/#chain-rule">B.12 The chain rule</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../neural/#activations">3.5</a>, box "Show that \(\sigma'(z) = \sigma(z)(1 - \sigma(z))\)", lines 1 to 4. (b) <a href="../neural/#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", lines 2 and 5 for one neuron, with \((o - y)\) in place of \(2(o - y)\) because the loss has a \(\frac12\). (c) <a href="../neural/#optimizers">3.8</a>, box "Show that a small gradient descent step does not increase \(J\)", line 1</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(z = 1\cdot1 + (-1)\cdot1 + 0 = 0\).</li>
 <li>\(o = \sigma(0) = \frac{1}{1 + 1} = 0.5\).</li>
@@ -327,7 +327,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part II Q2 · likelihoods, posteriors and decisions near the midpoint</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(p(x\mid A) = \frac{1}{10\sqrt{2\pi}}e^{-(x-100)^2/200}\). Choose A if \(p(x\mid A)P(A) > p(x\mid B)P(B)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#gaussian">B.9 The Gaussian</a> and <a href="../probabilistic/#bayes-decision">2.5 Bayesian decision</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#bayes-decision">2.5</a>, the 1-D Gaussian density and the Reading the formula card after it. (b) <a href="../probabilistic/#bayes-decision">2.5</a>, box "Two 1-D Gaussian classes with equal variance …", lines 1 and 6. (c) <a href="../probabilistic/#bayes-decision">2.5</a>, Reading the formula for Bayes' theorem</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) With \(\sigma^2 = 100\), the exponent of A is \(-\frac{(x-100)^2}{200}\) and of B is \(-\frac{(x-200)^2}{200}\).</li>
 <li>At \(x = 150\) both squares are \(50^2 = 2500\), so both exponents are \(-12.5\).</li>
@@ -360,7 +360,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part II Q3 · eigenvalues, the SVD of a symmetric matrix and a rank-1 approximation</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\det(A - \lambda I) = 0\). For a symmetric matrix with positive eigenvalues the SVD is the eigen decomposition. Best rank 1 is \(A_1 = d_1u_1v_1\T\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#eigen">B.5 Eigenvalues</a> and <a href="../foundations/#svd">1.11 SVD and low-rank approximation</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../basics/#eigen">B.5</a>, box "Find the eigenvalues and unit eigenvectors of A", lines 1 to 5 (it is the same matrix). (b) <a href="../basics/#svd-basics">B.6</a>, the Remember box (for a symmetric PSD matrix the SVD is the eigen decomposition), with <a href="../foundations/#svd">1.11</a>, Reading the formula for the SVD. (c) <a href="../foundations/#svd">1.11</a>, the subsection "Low-rank approximation" (keep only \(d_1\mathbf u_1\mathbf v_1\T\))</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\det(A - \lambda I) = (2 - \lambda)^2 - 1\).</li>
 <li>Expand. \(\lambda^2 - 4\lambda + 3 = 0\), which factors as \((\lambda - 3)(\lambda - 1) = 0\). So \(\lambda_1 = 3\) and \(\lambda_2 = 1\).</li>
@@ -385,7 +385,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part II Q4 · objective, the elbow method and a full run</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(J = \sum_{k=1}^{K}\sum_{x_i\in C_k}\|x_i - \mu_k\|^2\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#kmeans">2.8 k-means</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#kmeans">2.8</a>, the objective \(J\). (b) <a href="../probabilistic/#kmeans">2.8</a>, the paragraph on choosing \(K\) (the elbow). (c) <a href="../probabilistic/#kmeans">2.8</a>, box "Show that each k-means step can only lower (or keep) \(J\) …", lines 2 and 3</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) The objective is the formula above. It is minimised alternately over the clusters \(C_k\) and the means \(\mu_k\).</li>
 <li>(b) The best \(J\) never goes up as \(K\) grows, because with one more cluster you can always do at least as well. At \(K = N\) every point is its own cluster and \(J = 0\).</li>
@@ -423,7 +423,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part III Q1 · forward expression and two derivatives of a branch network</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(y = \sum_{k=1}^{4}\sigma(w_k\T x)\,u_k \in \R^p\), and \(\sigma' = \sigma(1-\sigma)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../neural/#mlp">3.4 MLPs</a> and <a href="../neural/#backprop">3.6 Backpropagation</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../neural/#mlp">3.4</a>, box "Three inputs, one hidden layer of two sigmoid neurons", line 5 (the chain \(\mathbf p = W\mathbf x\), \(\mathbf h = \sigma(\mathbf p)\), output weights times \(\mathbf h\), here with no biases and a vector output). (b) <a href="../neural/#activations">3.5</a>, box "Show that \(\sigma'(z) = \sigma(z)(1 - \sigma(z))\)", line 4, and <a href="../neural/#backprop">3.6</a>, box "Find \(\frac{\partial L}{\partial u_j}\) and \(\frac{\partial L}{\partial w_{jk}}\)", line 4 (the chain through \(\sigma\)). (c) <a href="../neural/#backprop">3.6</a>, the same box, line 4 (the factor \(q_j(1 - q_j)\) times the output weight)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) Add up the four contributions. \(y = \sum_k\alpha_ku_k = \sum_k\sigma(w_k\T x)u_k\), a vector in \(\R^p\). In NumPy, with <code>W</code> of shape (4, d) and <code>U</code> of shape (4, p), it is <code>y = U.T @ sigmoid(W @ x)</code>.</li>
 <li>(b) With \(d = 1\), \(w_k\) and \(x\) are plain numbers. Each term is \(\sigma(w_kx)u_k\), and only \(\sigma(w_kx)\) depends on \(x\).</li>
@@ -461,7 +461,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part III Q2 · symmetry, PSD and the feature map of a cubic kernel</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\((a + b)^3 = a^3 + 3a^2b + 3ab^2 + b^3\). Split each coefficient as \(\sqrt3\cdot\sqrt3\) between \(\phi(p)\) and \(\phi(q)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#kernels">2.12 Kernels</a> (which works out \((p\T q)^2\) the same way). The mid-sem asked (a) and (b) too.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#kernels">2.12</a>, box "Show that a kernel matrix … is symmetric and positive semi-definite", line 1. (b) the same box, lines 2 to 5. (c) <a href="../probabilistic/#kernels">2.12</a>, box "In 2-D, find \(\phi\) …", lines 1 and 2, with \((a+b)^3\) in place of \((a+b)^2\)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) \(K_{ij} = \phi(x_i)\T\phi(x_j)\). The dot product of two real vectors does not depend on the order, so this equals \(\phi(x_j)\T\phi(x_i) = K_{ji}\). Hence \(K = K\T\).</li>
 <li>(b) See the box above.</li>
@@ -501,7 +501,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part III Q3 · the +1 in a residual gradient, and why ReLU helps</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial y}{\partial x} = g_4'(s)\big(g_3'g_2'g_1' + 1\big)\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#resnet">4.6 ResNet and skip connections</a> and <a href="../neural/#activations">3.5 Activations</a></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../deep/#resnet">4.6</a>, box "Show why a skip connection helps the gradient reach early layers", lines 1 and 2. (b) the same box, line 3. (c) <a href="../neural/#activations">3.5</a>, Activations, and <a href="../deep/#resnet">4.6</a>, the same box, line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) See the box above.</li>
 <li>(b) The skip connection adds a "+1" inside the bracket. So even if the product \(g_3'g_2'g_1'\) of the deep path shrinks towards 0, the gradient through the block is still about \(g_4'(s)\).</li>
@@ -530,7 +530,7 @@
 <details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part III Q4 · a triangle density and EM for a triangle mixture</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(T(x\mid\mu) = \max(0,\ 1 - |x - \mu|)\). E-step \(\gamma_{ik} = \frac{\pi_kT(x_i\mid\mu_k)}{\sum_j\pi_jT(x_i\mid\mu_j)}\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#gmm-em">2.7 GMMs and EM</a>. The triangle itself is new, and is taught in the box above.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) new, built like the Gaussian in <a href="../probabilistic/#bayes-decision">2.5</a>. (b) <a href="../probabilistic/#gmm-em">2.7</a>, box "The EM algorithm for a GMM", lines 1 to 4. (c) the same box, lines 2 and 3 with the triangle density in place of the Gaussian. (d) <a href="../probabilistic/#gmm-em">2.7</a>, the Common mistake card and the paragraph on uses</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) \(T(x\mid\mu) = 1 - |x - \mu|\) when \(|x - \mu| \le 1\), and 0 otherwise. The support is \([\mu - 1, \mu + 1]\). (Under the text's reading it is \(\max(0, 2 - 4|x - \mu|)\) on \([\mu - 0.5, \mu + 0.5]\).)</li>
 <li>(b) GMM. Start with guesses for \(\pi_k\), \(\mu_k\) and \(\sigma_k^2\).</li>

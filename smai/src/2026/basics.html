@@ -25,7 +25,8 @@
 <tr><td>B.11 Gradients of vector expressions</td><td>closed-form regression, PCA, LDA</td><td>25 min</td></tr>
 <tr><td>B.12 The chain rule</td><td>backpropagation</td><td>20 min</td></tr>
 <tr><td>B.13 Lagrange multipliers</td><td>PCA, LDA, SVM</td><td>25 min</td></tr>
-<tr><td colspan="2"><strong>Total</strong></td><td><strong>5 h 50 min</strong></td></tr>
+<tr><td>B.14 In the exam hall</td><td>every quiz and exam</td><td>10 min</td></tr>
+<tr><td colspan="2"><strong>Total</strong></td><td><strong>6 h</strong></td></tr>
 </tbody>
 </table>
 <p>If time is short, do B.5, B.8 and B.11 first. The quizzes and the mid-sem in 2026 asked directly about norms, eigenvectors as solutions of optimisation problems, covariance matrices and Bayes' theorem.</p>
@@ -103,7 +104,7 @@
 <details class="q"><summary><span class="qt">L01 slide</span><span>What is the angle between the lines with normals \(\mathbf w_1 = [1,1]\T\) and \(\mathbf w_2 = [1,-1]\T\)? (a) 0 (b) 45 (c) 90 (d) 120</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\cos\theta \)<wbr>\({}= \frac{\mathbf a\T\mathbf b}{\|\mathbf a\|\,\|\mathbf b\|}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, length and angle</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#vectors">B.1</a>, Reading the formula for the angle \(\cos\theta\)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The dot product is \(1\cdot1 + 1\cdot(-1) = 0\).</li>
 <li>So \(\cos\theta = 0\) whatever the lengths are.</li>
@@ -114,7 +115,7 @@
 <details class="q"><summary><span class="qt">L01 slide</span><span>The rule is "class A if \(\mathbf w\T\mathbf x \ge 0\), else class B", with \(\mathbf w = [1,1,1,1]\T\). Classify (i) \([1,1,1,1]\) (ii) \([0,1,2,3]\) (iii) \([-1,1,-1,1]\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w\T\mathbf x \)<wbr>\({}= \sum_i w_ix_i\), then look at its sign</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, the dot product</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#vectors">B.1</a>, Reading the formula for the dot product</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(i) \(1+1+1+1 = 4 \ge 0\), so class A.</li>
 <li>(ii) \(0+1+2+3 = 6 \ge 0\), so class A.</li>
@@ -125,7 +126,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Project \(\mathbf x = [2,5]\T\) onto the direction of \([3,4]\T\). Give the projected vector and the leftover, and check they are orthogonal.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Projection \(= (\mathbf u\T\mathbf x)\,\mathbf u\) with \(\mathbf u\) a unit vector</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.1, projection onto a direction</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#vectors">B.1</a>, the Example card under "Projection onto a direction"</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\([3,4]\T\) has length 5, so the unit vector is \(\mathbf u = [0.6, 0.8]\T\).</li>
 <li>\(\mathbf u\T\mathbf x \)<wbr>\({}= 0.6\cdot2 + 0.8\cdot5 \)<wbr>\({}= 1.2 + 4 \)<wbr>\({}= 5.2\).</li>
@@ -170,7 +171,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Find the L0, L1, L2 and L∞ norms of \([-6, 3, 2, 0]\T\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\|\mathbf x\|_p \)<wbr>\({}= (\sum_i |x_i|^p)^{1/p}\), L0 counts non-zeros, L∞ is the largest \(|x_i|\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.2</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#norms">B.2</a>, Reading the formula for the Lp norm</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>L0: \(-6, 3, 2\) are non-zero, so 3.</li>
 <li>L1: \(6 + 3 + 2 + 0 = 11\).</li>
@@ -182,7 +183,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Points \(\mathbf a = [1,2]\T\) and \(\mathbf b = [4,-2]\T\). Find their L1 (Manhattan) and L2 (Euclidean) distances.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">distance \(= \|\mathbf a - \mathbf b\|_p\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.2, the paragraph on distances</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#norms">B.2</a>, Reading the formula for the Lp norm, applied to \(\mathbf a - \mathbf b\) as in the paragraph on distances</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\mathbf a - \mathbf b \)<wbr>\({}= [1-4, 2-(-2)]\T \)<wbr>\({}= [-3, 4]\T\).</li>
 <li>L1: \(3 + 4 = 7\).</li>
@@ -231,6 +232,29 @@
 <p>The closed-form regression of page 1 needs \((X\T X)^{-1}\), and for two parameters that is exactly this \(2\times2\) inverse.</p>
 </div>
 
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Show that the 2×2 inverse formula is right.</h4>
+<ol class="steps lines">
+<li>Let \(B = \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\), assuming \(ad - bc \ne 0\).</li>
+<li>Row 1 of \(AB\) is \(\frac{1}{ad-bc}[ad - bc,\ ba - ab] \)<wbr>\({}= [1, 0]\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Row 1 of \(A\) is \([a, b]\). Column 1 of the matrix inside \(B\) is \([d, -c]\T\).</li>
+<li>Their dot product is \(ad - bc\). Dividing by \(ad - bc\) gives 1.</li>
+<li>Column 2 of the matrix inside \(B\) is \([-b, a]\T\). Its dot product with \([a, b]\) is \(-ab + ba = 0\).</li>
+</ol>
+</details></li>
+<li>Row 2 of \(AB\) is \(\frac{1}{ad-bc}[cd - dc,\ ad - bc] \)<wbr>\({}= [0, 1]\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Row 2 of \(A\) is \([c, d]\).</li>
+<li>With column 1, \([d, -c]\T\), the dot product is \(cd - dc = 0\).</li>
+<li>With column 2, \([-b, a]\T\), it is \(-cb + da = ad - bc\). Dividing by \(ad - bc\) gives 1.</li>
+</ol>
+</details></li>
+<li>So \(AB = I\), which means \(B = A^{-1}\). If \(ad - bc = 0\), line 1 divides by zero and no inverse exists.</li>
+</ol>
+</div>
 <h3>Positive semi-definite matrices</h3>
 <p>A symmetric matrix \(A\) is <em class="t">positive semi-definite</em> (PSD) if \(\mathbf z\T A\mathbf z \ge 0\) for every vector \(\mathbf z\). The expression \(\mathbf z\T A\mathbf z\) is a single number (a row times a matrix times a column), called a <em class="t">quadratic form</em>. Covariance matrices and every matrix of the form \(X\T X\) are PSD. The derivation below is a question the slides asked twice (L05 and L06).</p>
 <div class="card exam"><span class="tag">Write this in the exam</span>
@@ -287,7 +311,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Invert \(A \)<wbr>\({}= \begin{bmatrix}3&1\\4&2\end{bmatrix}\) and check your answer.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(A^{-1} \)<wbr>\({}= \frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.3, determinant and trace</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#matrices">B.3</a>, box "Show that the 2×2 inverse formula is right", line 1 (lines 2 and 3 are the check)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\det A = 3\cdot2 - 1\cdot4 = 2\).</li>
 <li>Swap the diagonal entries and negate the others. \(\begin{bmatrix}2&-1\\-4&3\end{bmatrix}\).</li>
@@ -457,7 +481,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Find the eigenvalues and unit eigenvectors of \(\Sigma \)<wbr>\({}= \begin{bmatrix}5&2\\2&2\end{bmatrix}\). Check them with the trace and determinant.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda^2 - (\operatorname{tr})\lambda + \det \)<wbr>\({}= 0\), then \((\Sigma - \lambda I)\mathbf v \)<wbr>\({}= \mathbf 0\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.5, lines 1 to 5 of the exam box and the shortcut under it</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#eigen">B.5</a>, box "Find the eigenvalues and unit eigenvectors of A", lines 1 to 5, with the trace and determinant shortcut under the box</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(\operatorname{tr} = 7\), \(\det = 10 - 4 = 6\). So \(\lambda^2 - 7\lambda + 6 = 0\).</li>
 <li>Factor. \((\lambda - 6)(\lambda - 1) = 0\), so \(\lambda_1 = 6\), \(\lambda_2 = 1\).</li>
@@ -640,8 +664,44 @@
 <li>\(P(\omega_i\mid\mathbf x)\) is the <em class="t">posterior</em>, the probability of the class after seeing \(\mathbf x\).</li>
 </ul>
 <p>In words, the posterior is the likelihood times the prior, divided by the evidence. The bottom is the same for every class, so it only rescales the posteriors to add up to 1.</p>
-<p>It follows from the product rule, which gives \(P(\omega, \mathbf x) \)<wbr>\({}= P(\omega\mid\mathbf x)p(\mathbf x)\) and also \(P(\omega, \mathbf x) \)<wbr>\({}= p(\mathbf x\mid\omega)P(\omega)\). Set them equal and divide by \(p(\mathbf x)\).</p>
+<p>It follows from the product rule. The box below derives it.</p>
 <p><strong>Example (L10).</strong> Mangoes 90, pears 10. 5 mangoes and 8 pears are yellow. You see a yellow fruit. \(P(\text{mango}\mid\text{yellow}) \)<wbr>\({}= \frac{(5/90)(90/100)}{0.13} \)<wbr>\({}= \frac{0.05}{0.13} \approx 0.385\), and \(P(\text{pear}\mid\text{yellow}) \)<wbr>\({}= \frac{0.08}{0.13} \approx 0.615\). The prior said mango (0.9), but the evidence makes pear the better guess.</p>
+</div>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive Bayes' theorem.</h4>
+<ol class="steps lines">
+<li>By the product rule, \(P(\omega_i, \mathbf x) \)<wbr>\({}= p(\mathbf x\mid\omega_i)\,P(\omega_i)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The product rule (B.7) says \(P(A, B) = P(A\mid B)\,P(B)\).</li>
+<li>Take \(A\) to be the observation \(\mathbf x\) and \(B\) to be the class \(\omega_i\).</li>
+</ol>
+</details></li>
+<li>By the product rule the other way round, \(P(\omega_i, \mathbf x) \)<wbr>\({}= P(\omega_i\mid\mathbf x)\,p(\mathbf x)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The probability that both happen does not depend on which event we name first.</li>
+<li>So the product rule also holds with \(A = \omega_i\) and \(B = \mathbf x\).</li>
+</ol>
+</details></li>
+<li>Lines 1 and 2 are equal, so dividing by \(p(\mathbf x)\) gives \(P(\omega_i\mid\mathbf x) \)<wbr>\({}= \frac{p(\mathbf x\mid\omega_i)\,P(\omega_i)}{p(\mathbf x)}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Both lines equal the same joint probability \(P(\omega_i, \mathbf x)\), so their right-hand sides are equal.</li>
+<li>Divide both sides by \(p(\mathbf x)\). This is allowed because the observation we actually saw has non-zero probability.</li>
+<li>Only \(P(\omega_i\mid\mathbf x)\) is left on the left-hand side.</li>
+</ol>
+</details></li>
+<li>By total probability, \(p(\mathbf x) \)<wbr>\({}= \sum_j p(\mathbf x\mid\omega_j)\,P(\omega_j)\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>The classes do not overlap, and exactly one of them is true.</li>
+<li>So the sum rule (B.7) gives \(p(\mathbf x) = \sum_j P(\omega_j, \mathbf x)\).</li>
+<li>Replace each joint probability using line 1, with \(\omega_j\) in place of \(\omega_i\).</li>
+</ol>
+</details></li>
+<li>Check. Over all classes the posteriors add up to 1, because the tops in line 3 add up to the bottom from line 4.</li>
+</ol>
 </div>
 <p>When a question gives "true positive rate" and "false positive rate" for a test, translate them first. The <em class="t">true positive rate</em> is \(P(+\mid\text{sick})\). The <em class="t">false positive rate</em> is \(P(+\mid\text{healthy})\).</p>
 <div class="card watch"><span class="tag">Common mistake</span>
@@ -658,7 +718,7 @@
 <details class="q"><summary><span class="qt">L06 slide</span><span>A disease affects 1% of the population. The test is 90% accurate in both directions. A person tests positive. What is the chance they have the disease, to the nearest percent?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid+) \)<wbr>\({}= \frac{P(+\mid S)P(S)}{P(+\mid S)P(S) + P(+\mid \bar S)P(\bar S)}\), where \(\bar S\) means "not sick"</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#bayes">B.8</a>, box "Derive Bayes' theorem", lines 3 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Prior: \(P(S) = 0.01\), so \(P(\bar S) = 0.99\).</li>
 <li>"90% accurate in both directions" means \(P(+\mid S) = 0.9\) and \(P(-\mid\bar S) = 0.9\), so \(P(+\mid\bar S) = 0.1\).</li>
@@ -671,7 +731,7 @@
 <details class="q"><summary><span class="qt">L09 slide</span><span>A disease is present in 40% of the population. The test detects it with probability 0.6 and gives a false positive with probability 0.1. A person tests positive. What is the probability they are sick? (a) 0.6 (b) 0.7 (c) 0.8 (d) 0.9 (e) 0.95</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(S\mid P) \)<wbr>\({}= \frac{P(P\mid S)P(S)}{P(P\mid S)P(S) + P(P\mid\bar S)P(\bar S)}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula (the slide gives this hint)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#bayes">B.8</a>, box "Derive Bayes' theorem", lines 3 and 4 (the slide gives this hint)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(P(S) = 0.4\), \(P(\bar S) = 0.6\), \(P(P\mid S) = 0.6\), \(P(P\mid\bar S) = 0.1\).</li>
 <li>Top: \(0.6\times0.4 = 0.24\).</li>
@@ -683,7 +743,7 @@
 <details class="q"><summary><span class="qt">L09 slide</span><span>The morning is cloudy. 50% of rainy days start cloudy, 40% of all days start cloudy, and only 10% of days are rainy this month. What is the chance of rain? (a) 10% (b) 12.5% (c) 15% (d) more than 20% (e) less than 20%</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(R\mid C) \)<wbr>\({}= \frac{P(C\mid R)P(R)}{P(C)}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8. Here the evidence \(P(C) = 0.4\) is given directly, so no total-probability sum is needed.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#bayes">B.8</a>, box "Derive Bayes' theorem", line 3. The evidence \(P(C) = 0.4\) is given directly, so line 4 is not needed.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(P(C\mid R) = 0.5\), \(P(R) = 0.1\), \(P(C) = 0.4\).</li>
 <li>\(P(R\mid C) \)<wbr>\({}= \frac{0.5\times0.1}{0.4} \)<wbr>\({}= \frac{0.05}{0.4} \)<wbr>\({}= 0.125\).</li>
@@ -694,7 +754,7 @@
 <details class="q"><summary><span class="qt">L06 slide</span><span>A man speaks the truth 2 out of 3 times. He throws a die and reports a four. What is the probability it really was a four?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(P(4\mid\text{says }4) \)<wbr>\({}= \frac{P(\text{says }4\mid 4)P(4)}{P(\text{says }4\mid4)P(4) + P(\text{says }4\mid\text{not }4)P(\text{not }4)}\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.8, the boxed formula</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#bayes">B.8</a>, box "Derive Bayes' theorem", lines 3 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Prior: \(P(4) = \frac16\), \(P(\text{not }4) = \frac56\).</li>
 <li>If it was a four, he says four when he tells the truth, so \(P(\text{says }4\mid4) \)<wbr>\({}= \frac23\).</li>
@@ -800,6 +860,48 @@
 </ol>
 </div>
 <p>When setting the derivative to zero cannot be solved by hand, we walk downhill instead. That is <em class="t">gradient descent</em>, \(x_{k+1} = x_k - \eta f'(x_k)\), where \(\eta\) (eta) is a small step size called the <em class="t">learning rate</em>. Page 1 covers it in detail. The minus sign moves against the slope, which is downhill.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>For \(f(w) = aw^2 + bw + c\) with \(a > 0\), find the minimum and write the gradient descent update.</h4>
+<ol class="steps lines">
+<li>\(f'(w) = 2aw + b\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>By the power rule, \(aw^2\) gives \(2aw\) and \(bw\) gives \(b\).</li>
+<li>\(c\) is a constant, so its derivative is 0.</li>
+</ol>
+</details></li>
+<li>Setting \(f'(w) = 0\) gives \(w^* = -\frac{b}{2a}\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Write \(2aw + b = 0\). Subtract \(b\) from both sides, giving \(2aw = -b\).</li>
+<li>Divide both sides by \(2a\), which is allowed because \(a > 0\).</li>
+</ol>
+</details></li>
+<li>\(f''(w) = 2a > 0\), so \(w^*\) is the minimum.
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>Differentiate line 1 again. \(2aw\) gives \(2a\) and \(b\) gives 0.</li>
+<li>A positive second derivative everywhere means \(f\) is convex, so the stationary point of line 2 is the global minimum.</li>
+</ol>
+</details></li>
+<li>The minimum value is \(f(w^*) = c - \frac{b^2}{4a}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Substitute \(w^* = -\frac{b}{2a}\). The first term is \(a\cdot\frac{b^2}{4a^2} = \frac{b^2}{4a}\).</li>
+<li>The second term is \(b\cdot(-\frac{b}{2a}) = -\frac{b^2}{2a} = -\frac{2b^2}{4a}\).</li>
+<li>Add them with \(c\). \(\frac{b^2}{4a} - \frac{2b^2}{4a} + c = c - \frac{b^2}{4a}\).</li>
+</ol>
+</details></li>
+<li>The gradient descent update is \(w_{k+1} = w_k - \eta\,(2aw_k + b)\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>The rule is \(w \leftarrow w - \eta f'(w)\), as in the paragraph above.</li>
+<li>Substitute \(f'\) from line 1.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<p>Check line 4 on the example above. \(f(x) = x^2 - 2x + 4\) has \(a = 1\), \(b = -2\), \(c = 4\), so \(c - \frac{b^2}{4a} = 4 - 1 = 3\), as found there.</p>
 <div class="card remember"><span class="tag">Remember</span>
 <ul>
 <li>Minimum: \(f'(x) = 0\) and \(f''(x) > 0\).</li>
@@ -811,7 +913,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>\(L(w) = 2w^2 - 4w + 7\). (i) Write the gradient descent update. (ii) Starting at \(w_0 = 2\) with \(\eta = 0.2\), find \(w_1\) and \(w_2\). (iii) Find the minimum by calculus.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(w_{k+1} = w_k - \eta L'(w_k)\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.10, the paragraph on gradient descent</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#calculus">B.10</a>, box "For \(f(w) = aw^2 + bw + c\) …", line 5 for the update and lines 2 and 4 for the minimum</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>\(L'(w) = 4w - 4\), so the update is \(w_{k+1} = w_k - \eta(4w_k - 4)\).</li>
 <li>\(w_1 \)<wbr>\({}= 2 - 0.2(8 - 4) \)<wbr>\({}= 2 - 0.8 \)<wbr>\({}= 1.2\).</li>
@@ -890,7 +992,7 @@
 <details class="q"><summary><span class="qt">L09 slide</span><span>Show that the point \(\mathbf y\) minimising \(\sum_{i=1}^N\|\mathbf x_i - \mathbf y\|^2\) is the mean.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\nabla(\mathbf y\T\mathbf a) \)<wbr>\({}= \mathbf a\), \(\nabla(\mathbf y\T\mathbf y) \)<wbr>\({}= 2\mathbf y\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.11, both identities (the second with \(A = I\))</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#gradient">B.11</a>, box "Derive both identities", line 1 and line 4 (line 4 with \(A = I\))</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Expand each term. \(\|\mathbf x_i - \mathbf y\|^2 \)<wbr>\({}= \mathbf x_i\T\mathbf x_i - 2\mathbf y\T\mathbf x_i + \mathbf y\T\mathbf y\).</li>
 <li>The gradient of each term with respect to \(\mathbf y\) is \(\mathbf 0 - 2\mathbf x_i + 2\mathbf y\).</li>
@@ -979,7 +1081,7 @@
 <details class="q"><summary><span class="qt">Practice</span><span>\(o = \sigma(wx)\), \(L = (o - y)^2\). With \(w = 0\), \(x = 2\), \(y = 1\), find \(\frac{\partial L}{\partial w}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial L}{\partial w} \)<wbr>\({}= \frac{\partial L}{\partial o}\cdot\frac{\partial o}{\partial s}\cdot\frac{\partial s}{\partial w}\) with \(s = wx\)</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.12, the chain rule and the sigmoid derivative (line 4 of the exam box)</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#chain-rule">B.12</a>, Reading the formula for the chain rule, and box "Show that \(\sigma'(z) = \sigma(z)(1 - \sigma(z))\)", line 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Forward: \(s = 0\cdot2 = 0\), \(o = \sigma(0) = 0.5\), \(L = (0.5 - 1)^2 = 0.25\).</li>
 <li>\(\frac{\partial L}{\partial o} \)<wbr>\({}= 2(o - y) \)<wbr>\({}= -1\).</li>
@@ -1050,11 +1152,59 @@
 <details class="q"><summary><span class="qt">Practice</span><span>Find the unit vector \(\mathbf w\) that maximises \(\mathbf w\T\Sigma\mathbf w\) for \(\Sigma \)<wbr>\({}= \begin{bmatrix}5&2\\2&2\end{bmatrix}\), and the maximum value.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Maximiser = top unit eigenvector, maximum = top eigenvalue</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb">B.13, lines 2 to 4 of the exam box. The eigenvectors were found in B.5 (practice question 3).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#lagrange">B.13</a>, box "Show that the maximum of \(\mathbf w\T A\mathbf w\) subject to \(\mathbf w\T\mathbf w = 1\) …", lines 2 to 4. The eigenvalues come from <a href="#eigen">B.5</a>, box "Find the eigenvalues and unit eigenvectors of A", lines 1 to 5 (worked for this matrix in practice question 3 there).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>From B.5, the eigenvalues are 6 and 1, with unit eigenvectors \(\frac1{\sqrt5}[2,1]\T\) and \(\frac1{\sqrt5}[1,-2]\T\).</li>
 <li>The maximiser is \(\mathbf w \)<wbr>\({}= \frac1{\sqrt5}[2,1]\T\), and the maximum is 6.</li>
 <li>Check directly. \(\Sigma[2,1]\T \)<wbr>\({}= [10 + 2, 4 + 2]\T \)<wbr>\({}= [12, 6]\T\). Then \([2,1]\cdot[12,6] = 30\), and dividing by \(\|[2,1]\|^2 = 5\) gives 6.</li>
 </ol></div></div>
 </div></details>
+</section>
+
+<section>
+<h2 id="exam-hall"><span class="num">B.14</span>In the exam hall</h2>
+<p class="oneline">How to tell which section a question needs, what to write first, and how to check the answer before you move on.</p>
+<h3>Match the question to a section</h3>
+<table class="tbl">
+<thead><tr><th>The question says</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td>"find the L0, L1, L2 and L∞ norms"</td><td><a href="#norms">B.2</a>, Reading the formula for the Lp norm</td></tr>
+<tr><td>"angle between", "orthogonal", "cosine similarity"</td><td><a href="#vectors">B.1</a>, Reading the formula for the angle</td></tr>
+<tr><td>"show that \(X\T X\) is symmetric" or "is PSD"</td><td><a href="#matrices">B.3</a>, box "Show that \(A = X\T X\) is symmetric and positive semi-definite", lines 1 and 2</td></tr>
+<tr><td>"invert this 2×2 matrix"</td><td><a href="#matrices">B.3</a>, box "Show that the 2×2 inverse formula is right", line 1</td></tr>
+<tr><td>"rank of this matrix without computing"</td><td><a href="#rank">B.4</a>, the Example card (write every row as a combination of a few rows)</td></tr>
+<tr><td>"eigenvalues and eigenvectors of" a 2×2 matrix</td><td><a href="#eigen">B.5</a>, box "Find the eigenvalues and unit eigenvectors of A", lines 1 to 5</td></tr>
+<tr><td>"eigenvalues of \(A\T\)", "of \(cA\)", "of \(A^{-1}\)"</td><td><a href="#eigen">B.5</a>, the list of properties and the Remember box</td></tr>
+<tr><td>"singular values of", "SVD of \(\mathbf p\mathbf q\T\)"</td><td><a href="#svd-basics">B.6</a>, Reading the formula for the SVD</td></tr>
+<tr><td>"write the covariance matrix", "can it be diagonal"</td><td><a href="#probability">B.7</a>, Reading the formula for the covariance matrix</td></tr>
+<tr><td>a test's accuracy and how common a disease is, or "which bag", "which door"</td><td><a href="#bayes">B.8</a>, box "Derive Bayes' theorem", lines 3 and 4</td></tr>
+<tr><td>"density of \(\mathcal N(\boldsymbol\mu, \Sigma)\)", "shape of the contours"</td><td><a href="#gaussian">B.9</a>, both Reading the formula cards</td></tr>
+<tr><td>"minimise \(f\)", "show one step of gradient descent"</td><td><a href="#calculus">B.10</a>, box "For \(f(w) = aw^2 + bw + c\) …", lines 1, 2 and 5</td></tr>
+<tr><td>"gradient of \(\mathbf w\T A\mathbf w\)" or of \(\|\mathbf y - X\mathbf w\|^2\)</td><td><a href="#gradient">B.11</a>, box "Derive both identities", lines 1 and 4</td></tr>
+<tr><td>"derivative of the sigmoid" or of tanh, "\(\partial L/\partial w\) through a chain"</td><td><a href="#chain-rule">B.12</a>, box "Show that \(\sigma'(z) = \sigma(z)(1 - \sigma(z))\)", and the chain rule card</td></tr>
+<tr><td>"maximise \(\mathbf w\T A\mathbf w\) with \(\|\mathbf w\| = 1\)", "minimise \(\|A\mathbf x\|\) with \(\|\mathbf x\| = 1\)"</td><td><a href="#lagrange">B.13</a>, box "Show that the maximum of \(\mathbf w\T A\mathbf w\) …", lines 2 to 4</td></tr>
+</tbody>
+</table>
+<h3>What to write first</h3>
+<ul>
+<li>For a Bayes question, name the events. Then write the two priors and the two likelihoods on separate lines before any division. In the 2026 mid-sem (Q2.1) stating every probability was worth 3 of the 7.5 marks, and a final answer with no intermediate probabilities was capped at 4.</li>
+<li>For a "write the formula" question (covariance, MSE, ridge), write the whole formula and define every symbol in it. The 2026 mid-sem (Q1.1) took marks off when \(\boldsymbol\mu\) was used without being defined as the mean, and when the transpose was missing from the outer product. Quiz 1 took 0.5 off for a missing \(\frac1N\).</li>
+<li>For an eigenvalue question, write \(\det(A - \lambda I) = 0\) and the polynomial as your first line. The 2026 end-sem (Part II Q3) gave 2 marks for the polynomial alone.</li>
+<li>For gradient descent, write the derivative and the update rule before putting numbers in. Quiz 1 gave 2.5 of the 7.5 marks for the update rule.</li>
+<li>For a "one, none or more correct" question, write true or false next to every option.</li>
+</ul>
+<h3>Quick checks on the answer</h3>
+<ul>
+<li>A probability lies between 0 and 1, and the posteriors of all the classes add up to 1.</li>
+<li>For any vector, \(\|\mathbf x\|_\infty \le \|\mathbf x\|_2 \le \|\mathbf x\|_1\), and the L0 count is a whole number.</li>
+<li>The eigenvalues add up to the trace and multiply to the determinant.</li>
+<li>A symmetric PSD matrix (a covariance matrix, or any \(X\T X\)) has eigenvalues that are 0 or more, and its eigenvectors are orthogonal.</li>
+<li>Unit eigenvectors have length 1. The 2026 end-sem took half a mark for each eigenvector that was not normalised.</li>
+<li>Singular values are 0 or more, listed largest first. In the 2026 end-sem, building the rank-1 approximation from the smaller singular value lost half the marks for that part.</li>
+<li>A covariance matrix is \(d\times d\) and symmetric, with no negative numbers on its diagonal.</li>
+<li>The rank of an \(N\times d\) matrix is at most \(\min(N, d)\).</li>
+<li>A gradient has as many entries as the vector you differentiate with respect to.</li>
+<li>Gradient descent steps should move towards the minimum that calculus gives.</li>
+<li>\(\sigma'(z)\) is never more than \(\frac14\), and \(\tanh'(z)\) is never more than 1.</li>
+</ul>
 </section>

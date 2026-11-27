@@ -53,7 +53,7 @@
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.1 (3 points). A set \(\mathcal X = \{\mathbf x_i\}\) holds \(N\) samples \(\mathbf x_i \in \R^d\) drawn from a multivariate Gaussian. Write the formula for its covariance matrix \(\Sigma\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\boldsymbol\mu = \frac1N\sum_{i=1}^N\mathbf x_i\) and \(\Sigma = \frac1N\sum_{i=1}^N(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#probability">Section B.7</a> defines the covariance matrix. <a href="../probabilistic/#mle">Section 2.6</a> shows that this is the maximum likelihood estimate.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#probability">B.7</a>, Reading the formula for the covariance matrix (the mean is defined just above it under "Expectation and variance"). <a href="../probabilistic/#mle">2.6</a> shows this is the maximum likelihood estimate.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>First define the mean, because the covariance uses it. \(\boldsymbol\mu = \frac1N\sum_{i=1}^N\mathbf x_i\), a vector in \(\R^d\).</li>
 <li>Subtract the mean from each sample. \(\mathbf x_i - \boldsymbol\mu\) is a \(d\times1\) column.</li>
@@ -70,7 +70,7 @@
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.2 (3 points). A transformation \(\mathbf x' = \mathbf W\mathbf x\) of \(\mathbf x = [x^1, x^2]\T\) gives \(x'^1 = x^1 + x^2\) and \(x'^2 = x^1 - x^2\). Write \(\mathbf W\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Row \(i\) of \(\mathbf W\) holds the coefficients of the inputs in output \(x'^i\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">Section 1.4</a>, writing a feature transformation as a matrix.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">1.4</a>, Reading the formula for \(\mathbf x' = \mathbf W\mathbf x\) (row \(r\) of \(\mathbf W\) gives new feature \(r\)).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The superscripts here are component numbers, not powers. \(x^1\) is the first feature and \(x^2\) the second.</li>
 <li>\(x'^1 = 1\cdot x^1 + 1\cdot x^2\), so row 1 is \([1, 1]\).</li>
@@ -86,7 +86,7 @@
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.3 (3 points). Data in \(\R^2\) has mean \([1, 1]\T\). Write a Python snippet that makes every sample have unit \(L_2\) norm and makes the mean zero.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Centre with \(\mathbf x \leftarrow \mathbf x - \boldsymbol\mu\), then normalise with \(\mathbf x \leftarrow \mathbf x/\|\mathbf x\|_2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">Section 1.4</a>, normalisation.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">1.4</a>, box "Mean-centre a data set, then scale it", lines 2 and 5.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <pre style="overflow-x:auto"><code>import numpy as np
 # X has shape (N, 2), one sample per row
@@ -108,7 +108,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.4 (3 points). True or false? "In k-NN, if we increase \(K\), the decision boundary becomes more and more smooth."</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">k-NN predicts the majority label of the \(K\) nearest training points.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#knn">Section 1.2</a>, and the bias–variance discussion in <a href="../probabilistic/#generalization">Section 2.13</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#knn">1.2</a>, box "Classify a test point with k-NN and find the accuracy", lines 3 and 4, and the paragraph "Choosing K" after it. The bias and variance view is in <a href="../probabilistic/#generalization">2.13</a>.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>With \(K = 1\), the label at a point is the label of the single nearest training point. One noisy training point creates its own small island, so the boundary is jagged.</li>
 <li>With a larger \(K\), each prediction is a vote over many points. A single noisy point is outvoted, so the small islands disappear and the boundary becomes smoother.</li>
@@ -123,7 +123,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.5 (3 points). The MSE loss is \(\mathcal L = \frac1N\sum_{i=1}^N(y_i - \mathbf w\T\mathbf x_i)^2\). Write the gradient descent update for \(\mathbf w^{k+1}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w^{k+1} = \mathbf w^k - \eta\nabla\mathcal L(\mathbf w^k)\), with \(\nabla\mathcal L = -\frac2N\sum_i(y_i - \mathbf w\T\mathbf x_i)\,\mathbf x_i\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#gradient-descent">Section 1.7</a> derives this gradient.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#gradient-descent">1.7</a>, box "Derive the gradient descent update", lines 2 and 3.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Differentiate one term. By the chain rule, \(\nabla_{\mathbf w}(y_i - \mathbf w\T\mathbf x_i)^2 \)<wbr>\({}= 2(y_i - \mathbf w\T\mathbf x_i)\cdot(-\mathbf x_i)\). The \(-\mathbf x_i\) is the gradient of the inside, \(y_i - \mathbf w\T\mathbf x_i\).</li>
 <li>Average over the \(N\) terms. \(\nabla\mathcal L \)<wbr>\({}= -\frac2N\sum_{i=1}^N(y_i - \mathbf w\T\mathbf x_i)\,\mathbf x_i\).</li>
@@ -139,7 +139,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.6 (3 points). The best solution of an overdetermined homogeneous system \(\mathbf A\mathbf x = \mathbf 0\), with \(\mathbf A\) of size \(m\times n\) and \(m > n\), is the eigenvector corresponding to (a) the largest eigenvalue of \(\mathbf A\mathbf A\T\) (b) the largest eigenvalue of \(\mathbf A\T\mathbf A\) (c) the smallest eigenvalue of \(\mathbf A\mathbf A\T\) (d) the smallest eigenvalue of \(\mathbf A\T\mathbf A\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">The minimum of \(\mathbf x\T\mathbf M\mathbf x\) over unit vectors \(\mathbf x\) is the smallest eigenvalue of \(\mathbf M\), reached at its eigenvector.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#eigen-opt">Section 1.9</a>. The same question was L04's Problem 1.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#eigen-opt">1.9</a>, box "Maximise \(\mathbf w\T\mathbf A\mathbf w\) subject to \(\mathbf w\T\mathbf w = 1\)", lines 3 and 4, applied to \(\|\mathbf A\mathbf x\|^2 = \mathbf x\T\mathbf A\T\mathbf A\mathbf x\).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>With \(m > n\) there are more equations than unknowns, so usually only \(\mathbf x = \mathbf 0\) solves them exactly. That answer is useless, so ask for the unit vector that makes \(\|\mathbf A\mathbf x\|\) as small as possible.</li>
 <li>Square the norm. \(\|\mathbf A\mathbf x\|^2 \)<wbr>\({}= (\mathbf A\mathbf x)\T(\mathbf A\mathbf x) \)<wbr>\({}= \mathbf x\T(\mathbf A\T\mathbf A)\mathbf x\).</li>
@@ -155,7 +155,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.7 (3 points). \(A = aI\) is a diagonal matrix with every diagonal entry equal to \(a\). What is its SVD \(UDV\T\)?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(A = UDV\T\) with \(U\) and \(V\) orthogonal and \(D\) diagonal with entries \(\ge 0\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#svd-basics">Section B.6</a> and <a href="../foundations/#svd">Section 1.11</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#svd">1.11</a>, box "Find the SVD by hand", lines 1 to 4, and the Remember box in 1.11 (singular values are never negative).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>If \(a > 0\), the matrix is already in the required form. Take \(U = I\), \(D = aI\), \(V = I\). Then \(UDV\T = I\cdot aI\cdot I = aI\).</li>
 <li>If \(a \lt 0\), \(D = aI\) is not allowed, because singular values cannot be negative. Use \(D = |a|I\) and move the sign into \(V\). Take \(U = I\), \(D = |a|I\), \(V = -I\). Then \(UDV\T \)<wbr>\({}= |a|I\cdot(-I) \)<wbr>\({}= -|a|I = aI\).</li>
@@ -171,7 +171,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.8 (3 points). The 1-D data is \((+1, +)\), \((+2, +)\), \((+3, -)\), \((+4, -)\). Give the SVM decision rule and the support vectors.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">A hard-margin SVM needs \(y_i(wx_i + b) \ge 1\) for every sample, with equality at the support vectors, and margin \(2/|w|\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#svm">Section 2.11</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#svm">2.11</a>, box "Show that the margin … is \(\frac{2}{\|w\|}\) …", lines 2 and 4</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>The positives are 1 and 2. The negatives are 3 and 4. The two classes are separated, and the closest pair across the gap is 2 (positive) and 3 (negative). These are the support vectors.</li>
 <li>The widest gap is obtained with the boundary halfway between them, at \(x = 2.5\).</li>
@@ -189,7 +189,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.9 (3 points). 100 samples each come from \(\mathcal N(20, \sigma^2)\) and \(\mathcal N(30, 2\sigma^2)\). Where is the optimal Bayesian threshold? The key's answer is "(a) closer to 20". The other options are not listed in the key, but its notes imply they were about the threshold being closer to 30, exactly at 25, or beyond 30.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">With equal priors, the threshold is where the two densities are equal. Compare log densities \(-\frac{(x-\mu)^2}{2s^2} - \frac12\ln s^2\), dropping the shared \(\frac12\ln 2\pi\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#bayes-decision">Section 2.5</a>, the January and May temperature problem, which is the same calculation with different numbers.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#bayes-decision">2.5</a>, box "Two 1-D Gaussian classes with equal priors, means \(\mu_1 \lt \mu_2\) and different variances …", lines 1 to 6</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Equal sample counts mean equal priors, \(P(C_1) = P(C_2) = \frac12\). So the threshold is where \(p(x\mid C_1) = p(x\mid C_2)\).</li>
 <li>Write the log densities. Class 1 has variance \(\sigma^2\) and class 2 has variance \(2\sigma^2\). \[\ln p_1 = -\frac{(x-20)^2}{2\sigma^2} - \tfrac12\ln\sigma^2,\] \[\ln p_2 = -\frac{(x-30)^2}{4\sigma^2} - \tfrac12\ln(2\sigma^2).\] The threshold is where \(\ln p_1 = \ln p_2\).</li>
@@ -218,7 +218,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q1.10 (3 points). (a) Write the objective function of k-means. (b) Is k-means guaranteed to reach a unique global optimum?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(J = \sum_{k=1}^K\sum_{\mathbf x_i\in C_k}\|\mathbf x_i - \boldsymbol\mu_k\|^2\) with \(\boldsymbol\mu_k = \frac1{|C_k|}\sum_{\mathbf x_i\in C_k}\mathbf x_i\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#kmeans">Section 2.8</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#kmeans">2.8</a>, the objective \(J\). (b) <a href="../probabilistic/#kmeans">2.8</a>, box "Show that each k-means step can only lower (or keep) \(J\) …", lines 2 to 4, and the paragraph on starting means after it</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(a) \(C_k\) is the set of points in cluster \(k\) and \(\boldsymbol\mu_k\) is their mean. \(J\) adds the squared distance of every point to the mean of its own cluster. It is called the within-cluster sum of squares.</li>
 <li>(b) <strong>No.</strong> The objective is not convex, because which cluster each point belongs to is a discrete choice. Each step of k-means can only lower \(J\), so the algorithm always stops, but it stops at a local minimum that depends on the starting clusters.</li>
@@ -238,7 +238,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q2.1 (7.5 points). Bag I has \(w_1\) white and \(b_1\) black balls. Bag II has \(w_2\) white and \(b_2\) black balls. A bag is picked at random and a ball drawn from it is white. What is the probability that it came from Bag I?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Bayes' theorem, \(P(\text{I}\mid W) = \frac{P(W\mid\text{I})\,P(\text{I})}{P(W)}\), with the total probability \(P(W) \)<wbr>\({}= P(W\mid\text{I})P(\text{I}) + P(W\mid\text{II})P(\text{II})\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#bayes">Section B.8</a>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../basics/#bayes">B.8</a>, box "Derive Bayes' theorem", line 3 for the posterior and line 4 for the total probability \(P(W)\)</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Priors. The bag is picked at random, so \(P(\text{I}) = P(\text{II}) = \frac12\).</li>
 <li>Likelihoods. Bag I has \(w_1 + b_1\) balls of which \(w_1\) are white, so \(P(W\mid\text{I}) = \frac{w_1}{w_1 + b_1}\). In the same way, \(P(W\mid\text{II}) = \frac{w_2}{w_2 + b_2}\).</li>
@@ -255,7 +255,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q2.2 (7.5 points). A kernel is \(\kappa(\mathbf p, \mathbf q) = \phi(\mathbf p)\T\phi(\mathbf q)\) and the kernel matrix has entries \(K_{ij} = \kappa(\mathbf x_i, \mathbf x_j)\). Show that (a) \(K\) is symmetric and (b) \(K\) is positive semi-definite.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Symmetric means \(K_{ij} = K_{ji}\). Positive semi-definite (PSD) means \(\mathbf c\T K\mathbf c \ge 0\) for every \(\mathbf c \in \R^N\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#kernels">Section 2.12</a> for kernels. <a href="../basics/#matrices">Section B.3</a> for PSD, where the same argument shows that \(X\T X\) is PSD.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../probabilistic/#kernels">2.12</a>, box "Show that a kernel matrix \(K_{ij} = \phi(x_i)\T\phi(x_j)\) is symmetric and positive semi-definite", line 1. (b) the same box, lines 2 to 5</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>(a) \(K\) is symmetric</h4>
@@ -291,7 +291,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q2.3 (7.5 points). \(f(w) = w^2 + 2w + 1\), starting at \(w^0 = 5\) with learning rate \(\eta = 0.1\). (a) Find \(w^1\) and \(w^2\). (b) Suggest a better \(\eta\). (c) Find the \(\eta\) that reaches the minimum in one step.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(w^{k+1} = w^k - \eta f'(w^k)\) with \(f'(w) = 2w + 2\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#gradient-descent">Section 1.7</a>. Quiz 1's Q11 was the same kind of question.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(a) <a href="../foundations/#gradient-descent">1.7</a>, box "Derive the gradient descent update", line 3, in one dimension. (b) and (c) <a href="../foundations/#gradient-descent">1.7</a>, Reading the formula for the update (what a small or large \(\eta\) does).</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>Note that \(f(w) = (w + 1)^2\), so the minimum is at \(w^* = -1\), where \(f = 0\).</li>
 <li>(a) \(f'(5) = 12\). So \(w^1 = 5 - 0.1\times12 = 5 - 1.2 = \) <strong>3.8</strong>.</li>
@@ -312,7 +312,7 @@ X = X / norms                                    # divide each row by its own le
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q2.4 (7.5 points). Linear regression on \(\{(1, 2), (2, 3), (3, 4), (4, 5)\}\) with the model \(y = w_1x + w_2\). (i) Guess \(\mathbf w\) by looking at the data. (ii) Write Python for general linear regression, without scikit-learn.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Augment each input with a 1 to absorb the bias, then \(\tilde{\boldsymbol\theta} = (\tilde X\T\tilde X)^{-1}\tilde X\T\mathbf y\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#regression">Section 1.6</a> for the closed form, and <a href="../foundations/#linear-classifier">Section 1.3</a> for the augmentation trick.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(i) <a href="../foundations/#regression">1.6</a>, box "Show that \(\mathbf w^* = (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\)", line 5. (ii) the same box, line 5, with the column of ones from <a href="../foundations/#linear-classifier">1.3</a>, "Adding a bias, and the augmented vector".</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
 <li>(i) Each \(y\) is one more than its \(x\), since \(2 = 1 + 1\), \(3 = 2 + 1\), and so on. So \(y = x + 1\), and \(w_1 = 1\), \(w_2 = 1\), \(\mathbf w = [1, 1]\T\).</li>
 <li>Check (i) with the closed form. With rows \([x_i, 1]\), \(\tilde X\T\tilde X \)<wbr>\({}= \begin{bmatrix}30 & 10\\ 10 & 4\end{bmatrix}\) and \(\tilde X\T\mathbf y = [40, 14]\T\).</li>
@@ -346,7 +346,7 @@ theta, b = theta_aug[:d], theta_aug[d]    # the first d entries are the weights,
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q3.1 (15 points). (i) Write the steps of k-means. (ii) Run it with \(K = 3\) for 3 iterations on these 10 points in \(\R^3\). \(\mathbf x_1 = [1,1,1]\), \(\mathbf x_2 = [-1,-1,-1]\), \(\mathbf x_3 = [0,0,0]\), \(\mathbf x_4 = [5,5,0]\), \(\mathbf x_5 = [4,4,0]\), \(\mathbf x_6 = [6,6,0]\), \(\mathbf x_7 = [6,4,0]\), \(\mathbf x_8 = [4,6,0]\), \(\mathbf x_9 = [0,-6,-4]\), \(\mathbf x_{10} = [0,-4,-6]\). Start from \(C_1 = \{\mathbf x_1, \mathbf x_4, \mathbf x_7, \mathbf x_{10}\}\), \(C_2 = \{\mathbf x_2, \mathbf x_5, \mathbf x_8\}\), \(C_3 = \{\mathbf x_3, \mathbf x_6, \mathbf x_9\}\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Update \(\boldsymbol\mu_k = \frac1{|C_k|}\sum_{\mathbf x_i\in C_k}\mathbf x_i\). Reassign each point to \(\argmin_k\|\mathbf x_i - \boldsymbol\mu_k\|^2\). Repeat until nothing moves.</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../probabilistic/#kmeans">Section 2.8</a>, which runs the L11 examples the same way.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(i) <a href="../probabilistic/#kmeans">2.8</a>, box "Show that each k-means step can only lower (or keep) \(J\) …", lines 2 and 3. (ii) the same lines, repeated once per iteration</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <h4>(i) The algorithm</h4>
 <ol class="steps">
@@ -440,7 +440,7 @@ theta, b = theta_aug[:d], theta_aug[d]    # the first d entries are the weights,
 <details class="q"><summary><span class="qt pyq">Mid-sem 2026</span><span>Q3.2 (15 points). You have 200 face images of size \(100\times100\). The first 100 are person "A" and the next 100 are person "B". Write Python (numpy only) that uses PCA (eigenfaces) to reduce the dimension and then classifies a test image Q as "A" or "B" with k-NN, \(K = 5\). Cover (i) the mean and covariance, (ii) the eigenvectors and how many to keep, (iii) the projection, (iv) the k-NN step.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\boldsymbol\mu = \frac1N\sum_i\mathbf x_i\), \(\bar X = X - \boldsymbol\mu\). Eigenvectors of \(\frac1N\bar X\bar X\T\) (\(200\times200\)) give those of \(\frac1N\bar X\T\bar X\) through \(\mathbf u = \bar X\T\mathbf v\). Project with \(\mathbf z = W\T(\mathbf x - \boldsymbol\mu)\).</div></div>
-<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#pca">Section 1.12</a> for PCA and the 95% rule, <a href="../foundations/#eigenfaces">Section 1.13</a> for the small-matrix trick, and <a href="../foundations/#knn">Section 1.2</a> for k-NN.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">(i) <a href="../foundations/#pca">1.12</a>, box "Run PCA by hand on a few 2-D points", lines 1 and 2. (ii) <a href="../foundations/#eigenfaces">1.13</a>, box "Get the eigenvectors of \(\mathbf X\mathbf X\T\) from those of \(\mathbf X\T\mathbf X\)", lines 1 to 4, and the 95% rule in <a href="../foundations/#pca">1.12</a>. (iii) <a href="../foundations/#pca">1.12</a>, box "Run PCA by hand on a few 2-D points", line 5. (iv) <a href="../foundations/#knn">1.2</a>, box "Classify a test point with k-NN and find the accuracy", lines 1 to 4.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb">
 <p>Each image is flattened to a vector of \(100\times100 = 10000\) pixels. Stack them as rows of \(X\), which is \(200\times10000\).</p>
 <h4>(i) Mean and covariance</h4>
