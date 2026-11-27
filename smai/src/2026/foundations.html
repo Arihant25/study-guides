@@ -127,6 +127,10 @@
 <li>Check: the two classes are mirror images across the \(x_1\) axis, and \([4,0]\) lies on that axis, so a tie is what symmetry predicts.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-5-->
+<!--pyq:midsem#pyq-mid-1-4-->
 </section>
 
 <section>
@@ -267,6 +271,12 @@
 <li>Same effect by the distance. \(\|\mathbf W\mathbf p - \mathbf W\mathbf q\|^2 \)<wbr>\({}= a_1^2(p_1 - q_1)^2 + a_2^2(p_2 - q_2)^2\). So use the weighted Euclidean distance \(\sqrt{10^{-8}(p_1-q_1)^2 + 10^{6}(p_2-q_2)^2}\) on the raw features.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-7-->
+<!--pyq:midsem#pyq-mid-1-2-->
+<!--pyq:midsem#pyq-mid-1-3-->
+<!--pyq:neural#pyq-q2-1c-->
 </section>
 
 <section>
@@ -333,6 +343,10 @@
 <li>So the matrix is \(\begin{bmatrix} 0.6 & 0.4 \\ 0.1 & 0.9 \end{bmatrix}\), option (a) on the slide. Each row of a rate matrix adds up to 1.</li>
 <li>In counts: 36 infected detected, 24 missed, 4 healthy flagged, 36 healthy cleared. Check: 36 + 24 = 60 and 4 + 36 = 40.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-4-->
+<!--pyq:endsem#pyq-end-1-1-->
 </section>
 
 <div class="part">Part 3<span>L03, L04 · Regression, optimisation and regularisation</span></div>
@@ -476,6 +490,11 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>L04 adds an iterative version. Fit, set each \(\lambda_i\) smaller for points far from the line, refit, and repeat. This is iteratively reweighted least squares. It usually converges in a few rounds and reduces the pull of outliers, though like any local method it can settle on a poor answer if the first fit is very bad.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-8-->
+<!--pyq:foundations#pyq-q1-12-->
+<!--pyq:midsem#pyq-mid-2-4-->
 </section>
 
 <section>
@@ -558,6 +577,11 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>So \(m \leftarrow m + \frac{2\eta}N\sum_i\lambda_i(y_i - mx_i - c)x_i\) and \(c \leftarrow c + \frac{2\eta}N\sum_i\lambda_i(y_i - mx_i - c)\).</li>
 <li>Check: a sample with \(\lambda_i = 0\) contributes nothing to either update, as it should.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-11-->
+<!--pyq:midsem#pyq-mid-1-5-->
+<!--pyq:midsem#pyq-mid-2-3-->
 </section>
 
 <section>
@@ -645,6 +669,10 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Ridge: \(w = 5/(5 + 5) = 0.5\). The penalty halves the slope here.</li>
 <li>Check: as \(\lambda \to 0\) the ridge answer \(5/(5+\lambda)\) goes to 1, and as \(\lambda \to \infty\) it goes to 0.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-1-->
+<!--pyq:endsem#pyq-end-1-2-->
 </section>
 
 <section>
@@ -710,6 +738,10 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 </ol></div></details>
 <details class="q"><summary><span class="qt">L04 slide</span><span>The inverse of an upper triangular matrix is (a) upper triangular (b) lower triangular (c) need not be triangular (d) will not exist.</span><span class="chev">›</span></summary>
 <div class="ans"><p><strong>(a)</strong>, when the inverse exists (all diagonal entries non-zero). For example, \(\begin{bmatrix} 2 & 1 \\ 0 & 4 \end{bmatrix}^{-1} \)<wbr>\({}= \frac18\begin{bmatrix} 4 & -1 \\ 0 & 2 \end{bmatrix}\), still upper triangular. Solving \(\mathbf U\mathbf x \)<wbr>\({}= \mathbf e_j\) by back-substitution from the bottom never puts anything below the diagonal. (d) is wrong in general, but if a diagonal entry is 0 the determinant (the product of the diagonal) is 0 and no inverse exists.</p></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-2-->
+<!--pyq:midsem#pyq-mid-1-6-->
 </section>
 
 <div class="part">Part 4<span>L05 · Rank of the data matrix</span></div>
@@ -770,6 +802,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>\(\epsilon = 10^{-100}\): mathematically still rank 3, since \(10^{-100} \ne 0\). But one eigenvalue is \(10^{-100}\), far below the precision of any computer (about \(10^{-16}\) relative). Numerically the matrix has rank 2.</li>
 <li>The lesson is that in practice "rank" means "number of eigenvalues that are not tiny". This is the effective rank used throughout the course.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-10-->
 </section>
 
 <section>
@@ -857,6 +892,10 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>(f) true. Differentiate \(\sum_i\|\mathbf x_i - \mathbf y\|^2\) with respect to \(\mathbf y\). \(-2\sum_i(\mathbf x_i - \mathbf y) \)<wbr>\({}= \mathbf 0\) gives \(N\mathbf y = \sum\mathbf x_i\), so \(\mathbf y = \boldsymbol\mu\). This is the L06 answer to "what is the best single point to represent a set".</li>
 <li>Answer: <strong>(a), (d), (f)</strong>.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-6-->
+<!--pyq:midsem#pyq-mid-1-7-->
 </section>
 
 <div class="part">Part 5<span>L06, L07 · PCA</span></div>
@@ -1003,6 +1042,10 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Row 5 has column 4 = 6 = \(3 \times 2\), so row 5 = \(3\mathbf v = [9, 3, 21, 6, 3]\). Check: 21 matches.</li>
 <li>In the formula, \(\mathbf A\) holds the known entries and \(\mathbf B\) is the completed matrix we are looking for. The double sum runs over the known positions \((i, j)\) only. The minimum is over all matrices \(\mathbf B\) of rank 1. So it asks for the rank-1 matrix that agrees best with the entries we can see. With noisy real data (movie ratings), there is no exact fit and this least-squares version is what is solved. L08 continues this with recommendation systems.</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-9-->
+<!--pyq:endsem#pyq-end-1-3-->
 </section>
 
 <section>
@@ -1047,6 +1090,10 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>(4) Their non-zero eigenvalues are identical. \(\mathbf X\mathbf X\T\) has about 9801 extra zero eigenvalues.</li>
 <li>(5) If \(\mathbf X\T\mathbf X\mathbf v \)<wbr>\({}= \lambda\mathbf v\) then \(\mathbf u \)<wbr>\({}= \mathbf X\mathbf v / \sqrt\lambda\) is a unit eigenvector of \(\mathbf X\mathbf X\T\). Going the other way, \(\mathbf v \)<wbr>\({}= \mathbf X\T\mathbf u / \sqrt\lambda\).</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:foundations#pyq-q1-3-->
+<!--pyq:midsem#pyq-mid-3-2-->
 </section>
 
 <section>
@@ -1131,6 +1178,7 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p01.webp" alt="Quiz 1 Set 1, page 1, questions 1 to 5" loading="lazy">
 <figcaption>Quiz 1, Set 1, page 1 (questions 1 to 5).</figcaption></figure>
 
+<div class="pyq" id="pyq-q1-1">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q1 (3 points). For \(\mathbf x = [-4, 3, 0, 0]\), find the \(L_0\), \(L_1\), \(L_2\) and \(L_\infty\) norms.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(L_0\) = number of non-zeros, \(L_1 = \sum|x_i|\), \(L_2 = \sqrt{\sum x_i^2}\), \(L_\infty = \max|x_i|\).</div></div>
@@ -1142,7 +1190,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>\(L_\infty\): the largest absolute value is <strong>4</strong>.</li>
 <li>Check. \(L_\infty \le L_2 \le L_1\), \(4 \le 5 \le 7\). Rubric: 0.75 per norm.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-2">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q2 (3 points). The solution of "minimise \(\mathbf w\T\mathbf X\T\mathbf X\mathbf w\) such that \(\|\mathbf w\|_2^2 = 1\)" is the (A) ___ eigenvector of (B) ___. (A) largest, second largest, smallest, second smallest. (B) \(\mathbf X\T\mathbf X\), \(\mathbf X\mathbf X\T\), \(\mathbf X\), \(\mathbf X\T\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">min of \(\mathbf w\T\mathbf A\mathbf w\) over unit \(\mathbf w\) is at the eigenvector of the smallest eigenvalue of \(\mathbf A\).</div></div>
@@ -1152,7 +1202,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>It is a minimisation, so take the smallest eigenvalue.</li>
 <li>Answer: (A) <strong>smallest</strong>, (B) <strong>\(\mathbf X\T\mathbf X\)</strong>. Rubric: 1.5 per blank.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-3">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q3 (3 points). 1000 aligned face images of \(100\times100\), for eigenfaces. Which are true? (a) covariance is \(100\times100\) (b) covariance is \(10000\times10000\) (c) covariance is \(1000\times1000\) (d) practical rank strictly less than 100 (e) practical rank far less than \(\min(N, d)\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Covariance is \(d\times d\), \(d\) = number of pixels. Rank \(\le N - 1\).</div></div>
@@ -1163,7 +1215,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>(d) says strictly less than 100. Nothing in the question guarantees such a specific bound, and 1000 different faces will usually need more than 100 components. False.</li>
 <li>Answer: <strong>(b), (e)</strong>. Under the rubric, any wrong option gives 0.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-4">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q4 (3 points). Spam scores \(0.7, 0.65, 0.92, 0.75, 0.45, 0.8, 0.3, 0.8, 0.1, 0.1\) with true labels \(+, -, +, +, -, +, +, +, -, -\). Predict spam when score \(\ge \theta = 0.5\). Find precision and recall.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Precision \(= \frac{TP}{TP + FP}\), recall \(= \frac{TP}{TP + FN}\).</div></div>
@@ -1175,7 +1229,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Precision \(= \frac5{5 + 1} \)<wbr>\({}= \frac56 \approx\) <strong>0.83</strong>. Recall \(= \frac5{5 + 1} \)<wbr>\({}= \frac56 \approx\) <strong>0.83</strong>.</li>
 <li>Check: total actual + is 6 (emails 1, 3, 4, 6, 7, 8), and TP + FN = 6. Rubric: 1.5 each.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-5">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q5 (3 points). The training set is \(([2, 0.5], +)\), \(([-3, 0.5], -)\), \(([0, 3], +)\), \(([0, -3], -)\). The test set is \(([0,0], +)\), \(([1,1], +)\), \(([-1,1], +)\), \(([-1,-1], -)\), \(([1,-1], -)\). Accuracy of 1-NN with Manhattan distance?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(d_1(\mathbf p, \mathbf q) \)<wbr>\({}= |p_1 - q_1| + |p_2 - q_2|\). Accuracy = correct / total.</div></div>
@@ -1188,10 +1244,12 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>\([1,-1]\): A = 1 + 1.5 = 2.5, B = 4 + 1.5 = 5.5, C = 1 + 4 = 5, D = 1 + 2 = 3. Nearest A (+). True −, <strong>wrong</strong>.</li>
 <li>Accuracy \(= \frac35 = \) <strong>60%</strong>. Rubric: 3 points, no partial credit, so check each distance twice.</li>
 </ol></div></div></div></details>
+</div>
 
 <figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p02.webp" alt="Quiz 1 Set 1, page 2, questions 6 to 10" loading="lazy">
 <figcaption>Quiz 1, Set 1, page 2 (questions 6 to 10). In Q9 the symbol in \(\max_{\mathbf v}\mathbf v\T\Sigma\mathbf v\) is the covariance \(\Sigma\).</figcaption></figure>
 
+<div class="pyq" id="pyq-q1-6">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q6 (3 points). SVD of an \(m\times n\) matrix, \(m \gt n\), \(\mathbf A \)<wbr>\({}= \mathbf U\mathbf D\mathbf V\T\). "(a) ___ of \(\mathbf U\) are orthogonal, (b) ___ of \(\mathbf V\) are orthogonal, and \(D_{ii}\) are eigenvalues of (c) ___". The options are rows, columns, \(\mathbf A\mathbf A\T\), \(\mathbf A\T\mathbf A\), both.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">In the thin SVD, \(\mathbf U\) is \(m\times n\) with \(\mathbf U\T\mathbf U \)<wbr>\({}= \mathbf I\), \(\mathbf V\) is \(n\times n\) with \(\mathbf V\T\mathbf V \)<wbr>\({}= \mathbf V\mathbf V\T\)<wbr>\({}= \mathbf I\).</div></div>
@@ -1202,7 +1260,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>(c) The official answer is "both \(\mathbf A\mathbf A\T\) and \(\mathbf A\T\mathbf A\)" (either was accepted). Strictly, \(D_{ii}\) are the square roots of those eigenvalues, and \(D_{ii}^2\) are the eigenvalues. If you write "both", add "\(D_{ii}^2\)" to be safe.</li>
 <li>Rubric: 1 point per blank, 0.5 for (b) if only one of rows or columns is given.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-7">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q7 (3 points). \(D \)<wbr>\({}= \{[2,3], [3,2], [2,-3], [0,3], [0,0], [1,1], [-1,1]\}\). Normalise to a set \(D'\) with mean \([0,0]\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf x' \)<wbr>\({}= \mathbf x - \boldsymbol\mu\), \(\boldsymbol\mu \)<wbr>\({}= \frac1N\sum\mathbf x_i\).</div></div>
@@ -1214,13 +1274,17 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Check: first coordinates \(1 + 2 + 1 - 1 - 1 + 0 - 2 = 0\), second \(2 + 1 - 4 + 2 - 1 + 0 + 0 = 0\).</li>
 <li><strong>The official sheet has a slip.</strong> It lists \([-1, -1]\) twice and has no \([0, 0]\). The point \([1, 1]\) minus the mean \([1, 1]\) is \([0, 0]\). With the official list the first coordinates add to −1, not 0. Rubric: 1 point for the mean, 2 for the set, up to 2 slips allowed at −0.5 each.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-8">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q8 (3 points). Linear regression with \(N\) samples and \(\hat y = \mathbf w\T\mathbf x\). Write the MSE loss.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(J(\mathbf w) \)<wbr>\({}= \frac1N\sum_{i=1}^N(y_i - \mathbf w\T\mathbf x_i)^2\).</div></div>
 <div class="sol"><div class="sl">Where it comes from</div><div class="sb">Section 1.6, the loss.</div></div>
 <div class="sol"><div class="sl">Working</div><div class="sb"><p>Write exactly the formula above. Rubric: 3 points, minus 0.5 if the \(\frac1N\) is missing. Sets 2 and 3 asked for the ridge loss \(\frac1N\sum(y_i - \mathbf w\T\mathbf x_i)^2 + \lambda\|\mathbf w\|_2^2\) and the lasso loss \(\frac1N\sum(y_i - \mathbf w\T\mathbf x_i)^2 + \lambda\|\mathbf w\|_1\) (section 1.8).</p></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-9">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q9 (3 points). PCA maximises \(\mathbf v\T\Sigma\mathbf v\). Using gradient ascent, give \(\mathbf v_{k+1}\) from \(\mathbf v_k\). (a) \(\mathbf v_{k+1} \)<wbr>\({}= \Sigma\mathbf v_k\) (b) \((\mathbf I + \eta\Sigma)\mathbf v_k\) (c) \((\mathbf I - \eta\Sigma)\mathbf v_k\) (d) none. (The unit length is restored separately each step.)</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Ascent: \(\mathbf v_{k+1} \)<wbr>\({}= \mathbf v_k + \eta\nabla f(\mathbf v_k)\). For symmetric \(\Sigma\), \(\nabla(\mathbf v\T\Sigma\mathbf v) \)<wbr>\({}= 2\Sigma\mathbf v\).</div></div>
@@ -1231,7 +1295,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Factor \(\mathbf v_k\) on the right. \(\mathbf v_{k+1} \)<wbr>\({}= (\mathbf I + \eta\Sigma)\mathbf v_k\). Answer <strong>(b)</strong>.</li>
 <li>(c) is descent, which would head towards the smallest eigenvector. (a) is the "power method", which also finds the top eigenvector after normalising, but it is not a gradient ascent step. Rubric: 3 points for (b).</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-10">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q10 (3 points). Points \([-2,2], [-3,3], [-4,4], [-5,5], [-6,6]\) on a line. Which follow from the covariance matrix? (a) \(\lambda_2 = 0\) (b) \(\lambda_1 = 2\) (c) \(\lambda_1 = -1\) (d) \(\Sigma\) is singular (e) none.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\Sigma \)<wbr>\({}= \frac1N\sum(\mathbf x_i - \boldsymbol\mu)(\mathbf x_i - \boldsymbol\mu)\T\). For \(\begin{bmatrix} a & b \\ b & a \end{bmatrix}\), \(\lambda = a \pm b\).</div></div>
@@ -1244,10 +1310,12 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Answer: <strong>(a), (d)</strong>. The rubric gave 2 points for (a) and 1 for (d).</li>
 <li>Note that these points lie on \(y = -x\), which makes 135° with the x axis, not 45° as the paper says. The answer does not change, since any set of points on one line has \(\lambda_2 = 0\).</li>
 </ol></div></div></div></details>
+</div>
 
 <figure class="slide"><img src="{{ASSETS}}slides/Quiz1_Question_Paper/p03.webp" alt="Quiz 1 Set 1, page 3, questions 11 and 12" loading="lazy">
 <figcaption>Quiz 1, Set 1, page 3 (questions 11 and 12).</figcaption></figure>
 
+<div class="pyq" id="pyq-q1-11">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q11 (7.5 points). \(L(w) = 2w^2 - 4w + 7\). (i) Gradient descent update. (ii) \(w_1\) and \(w_2\) from \(w_0 = 2\) with \(\eta = 0.2\). (iii) \(L\) at the optimum.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(w_{k+1} = w_k - \eta L'(w_k)\).</div></div>
@@ -1260,7 +1328,9 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>Check: the iterates 2, 1.2, 1.04 approach 1, each time a fifth of the previous distance (\(1 - 4\eta = 0.2\)).</li>
 <li>On marks, the solution sheet gives 2.5 points to each part. The paper itself printed "[1.5 + 3.0 + 3.0 = 7.5]". Either way, all three parts carry marks, so write the update rule even if you get stuck on the numbers.</li>
 </ol></div></div></div></details>
+</div>
 
+<div class="pyq" id="pyq-q1-12">
 <details class="q"><summary><span class="qt pyq">Quiz 1, 2026</span><span>Q12 (7.5 points). Raju's data \((1, 2), (2, 3), (3, 4)\). Using \(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\), construct \(\mathbf X\) and \(\mathbf y\) and compute \(\mathbf w\).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf w \)<wbr>\({}= (\mathbf X\T\mathbf X)^{-1}\mathbf X\T\mathbf y\), with a column of ones in \(\mathbf X\) for the intercept.</div></div>
@@ -1276,6 +1346,7 @@ The column of ones is the augmented 1 from section 1.3. It is what lets the line
 <li>So \(\mathbf w = [1, 1]\), the line <strong>\(y = 1 + x\)</strong>. Check. \(1 + 1 = 2\), \(1 + 2 = 3\), \(1 + 3 = 4\).</li>
 <li>Rubric: \(\mathbf X\) 2.5, \(\mathbf y\) 1, substituting into the formula 1, the inverse 1.5, the final answer 1.5.</li>
 </ol></div></div></div></details>
+</div>
 
 <h3>Sets 2, 3 and 4</h3>
 <p>The other sets changed the numbers and some wording. Their answers, all re-checked:</p>

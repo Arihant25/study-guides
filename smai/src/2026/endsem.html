@@ -42,6 +42,7 @@
 <h2 id="part-1"><span class="num">E.3</span>Part I · Objective questions (60 marks)</h2>
 <p class="oneline">Ten questions of 6 marks. Aim for six minutes each.</p>
 
+<div class="pyq" id="pyq-end-1-1">
 <h3>Q1 · IPL wicket prediction (2 + 2 + 2)</h3>
 <p>A classifier predicts whether the next ball in an IPL match will take a wicket. On a test set of 1000 balls there were 15 actual wickets. The model flagged 20 balls as "wicket-likely", and 12 of those really were wickets.</p>
 <ol type="a">
@@ -65,7 +66,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) half a mark for each cell, full marks if any three are right because the fourth follows. Swapping FP and FN still earned 1 mark. (b) 1 mark each, with carry-forward if (a) was wrong. (c) 2 marks for all three correct options, 1 mark for exactly two of them, 0 if (iv) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-2">
 <h3>Q2 · Linear regression for strike rate (2 + 2 + 2)</h3>
 <p>A linear model \(Xw \approx y\) predicts a batter's strike rate from features in the rows of \(X\).</p>
 <ol type="a">
@@ -87,7 +89,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for False. Answering True but explaining the pseudo-inverse earned 1. (b) any of \(\frac2N X\T(Xw-y)\), \(X\T(Xw-y)\), \(\frac1N X\T(Xw-y)\) or \(-\frac2N X\T(y-Xw)\) got full marks. Right shape with a wrong constant got 1, only the right sign got half. (c) 2 for both (i) and (iii) with nothing wrong, 1 for one of them.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-3">
 <h3>Q3 · PCA and eigenfaces (2 + 2 + 2)</h3>
 <p>There are \(N = 400\) face images of size \(100\times100\), flattened into the rows of a mean-subtracted data matrix \(X\).</p>
 <ol type="a">
@@ -109,7 +112,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1 for the size, 1 for the rank. Both 399 and 400 were accepted. (b) full marks for True, even with no reason. (c) 2 for all of (i), (ii), (iv), 1 for exactly two, 0 if (iii) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-4">
 <h3>Q4 · Bayesian decision in a classroom (4 + 2)</h3>
 <p>Two classes have priors \(P(\omega_1) = 0.7\) and \(P(\omega_2) = 0.3\). For an observed \(x\) the likelihoods are \(p(x\mid\omega_1) = 0.4\) and \(p(x\mid\omega_2) = 0.6\).</p>
 <ol type="a">
@@ -130,7 +134,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the formula, 1 for the set-up, 1 for the number. Anything from 0.60 to 0.61 was accepted. Right formula with wrong arithmetic got 3. (b) 2 for True.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-5">
 <h3>Q5 · Naive Bayes and logistic regression (2 + 2 + 2)</h3>
 <ol type="a">
 <li>True or false? Naive Bayes assumes the features are conditionally independent given the class.</li>
@@ -148,7 +153,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for True. (b) 1 for the sigmoid, 1 for any correct name of the loss. (c) 2 for all three correct options, 1 for exactly two, 0 if (iv) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-6">
 <h3>Q6 · SVMs and kernels (3 + 3)</h3>
 <ol type="a">
 <li>Which are true? (i) In the dual solution only the support vectors have \(\alpha_i > 0\). (ii) The margin is \(\frac{2}{\|w\|}\). (iii) The dual uses the data only through dot products \(x_i\T x_j\), which is what allows kernels. (iv) Replacing the constraints by a hinge loss alone, with no \(C\) and no slack variables, gives exactly the soft-margin SVM.</li>
@@ -167,7 +173,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 for (i), (ii), (iii), 1.5 for exactly two of them. Because (iv) is genuinely ambiguous, ticking all four also got 3. This was the only exception to the strict rule in the paper. (b) 3 for True, at most 1 off for a wrong explanation.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-7">
 <h3>Q7 · From SLP to MLP (3 + 3)</h3>
 <ol type="a">
 <li>Which are true? (i) The perceptron rule finds a separating line in finitely many steps if the data are linearly separable. (ii) A single layer perceptron can learn XOR. (iii) The delta rule converges, with a small enough learning rate, even when the data are noisy and not separable. (iv) A single layer perceptron is a universal approximator.</li>
@@ -185,7 +192,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 for both (i) and (iii), 1.5 for one of them, 0 if (ii) or (iv) is ticked. (b) 3 for 11. Answers of 8 or 10 (a bias forgotten) got 2, and 6 (all biases forgotten) got 1.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-8">
 <h3>Q8 · Optimisers, BatchNorm and dropout (2 + 2 + 2)</h3>
 <ol type="a">
 <li>True or false? Adam combines momentum with a separate adaptive learning rate for each parameter.</li>
@@ -203,7 +211,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for True. (b) 2 for all three, 1 for exactly two, 0 if (iv) is ticked. (c) single correct option, so 2 or 0.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-9">
 <h3>Q9 · 2-D convolution arithmetic (2 + 2 + 2)</h3>
 <p>The input is \(224\times224\times1\). A convolution layer has 32 filters of size \(7\times7\), stride 2 and padding 3.</p>
 <ol type="a">
@@ -226,7 +235,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1.5 for \(112\times112\), 0.5 for 32 channels. Forgetting the padding gives 109, which earned half a mark for method. (b) 2 for 1600, 1.5 for 1568 (biases forgotten). (c) 1 for \(56\times56\), 1 for keeping 32 channels.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-10">
 <h3>Q10 · Multi-head self-attention (2 + 2 + 2)</h3>
 <p>A multi-head self-attention layer has 8 heads. The input and output dimension is \(d = 100\), there are \(N = 1000\) tokens, and each head's queries, keys and values have dimension 50.</p>
 <ol type="a">
@@ -249,12 +259,14 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for 25, 1 for 24 (\(W_O\) forgotten). Writing 4 because you stacked each of Q, K and V across heads into one matrix was also accepted. (b) 1 for the head matrices, 1 for \(W_O\), transposed shapes accepted. (c) 2 for 160 000, 1 for 120 000.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>
 <h2 id="part-2"><span class="num">E.4</span>Part II · Three out of four (60 marks)</h2>
 <p class="oneline">Numerical questions of 20 marks. Choose three. Aim for 20 minutes each.</p>
 
+<div class="pyq" id="pyq-end-2-1">
 <h3>Q1 · Gradient descent on a single neuron (3 + 10 + 8)</h3>
 <p>One neuron computes \(o = \sigma(w_1x_1 + w_2x_2 + b)\) with \(\sigma(z) = \frac{1}{1 + e^{-z}}\), and the loss is \(L = \frac12(o - y)^2\). Start from \(w_1 = 1\), \(w_2 = -1\), \(b = 0\). The sample is \(x = [1, 1]\) with \(y = 1\), and the learning rate is \(\eta = 1\).</p>
 <ol type="a">
@@ -303,7 +315,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1.5 for a correct step, 1.5 for the final form. The result alone got 2. (b) 1 each for \(z\), \(o\) and \(\sigma'(0)\), 2 for the chain-rule expression, 1 for the bias version, and the three numbers together were worth about 4. Writing \(y - o\) throughout was fine if you were consistent. (c) 2 for the update rule and 2 for each new value, capped at 6, with only 1 off for a carried sign error.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-2">
 <h3>Q2 · Bayesian classification in one dimension (5 + 10 + 5)</h3>
 <p>Class A is \(\mathcal N(100, 100)\) and class B is \(\mathcal N(200, 100)\), so both have \(\sigma = 10\). The priors are \(P(A) = 0.8\) and \(P(B) = 0.2\).</p>
 <ol type="a">
@@ -335,7 +348,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the densities, 2 for the value (within 10%, or left as \(\frac{1}{10\sqrt{2\pi}}e^{-12.5}\)), 1 for "No" with a reason. (b) 2 for Bayes' theorem, 2 for each of the three decisions, 2 for the remark about the pairs. Classifying all three as A without the ratios still earned at least 5. (c) 3 for at least one correct pair of posteriors, 2 for saying they add up to 1.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-3">
 <h3>Q3 · Eigen decomposition and SVD (6 + 8 + 6)</h3>
 <p>\(A = \begin{bmatrix}2&1\\1&2\end{bmatrix}\).</p>
 <ol type="a">
@@ -360,7 +374,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the polynomial, 1 for the eigenvalues, 1.5 for each unit eigenvector, half a mark off each if not normalised. Flipped signs were fine. (b) 2 for saying SVD equals the eigen decomposition here, 2 each for \(U\), \(D\) and \(V\). (c) 2 for the formula, 2 for using 3, 2 for the matrix. Using \(\sigma = 1\) by mistake got 3.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-4">
 <h3>Q4 · k-means in one dimension (4 + 6 + 10)</h3>
 <ol type="a">
 <li>Write the k-means objective.</li>
@@ -386,12 +401,14 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the double sum, 2 for the squared distance. (b) 2 for "non-increasing", 2 for the sketch, 2 for the elbow (silhouette or gap statistic also accepted). (c) 1 each for iteration 1's clusters, means and \(J\), 2 for iteration 2's clusters and means, 2 for its \(J\), 2 for showing iteration 3 changes nothing, 1 for the final answer. Skipping \(J\) cost only 2 in total.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>
 <h2 id="part-3"><span class="num">E.5</span>Part III · Three out of four (60 marks)</h2>
 <p class="oneline">Analytical questions of 20 marks. Choose three. Aim for 20 minutes each.</p>
 
+<div class="pyq" id="pyq-end-3-1">
 <h3>Q1 · A wide network with four parallel branches (6 + 7 + 7)</h3>
 <p>The input is \(x\in\R^d\). There are four branches \(k = 1, 2, 3, 4\). Branch \(k\) has a weight vector \(w_k\in\R^d\) and an output vector \(u_k\in\R^p\). It computes \(z_k = w_k\T x\) and \(\alpha_k = \sigma(z_k)\), and it adds \(\alpha_ku_k\) to the output.</p>
 <ol type="a">
@@ -418,7 +435,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for \(\alpha_k = \sigma(w_k\T x)\), 2 for the sum, 2 for saying \(y\in\R^p\). Correct code got full marks. (b) 2 for noticing the scalars, 2 for the chain rule, 2 for the \(\sigma'(w_kx)w_k\) factor, 1 for "vector in \(\R^p\)". (c) 2 for "only branch 2", 2 for \(\sigma'(z_2)\), 2 for the \(u_2\), 1 for the dimension.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-2">
 <h3>Q2 · The kernel matrix (2 + 8 + 10)</h3>
 <p>A kernel is \(\kappa(p, q) = \phi(p)\T\phi(q)\), and the kernel matrix of \(N\) samples is \(K_{ij} = \kappa(x_i, x_j)\).</p>
 <ol type="a">
@@ -455,7 +473,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for any correct use of \(a\T b = b\T a\). (b) 2 each for the double sum, putting in the kernel, combining the sums, and the squared norm, with only 1 off for one missing step. (c) 2 for the expansion, 4 for the four products, 4 for the \(\sqrt3\) factors. Forgetting the \(\sqrt3\) got 6.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-3">
 <h3>Q3 · Backpropagation through a residual block (12 + 4 + 4)</h3>
 <p>A residual block computes \(y = g_4\big(g_3(g_2(g_1(x))) + x\big)\), where each \(g_i\) is a function of one number with derivative \(g_i'\).</p>
 <ol type="a">
@@ -493,7 +512,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 each for the addition node, the chain rule through \(g_4\), the "+1" and the product \(g_3'g_2'g_1'\). Forgetting the "+1" cost 4 or 5 marks, because it is the whole point of a residual block. (b) 4 for any line that mentions the added "+1", 3 for "a shortcut" without it. (c) 2 for "slope 1 when positive", 2 for linking it to sigmoid and tanh saturating, at least 3 if either is clear.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-4">
 <h3>Q4 · A triangular mixture model (6 + 4 + 6 + 4)</h3>
 <p>Instead of Gaussians, model univariate data as a mixture of triangles. Each triangle is symmetric about its mean, has a fixed ratio of base to height, and gives probability zero outside its base.</p>
 <ol type="a">
@@ -528,6 +548,7 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for using \(|x - \mu|\), 2 for the straight-line shape with area 1, 2 for the support. Forgetting "zero outside" got 4. (b) 1 for the E-step, 2 for the M-step, 1 for the stopping rule. (c) 2 for the E-step with the triangle, 2 for the M-step, 1 for noting the fixed width, 1 for convergence. Copying GMM with the triangle put in got full marks. (d) 2 for two advantages and 2 for two disadvantages. Any sensible points were accepted.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>

@@ -209,6 +209,10 @@
 <p>No. The true points \((0,1), (1,0)\) and the false points \((0,0), (1,1)\) lie on the two diagonals of a square, and no line separates them. A perceptron's boundary is a line, so it always misclassifies at least one point, and by claim 2 its training never stops.</p>
 <p>Map each input to \((x_1, x_2, x_1x_2)\). With 0/1 inputs the unit \(\varphi(x_1 + x_2 - 2x_1x_2 - 0.5)\) gives 0, 1, 1, 0 at \((0,0), (0,1), (1,0), (1,1)\), which is XOR. The rule is linear in the expanded features, so a perceptron on the expanded input can learn it. A kernel does the same thing without listing the new features, through \(K(\mathbf x, \mathbf z) \)<wbr>\({}= (\mathbf x\T\mathbf z + 1)^2\), whose feature space contains \(x_1x_2\) (page 2, <a href="../probabilistic/#kernels">kernels</a>).</p>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:neural#pyq-q2-3-->
+<!--pyq:endsem#pyq-end-1-7-->
 </section>
 
 <section>
@@ -395,6 +399,10 @@
 <tr><td>1, 0</td><td>1</td><td>0</td><td>\(0.5\)</td><td>1</td></tr>
 <tr><td>1, 1</td><td>1</td><td>1</td><td>\(-0.5\)</td><td>0</td></tr></table>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:neural#pyq-q2-1e-->
+<!--pyq:endsem#pyq-end-3-1-->
 </section>
 
 <section>
@@ -588,6 +596,10 @@
 <li>Check: every gradient flips sign compared with \(y = 1\), because only the factor \(o - y\) changed, from \(-0.5\) to \(+0.5\).</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:neural#pyq-q2-2-->
+<!--pyq:endsem#pyq-end-2-1-->
 </section>
 
 <section>
@@ -667,6 +679,9 @@
 <li>Dropout removes neurons at random during training and rescales at test time.</li>
 </ul>
 </div>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:neural#pyq-q2-1a-->
 </section>
 
 <section>
@@ -791,6 +806,10 @@
 <li>Check against Newton. \(H^{-1}\nabla J = [1, 1]\T\), so one Newton step goes from \((1,1)\) straight to \((0, 0)\), the true minimum. The best gradient step gets much closer but not all the way, because it must use one step size for both directions.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:neural#pyq-q2-1b-->
+<!--pyq:endsem#pyq-end-1-8-->
 </section>
 
 <section>
@@ -803,6 +822,7 @@
 
 <h3>Question 1, brief answers (15 points)</h3>
 
+<div class="pyq" id="pyq-q2-1a">
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(a), 3 points. True or false, with a reason. (i) Backpropagation, implemented properly, always reaches the global minimum. (ii) Backpropagation works well when all weights start at zero. (iii) Residual (skip) connections reduce the vanishing gradient problem in deep networks.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">No formula. Check each statement on its own.</div></div>
@@ -814,7 +834,9 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">1 point per statement. The other variants asked the same kind of statements (backpropagation is useful only for convex problems, it never reaches a global minimum, XOR needs more than one layer, an L1 penalty gives sparse weights, cross-entropy is for regression, dropout compresses the model). See the table at the end.</div></div>
 </div></details>
+</div>
 
+<div class="pyq" id="pyq-q2-1b">
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(b), 3 points. Write the update equations for (i) plain gradient descent, (ii) gradient descent with momentum and (iii) Newton's method. Define every symbol.</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">
@@ -831,7 +853,9 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">1 point each. Plain gradient descent needs the minus sign, the \(k\) to \(k+1\) indices and the symbols defined (0.5 if symbols are missing, 0 for the wrong sign). Momentum needs both equations, and either the velocity form above or the form \(\mathbf v^{k+1} \)<wbr>\({}= \beta\mathbf v^k + \nabla L\), \(\mathbf w^{k+1} \)<wbr>\({}= \mathbf w^k - \eta\mathbf v^{k+1}\) gets full marks (0.5 for one equation). Newton needs the inverse Hessian, named (0.5 without the inverse or without naming \(H\)).</div></div>
 </div></details>
+</div>
 
+<div class="pyq" id="pyq-q2-1c">
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(c), 3 points. Normalise the data \(D = \{7, 8, 10, 11, 11, 13\}\) to zero mean and unit standard deviation (z-scores).</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">\(z_i = \frac{x_i - \mu}{\sigma}\), with \(\mu = \frac1N\sum_i x_i\) and \(\sigma^2 \)<wbr>\({}= \frac1N\sum_i(x_i - \mu)^2\) (population) or \(s^2 \)<wbr>\({}= \frac1{N-1}\sum_i(x_i - \mu)^2\) (sample).</div></div>
@@ -847,7 +871,9 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">3 points for the right mean, standard deviation (either convention, used consistently) and normalised values. 2 points if only the final arithmetic slips. 1 point for the mean alone or the right method with a wrong \(\mu\) or \(\sigma\).</div></div>
 </div></details>
+</div>
 
+<div class="pyq" id="pyq-q2-1d">
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(d), 3 points. "Test your breadth". (i) Who received the 2024 Nobel Prize in Physics for work on neural networks? (ii) Expand RNN. (iii) Name a popular open-source LLM.</span><span class="chev">›</span></summary>
 <div class="ans">
 <p>(i) John Hopfield and Geoffrey Hinton shared it. The key accepts either name. (ii) Recurrent neural network (<a href="../deep/#rnn">4, RNNs</a>). (iii) Any credible open-weight model, for example Meta's Llama, Mistral, Falcon, Gemma or DeepSeek.</p>
@@ -855,7 +881,9 @@
 <p>These are general-knowledge questions about current events in AI, not course material. Answers like "a popular open-source LLM" or "who left Meta" go out of date quickly, so read the news around the time of the quiz instead of memorising this list.</p>
 <div class="sol"><div class="sl">Marks</div><div class="sb">1 point per item. The TAs were told to use judgement and accept any clearly correct answer. They also accepted partly wrong answers where the spelling of the question caused the confusion.</div></div>
 </div></details>
+</div>
 
+<div class="pyq" id="pyq-q2-1e">
 <details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(e), 3 points. An MLP has 3 inputs, one hidden layer of 5 neurons and 1 output, with no biases. How many learnable parameters does it have?</span><span class="chev">›</span></summary>
 <div class="ans">
 <div class="sol"><div class="sl">Formula</div><div class="sb">Without biases, a dense layer has \(n_{\text{in}}\times n_{\text{out}}\) weights.</div></div>
@@ -868,7 +896,9 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">3 points for 20 with the working. 2 for the right formula with an arithmetic slip, 1 for counting only one layer. Counting biases (26) loses 1 point if it is clearly stated.</div></div>
 </div></details>
+</div>
 
+<div class="pyq" id="pyq-q2-2">
 <h3>Question 2, forward pass, backpropagation and the single layer equivalent (15 points)</h3>
 <p>All variants used the network of 3.6, but with ReLU hidden units, a linear output and a halved squared error.</p>
 <div class="eq">\[p_1 = w_{11}x_1 + w_{12}x_2,\]\[p_2 = w_{21}x_1 + w_{22}x_2,\]\[q_j = \operatorname{ReLU}(p_j) = \max(0, p_j),\]\[s = u_1q_1 + u_2q_2,\quad o = s,\]\[L = \tfrac12(y - o)^2.\]</div>
@@ -933,7 +963,8 @@
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">2 points for the argument that a linear MLP collapses to a single layer, 2 for computing \(\mathbf v = W\T\mathbf u\) correctly, and 1 for the diagram with its numerical weights.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-q2-3">
 <h3>Question 3, single layer perceptron (15 points)</h3>
 <p>Variant 1 had the data \(D \)<wbr>\({}= \{([1,1]\T, +1),\)<wbr>\(([0,0]\T, +1),\)<wbr>\(([-1,-1]\T, -1)\}\) and starting weights \(w_0 = 0\) (the bias), \(w_1 = -0.5\), \(w_2 = -0.5\).</p>
 
@@ -985,7 +1016,7 @@
 </div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">2 points for finding the misclassified samples in iteration 1, 2 for updating only those with \(\Delta w_j = \eta y x_j\), 2 for the weights after iteration 1, 1 for the iteration 2 classifications, and 1 for the final weights and noting convergence. Deductions are 1 for updating correct samples, 1 for the wrong sign of the update, 1 for the wrong learning rate, and 0.5 for a small arithmetic slip carried through.</div></div>
 </div></details>
-
+</div>
 <h3>Variants 2 to 4</h3>
 <p>The same questions with other numbers. The answers below follow the key, and all were rechecked.</p>
 <table class="tbl">

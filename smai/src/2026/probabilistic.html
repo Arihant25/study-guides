@@ -523,6 +523,11 @@
 <li>Check: without costs the answer was pear. Making one mistake costlier pushes the decision towards avoiding it, as expected.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:midsem#pyq-mid-1-9-->
+<!--pyq:endsem#pyq-end-1-4-->
+<!--pyq:endsem#pyq-end-2-2-->
 </section>
 
 <section>
@@ -723,6 +728,9 @@
 </div></details>
 <details class="q"><summary><span class="qt">L10 slide</span><span>Why does setting the derivative of the GMM log-likelihood to zero not give a closed-form answer, as it did for one Gaussian?</span><span class="chev">›</span></summary>
 <div class="ans"><p>For one Gaussian, \(\ln N(x_i\mid\mu,\sigma^2)\) is a simple quadratic in \(\mu\), and the derivatives give linear equations. For a GMM the log is taken of a sum \(\sum_k\pi_kN(\cdot)\). The derivative with respect to \(\mu_k\) contains the responsibility \(\gamma_k(x_i)\), which itself depends on all the parameters. The equations are coupled and nonlinear. EM handles this by freezing the responsibilities (E-step), solving the now simple weighted MLE (M-step), and repeating.</p></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:endsem#pyq-end-3-4-->
 </section>
 
 <section>
@@ -799,6 +807,11 @@
 </div></details>
 <details class="q"><summary><span class="qt">L11 slide</span><span>What happens to the k-means objective as \(K\) increases? How do we pick \(K\)?</span><span class="chev">›</span></summary>
 <div class="ans"><p>The best achievable \(J\) never increases with \(K\), because a \(K+1\) clustering can always copy a \(K\) clustering and split one cluster. At \(K = N\), \(J = 0\). So the minimum \(J\) cannot choose \(K\). Plot the best \(J\) against \(K\) and choose where extra clusters stop helping much (the elbow), or use knowledge of the problem (for example the number of topics or speakers).</p></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:midsem#pyq-mid-1-10-->
+<!--pyq:midsem#pyq-mid-3-1-->
+<!--pyq:endsem#pyq-end-2-4-->
 </section>
 
 <div class="part">Part C<span>L11 · probability to practice</span></div>
@@ -945,6 +958,9 @@
 </div></details>
 <details class="q"><summary><span class="qt">L11 slide</span><span>Do \(p(y=1\mid x) = g(w\T x)\) and \(p(y=0\mid x) = g(-w\T x)\) add up to one? What is the classification rule?</span><span class="chev">›</span></summary>
 <div class="ans"><p>\(g(z) + g(-z) \)<wbr>\({}= \frac1{1+e^{-z}} + \frac1{1+e^{z}}\). Multiply the top and bottom of the second fraction by \(e^{-z}\). It becomes \(\frac{e^{-z}}{e^{-z}+1}\). The sum is \(\frac{1 + e^{-z}}{1+e^{-z}} \)<wbr>\({}= 1\). The rule is to decide class 1 when \(g(w\T x) \ge 0.5\), which is the same as \(w\T x\ge 0\).</p></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:endsem#pyq-end-1-5-->
 </section>
 
 <div class="part">Part D<span>L12, L13 · margins and generalisation</span></div>
@@ -1046,6 +1062,10 @@
 <div class="ans"><p>Support vectors satisfy \(y_i(w\T x_i + b) = 1\) (on the edge planes), or in the soft-margin case lie inside the band. They are the points closest to the boundary and the hardest to classify. In the dual, only they have \(\alpha_i > 0\), and \(w = \sum\alpha_iy_ix_i\), so \(w\) and \(b\) are built from them alone. Removing any other point and retraining gives the same classifier.</p></div></details>
 <details class="q"><summary><span class="qt">L12 slide</span><span>The slides say a perceptron finds "a valid solution" but LR and SVM find "an optimal solution". What is the difference?</span><span class="chev">›</span></summary>
 <div class="ans"><p>The perceptron stops at the first line that separates the training data, and which line that is depends on the order of samples and the start. Logistic regression and the SVM each minimise a convex loss (cross-entropy, or hinge plus \(\|w\|^2\)). Each has a single best answer, the one with the most confident probabilities or the widest margin.</p></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:midsem#pyq-mid-1-8-->
+<!--pyq:endsem#pyq-end-1-6-->
 </section>
 
 <section>
@@ -1108,6 +1128,10 @@
 <li>\[K = \begin{bmatrix}4 & 1 & 4\\ 1 & 4 & 4\\ 4 & 4 & 9\end{bmatrix}.\]</li>
 <li>Check: it is symmetric, as every kernel matrix must be, since \(K(p,q) = K(q,p)\).</li>
 </ol></div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<!--pyq:midsem#pyq-mid-2-2-->
+<!--pyq:endsem#pyq-end-3-2-->
 </section>
 
 <section>

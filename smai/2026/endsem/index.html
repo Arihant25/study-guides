@@ -304,6 +304,10 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 .toc .brand a:hover{background:none; text-decoration:underline}
 @media(max-width:600px){ .tbl.collapse-last th:last-child, .tbl.collapse-last td:last-child{display:none} .tbl .sm{display:block; font-size:.8rem; color:var(--muted-fg)} }
 @media(min-width:601px){ .tbl .sm{display:none} }
+.pyq{margin:0}
+.pyq>h4{margin:1.4em 0 .3em}
+.pyqsrc{font-size:.84rem; color:var(--muted-fg); margin:4px 0 14px}
+#main .pyq .pyqsrc:only-child{display:none}
 
 </style>
 </head>
@@ -387,6 +391,7 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 <h2 id="part-1"><span class="num">E.3</span>Part I · Objective questions (60 marks)</h2>
 <p class="oneline">Ten questions of 6 marks. Aim for six minutes each.</p>
 
+<div class="pyq" id="pyq-end-1-1">
 <h3>Q1 · IPL wicket prediction (2 + 2 + 2)</h3>
 <p>A classifier predicts whether the next ball in an IPL match will take a wicket. On a test set of 1000 balls there were 15 actual wickets. The model flagged 20 balls as "wicket-likely", and 12 of those really were wickets.</p>
 <ol type="a">
@@ -410,7 +415,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) half a mark for each cell, full marks if any three are right because the fourth follows. Swapping FP and FN still earned 1 mark. (b) 1 mark each, with carry-forward if (a) was wrong. (c) 2 marks for all three correct options, 1 mark for exactly two of them, 0 if (iv) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-2">
 <h3>Q2 · Linear regression for strike rate (2 + 2 + 2)</h3>
 <p>A linear model <math><mrow><mi>X</mi><mi>w</mi><mo>≈</mo><mi>y</mi></mrow></math> predicts a batter's strike rate from features in the rows of <math><mi>X</mi></math>.</p>
 <ol type="a">
@@ -432,7 +438,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for False. Answering True but explaining the pseudo-inverse earned 1. (b) any of <math><mrow><mfrac><mn>2</mn><mi>N</mi></mfrac><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>X</mi><mi>w</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>X</mi><mi>w</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><mfrac><mn>1</mn><mi>N</mi></mfrac><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>X</mi><mi>w</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> or <math><mrow><mo form="prefix" stretchy="false">−</mo><mfrac><mn>2</mn><mi>N</mi></mfrac><msup><mi>X</mi><mi class="tml-med-pad">𝖳</mi></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>y</mi><mo>−</mo><mi>X</mi><mi>w</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> got full marks. Right shape with a wrong constant got 1, only the right sign got half. (c) 2 for both (i) and (iii) with nothing wrong, 1 for one of them.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-3">
 <h3>Q3 · PCA and eigenfaces (2 + 2 + 2)</h3>
 <p>There are <math><mrow><mi>N</mi><mo>=</mo><mn>400</mn></mrow></math> face images of size <math><mrow><mn>100</mn><mo>×</mo><mn>100</mn></mrow></math>, flattened into the rows of a mean-subtracted data matrix <math><mi>X</mi></math>.</p>
 <ol type="a">
@@ -454,7 +461,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1 for the size, 1 for the rank. Both 399 and 400 were accepted. (b) full marks for True, even with no reason. (c) 2 for all of (i), (ii), (iv), 1 for exactly two, 0 if (iii) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-4">
 <h3>Q4 · Bayesian decision in a classroom (4 + 2)</h3>
 <p>Two classes have priors <math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.7</mn></mrow></math> and <math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>ω</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.3</mn></mrow></math>. For an observed <math><mi>x</mi></math> the likelihoods are <math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.4</mn></mrow></math> and <math><mrow><mi>p</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo lspace="0.22em" rspace="0.22em" stretchy="false">|</mo><msub><mi>ω</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.6</mn></mrow></math>.</p>
 <ol type="a">
@@ -475,7 +483,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the formula, 1 for the set-up, 1 for the number. Anything from 0.60 to 0.61 was accepted. Right formula with wrong arithmetic got 3. (b) 2 for True.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-5">
 <h3>Q5 · Naive Bayes and logistic regression (2 + 2 + 2)</h3>
 <ol type="a">
 <li>True or false? Naive Bayes assumes the features are conditionally independent given the class.</li>
@@ -493,7 +502,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for True. (b) 1 for the sigmoid, 1 for any correct name of the loss. (c) 2 for all three correct options, 1 for exactly two, 0 if (iv) is ticked.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-6">
 <h3>Q6 · SVMs and kernels (3 + 3)</h3>
 <ol type="a">
 <li>Which are true? (i) In the dual solution only the support vectors have <math><mrow><msub><mi>α</mi><mi>i</mi></msub><mo>&gt;</mo><mn>0</mn></mrow></math>. (ii) The margin is <math><mfrac><mn>2</mn><mrow><mi>‖</mi><mi>w</mi><mi>‖</mi></mrow></mfrac></math>. (iii) The dual uses the data only through dot products <math><mrow><msubsup><mi>x</mi><mi>i</mi><mi class="tml-sml-pad">𝖳</mi></msubsup><msub><mi>x</mi><mi>j</mi></msub></mrow></math>, which is what allows kernels. (iv) Replacing the constraints by a hinge loss alone, with no <math><mi>C</mi></math> and no slack variables, gives exactly the soft-margin SVM.</li>
@@ -512,7 +522,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 for (i), (ii), (iii), 1.5 for exactly two of them. Because (iv) is genuinely ambiguous, ticking all four also got 3. This was the only exception to the strict rule in the paper. (b) 3 for True, at most 1 off for a wrong explanation.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-7">
 <h3>Q7 · From SLP to MLP (3 + 3)</h3>
 <ol type="a">
 <li>Which are true? (i) The perceptron rule finds a separating line in finitely many steps if the data are linearly separable. (ii) A single layer perceptron can learn XOR. (iii) The delta rule converges, with a small enough learning rate, even when the data are noisy and not separable. (iv) A single layer perceptron is a universal approximator.</li>
@@ -530,7 +541,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 for both (i) and (iii), 1.5 for one of them, 0 if (ii) or (iv) is ticked. (b) 3 for 11. Answers of 8 or 10 (a bias forgotten) got 2, and 6 (all biases forgotten) got 1.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-8">
 <h3>Q8 · Optimisers, BatchNorm and dropout (2 + 2 + 2)</h3>
 <ol type="a">
 <li>True or false? Adam combines momentum with a separate adaptive learning rate for each parameter.</li>
@@ -548,7 +560,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for True. (b) 2 for all three, 1 for exactly two, 0 if (iv) is ticked. (c) single correct option, so 2 or 0.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-9">
 <h3>Q9 · 2-D convolution arithmetic (2 + 2 + 2)</h3>
 <p>The input is <math><mrow><mn>224</mn><mo>×</mo><mn>224</mn><mo>×</mo><mn>1</mn></mrow></math>. A convolution layer has 32 filters of size <math><mrow><mn>7</mn><mo>×</mo><mn>7</mn></mrow></math>, stride 2 and padding 3.</p>
 <ol type="a">
@@ -571,7 +584,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1.5 for <math><mrow><mn>112</mn><mo>×</mo><mn>112</mn></mrow></math>, 0.5 for 32 channels. Forgetting the padding gives 109, which earned half a mark for method. (b) 2 for 1600, 1.5 for 1568 (biases forgotten). (c) 1 for <math><mrow><mn>56</mn><mo>×</mo><mn>56</mn></mrow></math>, 1 for keeping 32 channels.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-1-10">
 <h3>Q10 · Multi-head self-attention (2 + 2 + 2)</h3>
 <p>A multi-head self-attention layer has 8 heads. The input and output dimension is <math><mrow><mi>d</mi><mo>=</mo><mn>100</mn></mrow></math>, there are <math><mrow><mi>N</mi><mo>=</mo><mn>1000</mn></mrow></math> tokens, and each head's queries, keys and values have dimension 50.</p>
 <ol type="a">
@@ -594,12 +608,14 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for 25, 1 for 24 (<math><msub><mi>W</mi><mi>O</mi></msub></math> forgotten). Writing 4 because you stacked each of Q, K and V across heads into one matrix was also accepted. (b) 1 for the head matrices, 1 for <math><msub><mi>W</mi><mi>O</mi></msub></math>, transposed shapes accepted. (c) 2 for 160 000, 1 for 120 000.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>
 <h2 id="part-2"><span class="num">E.4</span>Part II · Three out of four (60 marks)</h2>
 <p class="oneline">Numerical questions of 20 marks. Choose three. Aim for 20 minutes each.</p>
 
+<div class="pyq" id="pyq-end-2-1">
 <h3>Q1 · Gradient descent on a single neuron (3 + 10 + 8)</h3>
 <p>One neuron computes <math><mrow><mi>o</mi><mo>=</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mi>b</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> with <math><mrow><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>z</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mi>z</mi></mrow></msup></mrow></mfrac></mrow></math>, and the loss is <math><mrow><mi>L</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>o</mi><mo>−</mo><mi>y</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math>. Start from <math><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow></math>, <math><mrow><msub><mi>w</mi><mn>2</mn></msub><mo>=</mo><mo form="prefix" stretchy="false">−</mo><mn>1</mn></mrow></math>, <math><mrow><mi>b</mi><mo>=</mo><mn>0</mn></mrow></math>. The sample is <math><mrow><mi>x</mi><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="false">[</mo><mn>1</mn><mo separator="true">,</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">]</mo></mrow></mrow></math> with <math><mrow><mi>y</mi><mo>=</mo><mn>1</mn></mrow></math>, and the learning rate is <math><mrow><mi>η</mi><mo>=</mo><mn>1</mn></mrow></math>.</p>
 <ol type="a">
@@ -648,7 +664,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1.5 for a correct step, 1.5 for the final form. The result alone got 2. (b) 1 each for <math><mi>z</mi></math>, <math><mi>o</mi></math> and <math><mrow><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, 2 for the chain-rule expression, 1 for the bias version, and the three numbers together were worth about 4. Writing <math><mrow><mi>y</mi><mo>−</mo><mi>o</mi></mrow></math> throughout was fine if you were consistent. (c) 2 for the update rule and 2 for each new value, capped at 6, with only 1 off for a carried sign error.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-2">
 <h3>Q2 · Bayesian classification in one dimension (5 + 10 + 5)</h3>
 <p>Class A is <math><mrow><mi class="mathcal">𝒩</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>100</mn><mo separator="true">,</mo><mn>100</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> and class B is <math><mrow><mi class="mathcal">𝒩</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>200</mn><mo separator="true">,</mo><mn>100</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, so both have <math><mrow><mi>σ</mi><mo>=</mo><mn>10</mn></mrow></math>. The priors are <math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>A</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.8</mn></mrow></math> and <math><mrow><mi>P</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>B</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>0.2</mn></mrow></math>.</p>
 <ol type="a">
@@ -680,7 +697,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the densities, 2 for the value (within 10%, or left as <math><mrow><mfrac><mn>1</mn><mrow><mn>10</mn><msqrt><mrow><mn>2</mn><mi>π</mi></mrow></msqrt></mrow></mfrac><msup><mi>e</mi><mrow class="tml-sml-pad"><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>12.5</mn></mrow></msup></mrow></math>), 1 for "No" with a reason. (b) 2 for Bayes' theorem, 2 for each of the three decisions, 2 for the remark about the pairs. Classifying all three as A without the ratios still earned at least 5. (c) 3 for at least one correct pair of posteriors, 2 for saying they add up to 1.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-3">
 <h3>Q3 · Eigen decomposition and SVD (6 + 8 + 6)</h3>
 <p><math><mrow><mi>A</mi><mo>=</mo><mrow><mo fence="true" form="prefix" stretchy="true">[</mo><mtable><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mn>2</mn></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mn>1</mn></mtd></mtr><mtr><mtd style="padding-left:0em;padding-right:5.9776pt;"><mn>1</mn></mtd><mtd style="padding-left:5.9776pt;padding-right:0em;"><mn>2</mn></mtd></mtr></mtable><mo fence="true" form="postfix" stretchy="true">]</mo></mrow></mrow></math>.</p>
 <ol type="a">
@@ -705,7 +723,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the polynomial, 1 for the eigenvalues, 1.5 for each unit eigenvector, half a mark off each if not normalised. Flipped signs were fine. (b) 2 for saying SVD equals the eigen decomposition here, 2 each for <math><mi>U</mi></math>, <math><mi>D</mi></math> and <math><mi>V</mi></math>. (c) 2 for the formula, 2 for using 3, 2 for the matrix. Using <math><mrow><mi>σ</mi><mo>=</mo><mn>1</mn></mrow></math> by mistake got 3.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-2-4">
 <h3>Q4 · k-means in one dimension (4 + 6 + 10)</h3>
 <ol type="a">
 <li>Write the k-means objective.</li>
@@ -731,12 +750,14 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for the double sum, 2 for the squared distance. (b) 2 for "non-increasing", 2 for the sketch, 2 for the elbow (silhouette or gap statistic also accepted). (c) 1 each for iteration 1's clusters, means and <math><mi>J</mi></math>, 2 for iteration 2's clusters and means, 2 for its <math><mi>J</mi></math>, 2 for showing iteration 3 changes nothing, 1 for the final answer. Skipping <math><mi>J</mi></math> cost only 2 in total.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>
 <h2 id="part-3"><span class="num">E.5</span>Part III · Three out of four (60 marks)</h2>
 <p class="oneline">Analytical questions of 20 marks. Choose three. Aim for 20 minutes each.</p>
 
+<div class="pyq" id="pyq-end-3-1">
 <h3>Q1 · A wide network with four parallel branches (6 + 7 + 7)</h3>
 <p>The input is <math><mrow><mi>x</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>d</mi></msup></mrow></math>. There are four branches <math><mrow><mi>k</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mn>3</mn><mo separator="true">,</mo><mn>4</mn></mrow></math>. Branch <math><mi>k</mi></math> has a weight vector <math><mrow><msub><mi>w</mi><mi>k</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mi>d</mi></msup></mrow></math> and an output vector <math><mrow><msub><mi>u</mi><mi>k</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mi>p</mi></msup></mrow></math>. It computes <math><mrow><msub><mi>z</mi><mi>k</mi></msub><mo>=</mo><msubsup><mi>w</mi><mi>k</mi><mi class="tml-med-pad">𝖳</mi></msubsup><mi>x</mi></mrow></math> and <math><mrow><msub><mi>α</mi><mi>k</mi></msub><mo>=</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>z</mi><mi>k</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, and it adds <math><mrow><msub><mi>α</mi><mi>k</mi></msub><msub><mi>u</mi><mi>k</mi></msub></mrow></math> to the output.</p>
 <ol type="a">
@@ -763,7 +784,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for <math><mrow><msub><mi>α</mi><mi>k</mi></msub><mo>=</mo><mi>σ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msubsup><mi>w</mi><mi>k</mi><mi class="tml-med-pad">𝖳</mi></msubsup><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, 2 for the sum, 2 for saying <math><mrow><mi>y</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>p</mi></msup></mrow></math>. Correct code got full marks. (b) 2 for noticing the scalars, 2 for the chain rule, 2 for the <math><mrow><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>w</mi><mi>k</mi></msub><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><msub><mi>w</mi><mi>k</mi></msub></mrow></math> factor, 1 for "vector in <math><msup><mi>ℝ</mi><mi>p</mi></msup></math>". (c) 2 for "only branch 2", 2 for <math><mrow><msup><mi>σ</mi><mo lspace="0em" rspace="0em" class="tml-prime">′</mo></msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>z</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, 2 for the <math><msub><mi>u</mi><mn>2</mn></msub></math>, 1 for the dimension.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-2">
 <h3>Q2 · The kernel matrix (2 + 8 + 10)</h3>
 <p>A kernel is <math><mrow><mi>κ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>ϕ</mi><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>p</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>𝖳</mi></msup><mi>ϕ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>q</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, and the kernel matrix of <math><mi>N</mi></math> samples is <math><mrow><msub><mi>K</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mi>κ</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>x</mi><mi>j</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>.</p>
 <ol type="a">
@@ -800,7 +822,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for any correct use of <math><mrow><msup><mi>a</mi><mi>𝖳</mi></msup><mi>b</mi><mo>=</mo><msup><mi>b</mi><mi>𝖳</mi></msup><mi>a</mi></mrow></math>. (b) 2 each for the double sum, putting in the kernel, combining the sums, and the squared norm, with only 1 off for one missing step. (c) 2 for the expansion, 4 for the four products, 4 for the <math><msqrt><mn>3</mn></msqrt></math> factors. Forgetting the <math><msqrt><mn>3</mn></msqrt></math> got 6.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-3">
 <h3>Q3 · Backpropagation through a residual block (12 + 4 + 4)</h3>
 <p>A residual block computes <math><mrow><mi>y</mi><mo>=</mo><msub><mi>g</mi><mn>4</mn></msub><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">(</mo><msub><mi>g</mi><mn>3</mn></msub><mo form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>2</mn></msub><mo form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>1</mn></msub><mo form="prefix" stretchy="false">(</mo><mi>x</mi><mo form="postfix" stretchy="false">)</mo><mo form="postfix" stretchy="false">)</mo><mo form="postfix" stretchy="false">)</mo><mo>+</mo><mi>x</mi><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow></math>, where each <math><msub><mi>g</mi><mi>i</mi></msub></math> is a function of one number with derivative <math><msubsup><mi>g</mi><mi>i</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup></math>.</p>
 <ol type="a">
@@ -838,7 +861,8 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 each for the addition node, the chain rule through <math><msub><mi>g</mi><mn>4</mn></msub></math>, the "+1" and the product <math><mrow><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup></mrow></math>. Forgetting the "+1" cost 4 or 5 marks, because it is the whole point of a residual block. (b) 4 for any line that mentions the added "+1", 3 for "a shortcut" without it. (c) 2 for "slope 1 when positive", 2 for linking it to sigmoid and tanh saturating, at least 3 if either is clear.</div></div>
 </div></details>
-
+</div>
+<div class="pyq" id="pyq-end-3-4">
 <h3>Q4 · A triangular mixture model (6 + 4 + 6 + 4)</h3>
 <p>Instead of Gaussians, model univariate data as a mixture of triangles. Each triangle is symmetric about its mean, has a fixed ratio of base to height, and gives probability zero outside its base.</p>
 <ol type="a">
@@ -873,6 +897,7 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 </ol></div></div>
 <div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for using <math><mrow><mi>|</mi><mi>x</mi><mo>−</mo><mi>μ</mi><mi>|</mi></mrow></math>, 2 for the straight-line shape with area 1, 2 for the support. Forgetting "zero outside" got 4. (b) 1 for the E-step, 2 for the M-step, 1 for the stopping rule. (c) 2 for the E-step with the triangle, 2 for the M-step, 1 for noting the fixed width, 1 for convergence. Copying GMM with the triangle put in got full marks. (d) 2 for two advantages and 2 for two disadvantages. Any sensible points were accepted.</div></div>
 </div></details>
+</div>
 </section>
 
 <section>

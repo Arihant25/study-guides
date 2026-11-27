@@ -304,6 +304,10 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 .toc .brand a:hover{background:none; text-decoration:underline}
 @media(max-width:600px){ .tbl.collapse-last th:last-child, .tbl.collapse-last td:last-child{display:none} .tbl .sm{display:block; font-size:.8rem; color:var(--muted-fg)} }
 @media(min-width:601px){ .tbl .sm{display:none} }
+.pyq{margin:0}
+.pyq>h4{margin:1.4em 0 .3em}
+.pyqsrc{font-size:.84rem; color:var(--muted-fg); margin:4px 0 14px}
+#main .pyq .pyqsrc:only-child{display:none}
 
 </style>
 </head>
@@ -674,6 +678,33 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 <li>Check: each filter in (c) spans all 16 input channels, so it is <math><mrow><mn>3</mn><mo>×</mo><mn>3</mn><mo>×</mo><mn>16</mn></mrow></math>. The channel count of the output comes from the number of filters, not from the input.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<div class="pyq">
+<h4>Q9 · 2-D convolution arithmetic (2 + 2 + 2)</h4>
+<p>The input is <math><mrow><mn>224</mn><mo>×</mo><mn>224</mn><mo>×</mo><mn>1</mn></mrow></math>. A convolution layer has 32 filters of size <math><mrow><mn>7</mn><mo>×</mo><mn>7</mn></mrow></math>, stride 2 and padding 3.</p>
+<ol type="a">
+<li>What is the output size?</li>
+<li>How many learnable parameters does the layer have?</li>
+<li>A <math><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow></math> max-pool with stride 2 follows. What is its output size?</li>
+</ol>
+<details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q9 · output size, parameters and pooling for a 7×7 conv layer</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Output side <math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">⌊</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>n</mi><mo>+</mo><mn>2</mn><mi>p</mi><mo>−</mo><mi>k</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mi>s</mi><mo fence="true" form="postfix" stretchy="false">⌋</mo></mrow><mo>+</mo><mn>1</mn></mrow></math>. Parameters <math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>k</mi><mo>⋅</mo><mi>k</mi><mo>⋅</mo><mi>D</mi><mo>+</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>⋅</mo><mi>K</mi></mrow></math>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#conv-size">4.3 Output size</a> and <a href="../deep/#cnn-params">4.4 Counting parameters</a></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Put in <math><mrow><mi>n</mi><mo>=</mo><mn>224</mn></mrow></math>, <math><mrow><mi>p</mi><mo>=</mo><mn>3</mn></mrow></math>, <math><mrow><mi>k</mi><mo>=</mo><mn>7</mn></mrow></math>, <math><mrow><mi>s</mi><mo>=</mo><mn>2</mn></mrow></math>. The top is <math><mrow><mn>224</mn><mo>+</mo><mn>6</mn><mo>−</mo><mn>7</mn><mo>=</mo><mn>223</mn></mrow></math>.</li>
+<li><math><mrow><mn>223</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>111.5</mn></mrow></math>, and the floor is 111.</li>
+<li>Add 1 to get 112. Each filter gives one channel, so the output is <math><mrow><mn>112</mn><mo>×</mo><mn>112</mn><mo>×</mo><mn>32</mn></mrow></math>.</li>
+<li>(b) Each filter has <math><mrow><mn>7</mn><mo>⋅</mo><mn>7</mn><mo>⋅</mo><mn>1</mn><mo>=</mo><mn>49</mn></mrow></math> weights and 1 bias, which is 50.</li>
+<li>For 32 filters that is <math><mrow><mn>32</mn><mo>×</mo><mn>50</mn><mo>=</mo><mn>1600</mn></mrow></math>.</li>
+<li>(c) Pooling halves each side, <math><mrow><mn>112</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>56</mn></mrow></math>, and keeps the channels. The output is <math><mrow><mn>56</mn><mo>×</mo><mn>56</mn><mo>×</mo><mn>32</mn></mrow></math>.</li>
+<li>Check (a). Padding 3 with a <math><mrow><mn>7</mn><mo>×</mo><mn>7</mn></mrow></math> filter is "same" padding, <math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>7</mn><mo>−</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>/</mi><mn>2</mn><mo>=</mo><mn>3</mn></mrow></math>. With stride 1 the output would be 224, and stride 2 halves it to 112.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">(a) 1.5 for <math><mrow><mn>112</mn><mo>×</mo><mn>112</mn></mrow></math>, 0.5 for 32 channels. Forgetting the padding gives 109, which earned half a mark for method. (b) 2 for 1600, 1.5 for 1568 (biases forgotten). (c) 1 for <math><mrow><mn>56</mn><mo>×</mo><mn>56</mn></mrow></math>, 1 for keeping 32 channels.</div></div>
+</div></details>
+<p class="pyqsrc">This question is from the <a href="../endsem/#pyq-end-1-9">End-sem 2026 paper</a>.</p>
+</div>
 </section>
 
 <section>
@@ -945,6 +976,48 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 <li>Check. <math><mrow><msup><mn>0.5</mn><mn>10</mn></msup><mo>×</mo><mn>1024</mn><mo>=</mo><mn>1</mn></mrow></math>.</li>
 </ol></div></div>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<div class="pyq">
+<h4>Q3 · Backpropagation through a residual block (12 + 4 + 4)</h4>
+<p>A residual block computes <math><mrow><mi>y</mi><mo>=</mo><msub><mi>g</mi><mn>4</mn></msub><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">(</mo><msub><mi>g</mi><mn>3</mn></msub><mo form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>2</mn></msub><mo form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>1</mn></msub><mo form="prefix" stretchy="false">(</mo><mi>x</mi><mo form="postfix" stretchy="false">)</mo><mo form="postfix" stretchy="false">)</mo><mo form="postfix" stretchy="false">)</mo><mo>+</mo><mi>x</mi><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow></math>, where each <math><msub><mi>g</mi><mi>i</mi></msub></math> is a function of one number with derivative <math><msubsup><mi>g</mi><mi>i</mi><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup></math>.</p>
+<ol type="a">
+<li>Find <math><mfrac><mrow><mi>∂</mi><mi>y</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></math>.</li>
+<li>In one line, how do residual connections help with vanishing gradients?</li>
+<li>How does ReLU help with vanishing gradients?</li>
+</ol>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>(a) Find <math><mfrac><mrow><mi>∂</mi><mi>y</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></math> for <math><mrow><mi>y</mi><mo>=</mo><msub><mi>g</mi><mn>4</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>3</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>2</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>g</mi><mn>1</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>+</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>.</h4>
+<ol class="steps lines">
+<li>Name the pieces. <math><mrow><msub><mi>h</mi><mn>1</mn></msub><mo>=</mo><msub><mi>g</mi><mn>1</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msub><mi>h</mi><mn>2</mn></msub><mo>=</mo><msub><mi>g</mi><mn>2</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><msub><mi>h</mi><mn>3</mn></msub><mo>=</mo><msub><mi>g</mi><mn>3</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>, <math><mrow><mi>s</mi><mo>=</mo><msub><mi>h</mi><mn>3</mn></msub><mo>+</mo><mi>x</mi></mrow></math>, <math><mrow><mi>y</mi><mo>=</mo><msub><mi>g</mi><mn>4</mn></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>s</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>.</li>
+<li><math><mrow><mfrac><mrow><mi>∂</mi><mi>y</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>=</mo><msubsup><mi>g</mi><mn>4</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>s</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><mfrac><mrow><mi>∂</mi><mi>s</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></mrow></math>.</li>
+<li><math><mrow><mfrac><mrow><mi>∂</mi><mi>s</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>∂</mi><msub><mi>h</mi><mn>3</mn></msub></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>+</mo><mn>1</mn></mrow></math>, and <math><mfrac><mrow><mi>∂</mi><msub><mi>h</mi><mn>3</mn></msub></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac></math><wbr><math><mrow><mrow></mrow><mo>=</mo><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>2</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>1</mn></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mspace width="0.1667em"></mspace><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>x</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>.
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li><math><mi>s</mi></math> is a sum of two things that both depend on <math><mi>x</mi></math>, so its derivative is the sum of their derivatives.</li>
+<li>The skip path is <math><mi>x</mi></math> itself, whose derivative is 1.</li>
+<li>The deep path is three functions applied in turn, so the chain rule multiplies their three derivatives.</li>
+</ol>
+</details></li>
+<li>So <math display="block" class="tml-display" style="display:block math;"><mrow><mfrac><mrow><mi>∂</mi><mi>y</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>=</mo><msubsup><mi>g</mi><mn>4</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo form="prefix" stretchy="false">(</mo><mi>s</mi><mo form="postfix" stretchy="false">)</mo><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">(</mo><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>2</mn></msub><mo form="postfix" stretchy="false">)</mo><mspace width="0.1667em"></mspace><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo form="prefix" stretchy="false">(</mo><msub><mi>h</mi><mn>1</mn></msub><mo form="postfix" stretchy="false">)</mo><mspace width="0.1667em"></mspace><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo form="prefix" stretchy="false">(</mo><mi>x</mi><mo form="postfix" stretchy="false">)</mo><mo>+</mo><mn>1</mn><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">)</mo><mi>.</mi></mrow></math></li>
+</ol>
+</div>
+<details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part III Q3 · the +1 in a residual gradient, and why ReLU helps</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb"><math><mrow><mfrac><mrow><mi>∂</mi><mi>y</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo>=</mo><msubsup><mi>g</mi><mn>4</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo form="prefix" stretchy="false">(</mo><mi>s</mi><mo form="postfix" stretchy="false">)</mo><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">(</mo><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mo>+</mo><mn>1</mn><mo fence="false" symmetric="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow></math></div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#resnet">4.6 ResNet and skip connections</a> and <a href="../neural/#activations">3.5 Activations</a></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) See the box above.</li>
+<li>(b) The skip connection adds a "+1" inside the bracket. So even if the product <math><mrow><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup></mrow></math> of the deep path shrinks towards 0, the gradient through the block is still about <math><mrow><msubsup><mi>g</mi><mn>4</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>s</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math>.</li>
+<li>(c) <math><mrow><mi>ReLU</mi><mo>⁡</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>z</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mrow><mi>max</mi><mo>⁡</mo></mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mi>z</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></mrow></math> has derivative 1 for <math><mrow><mi>z</mi><mo>&gt;</mo><mn>0</mn></mrow></math> and 0 for <math><mrow><mi>z</mi><mo>&lt;</mo><mn>0</mn></mrow></math>.</li>
+<li>Backpropagation multiplies one derivative per layer. A sigmoid's derivative is at most 0.25, so ten sigmoid layers can shrink a gradient by <math><mrow><msup><mn>0.25</mn><mn>10</mn></msup><mo>≈</mo><msup><mn>10</mn><mrow><mo form="prefix" stretchy="false" lspace="0em" rspace="0em">−</mo><mn>6</mn></mrow></msup></mrow></math>. Along active ReLU units the factors are exactly 1, so nothing shrinks.</li>
+<li>The cost is that a unit stuck at <math><mrow><mi>z</mi><mo>&lt;</mo><mn>0</mn></mrow></math> passes no gradient at all (a "dead" ReLU).</li>
+<li>Check (a) with every <math><mrow><msub><mi>g</mi><mi>i</mi></msub><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>t</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mi>t</mi></mrow></math>. Then <math><mrow><mi>y</mi><mo>=</mo><mn>2</mn><mi>x</mi></mrow></math>, so the derivative is 2. The formula gives <math><mrow><mn>1</mn><mo>⋅</mo><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mn>1</mn><mo>⋅</mo><mn>1</mn><mo>⋅</mo><mn>1</mn><mo>+</mo><mn>1</mn><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>=</mo><mn>2</mn></mrow></math>.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">(a) 3 each for the addition node, the chain rule through <math><msub><mi>g</mi><mn>4</mn></msub></math>, the "+1" and the product <math><mrow><msubsup><mi>g</mi><mn>3</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>2</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup><msubsup><mi>g</mi><mn>1</mn><mo lspace="0em" rspace="0em" class="tml-prime tml-sml-pad">′</mo></msubsup></mrow></math>. Forgetting the "+1" cost 4 or 5 marks, because it is the whole point of a residual block. (b) 4 for any line that mentions the added "+1", 3 for "a shortcut" without it. (c) 2 for "slope 1 when positive", 2 for linking it to sigmoid and tanh saturating, at least 3 if either is clear.</div></div>
+</div></details>
+<p class="pyqsrc">This question is from the <a href="../endsem/#pyq-end-3-3">End-sem 2026 paper</a>.</p>
+</div>
 </section>
 
 <section>
@@ -1386,6 +1459,33 @@ figure.slide figcaption{font-size:.84rem; color:var(--muted-fg); margin-top:8px;
 <li>Check: each row still adds to 1, and every weight above the diagonal is 0.</li>
 </ol>
 </div></details>
+<div class="checkrow">From the 2026 exams</div>
+<p class="small">The real 2026 exam questions on this topic, each solved with the TAs’ marking scheme. Try them on paper first.</p>
+<div class="pyq">
+<h4>Q10 · Multi-head self-attention (2 + 2 + 2)</h4>
+<p>A multi-head self-attention layer has 8 heads. The input and output dimension is <math><mrow><mi>d</mi><mo>=</mo><mn>100</mn></mrow></math>, there are <math><mrow><mi>N</mi><mo>=</mo><mn>1000</mn></mrow></math> tokens, and each head's queries, keys and values have dimension 50.</p>
+<ol type="a">
+<li>How many weight matrices does the layer have?</li>
+<li>What is the size of each?</li>
+<li>How many learnable parameters are there, ignoring biases?</li>
+</ol>
+<details class="q"><summary><span class="qt pyq">End-sem 2026</span><span>Part I Q10 · counting the matrices and parameters of multi-head attention</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Each head <math><mi>i</mi></math> has <math><mrow><msubsup><mi>W</mi><mi>Q</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>i</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></msubsup><mo separator="true">,</mo><msubsup><mi>W</mi><mi>K</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>i</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></msubsup><mo separator="true">,</mo><msubsup><mi>W</mi><mi>V</mi><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>i</mi><mo fence="true" form="postfix" stretchy="false">)</mo></mrow></msubsup></mrow></math> of size <math><mrow><mi>d</mi><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></math>. The output projection <math><msub><mi>W</mi><mi>O</mi></msub></math> is <math><mrow><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mi>h</mi><mo>⋅</mo><msub><mi>d</mi><mi>k</mi></msub><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mo>×</mo><mi>d</mi></mrow></math>.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../deep/#attention">4.11 Self-attention</a></div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(a) Each head has 3 matrices, so the heads have <math><mrow><mn>8</mn><mo>×</mo><mn>3</mn><mo>=</mo><mn>24</mn></mrow></math>. The output projection adds 1. The total is 25.</li>
+<li>(b) Each query, key and value matrix maps 100 numbers to 50, so it is <math><mrow><mn>100</mn><mo>×</mo><mn>50</mn></mrow></math>.</li>
+<li>Concatenating the 8 heads gives <math><mrow><mn>8</mn><mo>×</mo><mn>50</mn><mo>=</mo><mn>400</mn></mrow></math> numbers, and <math><msub><mi>W</mi><mi>O</mi></msub></math> maps them back to 100. So <math><msub><mi>W</mi><mi>O</mi></msub></math> is <math><mrow><mn>400</mn><mo>×</mo><mn>100</mn></mrow></math>.</li>
+<li>(c) The 24 head matrices hold <math><mrow><mn>24</mn><mo>×</mo><mn>100</mn><mo>×</mo><mn>50</mn><mo>=</mo><mn>120</mn><mspace width="0.1667em"></mspace><mn>000</mn></mrow></math> weights.</li>
+<li><math><msub><mi>W</mi><mi>O</mi></msub></math> holds <math><mrow><mn>400</mn><mo>×</mo><mn>100</mn><mo>=</mo><mn>40</mn><mspace width="0.1667em"></mspace><mn>000</mn></mrow></math>.</li>
+<li>The total is <math><mrow><mn>120</mn><mspace width="0.1667em"></mspace><mn>000</mn><mo>+</mo><mn>40</mn><mspace width="0.1667em"></mspace><mn>000</mn><mo>=</mo><mn>160</mn><mspace width="0.1667em"></mspace><mn>000</mn></mrow></math>.</li>
+<li>Note that <math><mrow><mi>N</mi><mo>=</mo><mn>1000</mn></mrow></math> never appears. The number of tokens changes the cost of running the layer but not the number of weights, because the same matrices are applied to every token.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">(a) 2 for 25, 1 for 24 (<math><msub><mi>W</mi><mi>O</mi></msub></math> forgotten). Writing 4 because you stacked each of Q, K and V across heads into one matrix was also accepted. (b) 1 for the head matrices, 1 for <math><msub><mi>W</mi><mi>O</mi></msub></math>, transposed shapes accepted. (c) 2 for 160 000, 1 for 120 000.</div></div>
+</div></details>
+<p class="pyqsrc">This question is from the <a href="../endsem/#pyq-end-1-10">End-sem 2026 paper</a>.</p>
+</div>
 </section>
 
 <section>

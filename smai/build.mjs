@@ -31,10 +31,29 @@ const strip = s => s.replace(/<[^>]+>/g, '').replace(/\\\(|\\\)/g, '').replace(/
 
 const built = PAGES.filter(p => fs.existsSync(path.join('src/2026', p.src)));
 
+// <!--pyq:midsem#pyq-mid-1-9--> copies that past-paper question (its <div class="pyq"> block, with the
+// statement and the worked answer) from the paper page into a topic section. The paper page stays the
+// single source. The copy loses its id, its h3 becomes an h4, and it ends with a link back to the paper.
+const PAPER = { foundations: 'Quiz 1, 2026', neural: 'Quiz 2, 2026', midsem: 'Mid-sem 2026', endsem: 'End-sem 2026' };
+function pickPyq(fromSlug, id, intoSlug) {
+  const src = fs.readFileSync(path.join('src/2026', fromSlug + '.html'), 'utf8');
+  const at = src.indexOf(`<div class="pyq" id="${id}">`);
+  if (at < 0) throw new Error(`pyq: no ${id} in ${fromSlug}`);
+  let depth = 0, end = -1;
+  const re = /<div\b|<\/div>/g; re.lastIndex = at;
+  for (let m; (m = re.exec(src));) { depth += m[0] === '</div>' ? -1 : 1; if (depth === 0) { end = re.lastIndex; break; } }
+  let block = src.slice(at, end).replace(` id="${id}"`, '').replace(/<h3([^>]*)>/g, '<h4$1>').replace(/<\/h3>/g, '</h4>');
+  // links like href="#mlp" in the copy mean the paper page's own sections, so point them back there
+  if (fromSlug !== intoSlug) block = block.replace(/href="#([\w-]+)"/g, (m, a) => (intoSlug ? `href="../${fromSlug}/#${a}"` : `href="${fromSlug}/#${a}"`));
+  const where = fromSlug === intoSlug ? `#${id}` : `../${fromSlug}/#${id}`;
+  return block.replace(/<\/div>$/, `<p class="pyqsrc">This question is from the <a href="${where}">${PAPER[fromSlug]} paper</a>.</p>\n</div>`);
+}
+
 for (const page of built) {
   const root = page.slug ? '../' : '';       // from this page back to smai/2026/
   const href = p => root + (p.slug ? p.slug + '/' : '');
   let body = fs.readFileSync(path.join('src/2026', page.src), 'utf8');
+  body = body.replace(/<!--pyq:(\w+)#([\w-]+)-->/g, (m, from, id) => pickPyq(from, id, page.slug));
   body = body.replace(/\{\{ASSETS\}\}/g, root + '../assets/');
   const meta = (body.match(/<!--desc:([\s\S]*?)-->/) || [, page.sub])[1].trim();
 
