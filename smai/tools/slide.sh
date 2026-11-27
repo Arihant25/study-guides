@@ -4,6 +4,7 @@
 set -euo pipefail
 L=$1; shift
 SRC="/g/My Drive/College/4-2/Statistical Methods in AI/2026/Lectures/$L.pdf"
+case $L in Midsem*) SRC="/g/My Drive/College/4-2/Statistical Methods in AI/2026/Mid-sem/$L.pdf";; Quiz2*) SRC="/g/My Drive/College/4-2/Statistical Methods in AI/2026/Quiz 2/$L.pdf";; Endsem*) SRC="/g/My Drive/College/4-2/Statistical Methods in AI/2026/End-sem/$L.pdf";; esac
 case $L in Quiz1*) SRC="/g/My Drive/College/4-2/Statistical Methods in AI/2026/Quiz 1/$L.pdf";; esac
 OUT="assets/slides/$L"; mkdir -p "$OUT"
 TMP=$(mktemp -d)

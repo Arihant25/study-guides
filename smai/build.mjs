@@ -13,6 +13,8 @@ const PAGES = [
   { slug: 'probabilistic', src: 'probabilistic.html', n: '2', title: 'Probabilistic ML', sub: 'L08–L13: LDA, LSI, Bayes, MLE, GMM, SVM, generalisation' },
   { slug: 'neural', src: 'neural.html', n: '3', title: 'Neural networks', sub: 'L14–L19: perceptron, MLP, backprop, training' },
   { slug: 'deep', src: 'deep.html', n: '4', title: 'Deep learning', sub: 'L20–L26: CNNs, RNNs, attention, transformers' },
+  { slug: 'midsem', src: 'midsem.html', n: 'M', title: 'Mid-sem 2026', sub: 'The paper solved, with the TAs\' marking scheme' },
+  { slug: 'endsem', src: 'endsem.html', n: 'E', title: 'End-sem 2026', sub: 'All three parts solved, with the marking scheme' },
   { slug: 'sheet', src: 'sheet.html', n: 'F', title: 'Formula sheet', sub: 'Every formula on one page, with where it comes from' },
 ];
 

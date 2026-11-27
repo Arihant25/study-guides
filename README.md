@@ -21,7 +21,7 @@ Each guide explains every symbol where it first appears and works through the pa
 
 | Course | Code | Guide | What's in it |
 |---|---|---|---|
-| Statistical Methods in AI | CS7.403 | [`smai/`](https://arihant25.github.io/study-guides/smai/) | The 2027 guide is coming soon. For now, a prep guide built from the 26 lectures of the 2026 course: maths basics, classical ML, neural networks and deep learning, with the key slides next to each explanation and the Quiz 1 paper solved |
+| Statistical Methods in AI | CS7.403 | [`smai/`](https://arihant25.github.io/study-guides/smai/) | The 2027 guide is coming soon. For now, a prep guide built from the 26 lectures of the 2026 course: maths basics, classical ML, neural networks and deep learning, with the key slides next to each explanation and all four 2026 exams solved with the marking schemes |
 
 ### Monsoon 2026
 

@@ -19,12 +19,12 @@
 <tr><td>3.6 Backpropagation</td><td>L16, L17</td><td>80 min</td></tr>
 <tr><td>3.7 Training in practice</td><td>L17, L18</td><td>50 min</td></tr>
 <tr><td>3.8 Why gradient descent works, Newton and Adam</td><td>L18</td><td>60 min</td></tr>
-<tr><td>3.9 Quiz 2 practice set</td><td>all</td><td>50 min</td></tr>
+<tr><td>3.9 Quiz 2, 2026, solved, and 3.10 extra practice</td><td>all</td><td>50 min</td></tr>
 <tr><td><strong>Total</strong></td><td></td><td><strong>8 hours</strong></td></tr>
 </table>
 <p>If you are short of time, do 3.2, 3.4 and 3.6 first. The perceptron update and a backpropagation pass by hand are the two calculations most likely to come up as numerical questions.</p>
 <p><strong>How the derivation boxes work.</strong> Each box headed "Write this in the exam" has a short numbered list of lines. Those lines are what you write on paper. Under a line there is a small "Why" link. It opens the same line broken into small steps, one action each. Read the lines first to see the shape, then open the "Why" for any line you cannot reproduce.</p>
-<p><strong>About the questions.</strong> Questions tagged with a lecture number are problems from the 2026 slides. No Quiz 2 paper was posted on Moodle, so the questions tagged "Practice" were written for this guide in the style of the 2026 Quiz 1 paper. Each answer gives the formula, where it comes from on this page, and the working. Try each one on paper before opening it.</p>
+<p><strong>About the questions.</strong> Questions tagged "Quiz 2, 2026" are from the real 2026 paper, rebuilt from the TAs answer key and solved in full in <a href="#quiz2">3.9</a> with the rubric for each part. Questions tagged with a lecture number are problems from the 2026 slides. Questions tagged "Practice" were written for this guide. Each answer gives the formula, where it comes from on this page, and the working. Try each one on paper before opening it.</p>
 </section>
 
 <div class="part">Part 3A<span>L14</span></div>
@@ -329,10 +329,10 @@
 <div class="card exam"><span class="tag">Write this in the exam</span>
 <h4>Three inputs, one hidden layer of two sigmoid neurons, one linear output neuron, all with bias. Count the weights and write \(y = f(\mathbf w, \mathbf x)\).</h4>
 <ol class="steps lines">
-<li>Hidden layer: each of the 2 neurons has 3 input weights and 1 bias, so \(2\times(3 + 1) = 8\).</li>
-<li>Output layer: 1 neuron with 2 input weights and 1 bias, so \(1\times(2 + 1) = 3\).</li>
+<li>In the hidden layer, each of the 2 neurons has 3 input weights and 1 bias, so \(2\times(3 + 1) = 8\).</li>
+<li>The output layer has 1 neuron with 2 input weights and 1 bias, so \(1\times(2 + 1) = 3\).</li>
 <li>Total learnable weights \(= 8 + 3 = 11\).</li>
-<li>\(y = v_1h_1 + v_2h_2 + c\) with \(h_1 = \sigma(w_{11}x_1 + w_{12}x_2 \)<wbr>\({}+ w_{13}x_3 + b_1)\) and \(h_2 = \sigma(w_{21}x_1 + w_{22}x_2 \)<wbr>\({}+ w_{23}x_3 + b_2)\). In full, \(y = v_1\,\sigma(w_{11}x_1 + w_{12}x_2 \)<wbr>\({}+ w_{13}x_3 + b_1) \)<wbr>\({}+ v_2\,\sigma(w_{21}x_1 + w_{22}x_2 \)<wbr>\({}+ w_{23}x_3 + b_2) \)<wbr>\({}+ c\).
+<li>\(y = v_1h_1 + v_2h_2 + c\) with \(h_1 \)<wbr>\({}= \sigma(w_{11}x_1 + w_{12}x_2\)<wbr>\({}+ w_{13}x_3 + b_1)\) and \(h_2 \)<wbr>\({}= \sigma(w_{21}x_1 + w_{22}x_2\)<wbr>\({}+ w_{23}x_3 + b_2)\). In full, \(y \)<wbr>\({}= v_1\,\sigma(w_{11}x_1 + w_{12}x_2\)<wbr>\({}+ w_{13}x_3 + b_1) \)<wbr>\({}+ v_2\,\sigma(w_{21}x_1 + w_{22}x_2 \)<wbr>\({}+ w_{23}x_3 + b_2) \)<wbr>\({}+ c\).
 <details class="linewhy"><summary>Why <span>(5 steps)</span></summary>
 <ol class="steps">
 <li>Name the hidden weights \(w_{jk}\), from input \(k\) into hidden neuron \(j\), and the hidden biases \(b_1, b_2\).</li>
@@ -362,7 +362,7 @@
 <div class="eq">\[\mathrm{KL}(\mathbf t\,\|\,\mathbf o) = \sum_i t_i\log t_i - \sum_i t_i\log o_i\]\[{}= -H(\mathbf t) + L(\mathbf o, \mathbf t).\]</div>
 <p>\(H(\mathbf t) \)<wbr>\({}= -\sum_i t_i\log t_i\) is the entropy of the targets. It does not depend on the network's weights, so minimising the cross-entropy and minimising the KL divergence give the same weights. For one-hot targets \(H(\mathbf t) = 0\) (using \(0\log0 = 0\)) and the two are equal.</p>
 <p>With two classes and a single sigmoid output, softmax and cross-entropy reduce to logistic regression and the binary cross-entropy of page 2.</p>
-<details class="opt"><summary>Going further: the gradient of softmax with cross-entropy is \(\mathbf o - \mathbf t\)</summary><div class="body">
+<details class="opt"><summary>Going further, why the gradient of softmax with cross-entropy is \(\mathbf o - \mathbf t\)</summary><div class="body">
 <p>For a one-hot target of class \(c\), \(L \)<wbr>\({}= -\log o_c \)<wbr>\({}= -z_c + \log\sum_j e^{z_j}\). Differentiate with respect to \(z_i\). The first term gives \(-1\) if \(i = c\) and 0 otherwise, which is \(-t_i\). The second gives \(\frac{e^{z_i}}{\sum_j e^{z_j}} \)<wbr>\({}= o_i\). So \(\frac{\partial L}{\partial z_i} \)<wbr>\({}= o_i - t_i\). In the example above with class 1 true, the gradient is \([0.665 - 1, 0.245, 0.090] \)<wbr>\({}= [-0.335, 0.245, 0.090]\). This simple form is one reason the pair is used together.</p>
 </div></details>
 <div class="card remember"><span class="tag">Remember</span>
@@ -794,11 +794,229 @@
 </section>
 
 <section>
-<h2 id="quiz2"><span class="num">3.9</span>Quiz 2 practice set</h2>
-<p class="slides">Scope from L18 slide 21, recap in L19</p>
+<h2 id="quiz2"><span class="num">3.9</span>Quiz 2, 2026, solved</h2>
+<p class="slides">Scope from L18 slide 21, recap in L19 · questions rebuilt from the TAs' answer key with its grading rubric</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L18/p21.webp" alt="Slide: Quiz 2 scope, overview of neural networks, neuron models, single layer perceptron, multi layer perceptron, gradient descent, backpropagation, second order methods" loading="lazy">
 <figcaption>L18, the Quiz 2 scope slide.</figcaption></figure>
-<p>The 2026 Quiz 2 covered the overview of neural networks, neuron models, the single layer perceptron, the multi-layer perceptron, gradient descent, backpropagation and second order methods. That is sections 3.1 to 3.8 of this page. No Quiz 2 paper or solutions were posted on Moodle. The 2026 Quiz 1 (on <a href="../foundations/#quiz1">page 1</a>) had 10 short questions of 3 points and 2 longer ones of 7.5 points, with numerical answers and "one, none or more correct" options, so the questions below follow that pattern. They were written for this guide. For "one, none or more correct" questions, check each option on its own and mark every one that is true.</p>
+<p>The paper was worth 45 points, in three questions of 15 points each. There were four variants (V1 to V4) with the same questions and different numbers. Question 1 was five short parts of 3 points (true or false, three update equations, a normalisation, three general-knowledge items and a parameter count). Question 2 was a forward pass, the chain rule, a numerical gradient and a "linear MLP is a single layer perceptron" argument on a small ReLU network. Question 3 was two iterations of the perceptron algorithm. The official scope was the L18 slide above, which is sections 3.1 to 3.8 of this page.</p>
+<p>Below, every part of Variant 1 is restated in our own words and solved in full. Each answer ends with a "Marks" row that summarises the TAs' rubric. A table of the Variant 2 to 4 answers follows. All numbers were checked again in Python.</p>
+
+<h3>Question 1, brief answers (15 points)</h3>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(a), 3 points. True or false, with a reason. (i) Backpropagation, implemented properly, always reaches the global minimum. (ii) Backpropagation works well when all weights start at zero. (iii) Residual (skip) connections reduce the vanishing gradient problem in deep networks.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">No formula. Check each statement on its own.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6 Backpropagation</a> (vanishing gradients, zero initialisation) and <a href="#training-practice">3.7 Training in practice</a>. Skip connections are taught in <a href="../deep/#resnet">4, ResNet</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(i) False. Backpropagation only computes gradients, and gradient descent follows them downhill. The loss of a network with hidden layers is not convex, so the descent can stop at a local minimum or a saddle point.</li>
+<li>(ii) False. With equal (for example zero) weights every hidden unit computes the same thing and receives the same gradient, so they stay identical for ever. This is the symmetry problem of 3.6. With all weights zero the hidden-layer gradients are exactly zero.</li>
+<li>(iii) True. A skip connection adds the input of a block to its output, \(y = x + F(x)\). Then \(\frac{\partial y}{\partial x} \)<wbr>\({}= 1 + F'(x)\), so the gradient always has a direct path of factor 1 back through the block and does not shrink layer after layer.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point per statement. The other variants asked the same kind of statements (backpropagation is useful only for convex problems, it never reaches a global minimum, XOR needs more than one layer, an L1 penalty gives sparse weights, cross-entropy is for regression, dropout compresses the model). See the table at the end.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(b), 3 points. Write the update equations for (i) plain gradient descent, (ii) gradient descent with momentum and (iii) Newton's method. Define every symbol.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">
+<p>(i) Plain gradient descent.</p><div class="eq">\[\mathbf w^{k+1} = \mathbf w^k - \eta\,\nabla L(\mathbf w^k)\]</div>
+<p>(ii) Momentum.</p><div class="eq">\[\mathbf v^{k+1} = \beta\,\mathbf v^k - \eta\,\nabla L(\mathbf w^k),\]\[\mathbf w^{k+1} = \mathbf w^k + \mathbf v^{k+1}\]</div>
+<p>(iii) Newton's method.</p><div class="eq">\[\mathbf w^{k+1} = \mathbf w^k - \big(H^k\big)^{-1}\nabla L(\mathbf w^k)\]</div>
+</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#delta-rule">3.3</a> for plain gradient descent, <a href="#training-practice">3.7, momentum</a>, and <a href="#optimizers">3.8, Newton's method</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Symbols. \(\mathbf w^k\) is the weight vector after \(k\) updates. \(\eta > 0\) is the learning rate. \(\nabla_{\mathbf w}L(\mathbf w^k)\) is the gradient of the loss at \(\mathbf w^k\).</li>
+<li>For momentum, \(\mathbf v^k\) is the velocity, the running step, which starts at \(\mathbf 0\). \(\beta\) is the momentum coefficient, between 0 and 1 (usually 0.9).</li>
+<li>The form in 3.7, \(\Delta\theta^k \)<wbr>\({}= \eta\nabla L + \gamma\Delta\theta^{k-1}\) with \(\theta^{k+1} \)<wbr>\({}= \theta^k - \Delta\theta^k\), is the same rule with \(\mathbf v = -\Delta\theta\) and \(\beta = \gamma\).</li>
+<li>For Newton, \(H^k\) is the Hessian of the loss at \(\mathbf w^k\), the matrix of second derivatives \(H_{ij} \)<wbr>\({}= \frac{\partial^2L}{\partial w_i\,\partial w_j}\).</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point each. Plain gradient descent needs the minus sign, the \(k\) to \(k+1\) indices and the symbols defined (0.5 if symbols are missing, 0 for the wrong sign). Momentum needs both equations, and either the velocity form above or the form \(\mathbf v^{k+1} \)<wbr>\({}= \beta\mathbf v^k + \nabla L\), \(\mathbf w^{k+1} \)<wbr>\({}= \mathbf w^k - \eta\mathbf v^{k+1}\) gets full marks (0.5 for one equation). Newton needs the inverse Hessian, named (0.5 without the inverse or without naming \(H\)).</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(c), 3 points. Normalise the data \(D = \{7, 8, 10, 11, 11, 13\}\) to zero mean and unit standard deviation (z-scores).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(z_i = \frac{x_i - \mu}{\sigma}\), with \(\mu = \frac1N\sum_i x_i\) and \(\sigma^2 \)<wbr>\({}= \frac1N\sum_i(x_i - \mu)^2\) (population) or \(s^2 \)<wbr>\({}= \frac1{N-1}\sum_i(x_i - \mu)^2\) (sample).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="../foundations/#features">1, features and normalisation</a>. The same calculation is inside batch normalisation in <a href="#training-practice">3.7</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Sum \(7 + 8 + 10 + 11 + 11 + 13 = 60\). Mean \(\mu = 60/6 = 10\).</li>
+<li>Deviations \(x_i - \mu\) are \(-3, -2, 0, 1, 1, 3\). They add to 0, as they must.</li>
+<li>Squares \(9, 4, 0, 1, 1, 9\), sum 24.</li>
+<li>Population standard deviation \(\sigma \)<wbr>\({}= \sqrt{24/6} \)<wbr>\({}= \sqrt4 \)<wbr>\({}= 2\).</li>
+<li>Divide each deviation by 2. \(D_{\text{norm}} \)<wbr>\({}= \{-1.5, -1, 0, 0.5, 0.5, 1.5\}\).</li>
+<li>With the sample convention \(s \)<wbr>\({}= \sqrt{24/5} \)<wbr>\({}= \sqrt{4.8} \)<wbr>\({}\approx 2.191\), giving \(\{-1.369, -0.913, 0,\)<wbr>\(0.456, 0.456, 1.369\}\).</li>
+<li>Check the population answer. Mean \(0/6 = 0\), and the squares \(2.25 + 1 + 0 + 0.25 + 0.25 + 2.25 \)<wbr>\({}= 6\) give variance \(6/6 = 1\).</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">3 points for the right mean, standard deviation (either convention, used consistently) and normalised values. 2 points if only the final arithmetic slips. 1 point for the mean alone or the right method with a wrong \(\mu\) or \(\sigma\).</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(d), 3 points. "Test your breadth". (i) Who received the 2024 Nobel Prize in Physics for work on neural networks? (ii) Expand RNN. (iii) Name a popular open-source LLM.</span><span class="chev">›</span></summary>
+<div class="ans">
+<p>(i) John Hopfield and Geoffrey Hinton shared it. The key accepts either name. (ii) Recurrent neural network (<a href="../deep/#rnn">4, RNNs</a>). (iii) Any credible open-weight model, for example Meta's Llama, Mistral, Falcon, Gemma or DeepSeek.</p>
+<p>Other variants asked for the Indian-origin 1994 Turing Award winner with a Hyderabad connection (Raj Reddy), the expansion of CNN, the use of "Nano Banana" (image generation), an AI researcher who left Meta to found a start-up and is known for CNNs (Yann LeCun is the expected answer), the expansion of ReLU (rectified linear unit), the main GPU maker for deep learning (NVIDIA), the 2024 award to Demis Hassabis and John Jumper (the Nobel Prize in Chemistry, for AlphaFold), the expansion of GPU (graphics processing unit) and a commercial LLM good at coding (Claude, GPT-4o, Gemini and similar).</p>
+<p>These are general-knowledge questions about current events in AI, not course material. Answers like "a popular open-source LLM" or "who left Meta" go out of date quickly, so read the news around the time of the quiz instead of memorising this list.</p>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point per item. The TAs were told to use judgement and accept any clearly correct answer. They also accepted partly wrong answers where the spelling of the question caused the confusion.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q1(e), 3 points. An MLP has 3 inputs, one hidden layer of 5 neurons and 1 output, with no biases. How many learnable parameters does it have?</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Without biases, a dense layer has \(n_{\text{in}}\times n_{\text{out}}\) weights.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4, counting parameters</a> (drop the "+1" for the bias).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Input to hidden \(3\times5 = 15\).</li>
+<li>Hidden to output \(5\times1 = 5\).</li>
+<li>Total \(15 + 5 = 20\).</li>
+<li>Check. With biases it would be \(5\times4 + 1\times6 = 26\), six more, one per neuron.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">3 points for 20 with the working. 2 for the right formula with an arithmetic slip, 1 for counting only one layer. Counting biases (26) loses 1 point if it is clearly stated.</div></div>
+</div></details>
+
+<h3>Question 2, forward pass, backpropagation and the single layer equivalent (15 points)</h3>
+<p>All variants used the network of 3.6, but with ReLU hidden units, a linear output and a halved squared error.</p>
+<div class="eq">\[p_1 = w_{11}x_1 + w_{12}x_2,\]\[p_2 = w_{21}x_1 + w_{22}x_2,\]\[q_j = \operatorname{ReLU}(p_j) = \max(0, p_j),\]\[s = u_1q_1 + u_2q_2,\quad o = s,\]\[L = \tfrac12(y - o)^2.\]</div>
+<p>Variant 1 had \(W = \begin{bmatrix}1 & 1\\ 1 & 1\end{bmatrix}\), \(\mathbf u = [2, 1]\T\), \(\mathbf x = [1, 1]\T\) and target \(y = 2\).</p>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(a), 3 points. Do the forward pass and find the output \(o\).</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\mathbf p = W\mathbf x\), \(\mathbf q \)<wbr>\({}= \operatorname{ReLU}(\mathbf p)\), \(o = s = \mathbf u\T\mathbf q\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6, the forward pass</a>, with ReLU from <a href="#activations">3.5</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(p_1 = 1\cdot1 + 1\cdot1 = 2\). \(p_2 = 1\cdot1 + 1\cdot1 = 2\).</li>
+<li>Both are positive, so ReLU leaves them unchanged. \(q_1 = 2\), \(q_2 = 2\).</li>
+<li>\(s = 2\cdot2 + 1\cdot2 = 6\).</li>
+<li>The output is linear, so \(o = s = 6\).</li>
+<li>The loss is \(L = \frac12(2 - 6)^2 = 8\).</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point each for \(p_1, p_2\), for \(q_1, q_2\) and for \(o\).</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(b), 3 points. Write \(\frac{\partial L}{\partial w_{22}}\) by the chain rule.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\[\frac{\partial L}{\partial w_{22}} = \frac{\partial L}{\partial o}\cdot\frac{\partial o}{\partial s}\cdot\frac{\partial s}{\partial q_2}\cdot\frac{\partial q_2}{\partial p_2}\cdot\frac{\partial p_2}{\partial w_{22}}\]</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#backprop">3.6, the chain rule box</a>, lines 1 to 5, with the derivatives of this network's blocks.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(w_{22}\) reaches the loss only along the path \(w_{22} \to p_2 \to q_2 \to s \to o \to L\), so the chain has these five factors.</li>
+<li>\(L = \frac12(y - o)^2\), so \(\frac{\partial L}{\partial o} \)<wbr>\({}= \frac12\cdot2(y - o)\cdot(-1) \)<wbr>\({}= o - y\).</li>
+<li>\(o = s\), so \(\frac{\partial o}{\partial s} \)<wbr>\({}= 1\).</li>
+<li>\(s = u_1q_1 + u_2q_2\), so \(\frac{\partial s}{\partial q_2} \)<wbr>\({}= u_2\).</li>
+<li>\(q_2 = \max(0, p_2)\), so \(\frac{\partial q_2}{\partial p_2} \)<wbr>\({}= \mathbf 1[p_2 > 0]\), which is 1 if \(p_2 > 0\) and 0 if \(p_2 \lt 0\).</li>
+<li>\(p_2 = w_{21}x_1 + w_{22}x_2\), so \(\frac{\partial p_2}{\partial w_{22}} \)<wbr>\({}= x_2\).</li>
+<li>Together, \(\frac{\partial L}{\partial w_{22}} \)<wbr>\({}= (o - y)\cdot1\cdot u_2\cdot\mathbf 1[p_2 > 0]\cdot x_2\).</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">3 points for all five factors in the right order (1 for \(\frac{\partial L}{\partial o}\), 1 for \(\frac{\partial s}{\partial q_2}\) and \(\frac{\partial q_2}{\partial p_2}\), 1 for \(\frac{\partial p_2}{\partial w_{22}}\)). Leaving out the factor \(\frac{\partial o}{\partial s} \)<wbr>\({}= 1\) costs 0.5.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(c), 4 points. Evaluate \(\frac{\partial L}{\partial w_{22}}\) for Variant 1.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{\partial L}{\partial w_{22}} \)<wbr>\({}= (o - y)\,u_2\,\mathbf 1[p_2 > 0]\,x_2\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Q2(b), line 7, with the numbers from Q2(a).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(o - y = 6 - 2 = 4\).</li>
+<li>\(p_2 = 2 > 0\), so the ReLU factor is 1.</li>
+<li>\(u_2 = 1\) and \(x_2 = 1\).</li>
+<li>\(\frac{\partial L}{\partial w_{22}} \)<wbr>\({}= 4\cdot1\cdot1\cdot1 \)<wbr>\({}= 4\).</li>
+<li>Check the sign. The output 6 is above the target 2, and raising \(w_{22}\) raises \(p_2\), \(q_2\) and \(o\). That makes the error worse, so the gradient should be positive, and it is.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point each for \(o - y\), the ReLU state, the values of \(u_2\) and \(x_2\), and the final number. In variants where the hidden unit is off and the answer is 0, ignoring the dead unit costs 2 points.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q2(d), 5 points. Now let the hidden activation be linear, \(\varphi(p) = p\). Show that the network is then a single layer perceptron, find its weights, and draw it.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(o \)<wbr>\({}= \mathbf u\T W\mathbf x \)<wbr>\({}= (W\T\mathbf u)\T\mathbf x\), so the single layer weights are \(\mathbf v = W\T\mathbf u\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#mlp">3.4, "Why hidden layers, and why nonlinear activations"</a>. Without a nonlinearity two layers collapse into one.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>With \(\varphi(p) = p\), the hidden outputs are \(\mathbf q \)<wbr>\({}= \mathbf p \)<wbr>\({}= W\mathbf x\).</li>
+<li>The output is \(o \)<wbr>\({}= \mathbf u\T\mathbf q \)<wbr>\({}= \mathbf u\T W\mathbf x\).</li>
+<li>A transpose rule, \((AB)\T = B\T A\T\), gives \(\mathbf u\T W \)<wbr>\({}= (W\T\mathbf u)\T\).</li>
+<li>So \(o \)<wbr>\({}= (W\T\mathbf u)\T\mathbf x \)<wbr>\({}= \mathbf v\T\mathbf x\) with \(\mathbf v = W\T\mathbf u\). This is one neuron with weight vector \(\mathbf v\) on the inputs, a single layer network.</li>
+<li>For Variant 1, \(W\T = \begin{bmatrix}1 & 1\\ 1 & 1\end{bmatrix}\), so \(v_1 = 1\cdot2 + 1\cdot1 = 3\) and \(v_2 = 1\cdot2 + 1\cdot1 = 3\).</li>
+<li>The diagram has \(x_1\) and \(x_2\) feeding one output neuron with weights 3 and 3, giving \(o = 3x_1 + 3x_2\).</li>
+<li>Check with \(\mathbf x = [1, 1]\T\). The two-layer net gives \(\mathbf p = [2, 2]\T\) and \(o = 2\cdot2 + 1\cdot2 = 6\). The single neuron gives \(3 + 3 = 6\).</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">2 points for the argument that a linear MLP collapses to a single layer, 2 for computing \(\mathbf v = W\T\mathbf u\) correctly, and 1 for the diagram with its numerical weights.</div></div>
+</div></details>
+
+<h3>Question 3, single layer perceptron (15 points)</h3>
+<p>Variant 1 had the data \(D \)<wbr>\({}= \{([1,1]\T, +1),\)<wbr>\(([0,0]\T, +1),\)<wbr>\(([-1,-1]\T, -1)\}\) and starting weights \(w_0 = 0\) (the bias), \(w_1 = -0.5\), \(w_2 = -0.5\).</p>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(a), 3 points. State the perceptron's classification rule and count the training errors of the starting weights.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\hat y \)<wbr>\({}= \operatorname{sign}(w_0 + w_1x_1 + w_2x_2)\), with \(\operatorname{sign}(a) = +1\) if \(a \ge 0\) and \(-1\) if \(a \lt 0\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2, the perceptron</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb">
+<table class="tbl"><tr><th>\(\mathbf x\)</th><th>\(y\)</th><th>\(a = w_0 + w_1x_1 + w_2x_2\)</th><th>\(\hat y\)</th><th>Error?</th></tr>
+<tr><td>\([1, 1]\)</td><td>\(+1\)</td><td>\(0 - 0.5 - 0.5 = -1\)</td><td>\(-1\)</td><td>yes</td></tr>
+<tr><td>\([0, 0]\)</td><td>\(+1\)</td><td>\(0\)</td><td>\(+1\)</td><td>no</td></tr>
+<tr><td>\([-1, -1]\)</td><td>\(-1\)</td><td>\(0 + 0.5 + 0.5 = 1\)</td><td>\(+1\)</td><td>yes</td></tr></table>
+<p>2 errors out of 3. The activation is the sign (threshold) function.</p>
+</div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point for the rule with the sign activation, 1 for the three outputs, 1 for the error count. The value at exactly 0 is a convention. With \(\operatorname{sign}(0) = -1\) the sample \([0,0]\) is also wrong (3 errors out of 3), and that is accepted if used consistently.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(b), 4 points. Write the perceptron training algorithm.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">On a mistake, \(w_j \leftarrow w_j + \eta\,y_i\,x_{ij}\) for \(j = 1, 2\), and \(w_0 \leftarrow w_0 + \eta\,y_i\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb"><a href="#perceptron">3.2, the learning rule and L14 slide 8</a>. This is the \(\eta\,t\,\mathbf x\) form of the rule.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Initialise \(\mathbf w = [w_0, w_1, w_2]\T\) and choose \(\eta > 0\).</li>
+<li>Repeat until a full pass makes no mistakes (or for a fixed number of passes).</li>
+<li>For each sample \((\mathbf x_i, y_i)\), compute \(a_i \)<wbr>\({}= w_0 + w_1x_{i1} + w_2x_{i2}\) and \(\hat y_i \)<wbr>\({}= \operatorname{sign}(a_i)\).</li>
+<li>If \(\hat y_i \ne y_i\), update \(w_j \leftarrow w_j + \eta y_ix_{ij}\) and \(w_0 \leftarrow w_0 + \eta y_i\). Otherwise leave \(\mathbf w\) alone.</li>
+</ol></div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">1 point each for the update rule, the "only on a mistake" condition, the bias update and the loop structure.</div></div>
+</div></details>
+
+<details class="q"><summary><span class="qt pyq">Quiz 2, 2026</span><span>Q3(c), 8 points. Run two iterations (passes over the data) of the algorithm with \(\eta = 0.5\), in the order given.</span><span class="chev">›</span></summary>
+<div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">On a mistake, \(\Delta w_0 = 0.5\,y\) and \(\Delta w_j = 0.5\,y\,x_j\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">Q3(b), line 4, and the worked table in <a href="#perceptron">3.2</a>.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb">
+<p><strong>Iteration 1</strong>, starting from \((w_0, w_1, w_2) \)<wbr>\({}= (0, -0.5, -0.5)\).</p>
+<table class="tbl"><tr><th>Sample</th><th>\(a\)</th><th>\(\hat y\)</th><th>Update</th><th>New \((w_0, w_1, w_2)\)</th></tr>
+<tr><td>\([1,1], +1\)</td><td>\(-1\)</td><td>\(-1\), wrong</td><td>\(+0.5\cdot[1, 1, 1]\)</td><td>\((0.5, 0, 0)\)</td></tr>
+<tr><td>\([0,0], +1\)</td><td>\(0.5\)</td><td>\(+1\), right</td><td>none</td><td>\((0.5, 0, 0)\)</td></tr>
+<tr><td>\([-1,-1], -1\)</td><td>\(0.5\)</td><td>\(+1\), wrong</td><td>\(-0.5\cdot[1, -1, -1]\)</td><td>\((0, 0.5, 0.5)\)</td></tr></table>
+<p>In the update column, the vector \([1, x_1, x_2]\) is the augmented input, so the first entry changes \(w_0\). For the last sample, \(-0.5\cdot[1, -1, -1] \)<wbr>\({}= [-0.5, 0.5, 0.5]\).</p>
+<p><strong>Iteration 2</strong>, starting from \((0, 0.5, 0.5)\).</p>
+<table class="tbl"><tr><th>Sample</th><th>\(a\)</th><th>\(\hat y\)</th><th>Update</th></tr>
+<tr><td>\([1,1], +1\)</td><td>\(0 + 0.5 + 0.5 = 1\)</td><td>\(+1\), right</td><td>none</td></tr>
+<tr><td>\([0,0], +1\)</td><td>\(0\)</td><td>\(+1\), right</td><td>none</td></tr>
+<tr><td>\([-1,-1], -1\)</td><td>\(-1\)</td><td>\(-1\), right</td><td>none</td></tr></table>
+<p>No mistakes, so the algorithm has converged with \(w_0 = 0\), \(w_1 = 0.5\), \(w_2 = 0.5\). The boundary is \(x_1 + x_2 = 0\).</p>
+<p>The second sample is classified right only because \(\operatorname{sign}(0) = +1\). With \(\operatorname{sign}(0) = -1\) it is wrong in iteration 2, the update gives \((0.5, 0.5, 0.5)\), and a third pass makes no mistakes. Say which convention you use.</p>
+</div></div>
+<div class="sol"><div class="sl">Marks</div><div class="sb">2 points for finding the misclassified samples in iteration 1, 2 for updating only those with \(\Delta w_j = \eta y x_j\), 2 for the weights after iteration 1, 1 for the iteration 2 classifications, and 1 for the final weights and noting convergence. Deductions are 1 for updating correct samples, 1 for the wrong sign of the update, 1 for the wrong learning rate, and 0.5 for a small arithmetic slip carried through.</div></div>
+</div></details>
+
+<h3>Variants 2 to 4</h3>
+<p>The same questions with other numbers. The answers below follow the key, and all were rechecked.</p>
+<table class="tbl">
+<tr><th>Part</th><th>V2</th><th>V3</th><th>V4</th></tr>
+<tr><td>Q1(a) i, ii, iii</td><td>F, T, T</td><td>F, F, F</td><td>F, T, F</td></tr>
+<tr><td>Q1(c) data</td><td>14, 16, 19, 23, 23, 25</td><td>43, 45, 49, 51, 55, 57</td><td>93, 94, 100, 102, 105, 106</td></tr>
+<tr><td>Q1(c) \(\mu\), \(\sigma\)</td><td>20, 4</td><td>50, 5</td><td>100, 5</td></tr>
+<tr><td>Q1(c) z-scores</td><td>\(-1.5, -1, -0.25, 0.75, 0.75, 1.25\)</td><td>\(-1.4, -1, -0.2, 0.2, 1, 1.4\)</td><td>\(-1.4, -1.2, 0, 0.4, 1, 1.2\)</td></tr>
+<tr><td>Q1(e) layers, parameters</td><td>4, 3, 2, so 18</td><td>2, 8, 1, so 24</td><td>7, 5, 1, so 40</td></tr>
+<tr><td>Q2 data</td><td>\(W = \begin{bmatrix}-1 & 1\\ -1 & 1\end{bmatrix}\), \(\mathbf u = [-1, 3]\T\), \(\mathbf x = [1, 1]\T\), \(y = 4\)</td><td>\(W = \begin{bmatrix}-1 & 1\\ -2 & 1\end{bmatrix}\), \(\mathbf u = [2, 2]\T\), \(\mathbf x = [-1, -1]\T\), \(y = 3\)</td><td>\(W = \begin{bmatrix}1 & -1\\ 1 & -1\end{bmatrix}\), \(\mathbf u = [1, -2]\T\), \(\mathbf x = [0, 2]\T\), \(y = -2\)</td></tr>
+<tr><td>Q2 output \(o\)</td><td>0</td><td>2</td><td>0</td></tr>
+<tr><td>Q2 \(\frac{\partial L}{\partial w_{22}}\)</td><td>0 or \(-12\)</td><td>2</td><td>0</td></tr>
+<tr><td>Q2 single layer \(\mathbf v\)</td><td>\([-2, 2]\)</td><td>\([-6, 4]\)</td><td>\([-1, 1]\)</td></tr>
+<tr><td>Q3 data labels for \([1,1], [0,0], [-1,-1]\)</td><td>\(-1, -1, +1\)</td><td>\(+1, +1, -1\)</td><td>\(-1, +1, +1\)</td></tr>
+<tr><td>Q3 start \((w_0, w_1, w_2)\)</td><td>\((-0.5, 0.5, 0.5)\)</td><td>\((0, -0.8, -0.8)\)</td><td>\((0.5, 0.7, 0.7)\)</td></tr>
+<tr><td>Q3(a) errors</td><td>2 of 3</td><td>2 of 3</td><td>2 of 3</td></tr>
+<tr><td>Q3 final \((w_0, w_1, w_2)\)</td><td>\((-0.5, -0.5, -0.5)\)</td><td>\((0, 0.2, 0.2)\)</td><td>\((0.5, -0.3, -0.3)\)</td></tr>
+</table>
+<p>Notes on the table.</p>
+<ul>
+<li><strong>V2, Q2.</strong> Here \(p_2 = -1 + 1 = 0\), exactly where ReLU has a corner and no derivative. Taking \(\operatorname{ReLU}'(0) = 0\) gives \((0 - 4)\cdot3\cdot0\cdot1 = 0\). Taking \(\operatorname{ReLU}'(0) = 1\) gives \((-4)\cdot3\cdot1\cdot1 = -12\). The key accepts either answer if the convention is stated. The forward pass is not affected, because \(\operatorname{ReLU}(0) = 0\) under every convention.</li>
+<li><strong>V3, Q2.</strong> \(p_1 = 0\) as well, but only \(q_1 = 0\) is needed there, and the gradient asked for uses \(p_2 = 1 > 0\).</li>
+<li><strong>V4, Q2.</strong> Both hidden units are off (\(p_1 = p_2 = -2\)), so \(o = 0\) and the gradient is 0. The answer is 0 because the ReLU unit is "dead", not because the error is small. The error \(o - y = 2\) is not zero.</li>
+<li><strong>Q1(c), sample convention.</strong> With \(N - 1\) the V2 values are about \(-1.369, -0.913, -0.228, 0.685, 0.685, 1.141\). The key prints 1.370 and 1.142, which are rounding slips of 0.001. V3 gives \(\pm1.278, \pm0.913, \pm0.183\), and V4 gives \(-1.278, -1.095, 0, 0.365, 0.913, 1.095\).</li>
+<li><strong>Q3 with \(\operatorname{sign}(0) = -1\).</strong> The key's answers assume \(\operatorname{sign}(0) = +1\). With the other convention V2 ends at the same weights. V1 and V3 start with 3 errors out of 3 and need a third pass. V1 ends at \((0.5, 0.5, 0.5)\), V3 needs a fourth pass and ends at \((0.5, 0.7, 0.7)\), and V4 needs a third pass but ends at the key's weights.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="quiz2-practice"><span class="num">3.10</span>Extra practice</h2>
+<p>These questions were written for this guide, in the style of the real Quiz 2 and Quiz 1. They cover the parts of the scope that the 2026 paper did not test, such as sigmoid derivatives, Adam and the optimal learning rate. For "one, none or more correct" questions, check each option on its own and mark every one that is true.</p>
 <figure class="slide"><img src="{{ASSETS}}slides/L19/p03.webp" alt="Slide: L19 recap of results, SLP convergence, expressive power of SLP and MLP, optimal learning rate" loading="lazy">
 <figcaption>L19, slide 3. The results the recap lecture singled out.</figcaption></figure>
 
@@ -918,7 +1136,7 @@
 <li>One such situation is data that is not linearly separable, such as XOR or two overlapping classes. The perceptron keeps making mistakes and its weights cycle for ever. The delta rule still converges to the weights with the least squared error, for a small enough \(\eta\).</li>
 </ol></div></div>
 </div></details>
-<p class="small">Questions 1 to 10 were written for this guide. They are a guess at the style, not a copy of the 2026 Quiz 2.</p>
+<p class="small">Questions 1 to 10 were written for this guide. They are not from a past paper.</p>
 </section>
 
 <section>
