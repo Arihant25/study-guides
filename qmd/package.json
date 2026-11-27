@@ -1,0 +1,12 @@
+{
+  "name": "qmd",
+  "private": true,
+  "description": "Build script for the QMD (SC1.311 Quantum Materials and Devices) study guide",
+  "type": "module",
+  "scripts": { "build": "node build.mjs", "check": "node check.mjs" },
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer-core": "^25.11.0",
+    "temml": "^0.13.5"
+  }
+}

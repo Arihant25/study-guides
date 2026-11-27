@@ -1,0 +1,178 @@
+</main>
+</div>
+<script>
+/* Theme switch (auto, light, dark), remembered in this browser */
+(function(){
+  var btn=document.getElementById('themebtn');
+  var ico=btn.querySelector('.ico'), lbl=btn.querySelector('.lbl');
+  var ICONS={auto:'◐',light:'☀',dark:'☾'}, ORDER=['auto','light','dark'];
+  function apply(mode){
+    if(mode==='light'||mode==='dark') document.documentElement.setAttribute('data-theme',mode);
+    else { document.documentElement.removeAttribute('data-theme'); mode='auto'; }
+    ico.textContent=ICONS[mode]; lbl.textContent=mode.charAt(0).toUpperCase()+mode.slice(1);
+    return mode;
+  }
+  var saved='auto'; try{ saved=localStorage.getItem('qmd-theme')||'auto'; }catch(e){}
+  var current=apply(saved);
+  btn.addEventListener('click',function(){
+    current=apply(ORDER[(ORDER.indexOf(current)+1)%ORDER.length]);
+    try{ current==='auto' ? localStorage.removeItem('qmd-theme') : localStorage.setItem('qmd-theme',current); }catch(e){}
+  });
+  /* highlight the section being read in the sidebar */
+  var links=[].slice.call(document.querySelectorAll('#tocnav a')), map={};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        links.forEach(function(l){l.classList.remove('active');});
+        var a=map[en.target.id]; if(a){a.classList.add('active'); a.scrollIntoView({block:'nearest'});}
+      }});
+    },{rootMargin:'-8% 0px -80% 0px',threshold:0});
+    document.querySelectorAll('main [id]').forEach(function(el){ if(map[el.id]) obs.observe(el); });
+  }
+  /* phone menu closes after a link is tapped, or on Escape */
+  var m=document.getElementById('mtoc');
+  if(m){ m.addEventListener('click',function(e){ if(e.target.closest('a')) m.open=false; });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') m.open=false; }); }
+})();
+</script>
+<script>
+/* Back-to-top button */
+(function(){
+  var b=document.createElement('button'); b.type='button'; b.className='totop';
+  b.setAttribute('aria-label','Back to top'); b.title='Back to top'; b.textContent='↑';
+  document.body.appendChild(b);
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  b.addEventListener('click',function(){ window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); });
+  function upd(){ b.classList.toggle('show', window.scrollY>600); }
+  window.addEventListener('scroll',upd,{passive:true}); upd();
+})();
+</script>
+<script>
+/* "Close all explanations" button for each Write-this-in-the-exam box */
+(function(){
+  document.querySelectorAll('.card.exam').forEach(function(card){
+    var whys=card.querySelectorAll('details.linewhy'); if(!whys.length) return;
+    var btn=document.createElement('button'); btn.type='button'; btn.className='closeall'; btn.textContent='Close all explanations';
+    card.appendChild(btn);
+    function update(){ btn.classList.toggle('show', [].some.call(whys,function(d){return d.open;})); }
+    whys.forEach(function(d){ d.addEventListener('toggle',update); });
+    btn.addEventListener('click',function(){ whys.forEach(function(d){d.open=false;}); update(); card.scrollIntoView({block:'nearest'}); });
+  });
+})();
+</script>
+<script>
+/* Games. Each <div class="game" data-type="..."> holds its data as JSON in a <script type="application/json">.
+   quiz:  {"q":[{"t":"question","o":["a","b","c","d"],"a":1,"w":"why"}]}   one question at a time
+   match: {"p":[["term","meaning"],...]}                                     tap a term, then its meaning
+   sort:  {"b":["bucket 1","bucket 2"],"i":[["item",0],...]}                 tap an item, then a bucket
+   blank: {"q":[{"t":"sentence with ___","a":["answer","other spelling"]}]}  type the missing word */
+(function(){
+  function el(tag,cls,txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function norm(s){ return s.toLowerCase().replace(/[^a-z0-9αβγδμπσφψωħ⁺⁻²³½]+/g,' ').replace(/\b(the|a|an)\b/g,' ').replace(/\s+/g,' ').trim(); }
+  function btn(txt,cls){ var b=el('button',cls,txt); b.type='button'; return b; }
+
+  function quiz(box,d){
+    var order, i, score, answered;
+    var meta=el('div','gmeta'), q=el('p','gq'), opts=el('div','gopts'), why=el('p','gwhy'), bar=el('div','gbtns');
+    var next=btn('Next question','go'), again=btn('Play again');
+    box.append(meta,q,opts,why,bar);
+    function start(){ order=shuffle(d.q); i=0; score=0; show(); }
+    function show(){
+      answered=false; why.textContent=''; why.className='gwhy'; bar.innerHTML='';
+      if(i>=order.length){ q.textContent='Done. You got '+score+' out of '+order.length+'.'+(score===order.length?' All correct.':' Read the sections for the ones you missed, then play again.'); opts.innerHTML=''; meta.textContent=''; bar.append(again); return; }
+      var it=order[i]; meta.textContent='Question '+(i+1)+' of '+order.length+' · score '+score;
+      q.textContent=it.t; opts.innerHTML='';
+      it.o.forEach(function(o,k){
+        var b=btn(o,'gopt'); b.addEventListener('click',function(){
+          if(answered) return; answered=true;
+          var ok=k===it.a; if(ok) score++;
+          b.classList.add(ok?'right':'wrong');
+          opts.children[it.a].classList.add('right');
+          why.textContent=(ok?'Correct. ':'Not quite. ')+(it.w||''); why.className='gwhy '+(ok?'ok':'no');
+          meta.textContent='Question '+(i+1)+' of '+order.length+' · score '+score;
+          bar.append(next);
+        }); opts.append(b);
+      });
+    }
+    next.addEventListener('click',function(){ i++; show(); });
+    again.addEventListener('click',start);
+    start();
+  }
+
+  function match(box,d){
+    var meta=el('div','gmeta'), grid=el('div','gmatch'), L=el('div','gcol'), R=el('div','gcol'), bar=el('div','gbtns'), again=btn('Shuffle and play again');
+    grid.append(L,R); box.append(meta,grid,bar);
+    var sel, done, miss;
+    function start(){
+      L.innerHTML=''; R.innerHTML=''; bar.innerHTML=''; sel=null; done=0; miss=0;
+      shuffle(d.p.map(function(p,k){return [p[0],k];})).forEach(function(p){ var b=btn(p[0],'gcard'); b.dataset.k=p[1]; L.append(b); });
+      shuffle(d.p.map(function(p,k){return [p[1],k];})).forEach(function(p){ var b=btn(p[0],'gcard'); b.dataset.k=p[1]; R.append(b); });
+      upd();
+    }
+    function upd(){ meta.textContent=done===d.p.length ? 'All '+done+' pairs matched with '+miss+' wrong '+(miss===1?'try':'tries')+'.' : 'Tap a term on the left, then its meaning on the right. Matched '+done+' of '+d.p.length+' · wrong tries '+miss; if(done===d.p.length) bar.append(again); }
+    L.addEventListener('click',function(e){ var b=e.target.closest('.gcard'); if(!b||b.disabled) return; if(sel) sel.classList.remove('sel'); sel=b; b.classList.add('sel'); });
+    R.addEventListener('click',function(e){ var b=e.target.closest('.gcard'); if(!b||b.disabled||!sel) return;
+      if(b.dataset.k===sel.dataset.k){ [b,sel].forEach(function(x){ x.classList.remove('sel'); x.classList.add('right'); x.disabled=true; }); sel=null; done++; }
+      else { miss++; b.classList.add('wrong'); setTimeout(function(){ b.classList.remove('wrong'); },500); }
+      upd(); });
+    again.addEventListener('click',start);
+    start();
+  }
+
+  function sort(box,d){
+    var meta=el('div','gmeta'), pool=el('div','gpool'), bk=el('div','gbuckets'), bar=el('div','gbtns'), again=btn('Shuffle and play again');
+    box.append(meta,pool,bk,bar);
+    var sel, done, miss, buckets=[];
+    d.b.forEach(function(name,k){ var c=el('div','gbucket'); var h=btn(name,'gbhead'); h.dataset.b=k; var list=el('div','gblist'); c.append(h,list); bk.append(c); buckets.push(list); });
+    function start(){
+      pool.innerHTML=''; buckets.forEach(function(l){l.innerHTML='';}); bar.innerHTML=''; sel=null; done=0; miss=0;
+      shuffle(d.i).forEach(function(it){ var b=btn(it[0],'gcard'); b.dataset.b=it[1]; pool.append(b); });
+      upd();
+    }
+    function upd(){ meta.textContent=done===d.i.length ? 'All '+done+' sorted with '+miss+' wrong '+(miss===1?'try':'tries')+'.' : 'Tap an item, then the group it belongs to. Sorted '+done+' of '+d.i.length+' · wrong tries '+miss; if(done===d.i.length) bar.append(again); }
+    pool.addEventListener('click',function(e){ var b=e.target.closest('.gcard'); if(!b) return; if(sel) sel.classList.remove('sel'); sel=b; b.classList.add('sel'); });
+    bk.addEventListener('click',function(e){ var h=e.target.closest('.gbhead'); if(!h||!sel) return;
+      if(h.dataset.b===sel.dataset.b){ sel.classList.remove('sel'); sel.classList.add('right'); sel.disabled=true; buckets[+h.dataset.b].append(sel); sel=null; done++; }
+      else { miss++; var s=sel; s.classList.add('wrong'); setTimeout(function(){ s.classList.remove('wrong'); },500); }
+      upd(); });
+    again.addEventListener('click',start);
+    start();
+  }
+
+  function blank(box,d){
+    var meta=el('div','gmeta'), list=el('ol','gblanks'); box.append(meta,list);
+    var right=0;
+    function upd(){ meta.textContent='Type the missing word and press Enter or Check. Correct '+right+' of '+d.q.length; }
+    d.q.forEach(function(it){
+      var li=el('li'), p=el('p','gq'); p.textContent=it.t; var row=el('div','grow');
+      var inp=document.createElement('input'); inp.type='text'; inp.className='ginput'; inp.setAttribute('aria-label','Answer'); inp.autocomplete='off'; inp.spellcheck=false;
+      var chk=btn('Check','go'), show=btn('Show'), out=el('span','gres');
+      row.append(inp,chk,show,out); li.append(p,row); list.append(li);
+      var solved=false;
+      function check(){
+        if(solved) return;
+        var v=norm(inp.value); if(!v) return;
+        var ok=it.a.some(function(a){ var n=norm(a); return v===n || (n.length>5 && v.indexOf(n)>=0); });
+        if(ok){ solved=true; right++; inp.classList.add('right'); out.textContent='Correct'; out.className='gres ok'; inp.disabled=true; upd(); }
+        else { inp.classList.add('wrong'); out.textContent='Try again'; out.className='gres no'; setTimeout(function(){ inp.classList.remove('wrong'); },500); }
+      }
+      chk.addEventListener('click',check);
+      inp.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+      show.addEventListener('click',function(){ out.textContent='Answer: '+it.a[0]; out.className='gres'; });
+    });
+    upd();
+  }
+
+  var TYPES={quiz:quiz,match:match,sort:sort,blank:blank};
+  document.querySelectorAll('.game').forEach(function(box){
+    var s=box.querySelector('script[type="application/json"]'); if(!s) return;
+    var d; try{ d=JSON.parse(s.textContent); }catch(e){ box.append(el('p','small','This game could not load.')); return; }
+    var area=el('div','garea'); box.append(area);
+    (TYPES[box.dataset.type]||function(){})(area,d);
+  });
+})();
+</script>
+</body>
+</html>

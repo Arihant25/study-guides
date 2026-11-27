@@ -1,0 +1,341 @@
+<div class="part">Part 2<span>Module 2 · Quantum materials</span></div>
+<section>
+<h2 id="m2-low">2A · Wells, wires and dots</h2>
+<p class="about">About 15 minutes. Lecture 2.1.</p>
+<p>When a material is made so thin that its size is close to the de Broglie wavelength of its electrons (a few nanometres), the electrons behave like a particle in a box in that direction (1E). Their energy in that direction becomes a set of discrete levels. This is <strong>quantum confinement</strong>. Low-dimensional systems are also cleaner than doped bulk material, which is disordered by its ionised impurities, and quantum effects are stronger in them.</p>
+<table class="tbl">
+<tr><th>System</th><th>Confined in</th><th>Free to move in</th><th>Typical size</th><th>Density of states</th><th>Uses</th></tr>
+<tr><td>Bulk (3D)</td><td>no direction</td><td>x, y, z</td><td>large</td><td>\(\propto E^{1/2}\)</td><td></td></tr>
+<tr><td>Quantum well (2D)</td><td>1 direction (z, the growth axis)</td><td>2 directions (the x–y plane)</td><td>2 to 20 nm thick</td><td>constant per subband, so a staircase</td><td>lasers, LEDs, HEMTs, quantum cascade lasers, infrared detectors</td></tr>
+<tr><td>Quantum wire (1D)</td><td>2 directions (y, z)</td><td>1 direction (x)</td><td>5 to 50 nm across, µm to mm long</td><td>\(\propto E^{-1/2}\), with spikes (van Hove singularities)</td><td>nano-transistors, transport studies</td></tr>
+<tr><td>Quantum dot (0D)</td><td>all 3 directions</td><td>none</td><td>2 to 20 nm</td><td>\(\delta\)-function spikes, like an atom</td><td>QD-LEDs and displays, bio-imaging, solar cells, single-photon sources, qubits</td></tr>
+</table>
+<p>"Dimension" counts the directions of free motion. A quantum well is called 2D because electrons move freely in two directions, even though it is confined in one. Note the trap: a quantum well confines carriers in <strong>one</strong> dimension.</p>
+<p><strong>Quantum wells.</strong> A thin layer of a low-band-gap semiconductor sandwiched between layers of a higher-gap one (for example GaAs between AlGaAs). Properties: discrete levels across the well, continuous motion along it, stronger radiative recombination, lower laser threshold current, better temperature stability. Material pairs: GaAs/AlGaAs (near infrared), InGaAs/InP (telecom, 1.3 to 1.55 µm), InGaN/GaN (blue and UV LEDs), GaInP/AlGaInP (red and yellow LEDs).</p>
+<p><strong>Quantum wires.</strong> Properties: van Hove singularities in the density of states, larger exciton binding energy, polarised light emission, ballistic transport in short wires, and <strong>quantised conductance</strong> in steps of \(\frac{2e^2}h\). Made by e-beam lithography and etching, self-organised growth (Stranski–Krastanov), growth on patterned substrates (V-grooves, cleaved-edge overgrowth) or templates (carbon nanotubes, porous alumina, DNA). Challenges: uniform size, clean interfaces, scaling up, making electrical contacts.</p>
+<p><strong>Quantum dots</strong> are "artificial atoms": confined in every direction, they have only discrete levels. Smaller dots have larger level spacing (1E: \(E\propto\frac1{L^2}\)), so they emit bluer light. <em>The colour of a quantum-dot LED is tuned by the dot size.</em> Properties: size-tunable emission, quantum yield up to 95%, narrow emission (width under 30 nm), resistance to photobleaching, strong absorption. Types: colloidal dots made in solution (CdSe/ZnS core–shell, 450 to 650 nm; InP/ZnS, cadmium-free, 500 to 700 nm; PbS, 900 to 2000 nm infrared), self-assembled dots grown epitaxially (InAs on GaAs), and carbon dots (biocompatible).</p>
+</section>
+
+<section>
+<h2 id="m2-dos">2B · Density of states in 2D, 1D and 0D</h2>
+<p class="about">About 35 minutes. Lecture 2.1. This was a 10-mark question in the 2025 end-sem (Q36).</p>
+<p>The method is the one in 1I, with the sphere replaced by a quarter circle (2D) or a line (1D). For a quantum well of area \(L\times L\), the free motion has \(E = \frac{h^2}{8mL^2}(n_x^2 + n_y^2) = \frac{h^2n^2}{8mL^2}\). For a wire of length \(L\), \(E = \frac{h^2n^2}{8mL^2}\) with one number \(n\).</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the density of states for 2D and 1D electron systems, and write it for 0D.</h4>
+<p><strong>2D (quantum well), per unit area</strong></p>
+<ol class="steps lines">
+<li>States inside radius \(n\): \(\frac14\pi n^2\) (positive quadrant). Between \(n\) and \(n + dn\): \(\frac14\cdot2\pi n\,dn = \frac\pi2n\,dn\).</li>
+<li>From \(n^2 = \frac{8mL^2}{h^2}E\): \(2n\,dn = \frac{8mL^2}{h^2}dE\), so \(n\,dn = \frac{4mL^2}{h^2}dE\).</li>
+<li>States in \(dE\): \(\frac\pi2\cdot\frac{4mL^2}{h^2}dE = \frac{2\pi mL^2}{h^2}dE\). Times 2 for spin, divided by the area \(L^2\): \[Z_{2D}(E) = \frac{4\pi m^*}{h^2} = \frac{m^*}{\pi\hbar^2}.\]<br>This is independent of \(E\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 to 3, 6 steps)</span></summary>
+<ol class="steps">
+<li>In 2D the states are points in a flat grid \((n_x, n_y)\). States with energy below \(E\) lie inside a circle of radius \(n\), and only the quarter with both numbers positive counts: area \(\frac14\pi n^2\).</li>
+<li>The thin ring between \(n\) and \(n + dn\) has area \(\frac14\pi[(n+dn)^2 - n^2] = \frac14\pi(2n\,dn)\), dropping the tiny \(dn^2\). That is \(\frac\pi2n\,dn\).</li>
+<li>Differentiate \(n^2 = \frac{8mL^2}{h^2}E\) on both sides: \(2n\,dn = \frac{8mL^2}{h^2}dE\). Halve both sides: \(n\,dn = \frac{4mL^2}{h^2}dE\). (Here the whole product \(n\,dn\) is needed, which is why the \(n\) cancels.)</li>
+<li>Substitute: \(\frac\pi2\cdot\frac{4mL^2}{h^2}dE = \frac{2\pi mL^2}{h^2}dE\).</li>
+<li>Two spins per state: \(\frac{4\pi mL^2}{h^2}dE\). Divide by the area \(L^2\): \(\frac{4\pi m}{h^2}\).</li>
+<li>With \(h = 2\pi\hbar\): \(\frac{4\pi m}{4\pi^2\hbar^2} = \frac m{\pi\hbar^2}\). No \(E\) is left, so the 2D density of states is a constant.</li>
+</ol>
+</details></li>
+<li>Each confined level \(E_n\) of the well starts its own subband, so the total is a staircase: \(Z_{2D,\text{total}} = \frac{m^*}{\pi\hbar^2}\sum_n\Theta(E - E_n)\), where \(\Theta\) is a step that switches on at \(E_n\).</li>
+</ol>
+<p><strong>1D (quantum wire), per unit length</strong></p>
+<ol class="steps lines">
+<li>States lie on a line; between \(n\) and \(n + dn\) there are \(dn\) states.</li>
+<li>\(n = \left(\frac{8mL^2}{h^2}\right)^{1/2}E^{1/2}\), so \(dn = \frac12\left(\frac{8mL^2}{h^2}\right)^{1/2}E^{-1/2}dE = \frac{L\sqrt{2m}}hE^{-1/2}dE\).</li>
+<li>Times 2 for spin, divided by \(L\): \[Z_{1D}(E) = \frac2h\sqrt{\frac{2m^*}E} = \frac1{\pi\hbar}\sqrt{\frac{2m^*}E}\ \propto\ E^{-1/2}.\]
+<details class="linewhy"><summary>Why <span>(covers lines 1 to 3, 5 steps)</span></summary>
+<ol class="steps">
+<li>In 1D there is only \(n_x = n\), so the states are evenly spaced points on a line, one per unit of \(n\). Between \(n\) and \(n + dn\) there are \(dn\) of them.</li>
+<li>Solve \(E = \frac{h^2n^2}{8mL^2}\) for \(n\) and differentiate, as in 1I line 2.</li>
+<li>Simplify the constant: \(\frac12\sqrt{\frac{8mL^2}{h^2}} = \frac12\cdot\frac{2L\sqrt{2m}}h = \frac{L\sqrt{2m}}h\), since \(\sqrt8 = 2\sqrt2\).</li>
+<li>Multiply by 2 for spin and divide by the length \(L\): \(\frac{2\sqrt{2m}}hE^{-1/2}\).</li>
+<li>With \(h = 2\pi\hbar\) this is \(\frac{\sqrt{2m}}{\pi\hbar}E^{-1/2}\). It falls as \(\frac1{\sqrt E}\) and is infinite at \(E = 0\) (a van Hove singularity). The slide writes it as \(\frac L{\pi\hbar}\sqrt{\frac{m^*}{2E}}\), the same without the spin factor 2 and per whole wire; the \(E^{-1/2}\) is what matters.</li>
+</ol>
+</details></li>
+<li>Each subband of the wire adds its own \(\frac1{\sqrt{E - E_n}}\) spike, so the total is a series of spikes that each fall off.</li>
+</ol>
+<p><strong>0D (quantum dot)</strong></p>
+<ol class="steps lines">
+<li>No direction is free, so there is no \(n\)-space to count. Only the discrete energies \(E_i = \frac{h^2}{8mL^2}(n_x^2 + n_y^2 + n_z^2)\) exist, each holding 2 electrons: \[Z_{0D}(E) = 2\sum_i\delta(E - E_i).\]</li>
+</ol>
+</div>
+<div class="figrow">
+<figure class="fig"><!--plot:dos-3d--><figcaption>3D, bulk: \(Z\propto E^{1/2}\).</figcaption></figure>
+<figure class="fig"><!--plot:dos-2d--><figcaption>2D, quantum well: constant per subband, a staircase.</figcaption></figure>
+<figure class="fig"><!--plot:dos-1d--><figcaption>1D, quantum wire: \(Z\propto E^{-1/2}\) spikes at each subband.</figcaption></figure>
+<figure class="fig"><!--plot:dos-0d--><figcaption>0D, quantum dot: \(\delta\)-function lines.</figcaption></figure>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<table class="tbl">
+<tr><th>Dimension</th><th>\(Z(E)\)</th><th>Shape to sketch</th></tr>
+<tr><td>3D</td><td>\(\frac1{2\pi^2}\left(\frac{2m^*}{\hbar^2}\right)^{3/2}E^{1/2}\)</td><td>rising curve that bends over</td></tr>
+<tr><td>2D</td><td>\(\frac{m^*}{\pi\hbar^2}\) per subband</td><td>staircase</td></tr>
+<tr><td>1D</td><td>\(\frac1{\pi\hbar}\sqrt{\frac{2m^*}E}\) per subband</td><td>sharp spikes that decay as \(\frac1{\sqrt E}\)</td></tr>
+<tr><td>0D</td><td>\(2\sum_i\delta(E - E_i)\)</td><td>separate vertical lines</td></tr>
+</table>
+<p>The power of \(E\) goes \(\frac12, 0, -\frac12\) as the dimension goes 3, 2, 1: each dimension removed lowers the power by \(\frac12\). Fewer dimensions concentrate the states at the band edge, which is why quantum wells make better lasers (3A).</p>
+</div>
+</section>
+
+<section>
+<h2 id="m2-2d">2C · Graphene and other 2D materials</h2>
+<p class="about">About 20 minutes. Lecture 2.1.</p>
+<p>A <strong>2D material</strong> is a crystal one or a few atoms thick (about 0.3 to 1 nm) but large sideways.</p>
+<h3>Graphene</h3>
+<p>Graphene is one layer of carbon atoms in a honeycomb (hexagonal) lattice. It was isolated in 2004 by Geim and Novoselov (Nobel Prize 2010) by peeling graphite with sticky tape. Its numbers: mobility above 200,000 cm²/V s at room temperature, strength 130 GPa (200 times steel), thermal conductivity above 5000 W/m K, 97.7% of light transmitted, and current density about \(10^8\) A/cm² (1000 times copper). It shows a quantum Hall effect even at room temperature.</p>
+<p>Graphene has <strong>zero band gap</strong>. The valence and conduction bands touch at points called the <strong>Dirac points</strong>, at the corners K and K′ of its hexagonal Brillouin zone. Near them the energy is <em>linear</em> in momentum, not quadratic:</p>
+<div class="eq boxed">\[E = \pm\hbar v_F|\vec k|,\qquad v_F\approx10^6\text{ m/s}\approx\frac c{300}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>For an ordinary electron \(E = \frac{\hbar^2k^2}{2m^*}\), a parabola. Graphene's \(E = \hbar v_F|k|\) is a cone (a <strong>Dirac cone</strong>), the same form as light, \(E = pc\). By the effective mass formula (1H), a straight line has zero curvature, so the electrons act as <strong>massless Dirac fermions</strong> moving at the fixed speed \(v_F\), about 1/300 of the speed of light. The \(\pm\) gives the upper (conduction) and lower (valence) cones. Graphene is called a <strong>semimetal</strong>. Its problem for logic chips is the lack of a gap.</p>
+</div>
+<figure class="fig"><!--plot:dirac--><figcaption>A linear Dirac cone (graphene, and topological insulator surfaces in 2E) compared with an ordinary parabolic band.</figcaption></figure>
+<p>Uses: transparent electrodes (touch screens, solar cells, OLED displays), fast RF and terahertz electronics, composites, supercapacitors and batteries. Challenges: opening a band gap, making large clean sheets, transferring them without contamination, and cost.</p>
+<h3>Transition metal dichalcogenides (TMDs)</h3>
+<p>TMDs have the formula MX₂: M is a transition metal (Mo, W) and X a chalcogen (S, Se, Te). Each layer is an X–M–X sandwich about 0.7 nm thick, and layers are held together by weak van der Waals forces. Examples: MoS₂, WS₂, MoSe₂, WSe₂, MoTe₂. Their key property: the band gap is <strong>indirect in the bulk but becomes direct in a single layer</strong>, which makes monolayers good for light emission (optoelectronics). Gaps: MoS₂ 1.8 eV, WS₂ 2.0 eV, WSe₂ 1.6 eV, MoTe₂ 1.0 eV. Other properties: two valleys K and K′ that can store information (<strong>valleytronics</strong>), strong spin–orbit coupling, strongly bound excitons (0.5 to 1 eV), piezoelectricity. Mobility 1 to 200 cm²/V s, on/off ratio \(10^6\) to \(10^8\). Uses: low-power transistors, photodetectors, LEDs, single-photon sources, memristors, gas sensors, catalysis.</p>
+<p>Other 2D materials: <strong>h-BN</strong> (hexagonal boron nitride), a wide-gap insulator used as a substrate; <strong>phosphorene</strong> (black phosphorus), with a tunable gap and properties that differ by direction.</p>
+<p><strong>Making them.</strong> Mechanical exfoliation (the sticky-tape method: best quality, small flakes), liquid-phase exfoliation (large amounts, lower quality), chemical vapour deposition (large area, controlled thickness, scalable for industry) and molecular beam epitaxy (highest quality, atomic precision, expensive).</p>
+<h3>Heterostructures and twisted bilayers</h3>
+<p>Different 2D layers can be stacked like Lego into <strong>van der Waals heterostructures</strong>: graphene on h-BN (higher mobility, less disorder), graphene on a TMD (charge transfer), TMD on TMD (type-II alignment and interlayer excitons, 3B).</p>
+<p>Stacking two layers with a small twist angle \(\theta_t\) makes a larger repeating pattern called a <strong>moiré pattern</strong>, with period</p>
+<div class="eq">\[\lambda_M\approx\frac{a}{2\sin(\theta_t/2)}.\]</div>
+<p>In <strong>twisted bilayer graphene</strong> at the "magic angle" \(\theta_t\approx1.1^\circ\), the bands become nearly flat. Flat bands mean the electrons' kinetic energy is tiny, so their repulsion dominates, giving correlated (Mott-like) insulators and superconductivity. The bandwidth can be tuned electrically. Magic-angle twisted trilayer graphene shows even more robust superconductivity.</p>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q23 (2 marks)</span><span>Write a note on twisted bilayer graphene.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda_M\approx\frac a{2\sin(\theta_t/2)}\); magic angle \(\theta_t\approx1.1^\circ\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2C, heterostructures and twisted bilayers.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Two graphene sheets stacked with a small twist angle form a moiré superlattice with the period above.</li>
+<li>At the magic angle of about 1.1° the bands become flat, so electron–electron interactions dominate.</li>
+<li>This gives correlated insulating states and superconductivity, tunable by gate voltage.</li>
+<li>Number to quote: with \(a = 0.246\) nm and \(\theta_t = 1.1^\circ\), \(\sin0.55^\circ = 0.0096\), so \(\lambda_M = \frac{0.246}{0.0192}\approx12.8\) nm, about 50 times the lattice constant.</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="sort"><span class="tag">Game · 2A to 2C</span>
+<h4>Sort by dimension of free motion</h4>
+<script type="application/json">{"b":["Quantum well (2D)","Quantum wire (1D)","Quantum dot (0D)"],"i":[["confined in one direction",0],["DOS is a staircase",0],["GaAs layer between AlGaAs",0],["used in HEMTs and quantum cascade lasers",0],["confined in two directions",1],["DOS ∝ E^(−1/2)",1],["van Hove singularities",1],["conductance in steps of 2e²/h",1],["confined in all three directions",2],["DOS is δ-functions",2],["artificial atom",2],["colour tuned by size",2]]}</script>
+</div>
+</section>
+
+<section>
+<h2 id="m2-hall">2D · The Hall effects</h2>
+<p class="about">About 25 minutes. Lecture 2.2. A 10-mark question in the 2025 mid-sem and a "find the errors" question in the end-sem.</p>
+<p>In every Hall effect, a current flows along a strip and a voltage or current appears <em>across</em> it. They differ in what pushes the carriers sideways.</p>
+<figure class="fig"><img src="assets/sl-hall.webp" alt="Slide: six panels (a) Hall effect with magnetic field, (b) anomalous Hall with magnetisation, (c) spin Hall with spin-orbit coupling, (d) quantum Hall with circular orbits and edge currents, (e) quantum anomalous Hall with magnetisation, (f) quantum spin Hall with opposite-spin edge currents." width="1000" height="563" loading="lazy"><figcaption>The family of Hall effects, from lecture 2.2 (after a review in the Annual Review of Condensed Matter Physics).</figcaption></figure>
+<table class="tbl">
+<tr><th>Effect</th><th>What pushes carriers sideways</th><th>Key features</th><th>Uses</th></tr>
+<tr><td>(a) Hall effect (Hall, 1879)</td><td>an external magnetic field \(B\): the Lorentz force \(\vec F = q\vec v\times\vec B\)</td><td>all carriers of one sign go to the same edge; charge piles up and a Hall voltage \(V_H = \frac{BI}{ned}\) appears</td><td>finding carrier type, density and mobility; magnetic field sensors</td></tr>
+<tr><td>(b) Anomalous Hall effect</td><td>the material's own magnetisation, through spin–orbit coupling and disorder; no external field needed</td><td>appears in ferromagnets, in addition to the ordinary effect</td><td>studying magnetic materials</td></tr>
+<tr><td>(c) Spin Hall effect</td><td>spin–orbit coupling, with no magnetic field, just a current</td><td>spin-up and spin-down electrons go to <em>opposite</em> edges, so a spin current flows across, with no net charge build-up</td><td>making spin currents for spintronics</td></tr>
+<tr><td>(d) Quantum Hall effect (von Klitzing, 1980)</td><td>a strong magnetic field at low temperature, in a 2D electron gas</td><td>electrons move in circles (Landau levels) in the bulk; current flows only along the edges; Hall conductance is quantised, \(\sigma_{xy} = \nu\frac{e^2}h\), and the longitudinal resistance is zero</td><td>the resistance standard</td></tr>
+<tr><td>(e) Quantum anomalous Hall effect</td><td>magnetisation plus spin–orbit coupling (a magnetic topological insulator), with no external field</td><td>quantised \(\sigma_{xy}\) and one-way edge channels without a magnet</td><td>low-loss electronics</td></tr>
+<tr><td>(f) Quantum spin Hall effect</td><td>spin–orbit coupling, with time-reversal symmetry (a 2D topological insulator)</td><td>each edge carries two channels of opposite spin moving in opposite directions (helical edge states); no net charge current along an edge at rest</td><td>spintronics, topological devices</td></tr>
+</table>
+<div class="card goal"><span class="tag">Reading the Hall voltage formula</span>
+<p>\(V_H = \frac{BI}{ned}\). \(B\) is the field, \(I\) the current, \(n\) the number of carriers per volume, \(e\) the charge and \(d\) the thickness. Why: carriers pile up on one edge until the electric field \(E_H\) of the pile-up balances the magnetic force, \(eE_H = evB\). The current is \(I = nevA\), with \(A = wd\) (width times thickness), so \(v = \frac I{newd}\) and \(V_H = E_Hw = vBw = \frac{BI}{ned}\). Fewer carriers give a bigger voltage, which is why semiconductors show a much bigger Hall voltage than metals. The sign of \(V_H\) tells you whether the carriers are electrons or holes.</p>
+<p><strong>Example.</strong> \(B = 0.5\) T, \(I = 1\) mA, \(n = 10^{22}\) m⁻³, \(d = 1\) µm: \(V_H = \frac{0.5\times10^{-3}}{10^{22}\times1.6\times10^{-19}\times10^{-6}} = \frac{5\times10^{-4}}{1.6\times10^{-3}} = 0.31\) V.</p>
+</div>
+<details class="q"><summary><span class="qt pyq">Mid-sem 2025 · Q24 (10 marks)</span><span>Describe the various Hall effects: their physical origin, key features and applications, with a labelled diagram for each.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(V_H = \frac{BI}{ned}\); quantum Hall \(\sigma_{xy} = \nu\frac{e^2}h\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2D, the table and the slide.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Write one paragraph per row of the table: origin, features, applications (about 1.5 marks each for six effects, plus diagrams).</li>
+<li>Draw each as a horizontal strip with current flowing left to right. (a) A dot-in-circle for \(B\) out of the page, curved paths all bending to the same edge. (b) Same paths, label "magnetisation" with a magnet arrow. (c) Two curved paths with spin arrows bending to opposite edges, label "spin–orbit coupling".</li>
+<li>(d) Circles in the bulk (cyclotron orbits) with an arrow along the top edge one way and the bottom edge the other way, label "magnetic field". (e) The same with "magnetisation". (f) Two arrows on each edge, in opposite directions, with opposite spins, label "spin–orbit coupling".</li>
+<li>Give the formula for (a) and the quantisation for (d), and note that (c) and (f) need no magnetic field.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q32 (5 marks)</span><span>The Hall family is sketched below. Each diagram has one mistake. Find and explain them.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img src="assets/qp-hall.webp" alt="Hand-drawn six panels of the Hall family from the 2025 end-sem, each with one deliberate mistake." width="1025" height="618" loading="lazy"><figcaption>The diagram from the 2025 end-sem. Compare it with the slide at the top of 2D.</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">The correct pictures and labels in the 2D table and slide.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2D. No official key was released, so this is worked out by comparing with the lecture slide.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>(a) Hall effect.</strong> The two paths bend to opposite edges. In the ordinary Hall effect all carriers of the same charge bend to the <em>same</em> edge, which is what builds up the Hall voltage. Opposite bending is the spin Hall picture.</li>
+<li><strong>(b) Anomalous Hall effect.</strong> It is drawn with closed circular orbits, which belong to the quantum Hall effects. It should show curved paths deflected to one edge, driven by the magnetisation.</li>
+<li><strong>(c) Spin Hall effect.</strong> Both spins are drawn bending towards the same edge. Spin-up and spin-down must bend to opposite edges, giving a pure spin current with no charge build-up.</li>
+<li><strong>(d) Quantum Hall effect.</strong> The label says "magnetization". It should be "magnetic field": the quantum Hall effect needs a strong external field.</li>
+<li><strong>(e) Quantum anomalous Hall effect.</strong> The label says "spin-orbit coupling" only. Its defining ingredient is the magnetisation (with spin–orbit coupling), so it should be labelled "magnetization", as on the slide.</li>
+<li><strong>(f) Quantum spin Hall effect.</strong> Check the edges: each edge must carry two counter-propagating channels with opposite spins. If both channels on an edge are drawn moving the same way, or with the same spin, that is the mistake. Write the correct rule and redraw it.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m2-topo">2E · Topological materials</h2>
+<p class="about">About 35 minutes. Lectures 2.2 and 2.3.</p>
+<h3>Topology, in one paragraph</h3>
+<p><strong>Topology</strong> studies properties that do not change when a shape is smoothly stretched or bent without tearing. A coffee mug and a doughnut are the same topologically (each has one hole), but a sphere is different (no hole). The number of holes is a whole number, so it cannot change gradually: it can only jump. In a <strong>topological material</strong>, the electron bands have a whole-number property of this kind, called a <strong>topological invariant</strong>. Because it cannot change smoothly, small disorder cannot change it, and the special states it guarantees are protected.</p>
+<h3>Three ingredients</h3>
+<p><strong>Time-reversal symmetry (TRS).</strong> Imagine running a film of the electrons backwards (\(t\to-t\)). Momentum flips and spin flips. If the physics looks the same, the system has time-reversal symmetry. A magnetic field or magnetisation <em>breaks</em> it, because reversing time would also reverse the field. So doping a material with magnetic atoms breaks TRS.</p>
+<p><strong>Spin–orbit coupling (SOC).</strong> An electron orbiting a nucleus sees, in its own frame, the charged nucleus going round it, which acts like a current and makes a magnetic field. That field couples to the electron's spin, so spin and orbital motion (\(\vec L\) and \(\vec S\), adding to \(\vec J = \vec L + \vec S\)) are linked. SOC is strong in heavy elements such as bismuth.</p>
+<p><strong>Berry phase.</strong> When a quantum state is carried slowly around a closed loop in some parameter space and comes back to where it started, it can pick up an extra phase that depends only on the geometry of the loop, not on how long it took. This is the <strong>Berry phase</strong>: a geometric phase acquired over a closed loop. For electrons in a crystal the loop is in <em>momentum space</em>. The building blocks are the <strong>Berry connection</strong> \(\vec A_n(\vec k) = i\langle u_n|\nabla_{\vec k}u_n\rangle\), the <strong>Berry curvature</strong> \(\Omega_n = \nabla_{\vec k}\times\vec A_n\), and the Berry phase \(\gamma_n = \oint\vec A_n\cdot d\vec k\). Adding up the Berry curvature over the whole Brillouin zone and dividing by \(2\pi\) gives a whole number, the <strong>Chern number</strong> \(C\). The quantum Hall conductance is \(\sigma_{xy} = C\frac{e^2}h\). For materials with time-reversal symmetry the invariant is the \(\mathbb Z_2\) number, which is 0 (ordinary) or 1 (topological).</p>
+<h3>Topological insulators</h3>
+<p>A <strong>topological insulator</strong> (TI) is an insulator inside (a bulk band gap) but conducts on its surface. The cause is <strong>band inversion</strong>: strong spin–orbit coupling pushes the bands past each other, so their usual order is swapped. Where the inverted inside meets the ordinary outside (vacuum), the gap must close, and this gives metallic surface states.</p>
+<ul>
+<li>The surface states form a <strong>Dirac cone</strong>: energy linear in momentum, crossing at the <strong>Dirac point</strong>, which sits inside the bulk gap.</li>
+<li><strong>Spin–momentum locking</strong>: on the surface, an electron's spin is always perpendicular to its momentum. Electrons moving the opposite way have opposite spin.</li>
+<li>So an electron cannot simply bounce backwards off a non-magnetic impurity, which would need its spin to flip. The surface states are protected by time-reversal symmetry.</li>
+<li>Well-known 3D TIs: Bi₂Se₃ and Bi₂Te₃. ARPES (4B) measured the Dirac cone, confirming the prediction, and spin-resolved ARPES showed the two branches have opposite spin.</li>
+<li>Adding magnetic impurities breaks time-reversal symmetry and opens a small gap at the Dirac point: a "massive Dirac fermion".</li>
+</ul>
+<figure class="fig"><img src="assets/sl-ti-weyl.webp" alt="Slide: (a) a topological insulator, an inverted gapped bulk band with a Dirac cone surface state; (b) a Weyl semimetal with a pair of band crossings and a surface Fermi arc." width="1000" height="563" loading="lazy"><figcaption>A topological insulator (left) and a Weyl semimetal (right), from lecture 2.3.</figcaption></figure>
+<h3>Semimetals: Dirac and Weyl</h3>
+<p>A <strong>semimetal</strong> sits between a semiconductor and a metal: its conduction and valence bands just touch or overlap slightly at the Fermi level.</p>
+<table class="tbl cmp">
+<tr><th></th><th>Dirac semimetal</th><th>Weyl semimetal</th></tr>
+<tr><td>Band touching</td><td>at Dirac points; each is fourfold degenerate (two Weyl points of opposite chirality on top of each other)</td><td>at Weyl points, each twofold degenerate; they come in pairs of opposite chirality, separated in \(k\)</td></tr>
+<tr><td>Symmetry</td><td>both time-reversal and inversion symmetry kept</td><td>time-reversal or inversion symmetry broken</td></tr>
+<tr><td>Surface</td><td>no protected arcs in general</td><td><strong>Fermi arcs</strong>: surface states joining the projections of a pair of Weyl points</td></tr>
+<tr><td>Topology</td><td>a nonzero Chern number exists only between Weyl points of opposite chirality, for Weyl semimetals</td><td></td></tr>
+<tr><td>Examples</td><td>Na₃Bi, Cd₃As₂ (3D analogues of graphene)</td><td>TaAs</td></tr>
+</table>
+<h3>Higher-order topological insulators (HOTI)</h3>
+<p>An ordinary (first-order) TI in \(d\) dimensions has protected states on its \((d-1)\)-dimensional boundary: a 2D TI has edge states, a 3D TI has surface states. An \(n\)th-order TI has protected states on boundaries of dimension \(d - n\). So a 2D second-order TI has states only at its <strong>corners</strong>. A 3D second-order TI has states along its <strong>hinges</strong> (edges where two faces meet). A 3D third-order TI has states at its corners. The bulk and the faces stay insulating.</p>
+<figure class="fig"><img src="assets/sl-hoti.webp" alt="Slide: a 2D conventional TI with edge states around its border, a 2D HOTI with states at its four corners, and a 3D HOTI with states at its eight corners." width="1000" height="563" loading="lazy"><figcaption>Higher-order topological insulators, from lecture 2.3.</figcaption></figure>
+<div class="checkrow">Questions</div>
+<details class="q"><summary><span class="qt pyq">Mid-sem 2025 · Q22 (5 marks)</span><span>Write a short note on higher-order topological insulators (HOTI).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">An \(n\)th-order TI in \(d\) dimensions has gapless states on boundaries of dimension \(d - n\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2E, HOTI.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Define a conventional (first-order) TI: insulating bulk, protected states one dimension lower (edges of a 2D sample, surfaces of a 3D sample).</li>
+<li>Define a HOTI by the rule above: the protected states move further down in dimension, and the faces are also gapped.</li>
+<li>Examples: 2D second-order, corner states; 3D second-order, hinge states; 3D third-order, corner states. Draw the slide's three pictures (square with a glowing border; square with four corner dots; cube with eight corner dots).</li>
+<li>Why they are protected: crystal symmetries (such as rotation or mirror symmetry) together with the band topology.</li>
+<li>Interest: localised, robust states for topological devices and photonic or acoustic analogues.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q24 (2 marks)</span><span>Differentiate between Dirac semimetals and Weyl semimetals.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Dirac point = two Weyl points of opposite chirality together (fourfold); Weyl point twofold, in separated pairs.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2E, the semimetal table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Dirac: fourfold-degenerate band crossings, needs both time-reversal and inversion symmetry (Na₃Bi, Cd₃As₂).</li>
+<li>Weyl: twofold crossings in pairs of opposite chirality, needs one of those symmetries broken; has surface Fermi arcs (TaAs).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">Mid-sem 2025 · Q21 (5 marks)</span><span>The graph shows the band structure of a 3D topological insulator with five errors. Identify them.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img class="narrow" src="assets/qp-ti.webp" alt="Hand-drawn graph titled 3D TI band structure, with momentum on the vertical axis and energy on the horizontal, an upper parabola labelled BVB, an inverted dashed parabola labelled BCB, and a crossing point labelled Pauli point." width="683" height="608" loading="lazy"><figcaption>The diagram from the 2025 mid-sem.</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">Correct picture: \(E\) up the vertical axis, \(k\) along the horizontal; bulk conduction band above and bulk valence band below, separated by a gap; surface states crossing linearly at the Dirac point inside the gap, with opposite spins on the two branches.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2E, topological insulators. No official key was released.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>Axes swapped.</strong> Momentum is on the vertical axis and energy on the horizontal. A band structure plots energy \(E\) against momentum \(k\).</li>
+<li><strong>Band labels swapped.</strong> The upward-opening parabola on top is labelled BVB (bulk valence band). It is the bulk conduction band (BCB); the downward-opening one is the valence band.</li>
+<li><strong>"Pauli point".</strong> The crossing of the surface states is the <strong>Dirac point</strong>. (The Pauli principle has nothing to do with it.)</li>
+<li><strong>No bulk gap.</strong> The drawn valence band rises above the bottom of the conduction band, so the bulk bands overlap. A topological insulator must have a bulk band gap.</li>
+<li><strong>Surface states in the wrong place.</strong> The Dirac point should sit inside the bulk gap, with the two linear branches running from the valence band to the conduction band (a Dirac cone). Here the crossing is below the bands and the lines are not a clean linear cone.</li>
+<li>Redraw it correctly, labelling spin-up and spin-down on the two branches (spin–momentum locking).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m2-sc">2F · Superconductors</h2>
+<p class="about">About 40 minutes. Lectures 2.3 and 2.4. The 2025 end-sem had a 10-mark question on this (Q37).</p>
+<p>A <strong>superconductor</strong> has exactly zero electrical resistance below a <strong>critical temperature</strong> \(T_c\), and pushes magnetic field out of itself. Heike Kamerlingh Onnes discovered it in 1911: the resistance of <strong>mercury</strong> vanished below 4.2 K, after he had learned to liquefy helium.</p>
+<figure class="fig"><!--plot:rt--><figcaption>Resistance against temperature. A metal's resistance rises with temperature. A semiconductor's falls, because more carriers cross the gap. A superconductor behaves like a metal above \(T_c\) and drops sharply to exactly zero at \(T_c\).</figcaption></figure>
+<p><strong>The transition is a phase change.</strong> Properties change abruptly at \(T_c\). The heat capacity jumps: in the normal state \(C_v\propto T\), at \(T_c\) it jumps up, and below \(T_c\) it falls off exponentially, as \(e^{-\Delta/k_BT}\).</p>
+<h3>The Meissner effect</h3>
+<p>Discovered by W. Meissner and R. Ochsenfeld in Germany in 1933. Put a sample in a weak magnetic field (\(H < H_c\)) and cool it below \(T_c\). The field is spontaneously pushed out of the bulk. It penetrates only a thin skin, the <strong>London penetration depth</strong> \(\lambda\approx100\) nm, decaying exponentially inside. Inside, \(B = 0\), so the material is a <strong>perfect diamagnet</strong> with susceptibility \(\chi = -1\).</p>
+<p>This is more than zero resistance. A perfect conductor would only resist <em>changes</em> of field (Lenz's law): a field already inside before cooling would stay trapped. A superconductor expels the field even if it was there before cooling. So the Meissner effect is a property of the superconducting state itself, not ordinary diamagnetism. It is also how a superconductor levitates a magnet.</p>
+<h3>Critical field and the two types</h3>
+<p>A strong enough field destroys superconductivity. The <strong>critical field</strong> depends on temperature as</p>
+<div class="eq boxed">\[H_c(T) = H_0\left[1 - \left(\frac T{T_c}\right)^2\right].\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(H_0\) is the critical field at 0 K, the largest it can be. At \(T = T_c\), the bracket is \(1 - 1 = 0\), so any field destroys it. The curve is a downward parabola and separates the superconducting region (below it) from the normal region. Why this shape: the superconducting state has lower free energy, but a field raises its free energy by an amount that grows as \(H^2\), while the normal state's free energy is hardly affected. Superconductivity is lost when the two become equal.</p>
+<p><strong>Example.</strong> At \(T = \frac{T_c}2\): \(H_c = H_0(1 - \frac14) = \frac34H_0\).</p>
+</div>
+<figure class="fig"><!--plot:hc--><figcaption>The critical field falls as a parabola from \(H_0\) at 0 K to zero at \(T_c\).</figcaption></figure>
+<table class="tbl cmp">
+<tr><th></th><th>Type I</th><th>Type II</th></tr>
+<tr><td>Materials</td><td>pure elements: tin, aluminium, lead, mercury</td><td>alloys and compounds: NbN, NbTi, Nb₃Ge; all high-temperature superconductors</td></tr>
+<tr><td>In a field</td><td>sharp switch from superconducting to normal at \(H_c\)</td><td>fully superconducting below \(H_{c1}\); a <strong>mixed state</strong> (superconducting with normal regions) between \(H_{c1}\) and \(H_{c2}\); normal above \(H_{c2}\)</td></tr>
+<tr><td>Critical fields</td><td>low, under about 1 tesla</td><td>much higher, up to 40 to 50 tesla</td></tr>
+</table>
+<p>Most first-generation superconductors only work below about 30 K.</p>
+<h3>BCS theory: why it happens</h3>
+<p>An early "two-fluid model" (normal plus superconducting electrons) had no firm basis and was dropped. The first successful quantum theory was <strong>BCS theory</strong> (1957), by John Bardeen, Leon Cooper and Robert Schrieffer at the University of Illinois (Nobel Prize 1972).</p>
+<ul>
+<li>Below \(T_c\), electrons form <strong>Cooper pairs</strong>. A moving electron pulls the positive ions slightly towards it, leaving a region of extra positive charge, which attracts a second electron. So the pairing is caused by lattice vibrations (<strong>phonons</strong>): the electron–lattice interaction here helps rather than scatters.</li>
+<li>The two electrons of a pair are about 100 nm apart, much more than the lattice spacing (0.1 to 0.4 nm). The pairs act together and move through the lattice without scattering, giving zero resistance.</li>
+<li>The pair's binding energy must beat thermal vibrations, which is why superconductivity needs low temperature.</li>
+<li>Evidence: the <strong>isotope effect</strong>. Heavier isotopes of the same metal have a lower \(T_c\) (\(T_c\propto M^{-1/2}\)), so the lattice must be involved. It is strong in Type I and weaker in Type II.</li>
+</ul>
+<h3>High-temperature superconductors</h3>
+<ul>
+<li>1986: Georg Bednorz and Karl Müller (IBM Zurich) found superconductivity at 35 K in a lanthanum-based copper oxide (a <strong>cuprate</strong>). Nobel Prize 1987.</li>
+<li>1987: replacing La with Y gave YBa₂Cu₃O₇₋ₓ (<strong>YBCO</strong>) with \(T_c\approx92\) K, above the boiling point of liquid nitrogen (77 K), so it can be cooled cheaply. Superconductivity disappears near \(x\approx0.6\), where the structure changes from orthorhombic to tetragonal.</li>
+<li>Thallium and mercury cuprates have even higher \(T_c\) (HgBa₂Ca₂Cu₃O₈, 134 K). Lanthanum superhydride LaH₁₀ reaches about 250 K, but only under about 200 GPa of pressure.</li>
+<li>All high-\(T_c\) superconductors are Type II. Their mechanism is still unsettled. Two proposals: <em>spin fluctuations</em> (antiferromagnetic, giving d-wave pairing, \(d_{x^2-y^2}\)) and <em>interlayer coupling</em> (BCS-like s-wave pairing helped by the layers).</li>
+</ul>
+<p><strong>Applications.</strong> Maglev trains (Meissner expulsion and strong superconducting magnets levitate and drive the train with no friction; running in Japan); MRI (strong uniform superconducting magnets); lossless power transmission (limited by the cost of cooling); superconducting YBCO tapes grown on nickel for strength (still being developed).</p>
+<h3>Josephson tunnelling</h3>
+<p>A <strong>Josephson junction</strong> is two superconductors separated by a thin <strong>insulating barrier</strong> (S–I–S). Cooper pairs tunnel through it, so a <strong>supercurrent flows with zero voltage</strong>, up to a critical current \(I_c\): \(I = I_c\sin\phi\), where \(\phi\) is the difference in quantum phase between the two superconductors. Leo Esaki, Ivar Giaever and Brian Josephson shared the 1973 Nobel Prize for tunnelling in semiconductors and superconductors.</p>
+<ul>
+<li>Normal metal–insulator–normal metal (N–I–N): current rises in proportion to voltage.</li>
+<li>Superconductor–insulator–normal (S–I–N): almost no current until \(V = \frac\Delta e\), where \(\Delta\) is the superconducting energy gap.</li>
+<li>S–I–S: a vertical spike of supercurrent at \(V = 0\) (Josephson tunnelling of pairs), then single-electron (Giaever) tunnelling once \(V = \frac{2\Delta}e\).</li>
+</ul>
+<p>Josephson junctions are the heart of SQUIDs and superconducting qubits (3D).</p>
+<div class="checkrow">Questions</div>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q37A (5 marks)</span><span>The temperature–resistance graph contains several errors. List them and redraw the correct graph.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img class="narrow" src="assets/qp-rt.webp" alt="Graph from the 2025 end-sem: a metal line falling with temperature, a dotted semiconductor curve rising, and a dashed curve labelled superconductor rising smoothly from a small value." width="591" height="458" loading="lazy"><figcaption>The graph from the 2025 end-sem.</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">Metal: \(R\) rises with \(T\). Semiconductor: \(R\) falls with \(T\). Superconductor: \(R\) drops abruptly to exactly 0 at \(T_c\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2F, the resistance plot, and 1H (bands).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>Metal line slopes the wrong way.</strong> It falls with temperature. A metal's resistance rises with temperature, because hotter atoms vibrate more and scatter electrons more.</li>
+<li><strong>Semiconductor curve slopes the wrong way.</strong> It rises. A semiconductor's resistance falls as temperature rises, because more electrons are lifted across the band gap (1H).</li>
+<li><strong>No superconducting drop.</strong> The superconductor curve rises smoothly and never reaches zero. It should fall abruptly to exactly zero at \(T_c\) and stay at zero below.</li>
+<li><strong>\(T_c\) is not marked.</strong> The critical temperature should be labelled on the temperature axis where the drop happens.</li>
+<li><strong>Labels placed ambiguously.</strong> The "Superconductor" label sits where two curves cross, so it is unclear which curve it names. Label each curve clearly at its end.</li>
+<li>Redraw: the plot at the top of 2F.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q37B (5 marks)</span><span>Explain the Meissner effect, with a neat labelled sketch.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Inside: \(B = 0\), \(\chi = -1\); field enters only to \(\lambda\approx100\) nm.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">2F, the Meissner effect.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Statement: when a superconductor in a field \(H < H_c\) is cooled below \(T_c\), the field is expelled from its bulk (Meissner and Ochsenfeld, 1933).</li>
+<li>Inside \(B = 0\): a perfect diamagnet, \(\chi = -1\). The field leaks in only to the London penetration depth, about 100 nm, falling off exponentially.</li>
+<li>Why it is not just zero resistance: a perfect conductor would trap a field present before cooling; a superconductor pushes it out. So it is a defining property of the superconducting state.</li>
+<li>Above \(H_c(T) = H_0[1 - (T/T_c)^2]\) superconductivity is destroyed.</li>
+<li>Sketch two panels: left, "\(T > T_c\)", a sphere with straight parallel field lines passing through it; right, "\(T < T_c\), \(H < H_c\)", the same lines bending around the sphere with none inside. Label "magnetic field lines", "normal state" and "superconducting state".</li>
+<li>Application: magnetic levitation (maglev trains).</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="quiz"><span class="tag">Game · Module 2</span>
+<h4>Quick-fire: past questions on Module 2</h4>
+<script type="application/json">{"q":[
+{"t":"A characteristic feature of a quantum well is that electron motion is","o":["confined in all three directions","confined in two directions","confined in one direction","free in all directions"],"a":2,"w":"A well confines one direction and leaves two free. Past paper question (mid-sem)."},
+{"t":"In a quantum wire, the density of states varies with energy as","o":["E^(1/2)","E⁰ (constant)","E^(−1/2)","E²"],"a":2,"w":"3D: E^(1/2); 2D: constant; 1D: E^(−1/2). Past paper question (mid-sem)."},
+{"t":"Which is a well-known 3D topological insulator?","o":["graphene","Bi₂Se₃","YBCO","FeSe"],"a":1,"w":"Bi₂Se₃ and Bi₂Te₃. Graphene is a semimetal, YBCO and FeSe are superconductors. Past paper question (mid-sem)."},
+{"t":"Spin–momentum locking in 3D topological insulators means","o":["spin direction is random","spin is always perpendicular to momentum","spin is independent of momentum","spin aligns with the external field"],"a":1,"w":"Past paper question (mid-sem)."},
+{"t":"The surface state dispersion of a 3D topological insulator is","o":["quadratic","linear (Dirac cone)","flat bands","parabolic"],"a":1,"w":"Past paper question (mid-sem and end-sem)."},
+{"t":"Which 2D material has zero band gap with linear dispersion near the Dirac points?","o":["MoS₂","WS₂","graphene","black phosphorus"],"a":2,"w":"Past paper question (mid-sem)."},
+{"t":"Monolayer TMDs like MoS₂ are attractive for optoelectronics because of their","o":["high thermal conductivity","direct band gap in monolayer form","zero effective mass","metallic behaviour at all thicknesses"],"a":1,"w":"Indirect in bulk, direct in a monolayer. Past paper question (mid-sem)."},
+{"t":"The spin Hall effect involves","o":["charge build-up at the edges","a spin current transverse to the charge current","Landau levels","breaking time-reversal symmetry"],"a":1,"w":"Spin-up and spin-down go to opposite edges. Past paper question (end-sem)."},
+{"t":"Band inversion in a topological insulator is caused by","o":["lattice vibrations","strong spin–orbit coupling","external pressure","magnetic ordering"],"a":1,"w":"Past paper question (end-sem)."},
+{"t":"Majorana fermions are expected to appear in","o":["high-temperature superconductors","topological superconductors","semiconductors at room temperature","classical metals"],"a":1,"w":"Past paper question (end-sem). See also 4E."},
+{"t":"The magic twist angle of bilayer graphene is about","o":["0.1°","1.1°","11°","30°"],"a":1,"w":"At about 1.1° the bands become flat and superconductivity appears."},
+{"t":"A Weyl semimetal requires","o":["both time-reversal and inversion symmetry","breaking time-reversal or inversion symmetry","a magnetic field","zero spin–orbit coupling"],"a":1,"w":"Keeping both gives a Dirac semimetal instead."},
+{"t":"A 3D second-order topological insulator has protected states on its","o":["surfaces","hinges","bulk","nowhere"],"a":1,"w":"Order n in d dimensions: states on boundaries of dimension d − n, here 3 − 2 = 1 (hinges)."},
+{"t":"High-temperature superconductors are all","o":["Type I","Type II","elemental metals","conventional BCS s-wave only"],"a":1,"w":"All cuprates are Type II."}
+]}</script>
+</div>
+<div class="game" data-type="blank"><span class="tag">Game · Module 2 fill in the blanks</span>
+<h4>Past fill-in-the-blank questions</h4>
+<script type="application/json">{"q":[
+{"t":"Berry phase is a geometric phase acquired over a closed ___ in momentum space.","a":["loop","path","cycle","curve"]},
+{"t":"Superconductivity was first discovered in ___ (material) in 1911 by Heike Kamerlingh Onnes.","a":["mercury","Hg"]},
+{"t":"The temperature below which a material becomes superconducting is called the ___ temperature.","a":["critical","transition","Tc"]},
+{"t":"Superconductors show the ___ effect, the complete expulsion of magnetic fields.","a":["Meissner","Meissner-Ochsenfeld"]},
+{"t":"Superconductors have ___ electrical resistance below Tc.","a":["zero","no"]},
+{"t":"In conventional superconductors, the electron pairing is mediated by ___.","a":["phonons","phonon","lattice vibrations"]},
+{"t":"A Josephson junction is two superconductors separated by a thin ___.","a":["insulator","insulating barrier","insulating layer","barrier"]},
+{"t":"High-temperature superconductors have a ___ critical temperature than conventional ones.","a":["higher","high"]},
+{"t":"Breaking time-reversal symmetry in a topological insulator can be done by ___ doping (or a magnetic field).","a":["magnetic","magnetic impurity","magnetic field"]},
+{"t":"A Majorana fermion is a particle that is its own ___.","a":["antiparticle","anti-particle"]},
+{"t":"Quantum wells confine carriers in ___ dimension(s).","a":["one","1"]},
+{"t":"The quantised Hall conductance is ν times ___.","a":["e²/h","e^2/h","e2/h"]}
+]}</script>
+</div>
+</section>

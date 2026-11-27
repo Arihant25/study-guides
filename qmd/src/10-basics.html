@@ -1,0 +1,115 @@
+<div class="part">Part 0<span>The basics that the rest of the page uses</span></div>
+<section>
+<h2 id="b-units">0a · Numbers, units and constants</h2>
+<p class="about">About 15 minutes.</p>
+<p><strong>Powers of ten.</strong> Quantum materials are tiny, so the numbers are very large or very small. \(10^{3} = 1000\) and \(10^{-3} = \frac1{1000} = 0.001\). A number like \(6.63\times10^{-34}\) means 6.63 divided by 1 followed by 34 zeros. To multiply, multiply the front numbers and add the powers: \((2\times10^{3})\times(3\times10^{-5}) = 6\times10^{-2}\). To divide, divide the front numbers and subtract the powers: \(\frac{6\times10^{-34}}{2\times10^{-14}} = 3\times10^{-20}\).</p>
+<table class="tbl">
+<tr><th>Prefix</th><th>Means</th><th>Example on this page</th></tr>
+<tr><td>milli (m)</td><td>\(10^{-3}\)</td><td>10 mK, the temperature a superconducting qubit needs</td></tr>
+<tr><td>micro (µ)</td><td>\(10^{-6}\)</td><td>a coherence time of 100 µs</td></tr>
+<tr><td>nano (n)</td><td>\(10^{-9}\)</td><td>a quantum well 5 to 20 nm thick</td></tr>
+<tr><td>ångström (Å)</td><td>\(10^{-10}\) m</td><td>the spacing of atoms, a few Å</td></tr>
+<tr><td>femto (f)</td><td>\(10^{-15}\)</td><td>a SQUID can sense \(10^{-15}\) tesla (femtotesla)</td></tr>
+<tr><td>kilo, mega, giga (k, M, G)</td><td>\(10^{3}, 10^{6}, 10^{9}\)</td><td>the NV centre splitting of 2.87 GHz; 1 kbar of pressure is \(10^{8}\) Pa</td></tr>
+</table>
+<p><strong>The electronvolt.</strong> Energies of single electrons are tiny in joules, so we use the <strong>electronvolt</strong> (eV), the energy an electron gains when it moves through 1 volt. \(1\text{ eV} = 1.602\times10^{-19}\text{ J}\). To turn eV into joules multiply by \(1.602\times10^{-19}\). To turn joules into eV divide by it.</p>
+
+<table class="tbl">
+<tr><th>Constant</th><th>Symbol and value</th><th>What it is</th></tr>
+<tr><td>Planck's constant</td><td>\(h = 6.626\times10^{-34}\) J s</td><td>sets the size of quantum effects; a photon of frequency \(\nu\) has energy \(h\nu\)</td></tr>
+<tr><td>Reduced Planck's constant, "h-bar"</td><td>\(\hbar = \frac{h}{2\pi} = 1.055\times10^{-34}\) J s</td><td>\(h\) divided by \(2\pi\); it appears whenever angular frequency \(\omega\) is used</td></tr>
+<tr><td>Electron charge</td><td>\(e = 1.602\times10^{-19}\) C</td><td>the size of the charge of one electron</td></tr>
+<tr><td>Electron mass</td><td>\(m_e = 9.109\times10^{-31}\) kg</td><td>the mass of a free electron</td></tr>
+<tr><td>Speed of light</td><td>\(c = 3.0\times10^{8}\) m/s</td><td></td></tr>
+<tr><td>Boltzmann's constant</td><td>\(k_B = 1.381\times10^{-23}\) J/K</td><td>turns temperature into energy: thermal energy is about \(k_BT\)</td></tr>
+<tr><td>Thermal energy at room temperature</td><td>\(k_BT = 0.0259\) eV at 300 K</td><td>worth remembering; at 4 K it is about 0.00035 eV</td></tr>
+<tr><td>A shortcut</td><td>\(hc = 1240\) eV nm</td><td>so a photon of wavelength \(\lambda\) nm has energy \(\frac{1240}{\lambda}\) eV</td></tr>
+</table>
+<p>The symbol \(\pi\) (the Greek letter pi) is 3.14159. Temperatures are in kelvin (K): 0 K is absolute zero, liquid helium boils at 4.2 K, liquid nitrogen at 77 K, and room temperature is about 300 K.</p>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Try it</span><span>Red light has wavelength 620 nm. What is the energy of one photon in eV and in joules?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E = \frac{hc}{\lambda}\), with \(hc = 1240\) eV nm.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">0a, the shortcut row of the table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(E = \frac{1240}{620}\text{ eV} = 2.0\) eV.</li>
+<li>Multiply by \(1.602\times10^{-19}\) to get joules. \(E = 2.0\times1.602\times10^{-19} = 3.2\times10^{-19}\) J.</li>
+<li>Check with \(h\) and \(c\) directly. \(\frac{6.626\times10^{-34}\times3.0\times10^{8}}{620\times10^{-9}} = \frac{1.99\times10^{-25}}{6.2\times10^{-7}} = 3.2\times10^{-19}\) J. The two agree.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Try it</span><span>Is thermal energy at room temperature bigger or smaller than a 1 eV band gap? By how much?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Thermal energy \(\approx k_BT = 0.0259\) eV at 300 K.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">0a, the constants table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Divide the gap by the thermal energy. \(\frac{1}{0.0259} \approx 39\).</li>
+<li>So the gap is about 39 times larger than \(k_BT\). Only a few electrons get enough energy to cross it, which is why a semiconductor conducts poorly at room temperature but better when hotter.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="b-maths">0b · The maths you need</h2>
+<p class="about">About 20 minutes. Come back here whenever a symbol later on is unclear.</p>
+<p><strong>Signs that compare.</strong> \(\approx\) means "roughly equal". \(\propto\) means "proportional to", that is, equal apart from a constant factor: \(E\propto n^2\) means \(E = Cn^2\) for some constant \(C\), so doubling \(n\) makes \(E\) four times bigger. \(\gg\) means "much greater than". \(\Delta x\) (capital delta) means "a change in \(x\)" or "the spread in \(x\)".</p>
+<p><strong>Sums.</strong> \(\sum_n a_n\) (capital sigma) means "add up \(a_n\) for every \(n\)", so \(\sum_{n=1}^{3}n^2 = 1 + 4 + 9 = 14\).</p>
+<p><strong>Derivatives.</strong> \(\frac{df}{dx}\) is the rate at which \(f\) changes as \(x\) changes, the slope of the graph of \(f\). The rules used on this page are these.</p>
+<ul>
+<li>\(\frac{d}{dx}x^n = nx^{n-1}\). For example \(\frac{d}{dx}x^2 = 2x\) and \(\frac{d}{dx}\sqrt x = \frac{d}{dx}x^{1/2} = \frac12x^{-1/2}\).</li>
+<li>\(\frac{d}{dx}\sin(kx) = k\cos(kx)\) and \(\frac{d}{dx}\cos(kx) = -k\sin(kx)\). Doing it twice gives \(\frac{d^2}{dx^2}\sin(kx) = -k^2\sin(kx)\). The second derivative \(\frac{d^2f}{dx^2}\) is the derivative of the derivative.</li>
+<li>\(\frac{d}{dx}e^{ax} = ae^{ax}\), where \(e = 2.718\dots\) is the base of natural logarithms. Here \(a\) can be any constant, even an imaginary one (below).</li>
+</ul>
+<p><strong>Partial derivatives.</strong> When a function depends on two things, like a wave \(\Psi(x, t)\) that depends on position \(x\) and time \(t\), the symbol \(\frac{\partial\Psi}{\partial t}\) (a curly d) means "differentiate with respect to \(t\) while holding \(x\) fixed". The symbol \(\nabla^2\) ("del squared") is shorthand for \(\frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}\), the 3D version of the second derivative.</p>
+<p><strong>Integrals.</strong> \(\int_a^bf(x)\,dx\) is the area under the graph of \(f\) between \(x = a\) and \(x = b\). It undoes differentiation. One identity is needed for the particle in a box: \(\sin^2\theta = \frac{1-\cos2\theta}{2}\). So \(\int_0^L\sin^2\!\left(\frac{n\pi x}{L}\right)dx = \frac L2\), because the cosine part goes through whole cycles and its area is zero.</p>
+<p><strong>Complex numbers.</strong> The symbol \(i\) means \(\sqrt{-1}\), so \(i^2 = -1\). A complex number \(z = a + ib\) has a real part \(a\) and an imaginary part \(b\). Its size squared is \(|z|^2 = a^2 + b^2\). Euler's formula links \(i\) to waves.</p>
+<div class="eq">\[e^{i\theta} = \cos\theta + i\sin\theta,\qquad |e^{i\theta}|^2 = \cos^2\theta + \sin^2\theta = 1.\]</div>
+<p>So \(e^{ikx}\) is a wave in \(x\) whose size is always 1. Quantum wavefunctions are written this way because the derivatives are easy: \(\frac{d}{dx}e^{ikx} = ike^{ikx}\).</p>
+<p><strong>Vectors.</strong> A vector \(\vec a\) has a size and a direction. The <strong>dot product</strong> \(\vec a\cdot\vec b = |a||b|\cos\theta\) is a number, zero when the vectors are perpendicular. The <strong>cross product</strong> \(\vec a\times\vec b\) is a vector perpendicular to both, with size \(|a||b|\sin\theta\). These appear in the reciprocal lattice (1G).</p>
+<p><strong>The delta function and the step.</strong> \(\delta(E - E_n)\) (small delta) is a spike at \(E = E_n\): zero everywhere else, with area 1. It is used for the density of states of a quantum dot, which has states at single energies only. A step function jumps from 0 to 1 at one point.</p>
+<p><strong>Logarithms.</strong> \(\ln x\) is the natural logarithm, the power you raise \(e\) to in order to get \(x\). So \(\ln e^{a} = a\) and \(\ln(ab) = \ln a + \ln b\).</p>
+
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Try it</span><span>Show that \(\psi = \sin(kx)\) satisfies \(\frac{d^2\psi}{dx^2} = -k^2\psi\).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{d}{dx}\sin(kx) = k\cos(kx)\), \(\frac{d}{dx}\cos(kx) = -k\sin(kx)\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">0b, derivatives.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>First derivative. \(\frac{d\psi}{dx} = k\cos(kx)\).</li>
+<li>Second derivative. \(\frac{d^2\psi}{dx^2} = k\times(-k\sin(kx)) = -k^2\sin(kx)\).</li>
+<li>Since \(\psi = \sin(kx)\), this is \(-k^2\psi\). Check at \(kx = \frac\pi2\): \(\psi = 1\) and the curve is at its peak, bending down, so the second derivative should be negative. It is \(-k^2\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Try it</span><span>Find \(|z|^2\) for \(z = 3e^{i\pi/4}\).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(|e^{i\theta}|^2 = 1\), and \(|cz|^2 = c^2|z|^2\) for a real number \(c\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">0b, complex numbers.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(|z|^2 = 3^2\times|e^{i\pi/4}|^2 = 9\times1 = 9\).</li>
+<li>Check by writing it out. \(e^{i\pi/4} = \cos45^\circ + i\sin45^\circ = 0.707 + 0.707i\), so \(z = 2.12 + 2.12i\) and \(|z|^2 = 2.12^2 + 2.12^2 = 4.5 + 4.5 = 9\).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="b-waves">0c · Waves</h2>
+<p class="about">About 10 minutes.</p>
+<p>A wave is a pattern that repeats in space and moves in time. Its <strong>wavelength</strong> \(\lambda\) (lambda) is the distance from one crest to the next. Its <strong>frequency</strong> \(\nu\) (nu) is how many crests pass a point each second, measured in hertz (Hz). The wave moves at speed \(v = \nu\lambda\). For light, \(v = c\).</p>
+<p>Two other numbers describe the same wave more neatly. The <strong>angular frequency</strong> is \(\omega = 2\pi\nu\) (omega). The <strong>wavenumber</strong> is \(k = \frac{2\pi}\lambda\). A wave moving along \(x\) can then be written</p>
+<div class="eq">\[y(x, t) = A\sin(kx - \omega t)\quad\text{or}\quad \Psi(x, t) = Ae^{i(kx-\omega t)}.\]</div>
+<p>\(A\) is the <strong>amplitude</strong>, the height of a crest. The quantity \(kx - \omega t\) is the <strong>phase</strong>. When \(x\) grows by \(\lambda\), the phase grows by \(k\lambda = 2\pi\), one full cycle.</p>
+<p><strong>Interference and diffraction.</strong> When two waves meet, they add. Crest on crest gives a bigger wave (constructive interference). Crest on trough cancels (destructive interference). A wave passing a regular grid of obstacles, such as rows of atoms, gives bright spots only at certain angles. This is <strong>diffraction</strong>. It is the test for whether something is a wave.</p>
+<p><strong>Standing waves.</strong> A wave trapped between two fixed ends, like a guitar string, can only have wavelengths that fit a whole number of half-waves between the ends: \(L = n\frac\lambda2\). The points that never move are called <strong>nodes</strong>. This is the idea behind the particle in a box (1E): trapping a wave makes only certain wavelengths, and so only certain energies, possible.</p>
+<div class="checkrow">Try it</div>
+<details class="q"><summary><span class="qt">Try it</span><span>A string of length 0.6 m is fixed at both ends. What are the three longest wavelengths that fit, and how many nodes does each have between the ends?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(L = n\frac\lambda2\), so \(\lambda = \frac{2L}n\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">0c, standing waves.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(n = 1\): \(\lambda = \frac{2\times0.6}{1} = 1.2\) m. One half-wave, no nodes between the ends.</li>
+<li>\(n = 2\): \(\lambda = 0.6\) m. Two half-waves, one node in the middle.</li>
+<li>\(n = 3\): \(\lambda = 0.4\) m. Three half-waves, two nodes.</li>
+<li>The pattern is \(n - 1\) nodes for the \(n\)th wave. Check \(n = 3\): three half-waves of 0.2 m each make 0.6 m, the length of the string.</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="match"><span class="tag">Game · Part 0</span>
+<h4>Match each symbol to its meaning</h4>
+<script type="application/json">{"p":[["ħ","Planck's constant divided by 2π"],["k_BT","thermal energy, 0.0259 eV at 300 K"],["∝","proportional to"],["λ","wavelength"],["ω","angular frequency, 2π times the frequency"],["k","wavenumber, 2π divided by the wavelength"],["∂/∂t","rate of change with time, other variables held fixed"],["∇²","sum of the second derivatives in x, y and z"],["i","the square root of −1"],["δ(E − Eₙ)","a spike at one energy, area 1"],["1 eV","1.602 × 10⁻¹⁹ joule"],["hc","1240 eV nm"]]}</script>
+</div>
+</section>

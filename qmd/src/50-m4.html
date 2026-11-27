@@ -1,0 +1,264 @@
+<div class="part">Part 4<span>Module 4 · Experimental techniques and emerging trends</span></div>
+<section>
+<h2 id="m4-stm">4A · Scanning tunnelling microscope (STM)</h2>
+<p class="about">About 25 minutes. Lectures 4.1 and 4.2. A 10-mark question in the 2025 end-sem (Q38).</p>
+<p>The STM was invented at IBM by Gerd Binnig and Heinrich Rohrer, who won the Nobel Prize in Physics in 1986. It scans a very sharp metal tip (ideally ending in a single atom) across a conducting surface, so close that electrons tunnel across the gap. It can resolve individual atoms. IBM famously arranged xenon atoms to spell "IBM".</p>
+<figure class="fig"><img src="assets/sl-stm.webp" alt="Slide: how an STM works, with a tip over a sample, the tunnelling current formula I ~ V e^(-cd), and the three principles: tunnelling, piezoelectric effect and feedback loop." width="1000" height="563" loading="lazy"><figcaption>How an STM works, from lecture 4.1.</figcaption></figure>
+<h3>The three principles (the "three essential requirements")</h3>
+<ol>
+<li><strong>Quantum tunnelling</strong> lets us "see" the surface. Classically, an electron without enough energy to go over the gap (vacuum, air or liquid) could never cross it. But its wavefunction does not stop dead at the edge; it decays inside the barrier. If the gap is thin enough (under about 1 nm), some of the wave reaches the other side, so a few electrons cross. Apply a voltage \(V\) between tip and sample, and a <strong>tunnelling current</strong> flows:
+<div class="eq boxed">\[I\propto V\,e^{-cd}\]</div></li>
+<li><strong>The piezoelectric effect</strong> moves the tip with sub-ångström precision. Discovered by Pierre Curie in 1880: squeezing certain crystals (quartz, barium titanate) makes opposite charges on their faces, and the reverse also works: a voltage makes the crystal stretch or shrink very slightly. The STM scanner is a piezoelectric tube, typically PZT (lead zirconate titanate).</li>
+<li><strong>A feedback loop</strong> measures the current and adjusts the tip height, and the computer turns these adjustments into an image.</li>
+</ol>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(I\) is the tunnelling current, \(V\) the tip–sample voltage, \(d\) the tip–sample distance, and \(c\) a constant set by how high the barrier is (the work function). The current falls <em>exponentially</em> with distance. For typical metals it drops about 10 times for every extra 0.1 nm. Because of this steepness, almost all the current flows through the single atom at the very end of the tip, which is why the STM sees atoms. It also makes the current a very sensitive measure of height.</p>
+<p><strong>Example.</strong> If moving the tip 0.1 nm closer multiplies the current by 10, then \(e^{c\times0.1\text{ nm}} = 10\), so \(c = \frac{\ln10}{0.1\text{ nm}} = 23\) per nm. A 1 Å bump on the surface then changes the current tenfold.</p>
+</div>
+<figure class="fig"><!--plot:stm--><figcaption>The tunnelling current against tip distance, with \(c = 23\) per nm.</figcaption></figure>
+<h3>Modes of operation</h3>
+<ul>
+<li><strong>Constant-current mode.</strong> The feedback loop is on. It keeps the current fixed by raising and lowering the tip as it scans. The recorded height is the image of the surface (strictly, of the local density of states). It is safe on rough surfaces but slower.</li>
+<li><strong>Constant-height mode.</strong> The feedback loop is off. The tip moves at a fixed height and the changing current is recorded as the image. It is fast but only safe on very flat surfaces, or the tip would crash.</li>
+</ul>
+<p>Famous images: the <strong>quantum corral</strong>, a ring of iron atoms on copper (111) inside which the surface electrons form circular standing waves, showing electron waves directly; and steps on graphene. Variable-temperature STMs (VT-STM) cool or heat the sample.</p>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q38 (10 marks)</span><span>(A) Explain how an STM works, based on quantum tunnelling between tip and sample (4). (B) State and describe its modes of operation (3). (C) What are the three essential requirements for STM operation? (3)</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(I\propto Ve^{-cd}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4A.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>(A) A sharp conducting tip is brought within about 1 nm of a conducting sample and a bias voltage applied. Electrons tunnel through the vacuum gap because their wavefunctions decay into the barrier rather than stopping at it. Write the formula and explain that the current falls about tenfold per 0.1 nm, so it is very sensitive to height and comes from the last atom of the tip. Scanning the tip and recording the current or height maps the surface atom by atom.</li>
+<li>Sketch: tip above a row of atoms, the gap \(d\), the voltage source, the current meter, the piezo tube and the feedback box. Draw a wavefunction oscillating on one side, decaying across the gap, and oscillating with smaller amplitude on the other.</li>
+<li>(B) Constant-current mode: feedback on, tip height adjusted to keep \(I\) fixed, height recorded; works on rough surfaces. Constant-height mode: feedback off, height fixed, current recorded; fast, flat surfaces only.</li>
+<li>(C) Quantum tunnelling (a conducting tip and sample with a sub-nanometre gap); the piezoelectric scanner for ångström-level positioning; the feedback loop that controls the tip and builds the image. (Also worth a line: a sharp tip and good vibration isolation.)</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m4-arpes">4B · Angle-resolved photoemission spectroscopy (ARPES)</h2>
+<p class="about">About 20 minutes. Lectures 4.1 and 4.2.</p>
+<p>ARPES measures the band structure \(E(\vec k)\) of a material directly. It is based on the <strong>photoelectric effect</strong> (1A). Ultraviolet or X-ray photons of known energy \(h\nu\) knock electrons out of the sample. A detector (a hemispherical analyser) measures each electron's kinetic energy and the angle at which it leaves.</p>
+<div class="eq boxed">\[E_{\text{kin}} = h\nu - |E_B| - \Phi,\qquad\hbar k_\parallel = \sqrt{2mE_{\text{kin}}}\,\sin\theta.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The photon gives energy \(h\nu\). The electron spends \(|E_B|\) to escape from its state (\(E_B\) is its <strong>binding energy</strong>, measured below the Fermi level) and \(\Phi\) to get out of the surface (the work function). What is left is the kinetic energy measured. So measuring \(E_{\text{kin}}\) gives \(E_B\), the energy of the state it came from. It is Einstein's \(KE_{\max} = h\nu - \phi\) with the binding energy added.</p>
+<p>The momentum along the surface, \(k_\parallel\), is conserved when the electron leaves, because the surface is periodic in that direction. The electron's total momentum is \(\sqrt{2mE_{\text{kin}}}\), and the part along the surface is that times \(\sin\theta\), where \(\theta\) is the angle from the surface normal. So the angle gives \(k_\parallel\). The momentum perpendicular to the surface is <em>not</em> conserved, but can be estimated with extra assumptions. Plotting \(E_B\) against \(k_\parallel\) draws the band.</p>
+<p><strong>Example.</strong> Helium lamp light, \(h\nu = 21.2\) eV; \(\Phi = 4.5\) eV; an electron measured with \(E_{\text{kin}} = 16.2\) eV at \(\theta = 10^\circ\). Then \(|E_B| = 21.2 - 4.5 - 16.2 = 0.5\) eV. With \(\frac{\sqrt{2m_e}}\hbar = 0.512\) Å⁻¹ per \(\sqrt{\text{eV}}\): \(k_\parallel = 0.512\times\sqrt{16.2}\times\sin10^\circ = 0.512\times4.02\times0.174 = 0.36\) Å⁻¹.</p>
+</div>
+<ul>
+<li>ARPES measures only <strong>occupied</strong> states (states that hold electrons). Empty states need <strong>inverse photoemission</strong>, where low-energy electrons are sent in and couple to empty states, emitting photons.</li>
+<li>The measured electrons follow the Fermi–Dirac distribution (1F). At 0 K with perfect resolution the signal stops sharply at the Fermi energy (the <strong>Fermi cut-off</strong>), which is the reference for binding energies. In practice it is broadened by temperature and by the instrument's energy resolution. Knowing one lets you find the other: a known temperature calibrates the resolution, and a known resolution measures the sample's temperature.</li>
+<li><strong>Three-step model</strong>: (1) the photon excites the electron from its initial state to a final state; (2) the excited electron travels to the surface; (3) it escapes through the surface into vacuum.</li>
+<li>In a non-interacting system, removing one electron leaves the rest unchanged, giving sharp peaks. In correlated materials, removing one electron disturbs the others, giving broad features. ARPES signatures: Dirac cones (topological materials, 2E), superconducting gaps, charge density waves, Mott gaps, and spin splitting.</li>
+</ul>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q25 (2 marks)</span><span>State the basic principle behind ARPES.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E_{\text{kin}} = h\nu - |E_B| - \Phi\), \(\hbar k_\parallel = \sqrt{2mE_{\text{kin}}}\sin\theta\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4B.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>It uses the photoelectric effect: photons of known energy eject electrons, whose kinetic energy and emission angle are measured.</li>
+<li>Energy conservation gives the binding energy, and conservation of momentum along the surface gives \(k_\parallel\) from the angle, so ARPES maps the occupied band structure \(E(k)\).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m4-trans">4C · Transport measurements</h2>
+<p class="about">About 20 minutes. Lectures 4.1 and 4.2.</p>
+<p>Transport measurements probe how charge, heat and spin move through a material when an electric, magnetic or thermal field is applied. They reveal the electronic structure, scattering and carrier behaviour.</p>
+<h3>Resistivity: two-probe and four-probe</h3>
+<p>Apply a known current \(I\) and measure the voltage \(V\). Then \(V = IR\), and the resistivity \(\rho\) follows from \(R = \rho\frac LA\), where \(L\) is the length and \(A\) the cross-section area.</p>
+<ul>
+<li><strong>Two-probe method</strong>: the same two contacts carry the current and measure the voltage. Simple, but the measured voltage includes the drop across the contacts and wires, so \(R_{\text{measured}} = R_{\text{sample}} + 2R_{\text{contact}} + R_{\text{wires}}\).</li>
+<li><strong>Four-probe method</strong>: the outer two contacts carry the current and the inner two measure the voltage. The voltmeter has a very high resistance, so almost no current flows through the inner contacts and there is almost no voltage drop at them. The measured voltage is only that across the sample between the inner probes. Contact resistance is eliminated, which matters most for low-resistance samples.</li>
+</ul>
+<p>Studies: whether a material is a metal, semiconductor or insulator; how scattering changes with temperature; phase transitions such as metal–insulator transitions and superconductivity (finding \(T_c\) from the resistance drop).</p>
+<h3>Other transport measurements</h3>
+<table class="tbl">
+<tr><th>Measurement</th><th>Formula</th><th>What it tells you</th></tr>
+<tr><td>Hall effect (2D)</td><td>\(V_H = \frac{IB}{ned}\); \(\sigma = e(n_e\mu_e + n_h\mu_h)\)</td><td>carrier type (sign of \(V_H\)), concentration and mobility; anomalous Hall effect in magnets</td></tr>
+<tr><td>Magnetoresistance</td><td>\(MR = \frac{\rho(B) - \rho(0)}{\rho(0)}\)</td><td>Fermi surface shape, scattering anisotropy, quantum oscillations (Shubnikov–de Haas effect), spin-dependent transport</td></tr>
+<tr><td>Seebeck (thermoelectric) effect</td><td>\(S = \frac V{\Delta T}\)</td><td>a temperature difference makes a voltage; tells the dominant carrier and how good a thermoelectric material is</td></tr>
+<tr><td>Thermal conductivity</td><td>\(k = \frac{Q\,L}{A\,\Delta T}\)</td><td>heat flow \(Q\) through length \(L\) and area \(A\) for a temperature difference \(\Delta T\); phonon and electron contributions, defects, low-dimensional effects</td></tr>
+</table>
+<p><strong>Quantum transport</strong> (low temperature or high field, or nanoscale devices): weak localisation and antilocalisation, the quantum Hall effect, Coulomb blockade (3C), ballistic and diffusive transport. It measures coherence lengths, Berry phase and topological properties. <strong>Superconducting transport</strong>: \(T_c\), critical current density \(J_c\), critical field \(H_c\), Josephson tunnelling and Andreev reflection (which reveal the gap symmetry and pairing). Instruments: cryostats (2 to 400 K), superconducting magnets (several tesla), source-measure units and lock-in amplifiers, rotating sample stages, nanovoltmeters.</p>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q33 (5 marks)</span><span>Describe the four-probe method for measuring resistivity and explain why it is preferred over the two-probe method.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(R = \frac VI\), \(\rho = R\frac AL\); two-probe measures \(R_{\text{sample}} + 2R_{\text{contact}}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4C.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Setup: four contacts in a line on the sample. Pass a known current \(I\) through the outer two; measure the voltage \(V\) between the inner two with a high-impedance voltmeter. Sketch it (four probes on a disc, an ammeter in the outer loop, a voltmeter across the inner pair), and the two-probe version beside it.</li>
+<li>Compute \(R = \frac VI\) for the section between the inner probes, then \(\rho = R\frac AL\), with \(L\) the inner probe spacing and \(A\) the cross-section.</li>
+<li>Why it is better: in the two-probe method the current flows through the voltage contacts, so contact and lead resistances add to the reading. In the four-probe method, almost no current flows through the voltage probes, so there is no drop across their contacts and only the sample's voltage is measured.</li>
+<li>It matters most for low-resistance samples (metals, superconductors, thin films), where the contact resistance can be larger than the sample's.</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="match"><span class="tag">Game · 4A to 4C</span>
+<h4>Match the technique or idea</h4>
+<script type="application/json">{"p":[["I ∝ V e^(−cd)","STM tunnelling current"],["Piezoelectric tube","moves the STM tip with ångström precision"],["Constant-current mode","feedback on; tip height is the image"],["Constant-height mode","feedback off; current is the image; flat surfaces only"],["E_kin = hν − |E_B| − Φ","ARPES energy relation"],["Inverse photoemission","probes empty states that ARPES cannot"],["k parallel","conserved during photoemission"],["Four-probe method","removes contact resistance"],["S = V/ΔT","Seebeck coefficient"],["(ρ(B) − ρ(0))/ρ(0)","magnetoresistance"],["Quantum corral","ring of Fe atoms on Cu(111) showing standing electron waves"],["Binnig and Rohrer","invented the STM, Nobel 1986"]]}</script>
+</div>
+</section>
+
+<section>
+<h2 id="m4-fab">4D · Nanofabrication and thin films</h2>
+<p class="about">About 40 minutes. Lectures 4.3 and 4.4. Six questions of the 2025 end-sem came from this lecture.</p>
+<h3>Why small is different, and two ways to make it</h3>
+<p>As particles shrink, a larger share of their atoms sit on the surface: about 76% of the atoms in a 1.2 nm cluster, 45% at 5 nm, 35% at 7 nm, and nearly 0% at 63 µm. Surface atoms have fewer neighbours, so nanomaterials behave differently from bulk.</p>
+<ul>
+<li><strong>Top-down</strong>: start with bulk and cut it down: mechanical milling, etching, lithography, laser ablation, sputtering, electro-explosion.</li>
+<li><strong>Bottom-up</strong>: build from atoms and molecules: chemical vapour deposition, molecular beam epitaxy, sol-gel, spinning, laser pyrolysis, supercritical fluid synthesis, molecular condensation, chemical reduction, green synthesis.</li>
+</ul>
+<h3>Molecular beam epitaxy (MBE)</h3>
+<p>MBE grows crystals one atomic layer at a time. Beams of atoms or molecules are aimed at a heated crystal substrate in ultra-high vacuum, where they land and build up the crystal (<strong>epitaxy</strong> means growing a crystal layer that copies the substrate's lattice).</p>
+<figure class="fig"><img src="assets/sl-mbe.webp" alt="Slide: schematic of molecular beam epitaxy with ultra-high vacuum, effusion cells aimed at a heated substrate, shutters, and a RHEED gun and screen." width="1000" height="563" loading="lazy"><figcaption>Molecular beam epitaxy, from lecture 4.3.</figcaption></figure>
+<table class="tbl">
+<tr><th>Component</th><th>Function</th></tr>
+<tr><td>Ultra-high vacuum chamber (about \(10^{-10}\) mbar)</td><td>keeps the beams collision-free and the surface clean</td></tr>
+<tr><td>Effusion (Knudsen) cells</td><td>heated crucibles that evaporate each element (Ga, As, Al...) into a steady beam</td></tr>
+<tr><td>Substrate holder and manipulator, with heater</td><td>holds, rotates (for uniform films) and heats the substrate so atoms can arrange properly</td></tr>
+<tr><td>Source shutters</td><td>open and close each beam in a fraction of a second, giving atomically sharp interfaces</td></tr>
+<tr><td>RHEED system (reflection high-energy electron diffraction)</td><td>an electron gun fires electrons at a grazing angle onto the surface and a fluorescent screen shows the diffraction pattern, monitoring the surface and growth rate live</td></tr>
+<tr><td>Vacuum pumps (cryopumps or ion pumps)</td><td>reach and hold ultra-high vacuum</td></tr>
+</table>
+<p><strong>Scanning probe and e-beam lithography</strong> draw patterns: coat the substrate with a resist, write the pattern with an electron beam (or a probe tip), develop (remove the exposed resist), deposit the material, then lift off the remaining resist so only the pattern is left.</p>
+<h3>Thin-film deposition</h3>
+<p>Thin films are made either by <strong>chemical vapour deposition</strong> (CVD: low-pressure, plasma-enhanced, atomic layer) or <strong>physical vapour deposition</strong> (PVD: thermal evaporation, sputtering). In both, a film grows in the same stages: <strong>nucleation</strong> (single atoms gather into tiny clusters), <strong>growth of nuclei</strong>, <strong>coalescence</strong> (islands merge), <strong>film growth</strong> with channels and holes filling in, and finally a <strong>continuous film</strong>.</p>
+<p><strong>Adatoms.</strong> Atoms arriving on the surface (adatoms) are not stationary. On a single crystal they migrate until they reach high-energy sites: vacancies in the surface, step edges, and kinks where a step edge bends. Trapped there, they become nucleation points. Amorphous surfaces such as silicon dioxide lack these well-defined sites.</p>
+<table class="tbl cmp">
+<tr><th></th><th>CVD (chemical vapour deposition)</th><th>PVD (physical vapour deposition)</th></tr>
+<tr><td>How the film forms</td><td>gaseous <strong>precursor</strong> chemicals react or decompose on the hot substrate; the solid product stays as the film and by-product gases are pumped away</td><td>the material itself is turned to vapour by physical means (heating or ion bombardment) and condenses on the substrate; no chemical reaction</td></tr>
+<tr><td>Energy</td><td>heat to the substrate, plasma, or both</td><td>heat (evaporation) or ion impact (sputtering)</td></tr>
+<tr><td>Pressure</td><td>from atmospheric down to ultra-high vacuum</td><td>vacuum, about \(10^{-5}\) to \(10^{-9}\) mbar for evaporation</td></tr>
+<tr><td>Coverage</td><td>conformal: coats steps and trenches evenly</td><td>line of sight: shadowed areas get less</td></tr>
+<tr><td>Examples</td><td>SiO₂, Si₃N₄, polysilicon, graphene, TMDs</td><td>metal contacts (Al, Au), magnetic multilayers, optical coatings</td></tr>
+</table>
+<p><strong>CVD steps</strong>: precursors enter the reactor; they travel to the substrate by gas flow and diffusion; they adsorb onto the surface and react or decompose (for example NH₃ on a metal breaks down step by step: N stays, H₂ leaves); by-products desorb and are pumped out. Precursors must be very pure, stable in storage, reactive only under process conditions, and volatile enough to flow steadily (gases like silane SiH₄, NH₃, H₂; liquids like TEOS through mass-flow controllers). Families: halides (TiCl₄, WF₆), hydrides (SiH₄, GeH₄, NH₃), organometallics (AlMe₃), metal alkoxides (TEOS), dialkylamides, diketonates (Cu(acac)₂), carbonyls (Ni(CO)₄). Reactors are designed to avoid reactions in the gas phase, which make particles that ruin devices. The film growth rate depends on the flux of precursor, free surface sites (by-products and impurities block them) and the substrate temperature.</p>
+<table class="tbl">
+<tr><th>CVD type</th><th>Pressure</th><th>What controls growth</th><th>Notes</th></tr>
+<tr><td>APCVD (atmospheric pressure)</td><td>760 Torr</td><td>gas-phase collisions and boundary layers dominate, so delivery by diffusion through the gas (mass transport) limits growth</td><td>simple, fast, no vacuum; less uniform; gas flow must be managed carefully; most at risk of gas-phase particles</td></tr>
+<tr><td>LPCVD (low pressure)</td><td>0.1 to 10 mbar</td><td>a mix of diffusion and surface reaction; longer mean free path</td><td>more uniform and conformal films, many wafers per batch; needs higher temperature and a vacuum system</td></tr>
+<tr><td>PECVD (plasma-enhanced)</td><td>0.1 to 10 mbar</td><td>reactive plasma species give strong mass-transfer effects</td><td>lower temperature; remote plasma avoids damaging the substrate</td></tr>
+<tr><td>UHV-CVD</td><td>very low</td><td>mean free path as large as the chamber, no boundary layer, so only the surface reaction rate matters</td><td>cleanest</td></tr>
+<tr><td>ALD (atomic layer)</td><td>low</td><td>self-limiting surface reactions, one layer per cycle</td><td>exact thickness control</td></tr>
+</table>
+<h3>PVD methods</h3>
+<ul>
+<li><strong>Thermal evaporation</strong>: the most common thin-film method. The material is heated in vacuum until it evaporates, and the vapour condenses on the substrate. Vacuum-assisted thermal evaporation is the simplest way to make amorphous films, especially chalcogenides (CdSSe, MnS, Ge-Te-Ga) for memory switching, phase-change and solar uses.</li>
+<li><strong>Resistive-heating evaporation</strong>: a large current runs through a boat or filament (tungsten, molybdenum) holding the material; the boat heats up by its resistance and the material evaporates upward onto the substrate. Simple and cheap, good for low-melting metals (Al, Au, Ag), but the boat can contaminate the film and very high-melting materials cannot be reached.</li>
+<li><strong>Electron-beam evaporation</strong>: an electron gun produces a high-energy beam that a magnet bends into a water-cooled crucible, melting a small spot of the target. Only the spot gets hot, so the film is purer, the rate higher, and high-melting materials (W, Ta, oxides) can be deposited.</li>
+<li><strong>Sputtering</strong>: argon gas (about 0 to 0.03 mbar) is turned into a plasma. The target is the negative cathode and the substrate side the anode. Free electrons accelerate and knock electrons off argon atoms, making Ar⁺ ions, which accelerate into the target and knock atoms out of it; those atoms land on the substrate. Used for hard discs, integrated circuits, glass coatings, cutting tools, CDs and DVDs. <strong>Magnetron sputtering</strong> adds magnets near the target to trap the plasma, giving faster, uniform, well-adhering films. <strong>Ion-beam sputtering</strong> aims a focused ion beam at the target, for the highest-quality films (optical coatings).</li>
+</ul>
+<p><strong>X-ray diffraction</strong> checks the crystal structure of the result. X-rays are made when fast electrons hit a metal target in an X-ray tube (which needs an electron source, a high voltage and a metal target). Monochromatic X-rays reflect off the crystal planes and interfere constructively only when \(n\lambda = 2d\sin\theta\) (Bragg's law, 1A, 1G). The detector is swept through \(2\theta\).</p>
+<div class="checkrow">Questions (all from the 2025 end-sem)</div>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q26 (2 marks)</span><span>Name two essential components of an MBE system and state their function.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">No formula; the MBE components table.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D, MBE.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Effusion (Knudsen) cells: heated crucibles that evaporate each source element into a controlled molecular beam.</li>
+<li>RHEED: grazing-angle electron diffraction that monitors the surface structure and growth layer by layer during growth. (Or: the ultra-high vacuum chamber, which keeps beams collision-free and the surface clean.)</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q27 (2 marks)</span><span>What is the basic difference between PVD and CVD?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">No formula; the CVD/PVD table.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>PVD moves the material physically (evaporation or sputtering) from a source to the substrate in vacuum, with no chemical reaction.</li>
+<li>CVD forms the film by a chemical reaction or decomposition of gaseous precursors on the heated substrate, with by-products pumped away. CVD coats conformally; PVD is line of sight.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q28 (2 marks)</span><span>What is the difference between LPCVD and APCVD?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">LPCVD 0.1 to 10 mbar; APCVD 760 Torr.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D, CVD types table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>APCVD runs at atmospheric pressure: gas collisions and boundary layers dominate, growth is limited by mass transport; fast and simple but less uniform and prone to gas-phase particles.</li>
+<li>LPCVD runs at low pressure: longer mean free path, growth set by surface reaction plus diffusion, so films are more uniform and conformal and many wafers can be coated at once, at the cost of a vacuum system and higher temperature.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q29 (2 marks)</span><span>Why is high vacuum needed in most PVD techniques?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">No formula; lower pressure means a longer mean free path.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D, PVD and the MBE table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>At low pressure the vapour atoms travel from source to substrate in straight lines without hitting gas molecules (the mean free path is longer than the chamber), so they arrive with their energy and direction.</li>
+<li>Fewer gas molecules also means fewer impurities (oxygen, water) landing in or reacting with the film, so it is purer and adheres better.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q30 (2 marks)</span><span>What is the role of substrate heating during thin-film deposition?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">No formula; adatom migration needs thermal energy.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D, adatoms and CVD energy requirements.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Heat gives adatoms energy to migrate to step, kink and vacancy sites, so the film is denser, smoother, more crystalline (epitaxial in MBE) and adheres better.</li>
+<li>In CVD, heat drives the surface chemical reactions and helps by-products desorb, setting the growth rate.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q34 (5 marks)</span><span>Describe how resistive-heating evaporation and e-beam evaporation work for thin-film deposition. Mention the basic principle of each.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Resistive heating: heat \(= I^2R\) in the boat. Both: evaporate in vacuum, condense on the substrate.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">4D, PVD methods.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Common principle: in high vacuum, the source material is heated until it evaporates; the vapour travels in straight lines and condenses as a thin film on the cooler substrate above.</li>
+<li>Resistive heating: a large current through a tungsten or molybdenum boat holding the material heats it by its resistance (\(I^2R\)). Simple, cheap, for low-melting metals (Al, Au). Drawbacks: contamination from the boat, limited temperature.</li>
+<li>E-beam: a heated filament emits electrons, accelerated by several kV; a magnetic field bends the beam into a water-cooled crucible, where its energy melts a small spot of the target. Purer films, higher rates, and high-melting materials (W, Ta, oxides). Drawbacks: costlier, possible X-ray damage.</li>
+<li>Sketch both: a bell jar with a vacuum pump outlet; substrate at the top; a heated boat (resistive) or a crucible with a curved electron beam from a side gun and a magnet (e-beam); arrows of vapour rising to the substrate.</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="sort"><span class="tag">Game · 4D</span>
+<h4>CVD or PVD?</h4>
+<script type="application/json">{"b":["CVD","PVD"],"i":[["precursor gases react on the substrate",0],["LPCVD and APCVD",0],["plasma-enhanced, low temperature",0],["atomic layer deposition",0],["conformal coating of trenches",0],["TEOS and silane",0],["thermal evaporation",1],["sputtering with Ar⁺ ions",1],["e-beam evaporation",1],["magnetron",1],["line-of-sight deposition",1],["no chemical reaction",1]]}</script>
+</div>
+</section>
+
+<section>
+<h2 id="m4-qubit">4E · Qubits</h2>
+<p class="about">About 20 minutes. Lecture 4.5, and the qubit list at the end of 4.4.</p>
+<p>A <strong>qubit</strong> needs three things: two distinct states, isolation from any higher states, and the ability to be in a superposition of the two.</p>
+<table class="tbl cmp">
+<tr><th></th><th>Classical bit</th><th>Qubit</th></tr>
+<tr><td>States</td><td>0 or 1, like a light switch</td><td>\(|0\rangle\), \(|1\rangle\), or any point on the <strong>Bloch sphere</strong>: \(|0\rangle\) at the north pole, \(|1\rangle\) at the south pole</td></tr>
+<tr><td>Superposition</td><td>two bits hold one of 00, 01, 10, 11 at a time</td><td>two qubits can be in a combination of all four at once; \(N\) qubits span \(2^N\) states</td></tr>
+<tr><td>Entanglement</td><td>bits are independent</td><td>measuring one entangled qubit fixes the result of the other, however far away</td></tr>
+<tr><td>Measurement</td><td>reading a bit does not change it</td><td>measuring makes the superposition <strong>collapse</strong> to 0 or 1; you only see the outcome, never the superposition itself</td></tr>
+</table>
+<p>A general qubit state is \(|\psi\rangle = \alpha|0\rangle + \beta|1\rangle\), with \(|\alpha|^2 + |\beta|^2 = 1\). A measurement gives 0 with probability \(|\alpha|^2\) and 1 with probability \(|\beta|^2\). On the Bloch sphere, \(\alpha = \cos\frac\theta2\) and \(\beta = e^{i\phi}\sin\frac\theta2\), where \(\theta\) and \(\phi\) are the angles shown on the sphere. Qubit properties are superposition, entanglement and (unfortunately) <strong>decoherence</strong>, the loss of the quantum state to noise. Qubits are <em>not</em> deterministic.</p>
+<p><strong>Physical qubits</strong>: superconducting circuits, trapped ions, photons, topological qubits and NV centres in diamond (3F).</p>
+<h3>Four types in the lecture</h3>
+<p><strong>1. Transmon</strong> (the most common; IBM and Google). A small superconducting circuit: a Josephson junction shunted by a large capacitor, acting as a non-linear oscillator, an "artificial atom". Its energy is</p>
+<div class="eq boxed">\[H = 4E_Cn^2 - E_J\cos\varphi,\qquad n = N_1 - N_2,\quad\varphi = \phi_1 - \phi_2.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(n\) is the number of Cooper pairs that have tunnelled across the junction and \(\varphi\) the phase difference across it. \(E_C\) is the <strong>charging energy</strong>, the cost of moving charge (the capacitor's energy, like \(\frac{Q^2}{2C}\)). \(E_J\) is the <strong>Josephson energy</strong>, the strength of the tunnelling. The \(\cos\varphi\) term is not a parabola, so the oscillator is <strong>anharmonic</strong>: its levels are not evenly spaced, and a microwave tuned to the \(|0\rangle\to|1\rangle\) gap does not also drive \(|1\rangle\to|2\rangle\). The large capacitor makes \(E_J/E_C\) large (10 to 100), which makes the transmon insensitive to charge noise, hence the name ("transmission-line shunted plasma oscillation").</p>
+</div>
+<ul>
+<li>Advantages: very fast gates (nanoseconds), made with standard lithography, easy to control with microwaves.</li>
+<li>Disadvantages: short coherence (microseconds, up to about 100 µs), large compared with atoms so hard to pack millions on a chip, must be kept at about 10 mK.</li>
+</ul>
+<p><strong>2. Phase qubit.</strong> A Josephson junction driven by a DC bias current. The state is set by the superconducting phase \(\delta\), sitting in a tilted "washboard" potential</p>
+<div class="eq">\[U(\delta) = -E_J\left[\cos\delta + \frac I{I_c}\delta\right].\]</div>
+<p>The bias current ratio \(\frac I{I_c}\) tilts the cosine, leaving shallow wells with a few levels. Advantage: direct readout, because the \(|1\rangle\) state tunnels out of the well and produces a voltage. Disadvantages: very sensitive to flux noise, and low anharmonicity, so it is easy to push it into \(|2\rangle\) or \(|3\rangle\) by mistake. \(E_J/E_C\) is about \(10^6\), and coherence was historically lower than the transmon's. This is the circuit of the 1985 experiments behind the 2025 Nobel Prize (3D).</p>
+<p><strong>3. Majorana qubit</strong> (pursued by Microsoft). Uses <strong>Majorana fermions</strong>, particles that are their own antiparticles, expected at the two ends of a nanowire on a topological superconductor. It is like splitting one electron into two halves at opposite ends. The information lives in the shared state of the two ends, so poking one end does not destroy it. The operators obey \(\gamma_A + i\gamma_B\to-\gamma_B + i\gamma_A = i(\gamma_A + i\gamma_B)\) when the two are swapped. Advantages: built-in fault tolerance (immune to local noise) and less need for error correction. Disadvantages: extremely hard to make (it is still debated whether stable Majoranas have been seen), and logic needs moving (braiding) the particles around each other.</p>
+<p><strong>4. Topological qubit</strong> (the class Majorana qubits belong to). Information is stored in the topology of the system, like a knot in a string that survives shaking. It uses <strong>anyons</strong>, quasiparticles that exist only in 2D. Swapping them (<strong>braiding</strong>) changes the state by a unitary matrix, \(|\psi\rangle\to U|\psi\rangle\), where \(U\) depends only on the path's topology, not its speed or exact shape. This makes it naturally fault tolerant.</p>
+<table class="tbl cmp">
+<tr><th>Feature</th><th>Transmon</th><th>Phase qubit</th></tr>
+<tr><td>Design</td><td>Josephson junction shunted by a large capacitor</td><td>Josephson junction with a DC current bias</td></tr>
+<tr><td>\(E_J/E_C\)</td><td>10 to 100</td><td>about \(10^6\)</td></tr>
+<tr><td>Charge noise</td><td>low sensitivity (large capacitor)</td><td>more sensitive</td></tr>
+<tr><td>Principle</td><td>non-linear resonator</td><td>macroscopic bias current through the junction</td></tr>
+<tr><td>Coherence</td><td>longer, about 100 µs</td><td>historically lower</td></tr>
+</table>
+
+<div class="game" data-type="quiz"><span class="tag">Game · Module 4</span>
+<h4>Quick-fire: past questions and lecture facts on Module 4</h4>
+<script type="application/json">{"q":[
+{"t":"In which mechanism do carriers travel without scattering?","o":["hopping","ballistic transport","thermionic emission","drift"],"a":1,"w":"Past paper question (end-sem)."},
+{"t":"Thermionic emission is important in","o":["graphene","tunnel diodes","metal–semiconductor junctions","organic semiconductors"],"a":2,"w":"Carriers go over the Schottky barrier with thermal energy. Past paper question (end-sem)."},
+{"t":"A qubit differs from a classical bit because it can","o":["only be 0 or 1","be in a superposition of 0 and 1","only store classical information","be negative"],"a":1,"w":"Past paper question (end-sem)."},
+{"t":"Which is NOT a property of a qubit?","o":["superposition","entanglement","decoherence","deterministic behaviour"],"a":3,"w":"Past paper question (end-sem)."},
+{"t":"The STM tunnelling current depends on tip distance d as","o":["linearly","1/d","exponentially, e^(−cd)","d²"],"a":2,"w":"About tenfold per 0.1 nm."},
+{"t":"Which mode of STM operation has the feedback loop switched off?","o":["constant current","constant height","both","neither"],"a":1,"w":"Constant height: fast, only for flat surfaces."},
+{"t":"ARPES measures","o":["only empty states","only occupied states","phonons only","the work function only"],"a":1,"w":"Empty states need inverse photoemission."},
+{"t":"In ARPES, which momentum is conserved when the electron leaves?","o":["perpendicular to the surface","parallel to the surface","both","neither"],"a":1,"w":"The surface is periodic in-plane, so k parallel is conserved."},
+{"t":"RHEED in an MBE system is used to","o":["pump the chamber","heat the substrate","monitor the surface and growth live","evaporate the sources"],"a":2,"w":"Grazing-angle electron diffraction on a fluorescent screen."},
+{"t":"Which deposition method uses Ar⁺ ions to knock atoms out of a target?","o":["CVD","thermal evaporation","sputtering","MBE"],"a":2,"w":"Magnetron sputtering confines the plasma with magnets."},
+{"t":"The transmon Hamiltonian is","o":["H = 4E_C n² − E_J cos φ","H = p²/2m","H = DS_z² + γB·S","H = −E_J(cos δ + Iδ/I_c)"],"a":0,"w":"The last option is the phase qubit's potential; the third is the NV centre."},
+{"t":"Majorana qubits are hoped to be","o":["easy to make","intrinsically fault tolerant","room temperature","made of trapped ions"],"a":1,"w":"Information is stored non-locally in the two ends."},
+{"t":"The four-probe method is preferred because it","o":["is cheaper","removes contact resistance","needs no current","measures the Hall voltage"],"a":1,"w":"No current flows through the voltage probes."},
+{"t":"The share of surface atoms in a 5 nm particle is about","o":["5%","45%","76%","100%"],"a":1,"w":"1.2 nm: 76%, 5 nm: 45%, 7 nm: 35%."}
+]}</script>
+</div>
+</section>

@@ -1,0 +1,587 @@
+<div class="part">Part 1<span>Module 1 · Foundations of quantum mechanics and solid-state physics</span></div>
+<section>
+<h2 id="m1-light">1A · Light as particles, electrons as waves</h2>
+<p class="about">About 20 minutes. Lecture 1.1, and the Davisson–Germer part of 1.2.</p>
+<p><strong>What the course is about.</strong> A <strong>quantum material</strong> is one whose large-scale properties (how it conducts, shines or responds to a magnet) are set by quantum effects. The course lists three signs of this. <em>Quantum confinement</em>: electrons squeezed into 1, 2 or 3 small dimensions get discrete energy levels. <em>Quantum coherence</em>: electrons keep their wave behaviour over 100 to 1000 nm, which allows superconductivity and quantum computing. <em>Topological protection</em>: some states are protected by the geometry of the material and survive defects and disorder. Examples are quantum dots, graphene, superconductors and topological insulators. Everyday uses are MRI (superconducting magnets), LEDs (quantum wells), QLED screens (quantum dots), hard-disk read heads (giant magnetoresistance) and GPS (atomic clocks).</p>
+<p>The course gives these reasons why classical physics is not enough. Transistors are approaching the size of atoms (about 5 nm), where electrons leak through barriers by tunnelling. Classical computers lose most of their energy as heat. A classical bit is only 0 or 1, while a <strong>qubit</strong> can be in a combination of both, and \(N\) qubits can represent \(2^N\) states at once (300 qubits represent more states than there are atoms in the universe).</p>
+<p>A quantum device is made in three steps: design the material, fabricate it at the nanoscale (lithography, deposition, etching), then integrate it (contacts, packaging, often cooling, and classical control electronics).</p>
+
+<h3>Wave–particle duality of light</h3>
+<p>Interference shows that light is a wave. The <strong>photoelectric effect</strong> shows that light also comes in particles, called <strong>photons</strong>. When light shines on a metal it can knock electrons out. Heinrich Hertz saw this in 1887, and Einstein explained it in 1905. Each photon carries energy \(E = h\nu\). An electron is freed only if one photon gives it at least the <strong>work function</strong> \(\phi\) (phi), the minimum energy needed to pull an electron out of that metal. Whatever is left over becomes the electron's kinetic energy.</p>
+<div class="eq boxed">\[KE_{\max} = h\nu - \phi\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(h\nu\) is the energy of one incoming photon. \(\phi\) is the cost of getting the electron out. \(KE_{\max}\) is the most kinetic energy an ejected electron can have; it is a maximum because some electrons lose extra energy on the way out.</p>
+<p>The formula explains the four observations on the slide. Below the <strong>threshold frequency</strong> \(\nu_0 = \frac\phi h\), \(KE_{\max}\) would be negative, so no electrons come out however bright the light. Above it, emission is instant, because one photon does the job. A brighter light has more photons, so more electrons, but each has the same energy. A higher frequency gives each electron more energy.</p>
+<p><strong>Example.</strong> A metal has \(\phi = 2.3\) eV. Light of 400 nm has photons of \(\frac{1240}{400} = 3.1\) eV, so \(KE_{\max} = 3.1 - 2.3 = 0.8\) eV. Light of 620 nm has photons of 2.0 eV, below 2.3 eV, so no electrons come out. ARPES (4B) uses this same equation.</p>
+</div>
+
+<h3>Matter waves: the de Broglie wavelength</h3>
+<p>De Broglie suggested that if light waves behave like particles, particles such as electrons should also behave like waves, with a wavelength set by their momentum \(p = mv\).</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the de Broglie wavelength \(\lambda = \frac hp\).</h4>
+<ol class="steps lines">
+<li>For a photon, Planck gives \(E = h\nu = \frac{hc}\lambda\), and Einstein gives \(E = mc^2\).</li>
+<li>Equate them: \(mc^2 = \frac{hc}\lambda\), so \(\lambda = \frac h{mc} = \frac hp\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 and 2, 4 steps)</span></summary>
+<ol class="steps">
+<li>A photon's frequency and wavelength are linked by \(c = \nu\lambda\), so \(\nu = \frac c\lambda\) and \(E = h\nu = \frac{hc}\lambda\).</li>
+<li>The same photon has energy \(E = mc^2\), where \(m\) is its effective mass.</li>
+<li>Both expressions are the energy of the same photon, so \(mc^2 = \frac{hc}\lambda\).</li>
+<li>Divide both sides by \(mc^2\) and multiply by \(\lambda\). \(\lambda = \frac{hc}{mc^2} = \frac h{mc}\). For a photon, \(mc\) is its momentum \(p\), so \(\lambda = \frac hp\).</li>
+</ol>
+</details></li>
+<li>De Broglie's idea: the same holds for a particle moving at speed \(v\), with \(p = mv\). So \(\lambda = \frac h{mv}\).</li>
+<li>For a particle of kinetic energy \(E_k\), \(p = \sqrt{2mE_k}\). An electron accelerated through \(V\) volts has \(E_k = eV\), so \(\lambda = \frac h{\sqrt{2meV}}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Kinetic energy is \(E_k = \frac12mv^2\). Multiply top and bottom by \(m\): \(E_k = \frac{(mv)^2}{2m} = \frac{p^2}{2m}\).</li>
+<li>Rearrange. \(p^2 = 2mE_k\), so \(p = \sqrt{2mE_k}\).</li>
+<li>Moving through a voltage \(V\) gives a charge \(e\) the energy \(eV\). Put \(E_k = eV\) into \(\lambda = \frac hp\): \(\lambda = \frac h{\sqrt{2meV}}\).</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<p>Because \(\lambda = \frac hp\), a lighter particle with the same kinetic energy has a smaller momentum (\(p = \sqrt{2mE_k}\)) and so a longer wavelength. Of an electron, proton, neutron and alpha particle with the same kinetic energy, the electron has the longest wavelength.</p>
+
+<h3>The Davisson–Germer experiment (1927)</h3>
+<p>Clinton Davisson and Lester Germer fired a beam of electrons from an electron gun at a nickel crystal and measured how many bounced off at each angle with a detector that could rotate. If electrons were plain particles, they would scatter evenly. Instead, at 54 V the scattered beam had a sharp peak at 50°. This is diffraction from the rows of nickel atoms, so electrons are waves. It was the first proof of matter waves for a particle that has mass. It is the basis of electron diffraction methods (LEED, TEM, and RHEED in 4D).</p>
+<p>The peak matches <strong>Bragg's law</strong> for waves reflecting off planes of atoms a distance \(d\) apart: \(n\lambda = 2d\sin\theta\), where \(\theta\) is the angle between the beam and the planes and \(n = 1, 2, \dots\) The scattering angle of 50° gives \(\theta = 65^\circ\) (since \(\theta + 50^\circ + \theta = 180^\circ\)), and for nickel \(d = 0.91\) Å.</p>
+<div class="checkrow">Questions</div>
+<details class="q"><summary><span class="qt">Practice</span><span>Show that the Davisson–Germer result agrees with de Broglie: compute \(\lambda\) for a 54 V electron and from Bragg's law with \(d = 0.91\) Å, \(\theta = 65^\circ\), \(n = 1\).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda = \frac h{\sqrt{2meV}}\) and \(n\lambda = 2d\sin\theta\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, de Broglie box line 4, and Bragg's law.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Multiply out \(2meV\): the numbers are \(2\), \(m = 9.109\times10^{-31}\), \(e = 1.602\times10^{-19}\) and \(V = 54\).</li>
+<li>\(2\times9.109\times10^{-31} = 1.822\times10^{-30}\). Times \(1.602\times10^{-19}\) gives \(2.919\times10^{-49}\). Times 54 gives \(1.576\times10^{-47}\).</li>
+<li>\(\sqrt{1.576\times10^{-47}} = \sqrt{15.76\times10^{-48}} = 3.97\times10^{-24}\) kg m/s. This is the momentum \(p\).</li>
+<li>\(\lambda = \frac{6.626\times10^{-34}}{3.97\times10^{-24}} = 1.67\times10^{-10}\) m \(= 1.67\) Å.</li>
+<li>Bragg: \(\lambda = 2\times0.91\times\sin65^\circ = 2\times0.91\times0.906 = 1.65\) Å.</li>
+<li>Check: 1.67 Å and 1.65 Å agree to about 1%, so the electrons diffract as waves of the de Broglie wavelength. (A quick formula for electrons: \(\lambda\approx\frac{1.227}{\sqrt V}\) nm, here \(\frac{1.227}{7.35} = 0.167\) nm.)</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">Quiz 1 2025 · Q1</span><span>For particles with the same kinetic energy, which has the largest de Broglie wavelength: alpha particle, neutron, proton or electron?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\lambda = \frac h{\sqrt{2mE_k}}\), so \(\lambda\propto\frac1{\sqrt m}\) at fixed \(E_k\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1A, de Broglie box line 4.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>At the same \(E_k\), the wavelength is largest for the smallest mass.</li>
+<li>The electron is about 1840 times lighter than a proton. Answer: <strong>electron</strong>.</li>
+<li>Check: its wavelength is \(\sqrt{1840}\approx43\) times that of a proton with the same energy.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m1-unc">1B · The uncertainty principle</h2>
+<p class="about">About 20 minutes. Lecture 1.2.</p>
+<p>In classical physics a particle has a definite position and momentum. A quantum particle is a <strong>wave packet</strong>, a bump made by adding many waves of slightly different wavelengths. A short packet has a well-defined position, but it needs a wide range of wavelengths, so its momentum is spread out. A long packet has nearly one wavelength (sharp momentum) but a spread-out position. Heisenberg's uncertainty principle puts a number on this.</p>
+<div class="eq boxed">\[\Delta x\,\Delta p \ge \frac\hbar2,\qquad \Delta E\,\Delta t\ge\frac\hbar2\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\Delta x\) is the spread (uncertainty) in position and \(\Delta p\) the spread in momentum. Their product can never be smaller than \(\frac\hbar2\). Squeeze one and the other must grow. The same holds for energy and time: a state that lasts only a short time \(\Delta t\) has an energy spread \(\Delta E\).</p>
+<p>The slides also derive the rougher form \(\Delta x\,\Delta p\ge h\) (shown below). It has the same meaning. Use \(\frac\hbar2\) unless the question says otherwise, and state which form you used.</p>
+<p>Because \(\hbar\) is about \(10^{-34}\) J s, the limit does not matter for a cricket ball. For a 1 kg ball known to within 1 µm, \(\Delta v\ge\frac{10^{-34}}{2\times10^{-6}}\approx5\times10^{-29}\) m/s. It matters hugely for an electron (see the question below).</p>
+</div>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the uncertainty principle from the wave packet (the slide's method).</h4>
+<ol class="steps lines">
+<li>The packet moves at the group velocity \(u = \frac{\Delta\omega}{\Delta k}\).</li>
+<li>With \(\omega = 2\pi\nu\) and \(k = \frac{2\pi p}h\): \(u = \frac{2\pi\Delta\nu}{2\pi\Delta p/h} = \frac{h\Delta\nu}{\Delta p}\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 and 2, 4 steps)</span></summary>
+<ol class="steps">
+<li>A wave packet is a group of waves. Its speed, the <strong>group velocity</strong>, is \(u = \frac{\Delta\omega}{\Delta k}\), the change in angular frequency over the change in wavenumber across the group.</li>
+<li>\(\omega = 2\pi\nu\), so \(\Delta\omega = 2\pi\Delta\nu\).</li>
+<li>\(k = \frac{2\pi}\lambda\) and \(\lambda = \frac hp\) (1A), so \(k = \frac{2\pi p}h\) and \(\Delta k = \frac{2\pi\Delta p}h\).</li>
+<li>Divide. \(u = \frac{2\pi\Delta\nu}{2\pi\Delta p/h}\). Cancel \(2\pi\): \(u = \frac{h\Delta\nu}{\Delta p}\).</li>
+</ol>
+</details></li>
+<li>The packet also crosses its own length \(\Delta x\) in a time \(\Delta t\), so \(u = \frac{\Delta x}{\Delta t}\).</li>
+<li>Equate the two: \(\Delta x\,\Delta p = h\,\Delta\nu\,\Delta t\).</li>
+<li>For any wave packet, \(\Delta\nu\,\Delta t\ge1\) (a Fourier property). So \(\Delta x\,\Delta p\ge h\). The exact treatment gives \(\Delta x\,\Delta p\ge\frac\hbar2\).
+<details class="linewhy"><summary>Why <span>(covers lines 3 to 5, 4 steps)</span></summary>
+<ol class="steps">
+<li>A packet of length \(\Delta x\) moving at \(u\) takes \(\Delta t = \frac{\Delta x}u\) to pass a point, so \(u = \frac{\Delta x}{\Delta t}\).</li>
+<li>Set this equal to line 2. \(\frac{\Delta x}{\Delta t} = \frac{h\Delta\nu}{\Delta p}\). Multiply both sides by \(\Delta t\,\Delta p\): \(\Delta x\,\Delta p = h\,\Delta\nu\,\Delta t\).</li>
+<li>To build a pulse that lasts \(\Delta t\), you must mix frequencies spread over at least \(\Delta\nu\approx\frac1{\Delta t}\). This is a general fact about waves (the Fourier uncertainty), so \(\Delta\nu\,\Delta t\ge1\).</li>
+<li>Put this in. \(\Delta x\,\Delta p\ge h\). Using \(E = h\nu\), the same steps give \(\Delta E\,\Delta t\ge h\). A careful calculation with Gaussian packets lowers the bound to \(\frac\hbar2\).</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="checkrow">Questions</div>
+<details class="q"><summary><span class="qt pyq">Surprise test 2025 · Q6</span><span>Estimate the minimum uncertainty in the velocity of an electron confined within a nucleus of diameter \(1\times10^{-14}\) m. (\(m_e = 9.1\times10^{-31}\) kg, \(h = 6.63\times10^{-34}\) J s.)</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\Delta x\,\Delta p\ge\frac\hbar2\), with \(\Delta p = m\Delta v\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1B, the boxed formula.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The electron is somewhere inside the nucleus, so \(\Delta x = 1\times10^{-14}\) m.</li>
+<li>\(\hbar = \frac{6.63\times10^{-34}}{2\pi} = \frac{6.63\times10^{-34}}{6.283} = 1.055\times10^{-34}\) J s.</li>
+<li>\(\Delta p\ge\frac{\hbar}{2\Delta x} = \frac{1.055\times10^{-34}}{2\times10^{-14}} = 5.28\times10^{-21}\) kg m/s.</li>
+<li>\(\Delta v = \frac{\Delta p}m = \frac{5.28\times10^{-21}}{9.1\times10^{-31}} = 5.8\times10^{9}\) m/s.</li>
+<li>This is about 19 times the speed of light, which is impossible. So an electron cannot be confined inside a nucleus. (With the slide's rougher form \(\Delta x\Delta p\ge h\), \(\Delta v\ge\frac{6.63\times10^{-34}}{10^{-14}\times9.1\times10^{-31}} = 7.3\times10^{10}\) m/s, the same conclusion.)</li>
+<li>Check: \(5.8\times10^{9}\times9.1\times10^{-31} = 5.28\times10^{-21}\), and that times \(2\times10^{-14}\) is \(1.06\times10^{-34}\approx\hbar\).</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m1-psi">1C · Wavefunctions and operators</h2>
+<p class="about">About 15 minutes. Lectures 1.2 and 1.5.</p>
+<p>A quantum particle is described by a <strong>wavefunction</strong> \(\Psi(x, t)\) (capital psi). It holds everything that can be measured about the particle. It can be complex, and on its own it has no direct physical meaning. Its size squared does (the <strong>Born interpretation</strong>, after Max Born).</p>
+<div class="eq boxed">\[P(x\text{ to }x+dx) = |\Psi(x,t)|^2\,dx,\qquad \int_{-\infty}^{\infty}|\Psi|^2dx = 1.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(|\Psi|^2\) is a <strong>probability density</strong>, a probability per unit length. Multiply it by a small length \(dx\) to get a probability. The second equation says the particle must be somewhere, so the probabilities over all space add up to 1. Making a wavefunction obey this is called <strong>normalising</strong> it. 1E uses this to find the constant in front of the box wavefunctions.</p>
+<p>So the wavefunction is a <strong>probability amplitude</strong>. It does not give the particle's trajectory, its energy directly, or the force on it.</p>
+</div>
+<p><strong>Operators.</strong> Each measurable quantity (an <strong>observable</strong>) has an <strong>operator</strong>, an instruction that acts on \(\Psi\). A hat marks an operator.</p>
+<table class="tbl">
+<tr><th>Observable</th><th>Operator</th><th>What it does to \(\psi\)</th></tr>
+<tr><td>Position</td><td>\(\hat x = x\)</td><td>multiply by \(x\)</td></tr>
+<tr><td>Momentum</td><td>\(\hat p = -i\hbar\frac{\partial}{\partial x}\)</td><td>differentiate, then multiply by \(-i\hbar\)</td></tr>
+<tr><td>Energy (the Hamiltonian)</td><td>\(\hat H = -\frac{\hbar^2}{2m}\nabla^2 + V\)</td><td>kinetic energy part plus potential energy \(V\)</td></tr>
+<tr><td>Angular momentum about z</td><td>\(\hat L_z = -i\hbar\frac{\partial}{\partial\phi}\)</td><td>differentiate with respect to the angle \(\phi\)</td></tr>
+</table>
+<p>Operators are <strong>linear</strong>: \(\hat A(c_1\psi_1 + c_2\psi_2) = c_1\hat A\psi_1 + c_2\hat A\psi_2\). Operators for observables are <strong>Hermitian</strong>, which guarantees that their results are real numbers. A state with a definite value \(a\) of the observable satisfies the <strong>eigenvalue equation</strong> \(\hat A\psi = a\psi\). Here \(a\) is the <strong>eigenvalue</strong> (the value measured) and \(\psi\) the <strong>eigenfunction</strong>.</p>
+<p><strong>Example.</strong> Apply \(\hat p\) to \(\psi = e^{ikx}\). \(\hat p\psi = -i\hbar\times ik\,e^{ikx} = \hbar k\,e^{ikx}\), because \(-i\times i = -i^2 = 1\). So \(e^{ikx}\) has definite momentum \(p = \hbar k\), which is de Broglie's \(p = \frac h\lambda\) again, since \(\hbar k = \frac h{2\pi}\cdot\frac{2\pi}\lambda\).</p>
+
+<div class="game" data-type="quiz"><span class="tag">Game · 1A to 1C</span>
+<h4>Quick-fire: light, matter waves, uncertainty and wavefunctions</h4>
+<script type="application/json">{"q":[
+{"t":"The probability density for a wavefunction Ψ(x,t) is","o":["Ψ(x,t)","Ψ²(x,t) without the modulus","|Ψ(x,t)|²","1/Ψ(x,t)"],"a":2,"w":"Born interpretation: the size squared |Ψ|² is the probability per unit length. Past paper question (surprise test)."},
+{"t":"The best description of the significance of a wavefunction is that it","o":["represents energy directly","represents the trajectory of the particle","is the probability amplitude of finding the particle","gives the force on the particle"],"a":2,"w":"Ψ is a probability amplitude; |Ψ|² gives the probability. Past paper question."},
+{"t":"The uncertainty principle says that","o":["energy and momentum cannot be measured together","position and momentum cannot both be known precisely","energy and mass cannot be equal","time and position are uncertain together"],"a":1,"w":"Δx Δp ≥ ħ/2. Past paper question."},
+{"t":"Which operator gives the momentum of a particle?","o":["x","−iħ ∂/∂x","iħ ∂/∂t","−ħ²/2m ∇²"],"a":1,"w":"p̂ = −iħ ∂/∂x. The last option is only the kinetic part of the Hamiltonian. Past paper question (Quiz 1)."},
+{"t":"In the photoelectric effect, making the light brighter (same frequency, above threshold)","o":["raises the energy of each electron","raises the number of electrons","stops the emission","lowers the work function"],"a":1,"w":"More photons means more electrons, each with the same KE_max = hν − φ."},
+{"t":"No electrons are emitted below the threshold frequency because","o":["the light is too dim","one photon has less energy than the work function","the metal heats up","electrons are waves"],"a":1,"w":"Each photon gives hν to one electron; if hν < φ nothing comes out, whatever the intensity."},
+{"t":"Davisson and Germer showed electron diffraction using a crystal of","o":["nickel","gold","silicon","copper"],"a":0,"w":"A nickel crystal; the peak was at 54 V and 50°, giving λ = 1.65 Å."},
+{"t":"For the same kinetic energy, which has the largest de Broglie wavelength?","o":["alpha particle","neutron","proton","electron"],"a":3,"w":"λ = h/√(2mE), so the lightest particle has the longest wavelength. Past paper question (Quiz 1)."},
+{"t":"A Hermitian operator always has","o":["imaginary eigenvalues","real eigenvalues","zero eigenvalues","no eigenfunctions"],"a":1,"w":"That is why observables, which give real measurement results, are Hermitian."},
+{"t":"The energy–time uncertainty relation is","o":["ΔE Δt ≥ ħ/2","ΔE Δt = 0","ΔE ≥ Δt","ΔE Δx ≥ ħ"],"a":0,"w":"A state that lasts a short time has a spread in energy."}
+]}</script>
+</div>
+</section>
+
+<section>
+<h2 id="m1-se">1D · The Schrödinger equations</h2>
+<p class="about">About 25 minutes. Lectures 1.3 and 1.4a. Asked as a 10-mark question in the surprise test and as Q3 of Quiz 1.</p>
+<p>The Schrödinger equation is to a quantum particle what \(F = ma\) is to a ball: it tells you how the wavefunction behaves. There are two versions. The <strong>time-dependent</strong> Schrödinger equation (TDSE) says how \(\Psi(x, t)\) changes in time. The <strong>time-independent</strong> Schrödinger equation (TISE) is used when the potential energy \(V\) does not change with time. It gives the allowed energies and the shapes \(\psi(x)\) of the states that have those energies.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the time-independent Schrödinger equation from the classical wave equation.</h4>
+<ol class="steps lines">
+<li>Classical wave equation: \(\frac{\partial^2y}{\partial x^2} = \frac1{v^2}\frac{\partial^2y}{\partial t^2}\). Try \(y = \psi(x)e^{-i\omega t}\).</li>
+<li>Substituting gives \(\frac{d^2\psi}{dx^2} + \frac{\omega^2}{v^2}\psi = 0\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 and 2, 5 steps)</span></summary>
+<ol class="steps">
+<li>The classical wave equation describes any wave \(y(x, t)\) moving at speed \(v\), such as a wave on a string.</li>
+<li>Look for a standing wave, a fixed shape \(\psi(x)\) that oscillates in time: \(y = \psi(x)e^{-i\omega t}\).</li>
+<li>Left side. Only \(\psi\) depends on \(x\), so \(\frac{\partial^2y}{\partial x^2} = \frac{d^2\psi}{dx^2}e^{-i\omega t}\).</li>
+<li>Right side. Differentiating \(e^{-i\omega t}\) twice brings down \((-i\omega)^2 = -\omega^2\). So \(\frac{\partial^2y}{\partial t^2} = -\omega^2\psi e^{-i\omega t}\).</li>
+<li>Put both into the wave equation and cancel \(e^{-i\omega t}\), which is never zero. \(\frac{d^2\psi}{dx^2} = -\frac{\omega^2}{v^2}\psi\). Move the term to the left: \(\frac{d^2\psi}{dx^2} + \frac{\omega^2}{v^2}\psi = 0\).</li>
+</ol>
+</details></li>
+<li>\(\frac\omega v = \frac{2\pi\nu}{\nu\lambda} = \frac{2\pi}\lambda\), and de Broglie gives \(\lambda = \frac hp\), so \(\frac{\omega^2}{v^2} = \frac{p^2}{\hbar^2}\).</li>
+<li>Total energy \(E = \frac{p^2}{2m} + V\), so \(p^2 = 2m(E - V)\).</li>
+<li>Therefore \[\frac{d^2\psi}{dx^2} + \frac{2m}{\hbar^2}(E - V)\psi = 0,\quad\text{that is}\quad -\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V\psi = E\psi.\]
+<details class="linewhy"><summary>Why <span>(covers lines 3 to 5, 6 steps)</span></summary>
+<ol class="steps">
+<li>\(\omega = 2\pi\nu\) and \(v = \nu\lambda\), so \(\frac\omega v = \frac{2\pi}\lambda\).</li>
+<li>Put in the de Broglie wavelength \(\lambda = \frac hp\). \(\frac\omega v = \frac{2\pi p}h = \frac p\hbar\), since \(\hbar = \frac h{2\pi}\).</li>
+<li>Square it. \(\frac{\omega^2}{v^2} = \frac{p^2}{\hbar^2}\).</li>
+<li>Energy is kinetic plus potential, \(E = \frac{p^2}{2m} + V\) (kinetic energy is \(\frac{p^2}{2m}\), see 1A). Rearrange: \(p^2 = 2m(E - V)\).</li>
+<li>Substitute into line 2. \(\frac{d^2\psi}{dx^2} + \frac{2m(E-V)}{\hbar^2}\psi = 0\).</li>
+<li>To get the second form, multiply every term by \(-\frac{\hbar^2}{2m}\) and move \(E\psi\) to the right. The left side is \(\hat H\psi\) (1C), so the TISE reads \(\hat H\psi = E\psi\): an eigenvalue equation whose eigenvalues are the allowed energies.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the time-dependent Schrödinger equation.</h4>
+<ol class="steps lines">
+<li>A free particle is a plane wave \(\Psi = Ae^{i(kx-\omega t)}\), with \(E = \hbar\omega\) and \(p = \hbar k\).</li>
+<li>Differentiate in time: \(i\hbar\frac{\partial\Psi}{\partial t} = \hbar\omega\Psi = E\Psi\).</li>
+<li>Differentiate twice in space: \(-\frac{\hbar^2}{2m}\frac{\partial^2\Psi}{\partial x^2} = \frac{\hbar^2k^2}{2m}\Psi = \frac{p^2}{2m}\Psi\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 to 3, 6 steps)</span></summary>
+<ol class="steps">
+<li>Planck: \(E = h\nu = \frac h{2\pi}\cdot2\pi\nu = \hbar\omega\). De Broglie: \(p = \frac h\lambda = \frac h{2\pi}\cdot\frac{2\pi}\lambda = \hbar k\).</li>
+<li>Time derivative of the plane wave. Differentiating \(e^{-i\omega t}\) brings down \(-i\omega\): \(\frac{\partial\Psi}{\partial t} = -i\omega\Psi\).</li>
+<li>Multiply both sides by \(i\hbar\). \(i\hbar\frac{\partial\Psi}{\partial t} = i\hbar(-i\omega)\Psi = \hbar\omega\Psi\), because \(i\times(-i) = 1\). And \(\hbar\omega = E\).</li>
+<li>Space derivative. Differentiating \(e^{ikx}\) once brings down \(ik\), twice brings down \((ik)^2 = -k^2\): \(\frac{\partial^2\Psi}{\partial x^2} = -k^2\Psi\).</li>
+<li>Multiply both sides by \(-\frac{\hbar^2}{2m}\). \(-\frac{\hbar^2}{2m}\frac{\partial^2\Psi}{\partial x^2} = \frac{\hbar^2k^2}{2m}\Psi\).</li>
+<li>Since \(\hbar k = p\), the right side is \(\frac{p^2}{2m}\Psi\), the kinetic energy times \(\Psi\).</li>
+</ol>
+</details></li>
+<li>Energy is \(E = \frac{p^2}{2m} + V\). Multiply by \(\Psi\) and use lines 2 and 3:
+\[i\hbar\frac{\partial\Psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2\Psi}{\partial x^2} + V\Psi.\]</li>
+<li>If \(V\) does not depend on time, write \(\Psi = \psi(x)e^{-iEt/\hbar}\). Substituting and cancelling \(e^{-iEt/\hbar}\) gives back the TISE, \(-\frac{\hbar^2}{2m}\psi'' + V\psi = E\psi\).
+<details class="linewhy"><summary>Why <span>(covers lines 4 and 5, 5 steps)</span></summary>
+<ol class="steps">
+<li>Multiply \(E = \frac{p^2}{2m} + V\) by \(\Psi\). \(E\Psi = \frac{p^2}{2m}\Psi + V\Psi\).</li>
+<li>Replace \(E\Psi\) by line 2 and \(\frac{p^2}{2m}\Psi\) by line 3. This gives the TDSE. It is assumed to hold for any potential, not only the free particle it was built from.</li>
+<li>Now let \(V\) depend on \(x\) only. Try \(\Psi = \psi(x)e^{-iEt/\hbar}\), a fixed shape times an oscillating phase. This is called <strong>separation of variables</strong>.</li>
+<li>Left side: \(i\hbar\frac{\partial\Psi}{\partial t} = i\hbar\cdot\left(-\frac{iE}\hbar\right)\psi e^{-iEt/\hbar} = E\psi e^{-iEt/\hbar}\). Right side: \(\left(-\frac{\hbar^2}{2m}\psi'' + V\psi\right)e^{-iEt/\hbar}\).</li>
+<li>Cancel \(e^{-iEt/\hbar}\) from both sides. What is left is the TISE. Such states are called <strong>stationary states</strong>, because \(|\Psi|^2 = |\psi|^2\) does not change in time.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="card remember"><span class="tag">Remember</span>
+<ul>
+<li>TDSE: \(i\hbar\frac{\partial\Psi}{\partial t} = \hat H\Psi\). TISE: \(\hat H\psi = E\psi\), with \(\hat H = -\frac{\hbar^2}{2m}\frac{d^2}{dx^2} + V\).</li>
+<li>Use the TISE when the potential does not depend on time.</li>
+<li>Ingredients of both derivations: \(E = \hbar\omega\), \(p = \hbar k\), \(E = \frac{p^2}{2m} + V\).</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2 id="m1-box">1E · Particle in a box</h2>
+<p class="about">About 35 minutes. Lecture 1.4b. Asked in every 2025 paper: a 10-mark derivation in the mid-sem and end-sem, and "find the errors in this diagram" in Quiz 1 and the surprise test.</p>
+<p>A particle of mass \(m\) moves along a line between two walls at \(x = 0\) and \(x = L\). Inside, the potential energy is \(V = 0\). The walls are infinitely high (\(V = \infty\) outside), so the particle can never be outside. This is the simplest model of an electron trapped in a small region, such as a quantum well (2A) or a quantum dot.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Solve the Schrödinger equation for a particle in a 1D box of length \(L\) with infinite walls. Show that the energy is quantised.</h4>
+<ol class="steps lines">
+<li>Outside the box \(\psi = 0\). Inside, \(V = 0\), so the TISE is \(\frac{d^2\psi}{dx^2} + k^2\psi = 0\) with \(k^2 = \frac{2mE}{\hbar^2}\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Where \(V = \infty\), the particle would need infinite energy, so the probability \(|\psi|^2\) there is 0, and \(\psi = 0\).</li>
+<li>Inside, put \(V = 0\) in the TISE (1D, line 5): \(\frac{d^2\psi}{dx^2} + \frac{2mE}{\hbar^2}\psi = 0\).</li>
+<li>Name the constant \(k^2 = \frac{2mE}{\hbar^2}\) to keep the writing short.</li>
+</ol>
+</details></li>
+<li>General solution: \(\psi(x) = A\sin kx + B\cos kx\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>We need a function whose second derivative is \(-k^2\) times itself. Both \(\sin kx\) and \(\cos kx\) do this (0b).</li>
+<li>Any mix \(A\sin kx + B\cos kx\) also works, because the equation is linear. \(A\) and \(B\) are constants fixed by the walls.</li>
+</ol>
+</details></li>
+<li>\(\psi\) must be continuous, so \(\psi(0) = 0\). This gives \(B = 0\).</li>
+<li>\(\psi(L) = 0\) gives \(A\sin kL = 0\), so \(kL = n\pi\) with \(n = 1, 2, 3, \dots\)
+<details class="linewhy"><summary>Why <span>(covers lines 3 and 4, 5 steps)</span></summary>
+<ol class="steps">
+<li>The wavefunction cannot jump, and it is 0 just outside, so it is 0 at each wall.</li>
+<li>At \(x = 0\): \(\sin0 = 0\) and \(\cos0 = 1\), so \(\psi(0) = B\). Setting \(\psi(0) = 0\) gives \(B = 0\). Now \(\psi = A\sin kx\).</li>
+<li>At \(x = L\): \(A\sin kL = 0\). We cannot take \(A = 0\), because then \(\psi = 0\) everywhere and there is no particle.</li>
+<li>So \(\sin kL = 0\). Sine is zero at whole multiples of \(\pi\), so \(kL = n\pi\) and \(k = \frac{n\pi}L\).</li>
+<li>\(n = 0\) would give \(\psi = 0\) again, so it is not allowed. Negative \(n\) only flips the sign of \(\psi\), the same state. So \(n = 1, 2, 3, \dots\)</li>
+</ol>
+</details></li>
+<li>So the energy can only take the values \[E_n = \frac{\hbar^2k^2}{2m} = \frac{n^2\pi^2\hbar^2}{2mL^2} = \frac{n^2h^2}{8mL^2}.\]
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>From line 1, \(k^2 = \frac{2mE}{\hbar^2}\). Solve for the energy: \(E = \frac{\hbar^2k^2}{2m}\).</li>
+<li>Put in \(k = \frac{n\pi}L\). \(E_n = \frac{\hbar^2n^2\pi^2}{2mL^2}\).</li>
+<li>Replace \(\hbar = \frac h{2\pi}\), so \(\hbar^2\pi^2 = \frac{h^2}{4\pi^2}\pi^2 = \frac{h^2}4\). Then \(E_n = \frac{n^2h^2}{8mL^2}\). Only these energies are allowed: the energy is quantised.</li>
+</ol>
+</details></li>
+<li>Normalise: \(\int_0^L A^2\sin^2\frac{n\pi x}L\,dx = A^2\frac L2 = 1\), so \[\psi_n(x) = \sqrt{\frac2L}\sin\frac{n\pi x}L.\]
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>The particle must be somewhere in the box, so \(\int_0^L|\psi|^2dx = 1\) (1C).</li>
+<li>Use \(\sin^2\theta = \frac{1-\cos2\theta}2\). The integral of \(\frac12\) from 0 to \(L\) is \(\frac L2\).</li>
+<li>The cosine term goes through \(n\) whole cycles between 0 and \(L\), so its integral is 0. So the integral is \(A^2\frac L2\).</li>
+<li>Set \(A^2\frac L2 = 1\). Then \(A^2 = \frac2L\) and \(A = \sqrt{\frac2L}\).</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(E_n = \frac{n^2h^2}{8mL^2}\). The top has \(n^2\): the levels go as \(1, 4, 9, 16, \dots\) times \(E_1\), so the gaps between them grow (\(3E_1, 5E_1, 7E_1, \dots\)). They are not evenly spaced. The bottom has \(L^2\): a smaller box gives higher and more widely spaced levels. This is why shrinking a quantum dot shifts its light towards blue (2A, 3B). The bottom also has \(m\): lighter particles have more widely spaced levels.</p>
+<p>The lowest energy is \(E_1\), not zero. A trapped particle always has some kinetic energy, as the uncertainty principle requires. This is called the <strong>zero-point energy</strong>.</p>
+<p><strong>Example.</strong> An electron in a box of \(L = 1\) nm: \(E_1 = \frac{(6.626\times10^{-34})^2}{8\times9.109\times10^{-31}\times(10^{-9})^2} = \frac{4.39\times10^{-67}}{7.29\times10^{-48}} = 6.0\times10^{-20}\) J \(= 0.376\) eV. Then \(E_2 = 1.50\) eV and \(E_3 = 3.38\) eV.</p>
+</div>
+<figure class="fig"><!--plot:pib-psi--><figcaption>The first three wavefunctions, each drawn on its own energy level. Each is zero at both walls. \(\psi_n\) has \(n\) half-waves and \(n - 1\) nodes inside. The levels sit at \(E_1\), \(4E_1\), \(9E_1\).</figcaption></figure>
+<figure class="fig"><!--plot:pib-prob--><figcaption>The probability densities \(|\psi_n|^2\). They are never negative. For \(n = 1\) the particle is most likely in the middle; for \(n = 2\) it is never found exactly in the middle.</figcaption></figure>
+<div class="card remember"><span class="tag">Remember (and draw this way)</span>
+<ul>
+<li>\(E_n = \frac{n^2h^2}{8mL^2}\), \(n = 1, 2, 3, \dots\); \(\psi_n = \sqrt{2/L}\,\sin(n\pi x/L)\).</li>
+<li>Level spacing grows as \(n^2\). Smaller box or lighter particle means bigger spacing.</li>
+<li>Every \(\psi_n\) is zero at both walls. \(\psi_n\) has \(n\) half-waves and \(n - 1\) nodes. \(\psi_1\) is a single hump, highest in the middle.</li>
+<li>\(|\psi|^2\) is never negative.</li>
+</ul>
+</div>
+<div class="checkrow">Questions</div>
+<details class="q"><summary><span class="qt pyq">Mid-sem 2025 · Q23c</span><span>For the ground state (\(n = 1\)), find the probability of finding the particle in \(0 < x < \frac L2\).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(P = \int_0^{L/2}|\psi_1|^2dx\), with \(\psi_1 = \sqrt{2/L}\sin(\pi x/L)\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1E, line 6, and 1C (Born interpretation).</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(P = \frac2L\int_0^{L/2}\sin^2\frac{\pi x}L\,dx\).</li>
+<li>Use \(\sin^2\theta = \frac{1-\cos2\theta}2\). \(P = \frac2L\int_0^{L/2}\frac12\left(1 - \cos\frac{2\pi x}L\right)dx = \frac1L\left[x - \frac L{2\pi}\sin\frac{2\pi x}L\right]_0^{L/2}\).</li>
+<li>At \(x = \frac L2\): \(\frac L2 - \frac L{2\pi}\sin\pi = \frac L2 - 0\). At \(x = 0\): \(0\).</li>
+<li>\(P = \frac1L\times\frac L2 = \frac12\).</li>
+<li>Check: \(|\psi_1|^2\) is symmetric about the middle, so each half must hold exactly half the probability.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">Quiz 1 2025 · Section B Q1</span><span>The diagram shows energy levels and wavefunctions for a particle in a 1D infinite well. It contains five errors. Find them.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img src="assets/qp-pib.webp" alt="The Quiz 1 diagram: five levels at roughly 1, 4, 7, 9 and 10 on the energy axis, with wavefunctions that do not go to zero at the walls." width="733" height="625" loading="lazy"><figcaption>The diagram from Quiz 1 (Monsoon 2025).</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E_n = n^2E_1\); \(\psi_n = \sqrt{2/L}\sin(n\pi x/L)\), zero at \(x = 0\) and \(x = L\), with \(n - 1\) nodes.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1E, lines 4 to 6, and the Remember box.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>Level spacing.</strong> The levels are drawn at about 1, 4, 7, 9 and 10, getting closer together. They should be at \(E_1, 4E_1, 9E_1, 16E_1, 25E_1\), with gaps that grow.</li>
+<li><strong>Boundary conditions.</strong> Several curves (for example \(\psi_1\) and \(\psi_3\)) do not reach zero at the walls. Every \(\psi_n\) must be zero at \(x = 0\) and \(x = L\).</li>
+<li><strong>Shape of \(\psi_1\).</strong> It is drawn as a line sloping down. It should be one symmetric hump, largest at \(x = L/2\).</li>
+<li><strong>Number of nodes.</strong> \(\psi_3\) is drawn with one node, like \(\psi_2\). It should have two nodes (three half-waves). In general \(\psi_n\) has \(n - 1\) nodes.</li>
+<li><strong>\(\psi_4\) and \(\psi_5\) overlap and cross.</strong> They are drawn almost on top of each other because their levels are too close. Each wavefunction should oscillate about its own level, and with correct spacing they are far apart.</li>
+<li>Then draw the correct picture: the first plot in 1E, extended to \(n = 4, 5\) at \(16E_1\) and \(25E_1\).</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt pyq">Surprise test 2025 · Q7</span><span>Find the error in this graph of the energy levels of a particle in a 1D box, and explain it using the energy formula.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img class="narrow" src="assets/qp-pib2.webp" alt="Four energy levels E1 to E4 drawn equally spaced, with correct-looking sine waves on each." width="425" height="450" loading="lazy"><figcaption>The diagram from the surprise test (Monsoon 2025).</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E_n = \frac{n^2h^2}{8mL^2} = n^2E_1\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1E, line 5.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>The four levels are drawn equally spaced, as if \(E_n\propto n\).</li>
+<li>The formula has \(n^2\), so \(E_2 = 4E_1\), \(E_3 = 9E_1\), \(E_4 = 16E_1\).</li>
+<li>The gaps should be \(3E_1\), \(5E_1\), \(7E_1\): each gap bigger than the one below.</li>
+<li>The wavefunctions themselves are right: \(n\) half-waves, zero at the walls. Check \(\psi_4\): four half-waves, three nodes.</li>
+</ol></div></div>
+</div></details>
+<details class="q"><summary><span class="qt">Practice</span><span>An electron is in a box of width 2 nm. Find the wavelength of light emitted when it drops from \(n = 2\) to \(n = 1\).</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E_n = \frac{n^2h^2}{8mL^2}\), photon \(\lambda = \frac{hc}{E_2 - E_1}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1E, line 5, and 0a.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>For \(L = 1\) nm, \(E_1 = 0.376\) eV (Reading the formula box). \(E_1\propto\frac1{L^2}\), so for \(L = 2\) nm, \(E_1 = \frac{0.376}4 = 0.094\) eV.</li>
+<li>\(E_2 - E_1 = (4 - 1)E_1 = 3\times0.094 = 0.282\) eV.</li>
+<li>\(\lambda = \frac{1240}{0.282} = 4400\) nm \(= 4.4\) µm, in the infrared.</li>
+<li>Check: a wider box gives smaller gaps and longer wavelengths, as expected.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m1-stat">1F · Quantum statistics</h2>
+<p class="about">About 15 minutes. Lecture 1.5.</p>
+<p>A solid has an enormous number of electrons. Quantum statistics says how many particles, on average, sit in a state of energy \(E\) at temperature \(T\). There are three kinds of particle, and each has its own rule.</p>
+<table class="tbl">
+<tr><th>Statistics</th><th>Occupation \(n(E)\)</th><th>Applies to</th></tr>
+<tr><td>Maxwell–Boltzmann</td><td>\(e^{-(E-\mu)/k_BT}\)</td><td>classical particles that can be told apart; valid at high temperature or low density</td></tr>
+<tr><td>Fermi–Dirac</td><td>\(\dfrac{1}{e^{(E-\mu)/k_BT} + 1}\)</td><td><strong>fermions</strong> (electrons, protons, neutrons). The Pauli exclusion principle allows at most one per state</td></tr>
+<tr><td>Bose–Einstein</td><td>\(\dfrac{1}{e^{(E-\mu)/k_BT} - 1}\)</td><td><strong>bosons</strong> (photons, phonons, helium-4 atoms). Any number can share a state, giving Bose–Einstein condensation</td></tr>
+</table>
+<p>Here \(\mu\) (mu) is the <strong>chemical potential</strong>. For electrons at \(T = 0\) it is the <strong>Fermi energy</strong> \(E_F\) (the Fermi level), the energy of the highest filled state.</p>
+<div class="card goal"><span class="tag">Reading the Fermi–Dirac formula</span>
+<p>The "+1" in the bottom keeps \(n(E)\) between 0 and 1, which is the Pauli principle: a state holds at most one electron (of each spin).</p>
+<p><strong>At \(T = 0\)</strong>: for \(E < \mu\) the exponent is \(-\infty\), so \(n = \frac1{0+1} = 1\); for \(E > \mu\) it is \(+\infty\), so \(n = 0\). It is a step: every state below \(E_F\) full, every state above empty.</p>
+<p><strong>At \(E = \mu\)</strong>: \(n = \frac1{1+1} = \frac12\) at any temperature.</p>
+<p><strong>Warmer</strong>: the step is smeared over a few \(k_BT\). Example at 300 K, 0.1 eV above \(\mu\): \(\frac{0.1}{0.0259} = 3.86\), \(e^{3.86} = 47.5\), so \(n = \frac1{48.5} = 0.021\).</p>
+<p><strong>Far above \(\mu\)</strong> (\(E - \mu\gg k_BT\)) the exponential is huge, the "+1" does not matter, and \(n\approx e^{-(E-\mu)/k_BT}\), the Maxwell–Boltzmann form. ARPES (4B) sees this step as the "Fermi cut-off".</p>
+</div>
+<figure class="fig"><!--plot:fd--><figcaption>Fermi–Dirac occupation. At 0 K it is a sharp step at \(\mu\). Warmer, it is rounded off, always passing through \(\frac12\) at \(E = \mu\).</figcaption></figure>
+</section>
+
+<section>
+<h2 id="m1-cryst">1G · Crystals</h2>
+<p class="about">About 30 minutes. Lecture 1.6, and the "Derivation of hkl" reading.</p>
+<p>A <strong>crystal</strong> is a solid whose atoms repeat in a regular 3D pattern. The repeating points form a <strong>lattice</strong>. Every lattice point can be reached from the origin by whole-number steps along three <strong>primitive vectors</strong> \(\vec a_1, \vec a_2, \vec a_3\).</p>
+<div class="eq">\[\vec R = n_1\vec a_1 + n_2\vec a_2 + n_3\vec a_3,\qquad n_1, n_2, n_3\text{ whole numbers.}\]</div>
+<p>The smallest box that builds the whole crystal by repetition is the <strong>unit cell</strong>. It is described by its edge lengths \(a, b, c\) (the <strong>lattice parameters</strong>) and the angles \(\alpha, \beta, \gamma\) between the edges. The atoms placed at each lattice point are called the <strong>motif</strong> (or basis).</p>
+<p>There are 7 <strong>crystal systems</strong> and 14 <strong>Bravais lattices</strong>.</p>
+<table class="tbl">
+<tr><th>System</th><th>Edges and angles</th><th>Bravais lattices</th><th>Example</th></tr>
+<tr><td>Cubic</td><td>\(a = b = c\), all angles 90°</td><td>simple, body-centred, face-centred</td><td>NaCl, Fe, Cu</td></tr>
+<tr><td>Tetragonal</td><td>\(a = b\neq c\), all 90°</td><td>simple, body-centred</td><td>SnO₂, TiO₂</td></tr>
+<tr><td>Orthorhombic</td><td>\(a\neq b\neq c\), all 90°</td><td>simple, base-, body-, face-centred</td><td>sulfur</td></tr>
+<tr><td>Monoclinic</td><td>\(a\neq b\neq c\), \(\alpha = \gamma = 90^\circ\neq\beta\)</td><td>simple, base-centred</td><td>gypsum</td></tr>
+<tr><td>Triclinic</td><td>\(a\neq b\neq c\), no angle 90°</td><td>simple</td><td>K₂Cr₂O₇</td></tr>
+<tr><td>Hexagonal</td><td>\(a = b\neq c\), \(\alpha = \beta = 90^\circ\), \(\gamma = 120^\circ\)</td><td>simple</td><td>graphite, ZnO</td></tr>
+<tr><td>Rhombohedral (trigonal)</td><td>\(a = b = c\), equal angles not 90°</td><td>simple</td><td>calcite, quartz</td></tr>
+</table>
+<h3>The three cubic cells</h3>
+<p>Atoms at a corner are shared by 8 cells, so each corner counts \(\frac18\). An atom on a face is shared by 2 cells and counts \(\frac12\). An atom in the body counts 1.</p>
+<table class="tbl">
+<tr><th>Cell</th><th>Atoms</th><th>Atoms per cell</th><th>Nearest neighbours</th><th>Packing efficiency</th></tr>
+<tr><td>Simple cubic (SC)</td><td>8 corners</td><td>\(8\times\frac18 = 1\)</td><td>6</td><td>52%</td></tr>
+<tr><td>Body-centred cubic (BCC)</td><td>8 corners + 1 at the centre</td><td>\(1 + 1 = 2\)</td><td>8</td><td>68%</td></tr>
+<tr><td>Face-centred cubic (FCC)</td><td>8 corners + 6 face centres</td><td>\(1 + 6\times\frac12 = 4\)</td><td>12</td><td>74%</td></tr>
+</table>
+<p>The <strong>packing efficiency</strong> is the fraction of the cell volume filled by the atoms, treated as touching spheres. FCC and hexagonal close-packed (HCP) tie for the highest value, 74%. Both are stacks of the densest possible layers of spheres. If a question lists both FCC and HCP, say so in a line, and choose FCC if only one answer is allowed (the 2025 papers listed this question; the examiners' key is not public).</p>
+<details class="q"><summary><span class="qt">Practice</span><span>Derive the packing efficiency of SC, BCC and FCC.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Efficiency \(= \frac{(\text{atoms per cell})\times\frac43\pi r^3}{a^3}\), with \(r\) found from where the atoms touch.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1G, the cubic cells table.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>SC.</strong> Atoms touch along an edge, so \(a = 2r\). Efficiency \(= \frac{1\times\frac43\pi r^3}{8r^3} = \frac\pi6 = 0.524\).</li>
+<li><strong>BCC.</strong> Atoms touch along the body diagonal, which has length \(\sqrt3a\) and holds \(4r\) (corner radius, centre diameter, corner radius). So \(a = \frac{4r}{\sqrt3}\) and \(a^3 = \frac{64r^3}{3\sqrt3}\).</li>
+<li>Efficiency \(= \frac{2\times\frac43\pi r^3}{64r^3/(3\sqrt3)} = \frac{8\pi/3}{64/(3\sqrt3)} = \frac{8\sqrt3\pi}{64} = \frac{\sqrt3\pi}8 = 0.680\).</li>
+<li><strong>FCC.</strong> Atoms touch along a face diagonal, length \(\sqrt2a = 4r\), so \(a = 2\sqrt2r\) and \(a^3 = 16\sqrt2r^3\).</li>
+<li>Efficiency \(= \frac{4\times\frac43\pi r^3}{16\sqrt2r^3} = \frac{16\pi/3}{16\sqrt2} = \frac{\pi}{3\sqrt2} = 0.740\).</li>
+<li>Check: more atoms per cell and more neighbours give higher packing, and the order SC &lt; BCC &lt; FCC agrees.</li>
+</ol></div></div>
+</div></details>
+
+<h3>Planes and Miller indices</h3>
+<p>Planes of atoms are named by three whole numbers \((hkl)\), the <strong>Miller indices</strong>. To find them: (1) write where the plane cuts the three axes, in units of the cell edges; (2) take the reciprocal of each (a plane parallel to an axis cuts it at \(\infty\), reciprocal 0); (3) multiply up to the smallest whole numbers. A bar over a number means it is negative. For example, a plane cutting at \(1, \infty, \infty\) is \((100)\); at \(1, 1, \infty\) it is \((110)\); at \(1, 1, 1\) it is \((111)\); at \(\frac12, 1, \infty\): reciprocals \(2, 1, 0\), so \((210)\). In a cubic crystal the spacing between neighbouring \((hkl)\) planes is \(d_{hkl} = \frac{a}{\sqrt{h^2+k^2+l^2}}\). This \(d\) goes into Bragg's law \(n\lambda = 2d\sin\theta\) for X-ray diffraction (4D).</p>
+
+<h3>The reciprocal lattice and the Brillouin zone</h3>
+<p>Waves in a crystal are labelled by their wavevector \(\vec k\). The natural grid for \(\vec k\) is the <strong>reciprocal lattice</strong>, the Fourier transform of the real lattice. Its vectors are</p>
+<div class="eq">\[\vec b_1 = 2\pi\frac{\vec a_2\times\vec a_3}{\vec a_1\cdot(\vec a_2\times\vec a_3)},\]\[\vec b_2 = 2\pi\frac{\vec a_3\times\vec a_1}{\vec a_1\cdot(\vec a_2\times\vec a_3)},\]\[\vec b_3 = 2\pi\frac{\vec a_1\times\vec a_2}{\vec a_1\cdot(\vec a_2\times\vec a_3)}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The bottom, \(\vec a_1\cdot(\vec a_2\times\vec a_3)\), is the volume of the unit cell. The cross product on top makes \(\vec b_1\) perpendicular to \(\vec a_2\) and \(\vec a_3\). Together these give \(\vec a_i\cdot\vec b_j = 2\pi\) when \(i = j\) and 0 otherwise.</p>
+<p><strong>Example, simple cubic</strong> with \(\vec a_1 = a\hat x, \vec a_2 = a\hat y, \vec a_3 = a\hat z\). Then \(\vec a_2\times\vec a_3 = a^2\hat x\) and the volume is \(a^3\), so \(\vec b_1 = 2\pi\frac{a^2\hat x}{a^3} = \frac{2\pi}a\hat x\). The reciprocal lattice is also simple cubic, with side \(\frac{2\pi}a\). A big real cell gives a small reciprocal cell.</p>
+<p>Any reciprocal lattice vector is \(\vec G = h\vec b_1 + k\vec b_2 + l\vec b_3\) with whole numbers \(h, k, l\). It is perpendicular to the \((hkl)\) planes.</p>
+</div>
+<p><strong>Remember the pairs</strong>: the reciprocal of SC is SC, the reciprocal of BCC is FCC, and the reciprocal of FCC is BCC. The reciprocal lattice is used for Brillouin zones, X-ray diffraction (the Laue conditions) and band structures.</p>
+<p>The <strong>first Brillouin zone</strong> is the Wigner–Seitz cell of the reciprocal lattice. To draw it, mark the reciprocal lattice points, draw the perpendicular bisector of the line from the origin to each neighbouring point, and take the smallest region around the origin enclosed by them. It contains every distinct \(\vec k\) once. For a square lattice it is a square; for a hexagonal lattice, a hexagon.</p>
+
+<h3>Bloch's theorem</h3>
+<p>Inside a crystal the potential energy repeats with the lattice: \(V(\vec r + \vec R) = V(\vec r)\). Bloch's theorem says the solutions of the Schrödinger equation then have this form.</p>
+<div class="eq boxed">\[\psi_{n\vec k}(\vec r) = e^{i\vec k\cdot\vec r}\,u_{n\vec k}(\vec r),\qquad u_{n\vec k}(\vec r + \vec R) = u_{n\vec k}(\vec r).\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(e^{i\vec k\cdot\vec r}\) is a plane wave, like a free electron. \(u_{n\vec k}\) is a function with the period of the lattice, peaked near each atom. So an electron in a crystal is a plane wave whose height is modulated by a function that repeats every lattice spacing. The label \(n\) numbers the energy bands, and \(\vec k\) can be restricted to the first Brillouin zone.</p>
+<p><strong>Why it matters.</strong> It explains why electrons in a crystal do not behave like free electrons, and it leads to energy bands and band gaps (1H). It is the foundation of solid-state physics.</p>
+</div>
+<details class="q"><summary><span class="qt pyq">End-sem 2025 · Q31 (5 marks)</span><span>Explain Bloch's theorem and its wavefunction form. Include a neat sketch of a plane wave modulated by a periodic function.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\psi_{n\vec k}(\vec r) = e^{i\vec k\cdot\vec r}u_{n\vec k}(\vec r)\), \(u_{n\vec k}(\vec r + \vec R) = u_{n\vec k}(\vec r)\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1G, Bloch's theorem.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Statement: in a periodic potential \(V(\vec r + \vec R) = V(\vec r)\), the eigenstates of the Schrödinger equation are plane waves times a function with the lattice period. Write the formula.</li>
+<li>Name the parts: \(e^{i\vec k\cdot\vec r}\) is the plane wave; \(u_{n\vec k}\) repeats with the lattice; \(n\) is the band index; \(\vec k\) is the crystal wavevector, restricted to the first Brillouin zone.</li>
+<li>Consequence: \(|\psi|^2 = |u|^2\) is the same in every unit cell, so the electron is spread through the whole crystal.</li>
+<li>Consequence: solving for each \(\vec k\) gives allowed energies \(E_n(\vec k)\), which form bands separated by gaps.</li>
+<li>Sketch: draw a row of atoms with the potential \(V\) dipping at each atom. Below it, draw a dashed cosine (the plane wave) and a solid curve that follows the cosine's outline but has a sharp wiggle at every atom (the Bloch function). Label "plane wave \(e^{ikx}\)", "periodic part \(u_k(x)\)" and the lattice spacing \(a\).</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="quiz"><span class="tag">Game · 1F and 1G</span>
+<h4>Quick-fire: statistics and crystals</h4>
+<script type="application/json">{"q":[
+{"t":"The reciprocal lattice of a body-centred cubic lattice is","o":["simple cubic","body-centred cubic","face-centred cubic","hexagonal"],"a":2,"w":"BCC ↔ FCC, SC ↔ SC. Past paper question (Quiz 1)."},
+{"t":"The first Brillouin zone is","o":["the region in real space with one lattice point","the Wigner–Seitz cell in reciprocal space","the k-points with zero energy","the most occupied band"],"a":1,"w":"Past paper question (Quiz 1)."},
+{"t":"By Bloch's theorem the wavefunction in a periodic potential is","o":["ψ = u(r) e^{ik·r}, with u periodic in the lattice","ψ = e^{−r/2}","ψ = sin(kr)","ψ = constant"],"a":0,"w":"A plane wave times a lattice-periodic function. Past paper question (Quiz 1)."},
+{"t":"Which lattice has the highest packing efficiency among SC, BCC and FCC?","o":["SC, 52%","BCC, 68%","FCC, 74%","they are equal"],"a":2,"w":"FCC 74% (HCP ties at 74%). Asked in both the 2025 mid-sem and end-sem."},
+{"t":"Which statement about Fermi–Dirac statistics is true?","o":["Bosons obey it","At absolute zero, electrons fill every state up to the Fermi energy","Fermions can share a state in unlimited numbers","It does not depend on temperature"],"a":1,"w":"At T = 0 it is a step: full below E_F, empty above. Past paper question (Quiz 1)."},
+{"t":"At E = μ the Fermi–Dirac occupation is","o":["0","1/2","1","depends on T"],"a":1,"w":"1/(e⁰ + 1) = 1/2 at every temperature."},
+{"t":"Photons and phonons obey","o":["Fermi–Dirac statistics","Bose–Einstein statistics","Maxwell–Boltzmann statistics only","no statistics"],"a":1,"w":"They are bosons; any number can share a state."},
+{"t":"How many atoms belong to one FCC unit cell?","o":["1","2","4","8"],"a":2,"w":"8 corners × 1/8 + 6 faces × 1/2 = 4."},
+{"t":"Miller indices of a plane cutting the axes at 1, 1, ∞ are","o":["(111)","(110)","(100)","(011)"],"a":1,"w":"Reciprocals 1, 1, 0."},
+{"t":"Graphite and ZnO belong to which crystal system?","o":["cubic","tetragonal","hexagonal","triclinic"],"a":2,"w":"a = b ≠ c, γ = 120°."}
+]}</script>
+</div>
+</section>
+
+<section>
+<h2 id="m1-bands">1H · Bonds, bands and effective mass</h2>
+<p class="about">About 20 minutes. Lectures 1.6 and 1.7, and the "explanation on bonds" reading.</p>
+<h3>Bonds in solids</h3>
+<p>Atoms hold together because their electrons rearrange. Real solids are a mix of five kinds of bond.</p>
+<table class="tbl">
+<tr><th>Bond</th><th>How it works</th><th>Properties</th><th>Examples</th></tr>
+<tr><td>Ionic</td><td>one atom gives electrons to another; the + and − ions attract</td><td>large electronegativity difference, closed shells, large band gap (over 3 eV), insulating</td><td>NaCl, MgO</td></tr>
+<tr><td>Covalent</td><td>neighbouring atoms share electrons</td><td>strong and directional; sp³ hybrid bonds point to the corners of a tetrahedron; the (8 − N) rule gives the number of bonds; bonding states form the valence band and antibonding states the conduction band</td><td>diamond, Si, Ge</td></tr>
+<tr><td>Metallic</td><td>a "sea" of free electrons moves between positive ion cores</td><td>good electrical and thermal conductors, shiny, ductile; conduction falls as temperature rises</td><td>Cu, Al, Fe</td></tr>
+<tr><td>Van der Waals</td><td>weak attraction between induced dipoles</td><td>weak; holds layered and molecular solids together</td><td>graphite (between layers), solid argon</td></tr>
+<tr><td>Hydrogen</td><td>H attached to an electronegative atom (O, N, F) attracts another such atom</td><td>stronger than van der Waals, weaker than covalent</td><td>water (ice), DNA base pairs</td></tr>
+</table>
+<h3>Energy bands</h3>
+<p>An isolated atom has sharp energy levels. Bring \(N\) atoms together and, because of the Pauli principle, each level splits into \(N\) levels very close together. With about \(10^{23}\) atoms these form continuous <strong>bands</strong>. Between bands there can be <strong>band gaps</strong>, energies no electron can have. Bloch's theorem (1G) is the formal reason.</p>
+<ul>
+<li>The <strong>valence band</strong> is the highest band that is filled at 0 K. The <strong>conduction band</strong> is the next one up, empty at 0 K. The band gap is \(E_g = E_c - E_v\), the bottom of the conduction band minus the top of the valence band.</li>
+<li><strong>Metal</strong>: the bands overlap or one is half full, so there is no gap and electrons move freely.</li>
+<li><strong>Semiconductor</strong>: a small gap (about 0.5 to 3 eV, Si 1.1 eV, GaAs 1.42 eV). Heat lifts some electrons across, so <em>raising the temperature increases the number of carriers</em> and the conductivity.</li>
+<li><strong>Insulator</strong>: a large gap (over about 3 eV). Almost no electrons can cross.</li>
+</ul>
+<p><strong>Direct and indirect gaps.</strong> Plot energy against \(k\). If the bottom of the conduction band and the top of the valence band are at the <em>same</em> \(k\), the gap is <strong>direct</strong> (GaAs, monolayer MoS₂). An electron can drop across and emit a photon directly, so direct-gap materials make good LEDs and lasers. If they are at <em>different</em> \(k\), the gap is <strong>indirect</strong> (Si). The electron must also give momentum to a lattice vibration (a phonon), so light emission is weak.</p>
+<h3>Effective mass</h3>
+<p>An electron in a crystal responds to a force as if it had a different mass, the <strong>effective mass</strong> \(m^*\). The crystal's effect is folded into this one number, so the electron can then be treated as free.</p>
+<div class="eq boxed">\[m^* = \frac{\hbar^2}{d^2E/dk^2}\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(\frac{d^2E}{dk^2}\) is the curvature of the band. A sharply curved band gives a small \(m^*\) (a light, fast electron, high mobility). A flat band gives a large \(m^*\). Near the top of a band the curvature is negative, so \(m^*\) is negative there, which is why we describe those states with positive "holes". \(m^*\) can also differ by direction.</p>
+<p><strong>Check with a free electron.</strong> \(E = \frac{\hbar^2k^2}{2m}\), so \(\frac{dE}{dk} = \frac{\hbar^2k}m\) and \(\frac{d^2E}{dk^2} = \frac{\hbar^2}m\). Then \(m^* = \frac{\hbar^2}{\hbar^2/m} = m\), as it should be. Typical values are 0.01 to 10 times \(m_e\); in GaAs \(m^* = 0.067m_e\).</p>
+</div>
+</section>
+
+<section>
+<h2 id="m1-dos">1I · Density of states in 3D</h2>
+<p class="about">About 30 minutes. Lecture 1.7. Quiz 1 asked a variant (count the states in a cube instead of a sphere).</p>
+<p>The <strong>density of states</strong> \(Z(E)\) is the number of allowed electron states per unit volume per unit energy near the energy \(E\). It tells you how many seats are available at each energy; Fermi–Dirac (1F) tells you how many are filled. Multiplying the two gives the number of electrons at each energy.</p>
+<p>The derivation uses a cube of side \(L\) as a 3D particle in a box. Each state has three whole numbers \(n_x, n_y, n_z\ge1\) and energy</p>
+<div class="eq">\[E = \frac{h^2}{8mL^2}(n_x^2 + n_y^2 + n_z^2) = \frac{h^2n^2}{8mL^2},\qquad n^2 = n_x^2 + n_y^2 + n_z^2.\]</div>
+<p>Think of each state as a point in a 3D grid with axes \(n_x, n_y, n_z\). All states with energy below \(E\) lie inside a sphere of radius \(n\). Only the part with all three numbers positive counts, which is \(\frac18\) of the sphere.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the density of states for a bulk (3D) solid and show that \(Z(E)\propto E^{1/2}\).</h4>
+<ol class="steps lines">
+<li>States inside radius \(n\): \(\frac18\cdot\frac43\pi n^3\). Between \(n\) and \(n + dn\): \(\frac18\cdot4\pi n^2dn = \frac\pi2n^2dn\).
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Each state is one point of the grid, and each point takes up one unit of volume in \(n\)-space. So counting states means measuring volume.</li>
+<li>A sphere of radius \(n\) has volume \(\frac43\pi n^3\). Only the positive octant counts, so \(\frac18\cdot\frac43\pi n^3\).</li>
+<li>The states with energy between \(E\) and \(E + dE\) lie in a thin shell between \(n\) and \(n + dn\). Its volume is the difference \(\frac18\cdot\frac43\pi[(n+dn)^3 - n^3]\).</li>
+<li>Expand \((n + dn)^3 = n^3 + 3n^2dn + \dots\) and drop the tiny terms with \(dn^2\) and \(dn^3\). The shell holds \(\frac18\cdot\frac43\pi\cdot3n^2dn = \frac\pi2n^2dn\) states.</li>
+</ol>
+</details></li>
+<li>From \(E = \frac{h^2n^2}{8mL^2}\): \(n^2 = \frac{8mL^2}{h^2}E\) and \(dn = \frac12\left(\frac{8mL^2}{h^2}\right)^{1/2}E^{-1/2}dE\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Rearrange the energy formula for \(n^2\): multiply by \(\frac{8mL^2}{h^2}\).</li>
+<li>Take the square root: \(n = \left(\frac{8mL^2}{h^2}\right)^{1/2}E^{1/2}\).</li>
+<li>Differentiate with respect to \(E\). The derivative of \(E^{1/2}\) is \(\frac12E^{-1/2}\), so \(dn = \frac12\left(\frac{8mL^2}{h^2}\right)^{1/2}E^{-1/2}dE\).</li>
+</ol>
+</details></li>
+<li>Substitute: \(\frac\pi2n^2dn = \frac\pi4\left(\frac{8m}{h^2}\right)^{3/2}L^3E^{1/2}dE\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>\(\frac\pi2\cdot\frac{8mL^2}{h^2}E\cdot\frac12\left(\frac{8mL^2}{h^2}\right)^{1/2}E^{-1/2}dE\).</li>
+<li>Collect the numbers: \(\frac\pi2\cdot\frac12 = \frac\pi4\). Collect the brackets: power \(1 + \frac12 = \frac32\). Collect \(E\): power \(1 - \frac12 = \frac12\).</li>
+<li>\(\left(\frac{8mL^2}{h^2}\right)^{3/2} = \left(\frac{8m}{h^2}\right)^{3/2}L^3\), since \((L^2)^{3/2} = L^3\).</li>
+</ol>
+</details></li>
+<li>Pauli allows two electrons (spin up and down) per state: multiply by 2.</li>
+<li>Divide by the volume \(V = L^3\) to get states per unit volume: \[Z(E)\,dE = \frac\pi2\left(\frac{8m}{h^2}\right)^{3/2}E^{1/2}\,dE,\qquad Z_{3D}(E)\propto E^{1/2}.\]</li>
+<li>The same in the form used in lecture 2.1: \(Z_{3D}(E) = \frac1{2\pi^2}\left(\frac{2m^*}{\hbar^2}\right)^{3/2}E^{1/2}\), with the effective mass \(m^*\) in place of \(m\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Replace \(h = 2\pi\hbar\): \(\frac{8m}{h^2} = \frac{8m}{4\pi^2\hbar^2} = \frac{2m}{\pi^2\hbar^2}\).</li>
+<li>Raise to the \(\frac32\): \(\left(\frac{2m}{\hbar^2}\right)^{3/2}\cdot\frac1{\pi^3}\).</li>
+<li>Multiply by \(\frac\pi2\): \(\frac{\pi}{2\pi^3} = \frac1{2\pi^2}\). Both forms are the same.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<div class="card goal"><span class="tag">Reading the result</span>
+<p>\(Z(E)\propto\sqrt E\): there are few states near the bottom of the band and more and more as the energy rises, because the shell in \(n\)-space gets bigger as its radius grows. The graph is a rising curve that bends over (see 2B). The \(m^{3/2}\) says heavier electrons have more states per energy, because their levels are closer together.</p>
+</div>
+<details class="q"><summary><span class="qt pyq">Quiz 1 2025 · Section B Q2</span><span>Derive the bulk density of states assuming the allowed states in \(n\)-space fill a cube instead of a sphere. How does it depend on \(E\)?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">Number of states up to "size" \(n\): \(N = n^3\) (a cube of side \(n\) in the positive octant), with \(n = \left(\frac{8mL^2}{h^2}\right)^{1/2}E^{1/2}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">1I, lines 2, 4 and 5, with the sphere replaced by a cube.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Count the states as the volume of a cube of side \(n\): \(N = n^3\).</li>
+<li>Put in \(n\) from line 2: \(N = \left(\frac{8mL^2}{h^2}\right)^{3/2}E^{3/2}\).</li>
+<li>States between \(E\) and \(E + dE\): \(\frac{dN}{dE}dE = \frac32\left(\frac{8mL^2}{h^2}\right)^{3/2}E^{1/2}dE\).</li>
+<li>Multiply by 2 for spin and divide by \(L^3\): \(Z(E) = 3\left(\frac{8m}{h^2}\right)^{3/2}E^{1/2}\).</li>
+<li>Still \(Z(E)\propto E^{1/2}\). Only the number in front changes (3 instead of \(\frac\pi2\)). The power of \(E\) is set by the number of dimensions, not by the shape of the region.</li>
+<li>Check the units of both: the same \(\left(\frac{8m}{h^2}\right)^{3/2}E^{1/2}\) appears, so they agree.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m1-trans">1J · How carriers move</h2>
+<p class="about">About 15 minutes. Lecture 1.7, carrier transport. The 2025 end-sem had three questions on this.</p>
+<p>Charge is carried by electrons and by <strong>holes</strong> (missing electrons in the valence band, which act as positive charges). The slide lists six ways they move.</p>
+<table class="tbl">
+<tr><th>Mechanism</th><th>What happens</th><th>Formula or where it matters</th></tr>
+<tr><td>Drift</td><td>an electric field \(E\) pushes carriers; they keep scattering off impurities, phonons and defects, so they settle at an average drift velocity</td><td>\(v_d = \mu E\), where \(\mu\) is the <strong>mobility</strong>; current density \(J_{\text{drift}} = qn\mu_nE + qp\mu_pE\)</td></tr>
+<tr><td>Diffusion</td><td>carriers spread from high to low concentration</td><td>\(J_{\text{diff}} = qD_n\frac{dn}{dx} - qD_p\frac{dp}{dx}\); Einstein relation \(\frac D\mu = \frac{k_BT}q\)</td></tr>
+<tr><td>Thermionic emission</td><td>carriers gain enough thermal energy to go over a barrier</td><td>metal–semiconductor junctions, heterostructures, a hot filament</td></tr>
+<tr><td>Tunnelling</td><td>carriers pass through a thin barrier without enough energy to go over it</td><td>tunnel diodes, thin MOSFET gates, the STM (4A)</td></tr>
+<tr><td>Ballistic transport</td><td>carriers cross the device without scattering, because the mean free path is at least the device length</td><td>nanowires, graphene, 2D materials</td></tr>
+<tr><td>Hopping</td><td>in disordered materials carriers jump between localised states</td><td>amorphous and organic semiconductors</td></tr>
+</table>
+<p>In the formulas, \(q\) is the carrier charge, \(n\) and \(p\) are the electron and hole concentrations, and \(D\) is the <strong>diffusion coefficient</strong>. The minus sign for holes in \(J_{\text{diff}}\) is because holes are positive: when both move down their gradients, they carry current in opposite directions.</p>
+
+<div class="game" data-type="match"><span class="tag">Game · 1H to 1J</span>
+<h4>Match the term to its description</h4>
+<script type="application/json">{"p":[["Drift","motion due to an applied electric field"],["Diffusion","motion from high to low concentration"],["Hopping","jumps between localised states in disordered materials"],["Ballistic transport","crossing a device without scattering"],["Thermionic emission","going over a barrier using thermal energy"],["Tunnelling","passing through a thin barrier without enough energy"],["Direct band gap","band edges at the same k, good for light emission"],["Indirect band gap","band edges at different k, as in silicon"],["Effective mass","ħ² divided by the band curvature d²E/dk²"],["Ionic bond","NaCl, MgO; transferred electrons"],["Van der Waals bond","holds graphite layers together"],["Covalent bond","diamond, Si; shared electrons, directional"]]}</script>
+</div>
+<div class="game" data-type="blank"><span class="tag">Game · Module 1 fill in the blanks</span>
+<h4>Type the missing word</h4>
+<script type="application/json">{"q":[
+{"t":"Carrier movement due to an applied electric field is called ___.","a":["drift"]},
+{"t":"Carrier movement from high to low concentration regions is called ___.","a":["diffusion"]},
+{"t":"In disordered materials, carriers move by jumping between localised states, known as ___ transport.","a":["hopping"]},
+{"t":"Bloch's theorem: the wavefunction in a periodic potential is a plane wave times a function with the ___ of the lattice.","a":["periodicity","period"]},
+{"t":"A material with a completely filled valence band and a large band gap is an ___.","a":["insulator"]},
+{"t":"The Brillouin zone is the Wigner–Seitz cell of the ___ lattice.","a":["reciprocal"]},
+{"t":"The density of states of a bulk (3D) solid is proportional to E to the power ___.","a":["1/2","half","0.5","one half"]},
+{"t":"The Pauli exclusion principle allows ___ electrons (of opposite spin) per state.","a":["two","2"]},
+{"t":"The lowest energy of a particle in a box is not zero; it is called the ___ energy.","a":["zero-point","zero point"]},
+{"t":"Electrons, protons and neutrons obey ___–Dirac statistics.","a":["Fermi"]}
+]}</script>
+</div>
+</section>

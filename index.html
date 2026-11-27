@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Study Guides · IIIT Hyderabad course notes</title>
-<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, signal processing, sociology, AI accelerators and statistical methods in AI.">
+<meta name="description" content="Free study guides for IIIT Hyderabad courses, written for students who are seeing the material for the first time. Advanced NLP, complex networks, detection theory, signal processing, sociology, AI accelerators, quantum materials and devices, and statistical methods in AI.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
@@ -31,6 +31,7 @@
   --sociology: #7a5200;
   --sp: #6b3fa0;
   --smai: #0b6285;
+  --qmd: #4d6b00;
   --ui: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --read: "Source Serif 4", Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -49,6 +50,7 @@
     --sociology: #e9b860;
     --sp: #c7a8ff;
     --smai: #6cc8ec;
+    --qmd: #b6d96a;
   }
 }
 
@@ -121,6 +123,7 @@ h3 a:hover { color: var(--c); text-decoration: underline; text-decoration-thickn
 .sociology { --c: var(--sociology); }
 .sp { --c: var(--sp); }
 .smai { --c: var(--smai); }
+.qmd { --c: var(--qmd); }
 
 @media (min-width: 720px) {
   .course { grid-template-columns: 9.5rem 1fr; }
@@ -182,7 +185,7 @@ footer a:hover { color: var(--ink); }
     <section class="term" aria-labelledby="monsoon-2026">
       <div class="term-head">
         <h2 id="monsoon-2026">Monsoon 2026</h2>
-        <span>5 courses</span>
+        <span>6 courses</span>
       </div>
 
       <article class="course anlp">
@@ -250,6 +253,19 @@ footer a:hover { color: var(--ink); }
             <li><a href="sdet/#ch13">Solved problems</a></li>
             <li><a href="sdet/#s13-5">2026 end-sem</a></li>
             <li><a href="sdet/#ch14">Formula sheet</a></li>
+          </ul>
+        </div>
+      </article>
+      <article class="course qmd">
+        <div class="code">SC1.311<small>qmd</small></div>
+        <div>
+          <h3><a href="qmd/">Quantum Materials and Devices</a></h3>
+          <p>The whole course on one page, from school maths to qubits: quantum mechanics, crystals and bands, low-dimensional and topological materials, superconductors, lasers, spintronics, NV centres, STM, ARPES and thin-film growth. Every derivation is set out as the lines to write in the exam, all the 2025 papers are worked through, and short games between sections test the facts the short questions ask.</p>
+          <ul class="parts">
+            <li><a href="qmd/">End-sem blitz</a><span>start here</span></li>
+            <li><a href="qmd/#m1-box">Particle in a box</a></li>
+            <li><a href="qmd/#m2-dos">Density of states</a></li>
+            <li><a href="qmd/#b-sheet">Formula sheet</a></li>
           </ul>
         </div>
       </article>

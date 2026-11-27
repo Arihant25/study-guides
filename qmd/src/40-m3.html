@@ -1,0 +1,326 @@
+<div class="part">Part 3<span>Module 3 · Quantum devices</span></div>
+<section>
+<h2 id="m3-laser">3A · Lasers and the Einstein coefficients</h2>
+<p class="about">About 35 minutes. Lecture 3.1 and the QWL reading. Einstein's A and B relations were a 5-mark question in Quiz 2.</p>
+<p><strong>LASER</strong> stands for Light Amplification by Stimulated Emission of Radiation. A laser gives an intense beam that is <strong>monochromatic</strong> (one wavelength), <strong>coherent</strong> (all waves in step, a fixed phase relation), <strong>highly directional</strong> (a narrow beam) and of <strong>high intensity</strong>. It can run continuously (continuous-wave) or in pulses.</p>
+<p>Every laser has three parts.</p>
+<ul>
+<li>The <strong>active medium</strong> (gas, solid, liquid or semiconductor), where population inversion is created.</li>
+<li>The <strong>pump</strong>, which supplies energy to lift electrons up (light, electric current).</li>
+<li>The <strong>optical resonator</strong> (cavity): two mirrors, one fully reflecting and one partly reflecting (the output coupler), that bounce light back and forth through the medium so it is amplified many times.</li>
+</ul>
+<h3>Three ways light and atoms interact</h3>
+<p>Take two energy levels, \(E_1\) (lower) and \(E_2\) (upper), with \(N_1\) and \(N_2\) atoms in them. Light of frequency \(\nu\) with \(h\nu = E_2 - E_1\) is present with energy density \(Q\) (energy per volume per frequency).</p>
+<ol>
+<li><strong>Stimulated absorption.</strong> An atom in \(E_1\) absorbs a photon and jumps to \(E_2\). Rate \(= B_{12}N_1Q\): it needs both atoms below and light.</li>
+<li><strong>Spontaneous emission.</strong> An atom in \(E_2\) drops to \(E_1\) by itself, emitting a photon in a random direction and phase. Rate \(= A_{21}N_2\): no light needed.</li>
+<li><strong>Stimulated emission.</strong> A passing photon makes an atom in \(E_2\) drop and emit a second photon <em>identical</em> to the first (same frequency, direction and phase). Rate \(= B_{21}N_2Q\). This is the "SE" in laser.</li>
+</ol>
+<p>\(A_{21}\), \(B_{12}\) and \(B_{21}\) are the <strong>Einstein coefficients</strong>, constants for a given pair of levels.</p>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Derive the relations between Einstein's A and B coefficients.</h4>
+<ol class="steps lines">
+<li>Rates: absorption \(B_{12}N_1Q\), spontaneous emission \(A_{21}N_2\), stimulated emission \(B_{21}N_2Q\).</li>
+<li>In thermal equilibrium, upward rate = downward rate: \(B_{12}N_1Q = A_{21}N_2 + B_{21}N_2Q\).</li>
+<li>Solve for \(Q\): \[Q = \frac{A_{21}/B_{21}}{\dfrac{B_{12}}{B_{21}}\dfrac{N_1}{N_2} - 1}.\]
+<details class="linewhy"><summary>Why <span>(4 steps)</span></summary>
+<ol class="steps">
+<li>Move the \(Q\) terms to one side. \(B_{12}N_1Q - B_{21}N_2Q = A_{21}N_2\).</li>
+<li>Take out \(Q\). \(Q(B_{12}N_1 - B_{21}N_2) = A_{21}N_2\), so \(Q = \frac{A_{21}N_2}{B_{12}N_1 - B_{21}N_2}\).</li>
+<li>Divide the top and bottom by \(B_{21}N_2\). Top: \(\frac{A_{21}}{B_{21}}\). Bottom: \(\frac{B_{12}N_1}{B_{21}N_2} - 1\).</li>
+<li>That is the form in line 3.</li>
+</ol>
+</details></li>
+<li>Boltzmann distribution: \(\frac{N_1}{N_2} = e^{(E_2-E_1)/k_BT} = e^{h\nu/k_BT}\). So \(Q = \frac{A_{21}}{B_{21}}\cdot\frac1{\frac{B_{12}}{B_{21}}e^{h\nu/k_BT} - 1}\).
+<details class="linewhy"><summary>Why <span>(2 steps)</span></summary>
+<ol class="steps">
+<li>In thermal equilibrium the number of atoms in a level falls as \(e^{-E/k_BT}\). So \(\frac{N_1}{N_2} = \frac{e^{-E_1/k_BT}}{e^{-E_2/k_BT}} = e^{(E_2-E_1)/k_BT}\).</li>
+<li>\(E_2 - E_1 = h\nu\). Substitute into line 3.</li>
+</ol>
+</details></li>
+<li>Planck's radiation law: \(Q = \frac{8\pi h\nu^3}{c^3}\cdot\frac1{e^{h\nu/k_BT} - 1}\).</li>
+<li>Lines 4 and 5 must agree at every temperature. Matching them gives \[B_{12} = B_{21},\qquad \frac{A_{21}}{B_{21}} = \frac{8\pi h\nu^3}{c^3} = \frac{8\pi h}{\lambda^3}.\]
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Both expressions describe the same light, so they are equal for every \(T\).</li>
+<li>The bottom of line 4 has \(\frac{B_{12}}{B_{21}}e^{h\nu/k_BT} - 1\), and Planck has \(e^{h\nu/k_BT} - 1\). For these to match at all \(T\), \(\frac{B_{12}}{B_{21}} = 1\): absorption and stimulated emission have equal coefficients.</li>
+<li>Then the front factors must match: \(\frac{A_{21}}{B_{21}} = \frac{8\pi h\nu^3}{c^3}\). Using \(\nu = \frac c\lambda\), \(\frac{\nu^3}{c^3} = \frac1{\lambda^3}\), so this is \(\frac{8\pi h}{\lambda^3}\).</li>
+</ol>
+</details></li>
+<li>Conclusion: the ratio of spontaneous to stimulated emission is \(\frac{A_{21}N_2}{B_{21}N_2Q} = e^{h\nu/k_BT} - 1\), which is huge for visible light. So spontaneous emission normally dominates, and a laser needs <strong>population inversion</strong> (\(N_2 > N_1\)).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Divide the spontaneous rate by the stimulated rate. \(N_2\) cancels, leaving \(\frac{A_{21}}{B_{21}Q}\).</li>
+<li>Put in \(\frac{A_{21}}{B_{21}}\) from line 6 and \(Q\) from line 5. The \(\frac{8\pi h\nu^3}{c^3}\) cancels, leaving \(e^{h\nu/k_BT} - 1\).</li>
+<li>For 600 nm light, \(h\nu = 2.07\) eV and \(k_BT = 0.0259\) eV at room temperature, so this is \(e^{80}\), an enormous number. Stimulated emission wins only if more atoms are in the upper level than the lower, which never happens in equilibrium. Also, because \(\frac AB\propto\nu^3\), spontaneous emission becomes more likely the larger the energy gap.</li>
+</ol>
+</details></li>
+</ol>
+</div>
+<p><strong>Population inversion</strong> is reached with three or four levels. In a four-level laser, the pump lifts atoms from \(N_0\) to a pump band \(N_3\); they drop quickly (without light) to \(N_2\), which lasts a long time; the laser transition is \(N_2\to N_1\); then \(N_1\) empties quickly to \(N_0\). Because \(N_1\) stays nearly empty, inversion between \(N_2\) and \(N_1\) is easy.</p>
+
+<h3>Semiconductor and quantum-well lasers</h3>
+<p>Most semiconductor lasers are <strong>laser diodes</strong>, pumped by a current through a p–n junction: electrons and holes meet in the junction and recombine, giving photons. Some are optically pumped, and <strong>quantum cascade lasers</strong> use transitions between subbands within one band. The materials must have a direct band gap (1H): GaAs, AlGaAs, InGaP, GaN, InGaAs, GaInNAs, InP, GaInP.</p>
+<p>A <strong>quantum-well laser</strong> makes the active region a quantum well (2A): a thin (5 to 20 nm) layer of low-gap material such as GaAs between higher-gap layers such as AlGaAs. The well is comparable to the de Broglie wavelength, so carriers are confined in the growth direction and the energies form discrete subbands, \(E_n\propto\frac{n^2}{L^2}\).</p>
+<p>Quantum confinement mainly changes the <strong>density of states</strong>: it becomes a staircase (2B), so carriers pile up right at the band edge instead of spreading over many energies. That gives more optical gain from fewer carriers.</p>
+<table class="tbl cmp">
+<tr><th>Feature</th><th>Quantum-well laser</th><th>Conventional laser diode</th></tr>
+<tr><td>Active region thickness</td><td>about 5 to 20 nm</td><td>micrometres (bulk)</td></tr>
+<tr><td>Threshold current</td><td>lower</td><td>higher</td></tr>
+<tr><td>Efficiency</td><td>higher</td><td>lower</td></tr>
+<tr><td>Spectral linewidth</td><td>narrower</td><td>broader</td></tr>
+<tr><td>Modulation speed</td><td>higher</td><td>lower</td></tr>
+<tr><td>Wavelength control</td><td>set precisely by the well thickness</td><td>limited to the material's band gap</td></tr>
+</table>
+<table class="tbl">
+<tr><th>Material system</th><th>Well</th><th>Barrier</th><th>Wavelength</th></tr>
+<tr><td>GaAs</td><td>GaAs</td><td>AlGaAs</td><td>700 to 900 nm</td></tr>
+<tr><td>InGaAs</td><td>InGaAs</td><td>GaAs</td><td>900 to 1300 nm</td></tr>
+<tr><td>InP</td><td>InGaAsP</td><td>InP</td><td>1300 to 1600 nm (fibre communication)</td></tr>
+</table>
+<p>Uses: fibre-optic communication, optical drives and laser printers, sensing and medical diagnostics, displays for AR and wearables, LIDAR and secure military communication.</p>
+</section>
+
+<section>
+<h2 id="m3-semi">3B · Junctions, transistors, LEDs and displays</h2>
+<p class="about">About 35 minutes. Lectures 3.2 and 3.3.</p>
+<h3>Heterojunctions</h3>
+<p>A <strong>heterojunction</strong> joins two different semiconductors with different band edges. The steps at the interface are the band offsets \(\Delta E_c\) (conduction band) and \(\Delta E_v\) (valence band).</p>
+<ul>
+<li><strong>Type I (straddling).</strong> The smaller gap sits entirely inside the larger one, so electrons and holes are both trapped in the narrow-gap layer. Their wavefunctions overlap strongly, which favours light emission. Example: GaAs/AlGaAs quantum wells for infrared emitters and lasers.</li>
+<li><strong>Type II (staggered).</strong> The lowest conduction band is in one material and the highest valence band in the other, so electrons and holes collect on opposite sides. Less overlap gives longer-lived <strong>interlayer excitons</strong> (bound electron–hole pairs split across the layers) and helps extract charge, as in solar cells. Example: MoSe₂/WSe₂, with electrons in MoSe₂ and holes in WSe₂.</li>
+</ul>
+<h3>Semiconductors and the p–n junction</h3>
+<ul>
+<li><strong>Intrinsic</strong> (pure): heat makes electron–hole pairs, so \(n = p = n_i\).</li>
+<li><strong>n-type</strong>: a group-V donor such as phosphorus in silicon has a fifth electron, weakly bound; its donor level \(E_D\) is just below the conduction band. Electrons are the majority carriers. The donor becomes a fixed positive ion; the crystal stays neutral overall.</li>
+<li><strong>p-type</strong>: a group-III acceptor such as boron has one fewer electron; its acceptor level \(E_A\) is just above the valence band. Holes are the majority carriers.</li>
+<li>In equilibrium \(np = n_i^2\) (the mass-action law).</li>
+</ul>
+<p>Join p and n material. Electrons diffuse from n to p and holes from p to n, and they recombine near the interface. This leaves a <strong>depletion region</strong> with no free carriers but with fixed ions (positive on the n side, negative on the p side). Their electric field drives a drift current that balances diffusion, so at equilibrium the net current is zero and the Fermi level is flat. The field's potential is the <strong>built-in voltage</strong></p>
+<div class="eq">\[V_{bi} = \frac{k_BT}q\ln\frac{N_AN_D}{n_i^2}.\]</div>
+<p>Here \(N_A\) and \(N_D\) are the acceptor and donor concentrations. <strong>Example:</strong> silicon with \(N_A = N_D = 10^{16}\) cm⁻³ and \(n_i = 10^{10}\) cm⁻³: \(\frac{10^{32}}{10^{20}} = 10^{12}\), \(\ln10^{12} = 27.6\), so \(V_{bi} = 0.0259\times27.6 = 0.71\) V.</p>
+<p><strong>Forward bias</strong> (p to +, n to −) opposes the built-in field, lowers the barrier, narrows the depletion region, and the current rises exponentially. <strong>Reverse bias</strong> raises the barrier and widens the depletion region; only a tiny current flows until breakdown (Zener or avalanche) at high voltage. The ideal diode equation is \(I = I_S\left(e^{qV/nk_BT} - 1\right)\), where \(I_S\) is the reverse saturation current and \(n\) the ideality factor.</p>
+<figure class="fig"><!--plot:diode--><figcaption>The diode current–voltage curve: a tiny current in reverse, and an exponential rise in forward bias.</figcaption></figure>
+<h3>Transistors</h3>
+<table class="tbl cmp">
+<tr><th></th><th>BJT (bipolar junction transistor)</th><th>FET (field-effect transistor)</th></tr>
+<tr><td>Control</td><td>current-controlled: a small base current controls a larger collector–emitter current</td><td>voltage-controlled: the gate voltage controls the drain–source current</td></tr>
+<tr><td>Build</td><td>three layers: emitter, base (thin), collector; NPN or PNP</td><td>one channel with source, drain and gate; JFET or MOSFET</td></tr>
+<tr><td>Input impedance</td><td>low</td><td>high</td></tr>
+<tr><td>Power use</td><td>high</td><td>low</td></tr>
+<tr><td>Switching speed</td><td>slower</td><td>faster</td></tr>
+<tr><td>Thermal stability</td><td>poor</td><td>better</td></tr>
+<tr><td>Uses</td><td>analog amplifiers, audio, power electronics</td><td>digital circuits, switches, integrated circuits</td></tr>
+</table>
+<p>In an NPN BJT in active mode, the base–emitter junction is forward biased and injects electrons into the thin p-type base; they diffuse across and the reverse-biased collector junction sweeps most of them into the collector. The circuit-symbol arrow points out for NPN and in for PNP. In an n-channel <strong>MOSFET</strong>, the gate sits on a thin oxide above a p-type body; a positive gate voltage above the <strong>threshold voltage</strong> \(V_T\) pulls electrons to the surface to form an inversion channel linking source and drain. The oxide insulates the gate, so it draws almost no current, which is why MOSFETs dominate dense logic chips. <strong>Gate-all-around</strong> transistors (Intel's RibbonFET in its 18A process) wrap the gate around stacked channels for better control.</p>
+<h3>LEDs and displays</h3>
+<p>In an ordinary diode, electron–hole recombination releases heat. In an <strong>LED</strong> (light-emitting diode), the semiconductor is chosen (a direct gap, such as GaAs or GaP, or InGaN for blue) so the energy comes out as a photon. Under forward bias, electrons and holes recombine at the junction. The colour is set by the band gap:</p>
+<div class="eq">\[E_{\text{photon}} = h\nu = \frac{hc}\lambda\approx E_g,\qquad\lambda\,(\text{nm})\approx\frac{1240}{E_g\,(\text{eV})}.\]</div>
+<p>Example: GaAs with \(E_g = 1.42\) eV gives \(\lambda = \frac{1240}{1.42} = 873\) nm, infrared. LEDs are efficient (little heat), last long and are used in indicators, backlights, lighting and optical communication.</p>
+<ul>
+<li><strong>LCD</strong>: the pixels do <em>not</em> make light. A backlight is always on, and each pixel's liquid crystal, between two polarisers and set by a thin-film transistor (TFT), changes how much light gets through; colour filters give red, green and blue. Because the backlight is always on, black is never fully black.</li>
+<li><strong>OLED</strong>: each pixel emits. An organic stack (anode, hole-transport layer, emissive layer, electron-transport layer, cathode) injects holes and electrons that meet and form excitons, which emit light. The levels are called HOMO (highest occupied molecular orbital) and LUMO (lowest unoccupied molecular orbital), the molecular versions of the valence and conduction bands.</li>
+<li><strong>Quantum dots</strong>: smaller dots emit at shorter wavelength (2A), so the colour is set by size.</li>
+<li><strong>QD-OLED</strong> (Samsung): a blue OLED layer is the light source in every pixel (blue has the most energy); red and green quantum-dot layers absorb blue and re-emit red or green; blue subpixels pass blue through. Each pixel can switch off fully, giving true black and a contrast ratio of about 1,000,000:1. It is thinner than an LCD (no backlight) and reduces harmful blue light in the 415 to 455 nm range.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="m3-set">3C · The single-electron transistor (SET)</h2>
+<p class="about">About 20 minutes. Lectures 3.2 and 3.3.</p>
+<p>A <strong>single-electron transistor</strong> is a three-terminal switch that moves electrons from source to drain <em>one at a time</em>. It looks like a FET, but the channel is replaced by a tiny conducting island (a quantum dot) and the p–n junctions by two <strong>tunnel junctions</strong> (thin barriers). A gate electrode couples to the island through a capacitor, without touching it.</p>
+<p><strong>Coulomb blockade.</strong> Adding one electron to a small island costs energy, because the electrons already there repel it. This <strong>charging energy</strong> is</p>
+<div class="eq boxed">\[E_C = \frac{e^2}{2C},\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>\(C\) is the total capacitance of the island. A smaller island has a smaller \(C\), so a bigger \(E_C\). If \(E_C\) is much larger than the thermal energy \(k_BT\), an electron cannot get onto the island unless the voltages supply that energy, so no current flows. That is the <strong>Coulomb blockade</strong>. The gate voltage shifts the island's energy; at the right gate voltage (\(V = \frac e{2C}\) on the slides) an electron can tunnel on, then off to the drain, and the cycle repeats.</p>
+<p><strong>Example.</strong> \(C = 1\) aF \(= 10^{-18}\) F: \(E_C = \frac{(1.6\times10^{-19})^2}{2\times10^{-18}} = \frac{2.56\times10^{-38}}{2\times10^{-18}} = 1.28\times10^{-20}\) J \(= 0.08\) eV. That is only about 3 times \(k_BT\) at room temperature (0.026 eV), so blockade would be washed out. This is why a room-temperature SET needs a dot smaller than about 10 nm, and why most SETs run cold.</p>
+</div>
+<figure class="fig"><!--plot:coulomb--><figcaption>Coulomb oscillations: as the gate voltage rises, current flows only in sharp peaks, one for each extra electron; between peaks the island is blocked.</figcaption></figure>
+<p>Each step in gate voltage adds one more electron to the island, so the number of electrons on the dot is controlled by the gate. A plot of conductance against gate voltage and source–drain voltage shows diamond-shaped blocked regions, the <strong>Coulomb diamonds</strong>. Typical numbers: gate voltages of a few millivolts, currents of picoamperes.</p>
+<ul>
+<li><strong>Advantages</strong>: very fast information transfer by electrostatic interaction only; no wires between cells; cells as small as 2.5 nm, good for dense memory; useful for future quantum computers.</li>
+<li><strong>Limitations</strong>: room-temperature operation needs dots under 10 nm; hard to make with ordinary optical lithography; methods are needed to connect SETs into large logic circuits; background charges and thermal noise disturb them.</li>
+<li><strong>Applications</strong>: sensors and digital circuits, mass data storage, ultra-sensitive electrometers (charge detectors), thermometers at very low temperature, single-electron spectroscopy, reading out qubits.</li>
+</ul>
+<details class="q"><summary><span class="qt">Practice</span><span>How small must the capacitance of a SET island be for the charging energy to be 10 times \(k_BT\) at 300 K?</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(E_C = \frac{e^2}{2C}\), so \(C = \frac{e^2}{2E_C}\).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3C, the boxed formula.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>\(10k_BT = 10\times0.0259 = 0.259\) eV \(= 0.259\times1.602\times10^{-19} = 4.15\times10^{-20}\) J.</li>
+<li>\(C = \frac{(1.602\times10^{-19})^2}{2\times4.15\times10^{-20}} = \frac{2.57\times10^{-38}}{8.3\times10^{-20}} = 3.1\times10^{-19}\) F \(= 0.31\) aF.</li>
+<li>Check: put it back. \(\frac{2.57\times10^{-38}}{2\times3.1\times10^{-19}} = 4.1\times10^{-20}\) J, which is \(10k_BT\). Such a tiny capacitance means an island of a few nanometres.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m3-squid">3D · SQUIDs and superconducting qubits</h2>
+<p class="about">About 25 minutes. Lecture 3.4.</p>
+<p>A <strong>SQUID</strong> (Superconducting Quantum Interference Device) is the most sensitive detector of magnetic flux known, able to measure fields as small as \(10^{-15}\) tesla (femtotesla). It uses two effects.</p>
+<ul>
+<li><strong>The Josephson effect</strong> (2F): Cooper pairs tunnel through a thin insulator between two superconductors with no voltage, with current \(I = I_c\sin\phi\).</li>
+<li><strong>Flux quantisation</strong>: the magnetic flux through a superconducting loop can only be a whole number of flux quanta.</li>
+</ul>
+<div class="eq boxed">\[\Phi = n\Phi_0,\qquad\Phi_0 = \frac h{2e} = 2.07\times10^{-15}\text{ Wb}.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>Magnetic flux \(\Phi\) is the field times the area it passes through, in webers (Wb). The superconducting wavefunction must join up with itself after one trip around the loop, and the flux shifts its phase, so the flux can only take steps of \(\Phi_0\). The \(2e\) is there because the current is carried by Cooper pairs, each with charge \(2e\). Check: \(\frac{6.626\times10^{-34}}{2\times1.602\times10^{-19}} = \frac{6.626\times10^{-34}}{3.204\times10^{-19}} = 2.07\times10^{-15}\) Wb.</p>
+</div>
+<p><strong>How it works.</strong> A <strong>dc SQUID</strong> is a superconducting loop (often niobium or lead) with two Josephson junctions. A bias current is sent through and the voltage across the junctions is measured. An outside field changes the phase difference across the two junctions, so the supercurrents through the two arms interfere constructively or destructively. The voltage therefore oscillates with the flux, with one period for every \(\Phi_0\). Counting these oscillations, and using the steep part of the curve, measures flux changes smaller than \(10^{-6}\Phi_0\). An <strong>rf SQUID</strong> has only one junction, and its loop is coupled to a radio-frequency tank circuit whose impedance changes with flux.</p>
+<figure class="fig"><!--plot:squid--><figcaption>The voltage across a dc SQUID repeats every flux quantum \(\Phi_0\).</figcaption></figure>
+<p>Characteristics: extremely sensitive, periodic response, linear for small changes around a bias point, low noise because it runs cold (4.2 K with liquid helium, or 77 K with high-\(T_c\) materials). Applications: magnetoencephalography (MEG, the tiny fields of brain activity), geophysics (minerals and oil), materials science (MPMS magnetometers), quantum computing (flux qubits and qubit readout), non-destructive testing, and fundamental research (gravitational waves, dark matter).</p>
+<h3>Superconducting qubits</h3>
+<p>A <strong>qubit</strong> is the basic unit of a quantum computer. It can be in a superposition of 0 and 1, and several qubits can be entangled (4E). A superconducting qubit is a small superconducting circuit (aluminium or niobium) with one or more Josephson junctions, capacitors and inductors.</p>
+<ul>
+<li>The circuit is like an LC oscillator (an inductor and capacitor), whose energy levels would be evenly spaced, so you could not pick out two of them. The Josephson junction makes it <strong>nonlinear</strong>, so the levels are unevenly spaced and the lowest two, \(|0\rangle\) and \(|1\rangle\), can be used on their own.</li>
+<li>Microwave pulses drive transitions between \(|0\rangle\) and \(|1\rangle\). Readout uses a resonator or a SQUID.</li>
+<li>Types: the <strong>charge qubit</strong> (Cooper-pair box), where the information is the number of Cooper pairs on an island (sensitive to charge noise), and the <strong>flux qubit</strong>, where it is the direction of a circulating supercurrent (clockwise or anticlockwise), controlled by flux, often in a SQUID loop.</li>
+<li>They run in a <strong>dilution refrigerator</strong> at millikelvin temperatures (the slide quotes "below 20 K" for superconductivity; the qubits themselves run near 10 mK).</li>
+<li>They are favoured because they show <strong>macroscopic quantum coherence</strong> and are made with chip lithography (IBM, Google).</li>
+</ul>
+<p><strong>Nobel Prize in Physics 2025</strong>: John Clarke, Michel Devoret and John Martinis, for showing macroscopic quantum tunnelling and energy quantisation in a superconducting electrical circuit (experiments published in 1985). This showed that a circuit large enough to hold in your hand can behave quantum mechanically, which is the foundation of superconducting qubits.</p>
+</section>
+
+<section>
+<h2 id="m3-spin">3E · Spintronics: GMR, spin valves, MTJs and STT</h2>
+<p class="about">About 35 minutes. Lecture 3.5. Quiz 2 had a "find the errors" question on MTJ structures.</p>
+<p>An electron has mass, charge and <strong>spin</strong> (\(s = \frac12\)), a quantum angular momentum that makes it a tiny magnet, "up" or "down". Ordinary electronics uses only charge. Magnetic recording used spin only through bulk magnetisation. <strong>Spintronics</strong> uses both together. It was made possible in the 1980s by growing magnetic multilayers only a few nanometres thick by sputtering, evaporation and molecular beam epitaxy (4D).</p>
+<h3>Giant magnetoresistance (GMR)</h3>
+<p>In 1986 Peter Grünberg's group made Fe/Cr/Fe layers and found the two iron layers lined up antiparallel. In 1988 Grünberg (1.5% at room temperature in Fe/Cr/Fe, over 10% at 5 K) and Albert Fert (about 50% at low temperature in Fe/Cr superlattices grown by MBE) found that the resistance depends strongly on whether the magnetic layers point the same way or opposite. Fert named it <strong>giant magnetoresistance</strong>. This revealed a strong link between spin and charge and started spintronics.</p>
+<p><strong>Mott's two-channel model (1936).</strong> Spin-up and spin-down electrons carry current in two separate channels, because they rarely flip. In a magnetic layer, electrons with spin parallel to the magnetisation scatter weakly (low resistance \(R_\uparrow\)), and antiparallel ones scatter strongly (high resistance \(R_\downarrow\)).</p>
+<figure class="fig"><img src="assets/sl-gmr.webp" alt="Slide: GMR summary, the two-channel resistor model for parallel and antiparallel layers, and the spin valve." width="1000" height="563" loading="lazy"><figcaption>The two-channel model, from lecture 3.5.</figcaption></figure>
+<div class="card exam"><span class="tag">Write this in the exam</span>
+<h4>Use the two-channel model to show that the antiparallel state has the higher resistance.</h4>
+<ol class="steps lines">
+<li>Parallel (P): spin-up meets \(R_\uparrow\) in both layers, spin-down meets \(R_\downarrow\) in both. Channels in parallel: \(R_P = \frac{2R_\uparrow\cdot2R_\downarrow}{2R_\uparrow + 2R_\downarrow} = \frac{2R_\uparrow R_\downarrow}{R_\uparrow + R_\downarrow}\).</li>
+<li>Antiparallel (AP): each spin meets \(R_\uparrow\) in one layer and \(R_\downarrow\) in the other. Each channel is \(R_\uparrow + R_\downarrow\), so \(R_{AP} = \frac{R_\uparrow + R_\downarrow}2\).
+<details class="linewhy"><summary>Why <span>(covers lines 1 and 2, 4 steps)</span></summary>
+<ol class="steps">
+<li>Within one channel the two layers are in series, so their resistances add.</li>
+<li>P: the spin-up channel is \(R_\uparrow + R_\uparrow = 2R_\uparrow\); the spin-down channel is \(2R_\downarrow\).</li>
+<li>The two channels carry current side by side, so they combine in parallel: \(\frac{ab}{a+b}\) with \(a = 2R_\uparrow\), \(b = 2R_\downarrow\). That is \(\frac{4R_\uparrow R_\downarrow}{2(R_\uparrow + R_\downarrow)} = \frac{2R_\uparrow R_\downarrow}{R_\uparrow + R_\downarrow}\).</li>
+<li>AP: both channels are \(R_\uparrow + R_\downarrow\). Two equal resistors in parallel give half: \(\frac{R_\uparrow + R_\downarrow}2\).</li>
+</ol>
+</details></li>
+<li>\(R_{AP} - R_P = \frac{(R_\downarrow - R_\uparrow)^2}{2(R_\uparrow + R_\downarrow)}\ge0\), so \(R_{AP} > R_P\) whenever \(R_\uparrow\neq R_\downarrow\).
+<details class="linewhy"><summary>Why <span>(3 steps)</span></summary>
+<ol class="steps">
+<li>Put both over the common bottom \(2(R_\uparrow + R_\downarrow)\): \(R_{AP} = \frac{(R_\uparrow + R_\downarrow)^2}{2(R_\uparrow + R_\downarrow)}\) and \(R_P = \frac{4R_\uparrow R_\downarrow}{2(R_\uparrow + R_\downarrow)}\).</li>
+<li>Subtract the tops: \((R_\uparrow + R_\downarrow)^2 - 4R_\uparrow R_\downarrow = R_\uparrow^2 - 2R_\uparrow R_\downarrow + R_\downarrow^2 = (R_\downarrow - R_\uparrow)^2\).</li>
+<li>A square is never negative, so \(R_{AP}\ge R_P\). In P, the spin-up channel is a low-resistance shortcut; in AP, every electron is scattered strongly in one layer, so there is no shortcut.</li>
+</ol>
+</details></li>
+<li>GMR ratio \(= \frac{R_{AP} - R_P}{R_P}\times100\%\).</li>
+</ol>
+</div>
+<p><strong>Example.</strong> \(R_\uparrow = 1\ \Omega\), \(R_\downarrow = 5\ \Omega\): \(R_P = \frac{2\times5}{6} = 1.67\ \Omega\), \(R_{AP} = \frac62 = 3\ \Omega\), GMR \(= \frac{3 - 1.67}{1.67} = 80\%\). The simple model ignores spin-flip scattering; real systems need better models.</p>
+<p><strong>Spin valve</strong> (Dieny and co-workers, 1991): two ferromagnetic layers separated by a <strong>non-magnetic metal</strong> spacer (such as Cu). One layer is <strong>pinned</strong> by an antiferromagnet next to it; the other is <strong>free</strong> and flips in a small field. A tiny field from a disk bit flips the free layer and changes the resistance. This became the hard-disk read head.</p>
+<h3>Magnetic tunnel junctions and TMR</h3>
+<p>A <strong>magnetic tunnel junction</strong> (MTJ) replaces the metal spacer with a thin <strong>insulating barrier</strong> (about 1 nm). Electrons cross it by tunnelling, and the tunnelling depends on the relative magnetisation: parallel gives low resistance \(R_P\), antiparallel gives high \(R_{AP}\). This is <strong>tunnel magnetoresistance</strong>:</p>
+<div class="eq">\[\text{TMR} = \frac{R_{AP} - R_P}{R_P}.\]</div>
+<figure class="fig"><img src="assets/sl-mtj.webp" alt="Slide: TMR effect and the basic MTJ stack, free layer, barrier layer, reference layer and antiferromagnetic layer." width="1000" height="563" loading="lazy"><figcaption>The structure of a typical MTJ, from lecture 3.5.</figcaption></figure>
+<p><strong>The MTJ stack, top to bottom</strong>: <em>free layer</em> (ferromagnet whose magnetisation can switch) / <em>barrier</em> (thin insulator, MgO or Al₂O₃) / <em>reference layer</em> (ferromagnet fixed during operation) / <em>antiferromagnetic layer</em> (PtMn or IrMn) that pins the reference layer. Often the reference layer is a <strong>synthetic antiferromagnet</strong> (SAF): two magnetic sublayers coupled through a thin ruthenium layer, which reduces the stray field on the free layer.</p>
+<p><strong>History</strong>: 1975 Jullière, about 14% at 4.2 K in Fe/Ge-O/Co (not reproducible); 1995 Moodera and Miyazaki, about 20% at room temperature with Al₂O₃, later about 70%; 2001 Butler and others predicted over 1000% for crystalline Fe/MgO/Fe; 2004 Yuasa and Parkin, about 200% at room temperature with MgO; later 604% at room temperature and 1144% at 5 K in CoFeB/MgO/CoFeB.</p>
+<p><strong>Why MgO gives huge TMR.</strong> Crystalline MgO acts as a <strong>symmetry filter</strong>: only electron states of one symmetry (called \(\Delta_1\)) pass through easily, and in iron these exist only for the majority spin. In the parallel state the \(\Delta_1\) electrons pass (low \(R_P\)). In the antiparallel state they find no matching state on the other side and decay (high \(R_{AP}\)).</p>
+<h3>Spin-transfer torque (STT)</h3>
+<p>A current can switch a magnet without any magnetic field. Proposed in 1996 by Berger and Slonczewski independently; seen in 2000 in Co/Cu/Co pillars; shown in MgO MTJs in 2005 (Diao and others), lowering the switching current from \(10^7\)–\(10^8\) A/cm² to about \(3\times10^6\) A/cm².</p>
+<p>How: electrons pass through the thick fixed (reference) layer and become spin-polarised. When they enter the thin free layer, their spins are turned to line up with its magnetisation. Angular momentum is conserved, so the sideways part of their spin is handed to the free layer as a torque, which rotates its magnetisation. It can switch the magnetisation or keep it precessing (spin-torque oscillators).</p>
+<p>Why it matters: the same line reads and writes, so circuits are simpler, denser and more scalable, use less energy than field switching, and are compatible with CMOS. It is the basis of <strong>STT-MRAM</strong>. MRAM combines the speed of SRAM, the density of DRAM and the non-volatility of flash, so it could become a "universal memory". Early MTJs had in-plane magnetisation switched by fields from metal lines (high power, poor scaling); <strong>perpendicular MTJs</strong> (magnetisation out of the plane) are smaller and scale better. Switching methods: thermally assisted, spin-transfer torque and voltage-induced.</p>
+<details class="q"><summary><span class="qt pyq">Quiz 2 2025 · Q13 (5 marks)</span><span>The two diagrams show incorrect MTJ structures. (a) Find and explain the mistakes. (b) State what they actually represent. (c) Draw the correct MTJ. (d) Expand MTJ.</span><span class="chev">›</span></summary><div class="ans">
+<figure class="fig"><img class="narrow" src="assets/qp-mtj.webp" alt="Two stacks: (A) ferromagnet / ferromagnet with arrows up and down / ferromagnet; (B) ferromagnet / non-magnetic metal / ferromagnet." width="750" height="450" loading="lazy"><figcaption>The diagrams from Quiz 2 (Monsoon 2025).</figcaption></figure>
+<div class="sol"><div class="sl">Formula</div><div class="sb">MTJ = free ferromagnet / thin insulating barrier / reference ferromagnet (/ antiferromagnetic pinning layer).</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3E, the MTJ stack and the spin valve.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li><strong>(A)</strong>: the middle layer is a ferromagnet. An MTJ needs a thin non-magnetic <em>insulating barrier</em> (MgO, about 1 nm) in the middle, so electrons must tunnel. The magnetisation arrows belong in the two outer ferromagnetic layers (free and reference), not in the spacer. With no spacer the three layers simply act as one thick magnet, with no magnetoresistance effect.</li>
+<li><strong>(B)</strong>: the spacer is a non-magnetic <em>metal</em>, so there is no tunnelling. Also no pinning layer or magnetisation directions are shown.</li>
+<li><strong>What they represent</strong>: (B) is a GMR spin valve (FM / non-magnetic metal / FM). (A) is just a ferromagnetic multilayer, effectively one magnet.</li>
+<li><strong>Correct MTJ</strong>, top to bottom: free layer (FM, arrow can point either way) / insulating barrier (MgO) / reference layer (FM, fixed arrow) / antiferromagnet (PtMn or IrMn). Label parallel arrows "low resistance \(R_P\)" and antiparallel "high resistance \(R_{AP}\)".</li>
+<li><strong>MTJ</strong> = Magnetic Tunnel Junction.</li>
+</ol></div></div>
+</div></details>
+</section>
+
+<section>
+<h2 id="m3-nv">3F · Defects and NV centres in diamond</h2>
+<p class="about">About 25 minutes. Lecture 3.6 and the Science paper by Yip and others. A 5-mark question in Quiz 2.</p>
+<h3>Point defects</h3>
+<ul>
+<li><strong>Vacancy</strong>: an atom is missing from its lattice site.</li>
+<li><strong>Interstitial</strong>: an extra atom squeezed between lattice sites.</li>
+<li><strong>Substitutional</strong>: a foreign atom (larger or smaller) takes a host atom's place.</li>
+<li><strong>Frenkel pair</strong>: an atom jumps from its site into an interstitial position, leaving a vacancy and an interstitial together.</li>
+</ul>
+<p>Defects that give a crystal colour are called <strong>colour centres</strong>.</p>
+<h3>The nitrogen–vacancy (NV) centre</h3>
+<p>In diamond, an <strong>NV centre</strong> is a nitrogen atom that replaces a carbon atom, sitting next to a vacancy (a missing carbon). It is a <strong>point defect</strong>. The defect has its own energy levels inside diamond's wide band gap, so it acts like an atom trapped in a crystal. Its electrons form a spin-1 system.</p>
+<figure class="fig"><img class="narrow" src="assets/sl-nv-levels.webp" alt="Slide: NV centre structure and its energy levels, ground state 3A2 with ms = 0 bright and ms = ±1 dark split by 2.87 GHz, excited state 3E, red emission at 637 nm, and a singlet 1A1 path." width="1000" height="563" loading="lazy"><figcaption>NV centre energy levels, from lecture 3.6.</figcaption></figure>
+<ul>
+<li>The ground state \(^3A_2\) has three spin states \(m_s = 0, +1, -1\). Even with no field, \(m_s = \pm1\) sit 2.87 GHz above \(m_s = 0\) (the <strong>zero-field splitting</strong> \(D\)).</li>
+<li>Green laser light excites the centre to \(^3E\). It returns by emitting red light (637 nm).</li>
+<li>From the \(m_s = \pm1\) states, there is an extra path back through a singlet state \(^1A_1\) that emits no visible light. So \(m_s = 0\) is <strong>bright</strong> and \(m_s = \pm1\) is <strong>dark</strong>. The brightness tells you the spin state. The same path also pumps the spin into \(m_s = 0\).</li>
+</ul>
+<p>In a magnetic field \(\vec B\) (with no electric field or strain), the spin's energy is given by the Hamiltonian</p>
+<div class="eq boxed">\[\frac{H_e}h = DS_z^2 + \gamma_e\vec B\cdot\vec S.\]</div>
+<div class="card goal"><span class="tag">Reading the formula</span>
+<p>The first term is the <strong>crystal field</strong>: \(D\approx2.87\) GHz lifts \(m_s = \pm1\) above \(m_s = 0\) (since \(S_z^2 = 1\) for them and 0 for \(m_s = 0\)). \(D\) shifts with temperature and pressure. The second term is the <strong>Zeeman splitting</strong>: a field along the NV axis moves \(m_s = +1\) up and \(m_s = -1\) down by \(\gamma_eB\) each, where \(\gamma_e\approx28\) GHz per tesla. So the two resonances are at \(D\pm\gamma_eB\), split by \(2\gamma_eB\).</p>
+<p><strong>Example.</strong> \(B = 1\) mT along the axis: \(\gamma_eB = 28\times10^{-3}\) GHz = 28 MHz, so the dips are at 2.842 and 2.898 GHz, 56 MHz apart. Measuring the splitting measures the field.</p>
+</div>
+<p><strong>ODMR</strong> (optically detected magnetic resonance): shine green light, sweep a microwave frequency, and watch the red fluorescence. When the microwaves match a transition from \(m_s = 0\) to \(\pm1\), the centre goes dark and the fluorescence dips. The dip positions give \(B\) (from the splitting) and the temperature or pressure (from the shift of \(D\)).</p>
+<h3>Using NV centres to study superconductors under high pressure</h3>
+<p>Many superconductors (like LaH₁₀, 2F) only appear at huge pressures, made in a <strong>diamond anvil cell</strong>: a tiny sample squeezed between the tips of two diamonds. Ordinary magnetic probes cannot fit inside. Yip and co-workers (Science, 2019) put a layer of NV centres in the diamond tip, right next to the sample.</p>
+<ol>
+<li>Apply a small magnetic field and measure the ODMR spectrum of NV centres at different spots near the sample.</li>
+<li>Above \(T_c\) the field passes straight through the sample, so the NV centres see the applied field.</li>
+<li>Below \(T_c\) the Meissner effect pushes the field out. NV centres above the sample see a weaker field and those at the edge see a stronger, bent field. The ODMR splitting changes.</li>
+<li>Repeating this at several temperatures finds \(T_c\); repeating at several pressures maps the superconducting region. They did this for BaFe₂(As₀.₅₉P₀.₄₁)₂ up to about 40 kbar, matching AC susceptibility data. The shift of \(D\) also measured the pressure itself, and its spread across the sample.</li>
+</ol>
+<details class="q"><summary><span class="qt pyq">Quiz 2 2025 · Q12 (5 marks)</span><span>What is a nitrogen–vacancy (NV) centre in diamond? Explain how NV centres can be used to study superconductors under high pressure.</span><span class="chev">›</span></summary><div class="ans">
+<div class="sol"><div class="sl">Formula</div><div class="sb">\(\frac{H_e}h = DS_z^2 + \gamma_e\vec B\cdot\vec S\); resonances at \(D\pm\gamma_eB\), \(D = 2.87\) GHz.</div></div>
+<div class="sol"><div class="sl">Where it comes from</div><div class="sb">3F.</div></div>
+<div class="sol"><div class="sl">Working</div><div class="sb"><ol class="steps">
+<li>Definition: a point defect in diamond, a substitutional nitrogen next to a carbon vacancy. Draw the N, the vacancy V and three neighbouring C atoms.</li>
+<li>Levels: spin-1 ground state, \(m_s = 0\) bright and \(m_s = \pm1\) dark, split by 2.87 GHz; green excitation, red (637 nm) emission. Sketch the level diagram.</li>
+<li>ODMR: sweeping microwaves while watching fluorescence shows dips at \(D\pm\gamma_eB\); the splitting measures the local field, the shift of \(D\) measures pressure and temperature.</li>
+<li>High pressure: NV centres placed in the diamond anvil tip sit next to the sample. Below \(T_c\) the Meissner effect expels the field, so the splitting seen by nearby NV centres changes. Tracking this against temperature at each pressure gives \(T_c(P)\) and the phase diagram (BaFe₂(As,P)₂, Yip and others, 2019).</li>
+<li>Advantages: works inside the tiny cell, maps the field with micrometre resolution, measures pressure at the same time.</li>
+</ol></div></div>
+</div></details>
+
+<div class="game" data-type="quiz"><span class="tag">Game · Module 3</span>
+<h4>Quick-fire: past questions and slide questions on devices</h4>
+<script type="application/json">{"q":[
+{"t":"Quantum confinement in quantum-well lasers mainly changes the","o":["lattice constant","density of states","Bohr magneton","vacuum permittivity"],"a":1,"w":"The DOS becomes a staircase, concentrating carriers at the band edge. Past paper question (Quiz 2)."},
+{"t":"Coulomb blockade is essential in","o":["MTJ","SQUID","SET","spin valve"],"a":2,"w":"The single-electron transistor. Past paper question (Quiz 2)."},
+{"t":"A SQUID operates on the","o":["spin filtering","Aharonov–Bohm effect","Josephson effect","Rashba effect"],"a":2,"w":"Josephson effect plus flux quantisation. Past paper question (Quiz 2)."},
+{"t":"Tunnelling probability in an MTJ is enhanced by","o":["ferromagnetic resonance","Δ₁ symmetry matching in MgO barriers","diamagnetic screening","high spin–orbit coupling"],"a":1,"w":"MgO acts as a symmetry filter. Past paper question (Quiz 2)."},
+{"t":"Superconducting qubits are favoured because they offer","o":["macroscopic quantum coherence","no decoherence","room-temperature entanglement","no fabrication effort"],"a":0,"w":"Past paper question (Quiz 2)."},
+{"t":"Spin-transfer torque is","o":["the torque of a magnetic field on a magnet","the torque from a spin-polarised current that switches a free layer","a torque from thermal vibrations","unrelated to MTJs"],"a":1,"w":"Slide quiz question, lecture 3.5."},
+{"t":"The TMR ratio of an MTJ is","o":["independent of temperature","the percentage change in resistance between parallel and antiparallel states","always under 1%","largest when the layers are non-magnetic"],"a":1,"w":"TMR = (R_AP − R_P)/R_P. Slide quiz question."},
+{"t":"A typical MTJ is","o":["two ferromagnets separated by a non-magnetic metal","two ferromagnets separated by an insulating barrier","one ferromagnet on a semiconductor","two non-magnets separated by an insulator"],"a":1,"w":"The metal spacer version is a spin valve (GMR). Slide quiz question."},
+{"t":"The GMR percentage is","o":["(R_AP − R_P)/R_P × 100%","(R_P − R_AP)/R_P × 100%","(R_AP + R_P)/2","R_P/R_AP"],"a":0,"w":"Slide quiz question."},
+{"t":"Einstein's relation between the B coefficients is","o":["B₁₂ = B₂₁","B₁₂ = 2B₂₁","B₁₂ = A₂₁","B₁₂ = 0"],"a":0,"w":"Absorption and stimulated emission have equal coefficients."},
+{"t":"A laser needs","o":["more atoms in the lower level","population inversion","no mirrors","an indirect band gap"],"a":1,"w":"Spontaneous emission dominates in equilibrium by a factor e^(hν/kT) − 1."},
+{"t":"In an LCD, the pixels","o":["emit their own light","modulate light from a backlight","use quantum dots only","are OLEDs"],"a":1,"w":"LCDs modulate; OLEDs emit; QD-OLED converts blue light."},
+{"t":"The flux quantum Φ₀ equals","o":["h/e","h/2e","2e/h","e²/h"],"a":1,"w":"2e because the carriers are Cooper pairs: 2.07 × 10⁻¹⁵ Wb."},
+{"t":"In the NV centre, which spin state is bright?","o":["mₛ = 0","mₛ = +1","mₛ = −1","none"],"a":0,"w":"mₛ = ±1 can decay through the dark singlet path."},
+{"t":"A BJT is","o":["voltage-controlled","current-controlled","light-controlled","not a transistor"],"a":1,"w":"BJT: current-controlled. FET: voltage-controlled."}
+]}</script>
+</div>
+<div class="game" data-type="blank"><span class="tag">Game · Module 3 fill in the blanks</span>
+<h4>Type the missing word</h4>
+<script type="application/json">{"q":[
+{"t":"Quantum dot LED colour is tuned by the dot ___.","a":["size","diameter"]},
+{"t":"Spin valves have two ___ layers separated by a non-magnetic spacer.","a":["ferromagnetic","ferromagnet","magnetic"]},
+{"t":"Spin valves have two ferromagnetic layers separated by a ___ spacer layer.","a":["non-magnetic","nonmagnetic","non magnetic metal","non-magnetic metal","metal"]},
+{"t":"A ___ defect occurs when an atom is missing from its regular lattice site.","a":["vacancy","point"]},
+{"t":"NV centres are examples of ___ defects in a solid.","a":["point","colour centre","color center"]},
+{"t":"STT switches magnetisation using a spin-___ current.","a":["polarised","polarized"]},
+{"t":"In an MTJ, the resistance is ___ when the magnetisations are parallel.","a":["lower","low"]},
+{"t":"MTJ stands for Magnetic ___ Junction.","a":["tunnel"]},
+{"t":"A spin valve is an example of a ___ device.","a":["GMR","giant magnetoresistance"]},
+{"t":"STT-MRAM uses spin transfer ___ for writing data.","a":["torque"]},
+{"t":"The zero-field splitting of the NV centre is ___ GHz.","a":["2.87"]},
+{"t":"The charging energy of a SET island is e² divided by twice its ___.","a":["capacitance"]}
+]}</script>
+</div>
+</section>
