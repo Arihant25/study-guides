@@ -2,7 +2,7 @@
 
 Revision notes for Intro to Sociology (HS2.201), built with plain HTML, CSS and JavaScript. There is no build step.
 
-**Live site:** `https://arihant25.github.io/sociology-study-guide/`
+**Live site:** https://arihant25.github.io/study-guides/sociology/
 
 ## Pages
 
